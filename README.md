@@ -27,6 +27,8 @@ On WIN-64 platforms:
 On GLX-64 platforms:
 /bin/GLX-64/jigsaw64r     example.jig
 ````
+In this example, a high-quality tetrahedral mesh is generated for the stanford-bunny geometry and the result is written to file. The input geometry is specified as a triangulated surface, and is read from `../geo/bunny.msh`. The volume and surface mesh outputs are written to `../out/bunny.msh`. Edit `example.jig` for a description of `JIGSAW`'s configuration options. 
+
 Additional information, documentation, online tutorials and references are available <a href="http://sites.google.com/site/dengwirda/jigsaw">here</a>.
 
 
