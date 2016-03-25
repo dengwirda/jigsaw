@@ -8,11 +8,11 @@
 #
 #   On WIN machines:
 #
-#       bin\jigsaw64r.exe example.jig
+#       bin\WIN-64\jigsaw64r.exe example.jig
 #
 #   On LNX machines:
 #
-#       bin/jigsaw64r     example.jig
+#       bin/GLX-64/jigsaw64r     example.jig
 #
 #   This command calls JIGSAW using the configuration data contained in 
 #   "example.jig", which, in its unmodified form, creates a tetrahedral 
