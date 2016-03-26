@@ -6,13 +6,13 @@
 #   To run this example, navigate to the directory containing this file 
 #   and run the following from the cmd line:
 #
-#   On WIN machines:
+#   On WIN-64 platforms:
 #
 #       bin\WIN-64\jigsaw64r.exe example.jig
 #
-#   On LNX machines:
+#   On LNX-64 platforms:
 #
-#       bin/GLX-64/jigsaw64r     example.jig
+#       bin/LNX-64/jigsaw64r     example.jig
 #
 #   This command calls JIGSAW using the configuration data contained in 
 #   "example.jig", which, in its unmodified form, creates a tetrahedral 
