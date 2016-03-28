@@ -9,7 +9,7 @@
 
 <a href="https://sites.google.com/site/dengwirda/jigsaw">`JIGSAW`</a> is a Delaunay-based unstructured mesh generator for two- and three-dimensional geometries. It is designed to generate high-quality triangular and tetrahedral meshes for planar, surface and volumetric problems. `JIGSAW` is based on a recently developed "restricted" Frontal-Delaunay algorithm -- a hybrid technique combining many of the best features of advancing-front and Delaunay-refinement type approaches.
 
-`JIGSAW` is a stand-alone mesh generator written in C++, and is currently available for 64-bit `Windows` and `Linux` platforms. This package provides a basic command-line interface. A <a href="http://www.mathworks.com">`MATLAB`</a> // <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including file I/O, mesh visualisation and post-processing facilities can be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
+`JIGSAW` is a stand-alone mesh generator written in `C++`, and is currently available for `64-bit` `Windows` and `Linux` platforms. This package provides a basic command-line interface. A <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including file I/O, mesh visualisation and post-processing facilities can be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
 
 # `Installation`
 
@@ -31,7 +31,7 @@ On LNX-64 platforms:
 ````
 In this example, a high-quality tetrahedral mesh is generated for the stanford-bunny geometry and the result is written to file. The input geometry is specified as a triangulated surface, and is read from `../geo/bunny.msh`. The volume and surface mesh outputs are written to `../out/bunny.msh`. Edit `example.jig` for a description of `JIGSAW`'s configuration options. 
 
-Additional information, documentation, online tutorials and references are available <a href="http://sites.google.com/site/dengwirda/jigsaw">here</a>.
+Additional information, documentation, online tutorials and references are available <a href="http://sites.google.com/site/dengwirda/jigsaw">here</a>. A repository of 3D surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>.
 
 # `Attribution!`
 
