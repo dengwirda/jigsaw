@@ -43,4 +43,6 @@ If you make use of `JIGSAW` please reference appropriately. The algorithmic deve
 
 `[3]` - Darren Engwirda, Voronoi-based Point-placement for Three-dimensional Delaunay-refinement, Procedia Engineering, Volume 124, 2015, Pages 330-342, ISSN 1877-7058, http://dx.doi.org/10.1016/j.proeng.2015.10.143. 
 
+`[4]` - Darren Engwirda, Conforming restricted Delaunay mesh generation for piecewise smooth complexes, Submitted to the 25th International Meshing Roundtable, (https://arxiv.org/abs/1606.01289), 2016. Keywords: Three-dimensional mesh generation, restricted Delaunay, Delaunay-refinement, Advancing-front, Frontal-Delaunay, Off-centres, Sharp-features.
+
 
