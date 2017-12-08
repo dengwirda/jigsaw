@@ -74,7 +74,7 @@
 #       ifold connections.
 #
 
-    GEOM_FEAT = TRUE
+#   GEOM_FEAT = TRUE
 
 
 #   ---> GEOM_ETA1 - {default=45deg} 1-dim. feature-angle, 
@@ -171,7 +171,7 @@
 #       on 1-manifold complexes.
 #
 
-    MESH_TOP1 = TRUE
+#   MESH_TOP1 = TRUE
 
 
 #   ---> MESH_TOP2 - {default=false} enforce 2-dim. topolog-
@@ -340,7 +340,7 @@
 #       rated by JIGSAW. Set VERBOSITY >= 1 for more output.
 #
 
-    VERBOSITY = 1
+#   VERBOSITY = 1
 
 
 
