@@ -13,6 +13,20 @@ This package provides the underlying `C++` source for `JIGSAW`; defining a basic
 
 `JIGSAW` has been compiled and tested on various `64-bit` `Linux` , `Windows` and `Mac` based platforms. 
 
+
+## `Code Structure`
+
+`JIGSAW` is written in `C++` as a `header-only` library. Support is provided for a basic command-line interface and a `C`-format `API`.
+
+      JIGASW::
+      ├── src -- JIGSAW src code
+      ├── inc -- JIGSAW header files (for libjigsaw)
+      ├── bin -- put JIGSAW exe binaries here
+      ├── lib -- put JIGSAW lib binaries here
+      ├── geo -- geometry definitions and input data
+      ├── out -- default folder for JIGSAW output
+      └── uni -- unit tests and libjigsaw example programs
+
 ## `Getting Started`
 
 The first step is to compile the code! The `JIGSAW` src can be found in <a href="../master/jigsaw/src/">`../jigsaw/src/`</a>.
@@ -23,13 +37,13 @@ The first step is to compile the code! The `JIGSAW` src can be found in <a href=
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
-	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG -I libcpp 
-	-static-libstdc++ jigsaw.cpp -o jigsaw64r
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG -I libcpp -static-libstdc++ 
+	jigsaw.cpp -o jigsaw64r
 	
 can be used to build a `JIGSAW` executable, while:
 
-	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -I libcpp 
-	-static-libstdc++ jigsaw.cpp -shared -o libjigsaw64r.so
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -I libcpp -static-libstdc++ 
+	jigsaw.cpp -shared -o libjigsaw64r.so
 
 can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
 
@@ -45,25 +59,9 @@ can be used to build a `JIGSAW` shared library. See the headers in <a href="../m
 
 Once you have built the `JIGSAW` binaries, place them in the appropriate sub-folders in`../jigsaw/bin/` and/or `../jigsaw/lib/` directories, so that they can be found by the unit tests in `../jigsaw/uni/`.
 
-## `Code Structure`
+## `A Simple Example`
 
-	JIGASW::
-      ├── src -- JIGSAW src code
-	    ├── inc -- JIGSAW header files (for libjigsaw)
-	    ├── bin -- put JIGSAW exe binaries here
-	    ├── lib -- put JIGSAW lib binaries here
-	    ├── geo -- geometry definitions and input data
-	    ├── out -- default folder for JIGSAW output
-	    └── uni -- unit tests and libjigsaw example programs
-
-
-
-
-
-
-# `Starting Out`
-
-To run `JISAW`, first download and unzip the current <a href="https://github.com/dengwirda/jigsaw/archive/master.zip">repository</a>, then navigate to the installation directory and execute the following command-line entries:
+After compiling the code, run the following command-line example to confirm:
 ````
 On WIN-64 platforms:
 
@@ -73,11 +71,11 @@ On LNX-64 platforms:
 
 /bin/LNX-64/jigsaw64r     example.jig
 ````
-In this example, a high-quality tetrahedral mesh is generated for the stanford-bunny geometry and the result is written to file. The input geometry is specified as a triangulated surface, and is read from `../geo/bunny.msh`. The volume and surface mesh outputs are written to `../out/bunny.msh`. Edit `example.jig` for a description of `JIGSAW`'s configuration options. 
+In this example, a high-quality tetrahedral mesh is generated for the 'stanford-bunny' geometry and the result is written to file. The input geometry is specified as a triangulated surface, and is read from `../geo/bunny.msh`. The volume and surface mesh outputs are written to `../out/bunny.msh`. Edit `example.jig` for a description of `JIGSAW`'s configuration options. 
 
 Additional information, documentation, online tutorials and references are available <a href="http://sites.google.com/site/dengwirda/jigsaw">here</a>. A repository of 3D surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>.
 
-# `Attribution!`
+## `Attribution!`
 
 If you make use of `JIGSAW` please make reference to the following. The algorithmic developments behind `JIGSAW` have been the subject of a number of publications, originally stemming from my PhD research at the University of Sydney:
 
