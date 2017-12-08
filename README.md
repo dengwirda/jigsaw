@@ -1,4 +1,4 @@
-# `JIGSAW: An unstrutured mesh generator`
+## `JIGSAW: An unstrutured mesh generator`
 
 <p align="center">
   <img src = "../master/img/bunny-TRIA3-1.png"> &nbsp
@@ -7,17 +7,61 @@
   <img src = "../master/img/bunny-TRIA4-3.png">
 </p>
 
-<a href="https://sites.google.com/site/dengwirda/jigsaw">`JIGSAW`</a> is a Delaunay-based unstructured mesh generator for two- and three-dimensional geometries. It is designed to generate high-quality triangular and tetrahedral meshes for planar, surface and volumetric problems. `JIGSAW` is based on a recently developed "restricted" Frontal-Delaunay algorithm -- a hybrid technique combining many of the best features of advancing-front and Delaunay-refinement type approaches.
+`JIGSAW` is a computational library for unstructured mesh generation; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes both `refinement`-based algorithms for the construction of new meshes, as well as `optimisation`-driven techniques for the improvement of existing grids.
 
-`JIGSAW` is a stand-alone mesh generator written in `C++`, and is currently available for `64-bit` `Windows` and `Linux` platforms. This package provides a basic command-line interface. A <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including file I/O, mesh visualisation and post-processing facilities can be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
+This package provides the underlying `C++` source for `JIGSAW`; defining a basic command-line interface and a `C`-format `API`. A <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including a range of additiona facilities for file I/O, mesh visualisation and post-processing operations can be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
 
-# `Installation`
+`JIGSAW` has been compiled and tested on various `64-bit` `Linux` , `Windows` and `Mac` based platforms. 
 
-`JIGSAW` itself is a fully self-contained executable, without dependencies on third-party libraries or run-time packages. 
+## `Getting Started`
+
+The first step is to compile the code! The `JIGSAW` src can be found in <a href="../master/jigsaw/src/">`../jigsaw/src/`</a>.
+
+`JIGSAW` is a `header-only` package - there is only the single main `jigsaw.cpp` file that simply `#include`'s the rest of the library as headers. The resulting build process should be fairly straight-forward as a result. `JIGSAW` does not currently dependent on any external packages or libraries.
+
+#### `On Linux/Mac`
+
+`JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
+
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG -I libcpp 
+	-static-libstdc++ jigsaw.cpp -o jigsaw64r
+	
+can be used to build a `JIGSAW` executable, while:
+
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -I libcpp 
+	-static-libstdc++ jigsaw.cpp -shared -o libjigsaw64r.so
+
+can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
+
+#### `On Windows`
+
+`JIGSAW` has been successfully built using various versions of the `msvc` compiler. I do not provide a sample `msvc` project, but the following steps can be used to create one:
+
+	* Create a new, empty MSVC project.
+	* Import the jigsaw.cpp file, this contains the main() entry-point.
+	* Modify the MSVC project settings to include the "../src/" and "../src/libcpp/" directories.
+
+#### `Folder Structure`
+
+Once you have built the `JIGSAW` binaries, place them in the appropriate sub-folders in`../jigsaw/bin/` and/or `../jigsaw/lib/` directories, so that they can be found by the unit tests in `../jigsaw/uni/`.
+
+## `Code Structure`
+
+	JIGASW::
+      ├── src -- JIGSAW src code
+	    ├── inc -- JIGSAW header files (for libjigsaw)
+	    ├── bin -- put JIGSAW exe binaries here
+	    ├── lib -- put JIGSAW lib binaries here
+	    ├── geo -- geometry definitions and input data
+	    ├── out -- default folder for JIGSAW output
+	    └── uni -- unit tests and libjigsaw example programs
+
+
+
+
+
 
 # `Starting Out`
-
-`JIGSAW` is a command-line executable, and operates by reading and writing a set of input/output files. Run-time control for `JIGSAW` is enforced by instantiating the executable with a simple text-based configuration file (a so-called `JIG` file). Additional information on `JIGSAW`'s file-formats can be found <a href="http://sites.google.com/site/dengwirda/jigsaw/jigsaw-documentation">here</a>.
 
 To run `JISAW`, first download and unzip the current <a href="https://github.com/dengwirda/jigsaw/archive/master.zip">repository</a>, then navigate to the installation directory and execute the following command-line entries:
 ````
@@ -35,14 +79,15 @@ Additional information, documentation, online tutorials and references are avail
 
 # `Attribution!`
 
-If you make use of `JIGSAW` please reference appropriately. The algorithmic developments behind `JIGSAW` have been the subject of a number of publications, beginning with my PhD research at the University of Sydney:
+If you make use of `JIGSAW` please make reference to the following. The algorithmic developments behind `JIGSAW` have been the subject of a number of publications, originally stemming from my PhD research at the University of Sydney:
 
-`[1]` - Darren Engwirda, Locally-optimal Delaunay-refinement and optimisation-based mesh generation, Ph.D. Thesis, School of Mathematics and Statistics, The University of Sydney, September 2014, http://hdl.handle.net/2123/13148.
+`[1]` - Darren Engwirda: Generalised primal-dual grids for unstructured co-volume schemes, under review, https://arxiv.org/abs/1712.02657, 2017.
 
-`[2]` - Darren Engwirda, David Ivers, Off-centre Steiner points for Delaunay-refinement on curved surfaces, Computer-Aided Design, Volume 72, March 2016, Pages 157-171, ISSN 0010-4485, http://dx.doi.org/10.1016/j.cad.2015.10.007.
+`[2]` - Darren Engwirda, Conforming Restricted Delaunay Mesh Generation for Piecewise Smooth Complexes, Procedia Engineering, Volume 163, Pages 84-96, ISSN 1877-7058, https://doi.org/10.1016/j.proeng.2016.11.024, 2016.
 
-`[3]` - Darren Engwirda, Voronoi-based Point-placement for Three-dimensional Delaunay-refinement, Procedia Engineering, Volume 124, 2015, Pages 330-342, ISSN 1877-7058, http://dx.doi.org/10.1016/j.proeng.2015.10.143. 
+`[3]` - Darren Engwirda, Voronoi-based Point-placement for Three-dimensional Delaunay-refinement, Procedia Engineering, Volume 124, Pages 330-342, ISSN 1877-7058, http://dx.doi.org/10.1016/j.proeng.2015.10.143, 2015.
 
-`[4]` - Darren Engwirda, Conforming restricted Delaunay mesh generation for piecewise smooth complexes, Submitted to the 25th International Meshing Roundtable, (https://arxiv.org/abs/1606.01289), 2016. Keywords: Three-dimensional mesh generation, restricted Delaunay, Delaunay-refinement, Advancing-front, Frontal-Delaunay, Off-centres, Sharp-features.
+`[4]` - Darren Engwirda, David Ivers, Off-centre Steiner points for Delaunay-refinement on curved surfaces, Computer-Aided Design, Volume 72, Pages 157-171, ISSN 0010-4485, http://dx.doi.org/10.1016/j.cad.2015.10.007, 2016.
 
+`[5]` - Darren Engwirda, Locally-optimal Delaunay-refinement and optimisation-based mesh generation, Ph.D. Thesis, School of Mathematics and Statistics, The University of Sydney, http://hdl.handle.net/2123/13148, 2014.
 
