@@ -39,14 +39,14 @@
 #       eation of *.MSH files.
 #
 
-    GEOM_FILE = geo/lake.msh
+    GEOM_FILE = geo/bunny.msh
     
     
 #   ---> MESH_FILE - 'MESHNAME.MSH', a string containing the 
 #       name of the output file (will be created on output).
 #
 
-    MESH_FILE = out/lake.msh
+    MESH_FILE = out/bunny.msh
 
 
 #
