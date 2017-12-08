@@ -13,6 +13,40 @@
 #   JIGSAW: an unstructured mesh generation package 
 #------------------------------------------------------------
 
+  * Version 0.9.5:
+    -------------
+    
+  - Support for generalised 'regular-power' grids - 
+    a 'weighted' variant of the 'standard' Voronoi-
+    Delaunay tessellation that can be used to cons-
+    truct very high-quality, orthogonal primal-dual 
+    pairs for co-volume type numerical simulations.
+    
+    Regular-power grids are constructed through an
+    optimisation-based approach; enabled by setting
+    OPTM_DUAL=TRUE. 
+    
+
+  * Version 0.9.4:
+    -------------
+
+  - Support for a new iterative mesh-optimisation 
+    algorithm. Improvements to mesh-quality metrics
+    are sought using a combination of geometrical
+    and topological operations, including: topolog-
+    ical "flips", node "smoothing", and edge/face
+    "merge" and "split" predicates.
+
+
+  * Version 0.9.3:
+    -------------
+    
+  - Support for user-defined mesh-spacing functions
+    via HFUN_FILE, allowing general mesh-size info-
+    rmation to be specified on unstructured backgr-
+    ound grids.   
+  
+
   * Version 0.9.2:
     -------------
 
