@@ -16,7 +16,7 @@ This package provides the underlying `C++` source for `JIGSAW`; defining a basic
 
 ## `Code Structure`
 
-`JIGSAW` is written in `C++` as a `header-only` library. Support is provided for a basic command-line interface and a `C`-format `API`.
+`JIGSAW` is written as a `header-only` library in `C++`. Both a basic command-line interface and a `C`-format `API` are defined:
 
       JIGASW::
       ├── src -- JIGSAW src code
@@ -61,7 +61,7 @@ Once you have built the `JIGSAW` binaries, place them in the appropriate sub-fol
 
 ## `A Simple Example`
 
-After compiling the code, run the following command-line example to confirm:
+After compiling the code, run the following command-line example to get started:
 ````
 On WIN-64 platforms:
 
