@@ -29,7 +29,7 @@ This package provides the underlying `C++` source for `JIGSAW`; defining a basic
 
 ## `Getting Started`
 
-The first step is to compile the code! The `JIGSAW` src can be found in <a href="../master/jigsaw/src/">`../jigsaw/src/`</a>.
+The first step is to compile the code! The `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>.
 
 `JIGSAW` is a `header-only` package - there is only the single main `jigsaw.cpp` file that simply `#include`'s the rest of the library as headers. The resulting build process should be fairly straight-forward as a result. `JIGSAW` does not currently dependent on any external packages or libraries.
 
@@ -45,7 +45,7 @@ can be used to build a `JIGSAW` executable, while:
 	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -I libcpp -static-libstdc++ 
 	jigsaw.cpp -shared -o libjigsaw64r.so
 
-can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
+can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
 
 #### `On Windows`
 
@@ -71,7 +71,7 @@ On LNX-64 platforms:
 
 /bin/LNX-64/jigsaw64r     example.jig
 ````
-In this example, a high-quality tetrahedral mesh is generated for the 'stanford-bunny' geometry and the result is written to file. The input geometry is specified as a triangulated surface, and is read from `../geo/bunny.msh`. The volume and surface mesh outputs are written to `../out/bunny.msh`. Edit `example.jig` for a description of `JIGSAW`'s configuration options. 
+In this example, a high-quality tetrahedral mesh is generated for the 'stanford-bunny' geometry and the result is written to file. The input geometry is specified as a triangulated surface, and is read from `../jigsaw/geo/bunny.msh`. The volume and surface mesh outputs are written to `../jigsaw/out/bunny.msh`. Edit `example.jig` for a description of `JIGSAW`'s configuration options. 
 
 Additional information, documentation, online tutorials and references are available <a href="http://sites.google.com/site/dengwirda/jigsaw">here</a>. A repository of 3D surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>.
 
