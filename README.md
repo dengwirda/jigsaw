@@ -18,7 +18,7 @@ This package provides the underlying `C++` source for `JIGSAW`; defining a basic
 
 `JIGSAW` is written as a `header-only` library in `C++`. Both a basic command-line interface and a `C`-format `API` are defined:
 
-      JIGASW::
+      JIGSAW::
       ├── src -- JIGSAW src code
       ├── inc -- JIGSAW header files (for libjigsaw)
       ├── bin -- put JIGSAW exe binaries here
