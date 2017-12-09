@@ -435,7 +435,7 @@
     /*---------------- calc. line search direction vector */
         if (_kind == +1 )
         {
-            _odt_move( _mesh, _hfun, 
+            _wvt_move( _mesh, _hfun, 
                 _pred, _hval, _tset, 
                 _node, _line, _ladj) ;
         }
