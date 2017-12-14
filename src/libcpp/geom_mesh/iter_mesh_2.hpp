@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 November, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -286,6 +286,16 @@
         
         _msrc /= _csrc.count() ;
         _mdst /= _cdst.count() ;
+        
+        
+        if ( true )
+        {  
+    /*--------------------- okay if all are improving */        
+            _okay  = _0dst > _0src &&
+                     _mdst > _msrc ;
+        
+            if (_okay) return;
+        }
             
         if ( true )
         {  
@@ -419,7 +429,7 @@
         )
     {
         iptr_type static 
-            constexpr _ITER = (iptr_type)+5 ;
+            constexpr _ITER = (iptr_type)+8 ;
     
         _okay = false ;
     
@@ -435,7 +445,7 @@
     /*---------------- calc. line search direction vector */
         if (_kind == +1 )
         {
-            _wvt_move( _mesh, _hfun, 
+            _pvt_move( _mesh, _hfun, 
                 _pred, _hval, _tset, 
                 _node, _line, _ladj) ;
         }
@@ -459,7 +469,7 @@
             _ladj * _xtol) return;
       
         real_type _scal = 
-            _llen * (real_type) +1.0 ;
+            _llen * (real_type) +2.0 ;
         
     /*---------------- do backtracking line search iter's */
       
@@ -547,7 +557,7 @@
         )
     {
         iptr_type static 
-            constexpr _ITER = (iptr_type)+5 ;
+            constexpr _ITER = (iptr_type)+8 ;
     
         _okay = false ;
     
@@ -555,7 +565,7 @@
  
     /*---------------- calc. line search direction vector */
         
-        _good = (real_type)+1. ;
+        _good  = (real_type) +.9875;
         
         if(_qmin < _good )
         { 
@@ -578,7 +588,7 @@
             _radj * _xtol) return;
       
         real_type _scal = 
-            _llen * (real_type) +1. ;
+            _llen * (real_type) +2. ;
             
         real_type _wmax = 
             _radj * (real_type) +4. ;
