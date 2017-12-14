@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 September, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -50,13 +50,15 @@
 
     typedef struct 
         {
-        real_t                  _ppos [2] ;
+        real_t                  _ppos [2] ; // coord.'s
+        real_t                  _vpwr ;     // weight
         indx_t                  _itag ;
         } jigsaw_VERT2_t ;
         
     typedef struct
         {
-        real_t                  _ppos [3] ;
+        real_t                  _ppos [3] ; // coord.'s
+        real_t                  _vpwr ;     // weight
         indx_t                  _itag ;
         } jigsaw_VERT3_t ;
     
