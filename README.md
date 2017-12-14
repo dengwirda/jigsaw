@@ -7,9 +7,9 @@
   <img src = "../master/img/bunny-TRIA4-3.png">
 </p>
 
-`JIGSAW` is a computational library for unstructured mesh generation; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes both `refinement`-based algorithms for the construction of new meshes, as well as `optimisation`-driven techniques for the improvement of existing grids.
+`JIGSAW` is a computational library for unstructured mesh generation; designed to generate high-quality Delaunay triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes both `refinement`-based algorithms for the construction of new meshes, as well as `optimisation`-driven techniques designed to improve existing grids.
 
-This package provides the underlying `C++` source for `JIGSAW`; defining a basic command-line interface and a `C`-format `API`. A <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including a range of additiona facilities for file I/O, mesh visualisation and post-processing operations can be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
+This package provides the underlying `C++` source for `JIGSAW`; defining a basic command-line interface and a `C`-format `API`. A <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including a range of additional facilities for file I/O, mesh visualisation and post-processing operations can be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
 
 `JIGSAW` has been compiled and tested on various `64-bit` `Linux` , `Windows` and `Mac` based platforms. 
 

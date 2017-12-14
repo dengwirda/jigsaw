@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 November, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -557,7 +557,16 @@
                 qtol() = _jjig._optm_qtol ;
             _jcfg._iter_opts.
                 qlim() = _jjig._optm_qlim ;
-            
+                
+            _jcfg._iter_opts.
+                tria() = _jjig._optm_tria ;
+            _jcfg._iter_opts.
+                dual() = _jjig._optm_dual ;
+            _jcfg._iter_opts.
+                div_() = _jjig._optm_div_ ;
+            _jcfg._iter_opts.
+                zip_() = _jjig._optm_zip_ ;
+                
         }
         catch (...)
         {

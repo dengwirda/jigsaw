@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 November, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -46,7 +46,7 @@
 
     /*
     --------------------------------------------------------
-     * _WVT-MOVE: weighted voronoi tessellation update.
+     * _PVT-MOVE: point-wise voro. tessellation update.
     --------------------------------------------------------
      */
    
@@ -59,7 +59,7 @@
         typename  node_iter
              >
     __static_call
-    __normal_call void_type _wvt_move (
+    __normal_call void_type _pvt_move (
         mesh_type &_mesh ,
         size_type &_hfun ,
         pred_type &_pred ,
@@ -106,10 +106,10 @@
             _mesh._set1.head()+_tnod[2] ;
                  
             real_type _ball [_dims + 1] ;
-            _pred.orthoball (_ball , 
+            _pred.perp_ball (_ball , 
                 &_inod->pval(0),
                     &_jnod->pval(0),
-                        &_knod->pval(0) ) ;
+                        &_knod->pval(0), true) ;
         
             if (_hval[_tnod[0]] < (real_type)+0.)
             {
@@ -232,10 +232,10 @@
             _mesh._set1.head()+_tnod[2] ;
             
             real_type _ball [_dims + 1] ;
-            _pred.orthoball (_ball , 
+            _pred.perp_ball (_ball , 
                 &_inod->pval(0),
                     &_jnod->pval(0),
-                        &_knod->pval(0) ) ;
+                        &_knod->pval(0), true) ;
                  
             real_type _tmag = 
             _pred.mass_tria (
@@ -268,14 +268,22 @@
                 (real_type) +0., _ball[_dims]);
             
             real_type _trad = std::sqrt(_tsqr);
+          
+            real_type _irho = (real_type)+1. 
+                            / _hval[_tnod[0]] ;
+            real_type _jrho = (real_type)+1. 
+                            / _hval[_tnod[1]] ;
+            real_type _krho = (real_type)+1. 
+                            / _hval[_tnod[2]] ;
+   
+            _irho = _irho * _irho  ;
+            _jrho = _jrho * _jrho  ;
+            _krho = _krho * _krho  ;
+           
+            real_type _rbar = 
+               (_irho+_jrho+_krho) / (real_type)+3. ;
             
-            real_type _hbar = _hval[_tnod[0]] +
-                              _hval[_tnod[1]] +
-                              _hval[_tnod[2]] ;
-            _hbar /= (real_type) +3.0 ; 
-         
-            real_type _irho = _hbar * _hbar ;
-            real_type _wval = _tmag / _irho ;
+            real_type _wval = _tmag* _rbar  ;
             
             for (auto _idim = _dims; _idim-- != +0; )
             {

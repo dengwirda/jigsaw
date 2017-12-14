@@ -427,6 +427,24 @@ class dd_flt
                _aa.hi() >  _bb.hi() :
                _aa.lo() >  _bb.lo() ;
     }
+    
+    __inline_call  bool operator <= (
+        dd_flt const& _aa, 
+        dd_flt const& _bb
+        )
+    {   return _aa.hi() == _bb.hi() ?
+               _aa.lo() <= _bb.lo() :
+               _aa.hi() <= _bb.hi() ;
+    }
+    
+    __inline_call  bool operator >= (
+        dd_flt const& _aa, 
+        dd_flt const& _bb
+        )
+    {   return _aa.hi() == _bb.hi() ?
+               _aa.lo() >= _bb.lo() :
+               _aa.hi() >= _bb.hi() ;
+    }
   
 #endif//__DD_FLT__
 

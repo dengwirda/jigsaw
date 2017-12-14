@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 August, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -325,14 +325,50 @@
        
     /* 
     --------------------------------------------------------
-     * OPTM_QLIM - {default=0.9250} threshold on mesh cost
+     * OPTM_QLIM - {default=0.9375} threshold on mesh cost
      * function above which gradient-based optimisation is
      * attempted.
     --------------------------------------------------------
      */
        
         real_t                  _optm_qlim ;
+ 
+    /*
+    --------------------------------------------------------
+     * OPTM_TRIA - {default= true} allow for optimisation
+     * of TRIA grid geometry.
+    --------------------------------------------------------
+     */
+   
+        indx_t                  _optm_tria ;
+       
+    /*
+    --------------------------------------------------------
+     * OPTM_DUAL - {default=false} allow for optimisation
+     * of DUAL grid geometry.
+    --------------------------------------------------------
+     */
         
+        indx_t                  _optm_dual ;
+       
+    /*
+    --------------------------------------------------------
+     * OPTM_ZIP_ - {default= true} allow for "merge" oper-
+     * ations on sub-faces.
+    --------------------------------------------------------
+     */
+        
+        indx_t                  _optm_zip_ ;
+       
+    /*
+    --------------------------------------------------------
+     * OPTM_DIV_ - {default= true} allow for "split" oper-
+     * ations on sub-faces.
+    --------------------------------------------------------
+     */
+        
+        indx_t                  _optm_div_ ;
+       
         } jigsaw_jig_t ;
         
     

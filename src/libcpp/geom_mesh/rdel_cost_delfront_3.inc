@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 September, 2017
+     * Last updated: 10 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -430,7 +430,7 @@
              tria(_tpos)->node(_fnod[ 2]);
 
             real_type _fbal [ +4];
-            geometry::tria_ball_3d(_fbal ,
+            geometry::circ_ball_3d(_fbal ,
            &_mesh._tria.
              node(_fnod[0])->pval(0),
            &_mesh._tria.

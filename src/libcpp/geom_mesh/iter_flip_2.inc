@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 November, 2017
+     * Last updated: 12 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -167,14 +167,14 @@
                 std::less<iptr_type>());
         
         real_type _ibal[_dims+1] ;
-        _pred.orthoball(_ibal ,
+        _pred.perp_ball(_ibal ,
        &_mesh._set1[_iloc[0]].pval(0),
        &_mesh._set1[_iloc[1]].pval(0),
        &_mesh._set1[_iloc[2]].pval(0)
             ) ;
             
         real_type _jbal[_dims+1] ;
-        _pred.orthoball(_jbal ,
+        _pred.perp_ball(_jbal ,
        &_mesh._set1[_jloc[0]].pval(0),
        &_mesh._set1[_jloc[1]].pval(0),
        &_mesh._set1[_jloc[2]].pval(0)

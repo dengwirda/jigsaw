@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 10 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -488,7 +488,7 @@
 
     /*----------------------------------- calc. edge-ball */
         real_type _ebal [ +3];
-        geometry::mini_ball_2d(_ebal,
+        geometry::circ_ball_2d(_ebal,
            &_mesh._tria.
              node(_enod[0])->pval(0),
            &_mesh._tria.

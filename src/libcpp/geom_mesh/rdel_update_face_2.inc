@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 November, 2017
+     * Last updated: 10 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -397,7 +397,7 @@
         {
     /*---------------------- calc. ball in floating-point */
             real_type _tbal[3] ;
-            geometry::tria_ball_2d (
+            geometry::circ_ball_2d (
                 _tbal , 
            &_mesh._tria.
                 node(_tnod[0])->pval(0) , 
@@ -435,7 +435,7 @@
                 } ;
             
             dd_flt _tbal[ +3] ;
-            geometry::tria_ball_2d (
+            geometry::circ_ball_2d (
                 _tbal, _pos1, 
                 _pos2, _pos3) ;
            

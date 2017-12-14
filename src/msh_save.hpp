@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 November, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -562,9 +562,12 @@
                         _ppos[0] = _iter->pval(0) ;
                     _mmsh._vert2._data[_nout].
                         _ppos[1] = _iter->pval(1) ;
+                        
+                    _mmsh._vert2._data[_nout].
+                        _vpwr    = (real_type)+0. ;
                     
                     _mmsh._vert2.
-                        _data[_nout]._itag =  0;
+                        _data[_nout]._itag = 0 ;
                         
                     _nout = _nout + 1 ;
                     }
@@ -749,8 +752,11 @@
                     _mmsh._vert3._data[_nout].
                         _ppos[2] = _iter->pval(2) ;
                     
+                    _mmsh._vert3._data[_nout].
+                        _vpwr    = (real_type)+0. ;
+                    
                     _mmsh._vert3.
-                        _data[_nout]._itag =  0;
+                        _data[_nout]._itag = 0 ;
                         
                     _nout = _nout + 1 ;
                     }
@@ -1407,6 +1413,9 @@
                     _mmsh._vert2._data[_nout].
                         _ppos[1] = _iter->pval(1) ;
                     
+                    _mmsh._vert2._data[_nout].
+                        _vpwr    = _iter->pval(2) ;
+                    
                     _mmsh._vert2.
                         _data[_nout]._itag = 0 ;
                         
@@ -1581,6 +1590,9 @@
                         _ppos[1] = _iter->pval(1) ;
                     _mmsh._vert3._data[_nout].
                         _ppos[2] = _iter->pval(2) ;
+                    
+                    _mmsh._vert3._data[_nout].
+                        _vpwr    = _iter->pval(3) ;
                     
                     _mmsh._vert3.
                         _data[_nout]._itag = 0 ;

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 November, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -64,7 +64,7 @@
         real_type  _lmin
             = (real_type) +7.50E-01,
         real_type  _good 
-            = (real_type) +9.00E-01,
+            = (real_type) +9.75E-01,
         real_type  _qinc 
             = (real_type) +1.00E-08
         )
@@ -110,8 +110,7 @@
         sqrt(_pred.length_sq(_ipos,_jpos) ) ;
 
         real_type  _hbar = 
-       (real_type) (1./2.) * _isiz + 
-       (real_type) (1./2.) * _jsiz ;
+            std::min(_isiz , _jsiz) ;
 
         if (_elen <= _hbar * _lmin)
             return  ;
@@ -151,14 +150,14 @@
         if (_cmin > _good) return;
         
         real_type _ibal[_dims+1] ;
-        _pred.mini_ball(_ibal ,
+        _pred.perp_ball(_ibal ,
            &_mesh._set1[
             _itri->node(0)].pval(0),
            &_mesh._set1[
             _itri->node(1)].pval(0),
            &_mesh._set1[
-            _itri->node(2)].pval(0)
-            ) ;
+            _itri->node(2)].pval(0),
+            true) ;
 
         real_type _ipwr = (real_type)+0.;
         _ipwr += _mesh._set1[
@@ -170,14 +169,14 @@
         _ipwr /= (real_type) +3. ;
 
         real_type _jbal[_dims+1] ;
-        _pred.mini_ball(_jbal ,
+        _pred.perp_ball(_jbal ,
            &_mesh._set1[
             _jtri->node(0)].pval(0),
            &_mesh._set1[
             _jtri->node(1)].pval(0),
            &_mesh._set1[
-            _jtri->node(2)].pval(0)
-            ) ;
+            _jtri->node(2)].pval(0),
+            true) ;
         
         real_type _jpwr = (real_type)+0.;
         _jpwr += _mesh._set1[
