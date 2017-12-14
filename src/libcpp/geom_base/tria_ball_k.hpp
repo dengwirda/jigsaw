@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 13 November, 2017
+     * Last updated: 12 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -47,7 +47,7 @@
 #   define __TRIA_BALL_K__
 
     namespace geometry {
-
+    
     /*
     --------------------------------------------------------
      * small matrix utilities. 
@@ -192,31 +192,192 @@
 	    _aa[__ij(1,0,_la)] * 
 	    _aa[__ij(0,1,_la)] ;
     }
-     
+          
     /*
     --------------------------------------------------------
-     * TRIA-BALL: circumscribing balls. 
+     * MINI-BALL: min. enclosing balls. 
+    --------------------------------------------------------
+     */
+
+    template <
+    typename      real_type
+             >
+    __normal_call void_type circ_ball_2d (  // forward dec's
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	              bool_type  _in = false
+        ) ;
+        
+    template <
+    typename      real_type
+             >
+    __normal_call void_type circ_ball_3d (  // forward dec's
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	              bool_type  _in = false
+        ) ;
+        
+    template <
+    typename      real_type
+             >
+    __normal_call void_type circ_ball_2d (  // forward dec's
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+	              bool_type  _in = false
+        ) ;
+        
+    template <
+    typename      real_type
+             >
+    __normal_call void_type circ_ball_3d (  // forward dec's
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+	              bool_type  _in = false
+        ) ;
+
+    template <
+    typename      real_type
+             >
+    __normal_call void_type circ_ball_3d (  // forward dec's
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+	__const_ptr  (real_type) _p4 ,
+	              bool_type  _in = false
+        ) ;
+
+    #define __circface12(__cc, __pi, __pj, __pq) \
+        do {                                \
+    /*---------- calc. face circumball */   \
+        circ_ball_2d(__bf, __pi, __pj, true);    \
+    /*---------- keep if min-enclosing */   \
+        if (__bf[2] >= lensqr_2d(__bf, __pq))    \
+        {                                   \
+            if (__bf[2] < __cc[2])          \
+            {                               \
+                __cc[0] = __bf[0];          \
+                __cc[1] = __bf[1];          \
+                __cc[2] = __bf[2];          \
+            }                               \
+        }                                   \
+        } while (false) ;
+
+    #define __circface13(__cc, __pi, __pj, __pq) \
+        do {                                \
+    /*---------- calc. face circumball */   \
+        circ_ball_3d(__bf, __pi, __pj, true);    \
+    /*---------- keep if min-enclosing */   \
+        if (__bf[3] >= lensqr_3d(__bf, __pq))    \
+        {                                   \
+            if (__bf[3] < __cc[3])          \
+            {                               \
+                __cc[0] = __bf[0];          \
+                __cc[1] = __bf[1];          \
+                __cc[2] = __bf[2];          \
+                __cc[3] = __bf[3];          \
+            }                               \
+        }                                   \
+        } while (false) ;
+
+    #define __circface23(__cc, __pi, __pj, __pk, __pq) \
+        do {                                \
+    /*---------- calc. face circumball */   \
+        circ_ball_3d(__bf, __pi, __pj, __pk, true); \
+    /*---------- keep if min-enclosing */   \
+        if (__bf[3] >= lensqr_3d(__bf, __pq))       \
+        {                                   \
+            if (__bf[3] < __cc[3])          \
+            {                               \
+                __cc[0] = __bf[0];          \
+                __cc[1] = __bf[1];          \
+                __cc[2] = __bf[2];          \
+                __cc[3] = __bf[3];          \
+            }                               \
+        }                                   \
+        } while (false) ;
+ 
+    /*
+    --------------------------------------------------------
+     * CIRC-BALL: circumscribing balls. 
     --------------------------------------------------------
      */
      
     template <
     typename      data_type
              >
-	__inline_call void_type tria_norm_3d (  // forward dec.
+	__inline_call void_type tria_norm_3d (  // forward dec's
 	__const_ptr  (data_type) _p1,
 	__const_ptr  (data_type) _p2,
 	__const_ptr  (data_type) _p3,
 	__write_ptr  (data_type) _nv
 		 ) ;
+    
+    template <
+    typename      real_type
+             >
+    __normal_call void_type circ_ball_2d (
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	              bool_type  _in
+        )
+    {
+        _cc[0] = 
+        (real_type).5*(_p1[0]+_p2[0]);
+        _cc[1] = 
+        (real_type).5*(_p1[1]+_p2[1]);
+
+        __unreferenced(_in);
+
+        _cc[2] = (real_type)+0. ;
+		_cc[2] = std::max (
+		_cc[2] , lensqr_2d(_cc, _p1));
+		_cc[2] = std::max (
+		_cc[2] , lensqr_2d(_cc, _p2));
+    }
+
+    template <
+    typename      real_type
+             >
+    __normal_call void_type circ_ball_3d (
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	              bool_type  _in
+        )
+    {
+        _cc[0] = 
+        (real_type).5*(_p1[0]+_p2[0]);
+        _cc[1] = 
+        (real_type).5*(_p1[1]+_p2[1]);
+        _cc[2] = 
+        (real_type).5*(_p1[2]+_p2[2]);
+
+        __unreferenced(_in);
+
+        _cc[3] = (real_type)+0. ;
+		_cc[3] = std::max (
+		_cc[3] , lensqr_3d(_cc, _p1));
+		_cc[3] = std::max (
+		_cc[3] , lensqr_3d(_cc, _p2));
+    }
      
     template <
     typename      real_type
              >
-	__normal_call void_type tria_ball_2d (
-	__write_ptr  (real_type) _bb,
-	__const_ptr  (real_type) _p1,
-	__const_ptr  (real_type) _p2,
-	__const_ptr  (real_type) _p3
+	__normal_call void_type circ_ball_2d (
+	__write_ptr  (real_type) _bb ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+                  bool_type  _in
 		)
 	{
 		real_type _xm[2*2] ;
@@ -281,16 +442,24 @@
 
         _bb[ 0] += _p1[0]  ;
         _bb[ 1] += _p1[1]  ;
+        
+        if (!_in)  return  ;
+	
+	    real_type __bf[3]  ;
+        __circface12( _bb, _p1, _p2, _p3);
+        __circface12( _bb, _p2, _p3, _p1);
+        __circface12( _bb, _p3, _p1, _p2);
 	}
 
     template <
     typename      real_type
              >
-	__normal_call void_type tria_ball_3d (
-	__write_ptr  (real_type) _bb,
-	__const_ptr  (real_type) _p1,
-	__const_ptr  (real_type) _p2,
-	__const_ptr  (real_type) _p3
+	__normal_call void_type circ_ball_3d (
+	__write_ptr  (real_type) _bb ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+                  bool_type  _in
 		)
 	{
         real_type _nv[4*1] ;
@@ -394,17 +563,25 @@
         _bb[ 0] += _p1[0]  ;
         _bb[ 1] += _p1[1]  ;
         _bb[ 2] += _p1[2]  ;
+	
+	    if (!_in)  return  ;
+	
+	    real_type __bf[4]  ;
+        __circface13( _bb, _p1, _p2, _p3);
+        __circface13( _bb, _p2, _p3, _p1);
+        __circface13( _bb, _p3, _p1, _p2);
 	}
 
     template <
     typename      real_type
              >
-	__normal_call void_type tria_ball_3d (
-	__write_ptr  (real_type) _bb,
-	__const_ptr  (real_type) _p1,
-	__const_ptr  (real_type) _p2,
-	__const_ptr  (real_type) _p3,
-    __const_ptr  (real_type) _p4
+	__normal_call void_type circ_ball_3d (
+	__write_ptr  (real_type) _bb ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+    __const_ptr  (real_type) _p4 ,
+                  bool_type  _in
 		)
 	{
 	    real_type _xm[3*3] ;
@@ -512,21 +689,150 @@
         _bb[ 1] += _p1[1]  ;
         _bb[ 2] += _p1[2]  ;
         
+        if (!_in) return   ;
+        
+        real_type __bf[4]  ;
+        __circface23( 
+            _bb, _p1, _p2, _p3, _p4) ;
+        __circface23( 
+            _bb, _p1, _p2, _p4, _p3) ;
+        __circface23( 
+            _bb, _p2, _p3, _p4, _p1) ;
+        __circface23( 
+            _bb, _p3, _p1, _p4, _p2) ;
 	}
 	
+	#undef  __circface12
+    #undef  __circface13
+    #undef  __circface23
+    
+    /*
+    --------------------------------------------------------
+     * MINI-BALL: min. enclosing balls. 
+    --------------------------------------------------------
+     */
+
+    template <
+    typename      real_type
+             >
+    __normal_call void_type perp_ball_2d (  // forward dec's
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	              bool_type  _in = false
+        ) ;
+        
+    template <
+    typename      real_type
+             >
+    __normal_call void_type perp_ball_3d (  // forward dec's
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	              bool_type  _in = false
+        ) ;
+        
+    template <
+    typename      real_type
+             >
+    __normal_call void_type perp_ball_2d (  // forward dec's
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+	              bool_type  _in = false
+        ) ;
+        
+    template <
+    typename      real_type
+             >
+    __normal_call void_type perp_ball_3d (  // forward dec's
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+	              bool_type  _in = false
+        ) ;
+
+    template <
+    typename      real_type
+             >
+    __normal_call void_type perp_ball_3d (  // forward dec's
+    __write_ptr  (real_type) _cc ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+	__const_ptr  (real_type) _p4 ,
+	              bool_type  _in = false
+        ) ;
+
+    #define __perpface12(__cc, __pi, __pj, __pq)    \
+        do {                                \
+    /*---------- calc. face circumball */   \
+        perp_ball_2d(__bf, __pi, __pj, true);       \
+    /*---------- keep if min-enclosing */   \
+        if (__bf[2] >=                      \
+                lensqr_2d(__bf, __pq) - __pq[2])    \
+        {                                   \
+            if (__bf[2] < __cc[2])          \
+            {                               \
+                __cc[0] = __bf[0];          \
+                __cc[1] = __bf[1];          \
+                __cc[2] = __bf[2];          \
+            }                               \
+        }                                   \
+        } while (false) ;
+
+    #define __perpface13(__cc, __pi, __pj, __pq)    \
+        do {                                \
+    /*---------- calc. face circumball */   \
+        perp_ball_3d(__bf, __pi, __pj, true);       \
+    /*---------- keep if min-enclosing */   \
+        if (__bf[3] >=                      \
+                lensqr_3d(__bf, __pq) - __pq[3])    \
+        {                                   \
+            if (__bf[3] < __cc[3])          \
+            {                               \
+                __cc[0] = __bf[0];          \
+                __cc[1] = __bf[1];          \
+                __cc[2] = __bf[2];          \
+                __cc[3] = __bf[3];          \
+            }                               \
+        }                                   \
+        } while (false) ;
+
+    #define __perpface23(__cc, __pi, __pj, __pk, __pq)  \
+        do {                                \
+    /*---------- calc. face circumball */   \
+        perp_ball_3d(__bf, __pi, __pj, __pk, true); \
+    /*---------- keep if min-enclosing */   \
+        if (__bf[3] >=                      \
+                lensqr_3d(__bf, __pq) - __pq[3])    \
+        {                                   \
+            if (__bf[3] < __cc[3])          \
+            {                               \
+                __cc[0] = __bf[0];          \
+                __cc[1] = __bf[1];          \
+                __cc[2] = __bf[2];          \
+                __cc[3] = __bf[3];          \
+            }                               \
+        }                                   \
+        } while (false) ;
+     
 	/*
     --------------------------------------------------------
-     * ORTHOBALL: (scalar) weighted orthogonal balls. 
+     * PERP-BALL: perpendicular (orthogonal) balls. 
     --------------------------------------------------------
      */
     
     template <
     typename      real_type
              >
-	__normal_call void_type orthoball_2d (
-	__write_ptr  (real_type) _bb,
-	__const_ptr  (real_type) _p1,
-	__const_ptr  (real_type) _p2
+	__normal_call void_type perp_ball_2d (
+	__write_ptr  (real_type) _bb ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	              bool_type  _in
 		)
 	{
 	    real_type _dd[3*1] ;
@@ -540,6 +846,14 @@
         real_type _tt = 
             (real_type).5 * 
                 (_dd[2] + _dp) / _dp ;
+                
+        if (_in == true)
+        { 
+            _tt  = 
+        std::min((real_type)1., _tt) ;
+            _tt  = 
+        std::max((real_type)0., _tt) ;
+	    }
 	    
 	    _bb[0] = 
 	    _p1[0] -  _tt * _dd[0] ;
@@ -554,17 +868,17 @@
 	    _r1 -= _p1[2] ;
 	    _r2 -= _p2[2] ;
 	    
-	    _bb[2] = 
-	    (_r1 + _r2) / (real_type)+2. ;
+	    _bb[2] = std::max (_r1, _r2) ;
 	}
 	
 	template <
     typename      real_type
              >
-	__normal_call void_type orthoball_3d (
-	__write_ptr  (real_type) _bb,
-	__const_ptr  (real_type) _p1,
-	__const_ptr  (real_type) _p2
+	__normal_call void_type perp_ball_3d (
+	__write_ptr  (real_type) _bb ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	              bool_type  _in
 		)
 	{
 	    real_type _dd[4*1] ;
@@ -579,6 +893,14 @@
         real_type _tt = 
             (real_type).5 * 
                 (_dd[3] + _dp) / _dp ;
+                
+        if (_in == true)
+        { 
+            _tt  = 
+        std::min((real_type)1., _tt) ;
+            _tt  = 
+        std::max((real_type)0., _tt) ;
+	    }
 	    
 	    _bb[0] = 
 	    _p1[0] -  _tt * _dd[0] ;
@@ -595,18 +917,18 @@
 	    _r1 -= _p1[3] ;
 	    _r2 -= _p2[3] ;
 	    
-	    _bb[3] = 
-	    (_r1 + _r2) / (real_type)+2. ;
+	    _bb[3] = std::max (_r1, _r2) ;
 	}
      
     template <
     typename      real_type
              >
-	__normal_call void_type orthoball_2d (
-	__write_ptr  (real_type) _bb,
-	__const_ptr  (real_type) _p1,
-	__const_ptr  (real_type) _p2,
-	__const_ptr  (real_type) _p3
+	__normal_call void_type perp_ball_2d (
+	__write_ptr  (real_type) _bb ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+	              bool_type  _in
 		)
 	{
 		real_type _xm[2*2] ;
@@ -688,16 +1010,24 @@
 	    _r3     -= _p3[2]  ;
 	
 	    _bb[2] = (_r1+_r2+_r3) / (real_type)3. ;
+	    
+	    if (!_in)  return  ;
+	
+	    real_type __bf[3]  ;
+        __perpface12(_bb, _p1, _p2, _p3) ;
+        __perpface12(_bb, _p2, _p3, _p1) ;
+        __perpface12(_bb, _p3, _p1, _p2) ;
 	}
 
     template <
     typename      real_type
              >
-	__normal_call void_type orthoball_3d (
-	__write_ptr  (real_type) _bb,
-	__const_ptr  (real_type) _p1,
-	__const_ptr  (real_type) _p2,
-	__const_ptr  (real_type) _p3
+	__normal_call void_type perp_ball_3d (
+	__write_ptr  (real_type) _bb ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+	              bool_type  _in
 		)
 	{
         real_type _nv[4*1] ;
@@ -818,17 +1148,25 @@
 	    _r3     -= _p3[3]  ;
 	
 	    _bb[3] = (_r1+_r2+_r3) / (real_type)3. ;
+	    
+	    if (!_in)  return  ;
+	
+	    real_type __bf[4]  ;
+        __perpface13(_bb, _p1, _p2, _p3) ;
+        __perpface13(_bb, _p2, _p3, _p1) ;
+        __perpface13(_bb, _p3, _p1, _p2) ;
 	}
 
     template <
     typename      real_type
              >
-	__normal_call void_type orthoball_3d (
-	__write_ptr  (real_type) _bb,
-	__const_ptr  (real_type) _p1,
-	__const_ptr  (real_type) _p2,
-	__const_ptr  (real_type) _p3,
-    __const_ptr  (real_type) _p4
+	__normal_call void_type perp_ball_3d (
+	__write_ptr  (real_type) _bb ,
+	__const_ptr  (real_type) _p1 ,
+	__const_ptr  (real_type) _p2 ,
+	__const_ptr  (real_type) _p3 ,
+    __const_ptr  (real_type) _p4 ,
+	              bool_type  _in
 		)
 	{
 	    real_type _xm[3*3] ;
@@ -950,178 +1288,25 @@
 	    _r4     -= _p4[3]  ;
 	
 	    _bb[3] = (_r1+_r2+_r3+_r4)/(real_type)4. ;
+	    
+	    if (!_in) return   ;
+        
+        real_type __bf[4]  ;
+        __perpface23 ( 
+            _bb, _p1 , _p2, _p3, _p4) ;
+        __perpface23 ( 
+            _bb, _p1 , _p2, _p4, _p3) ;
+        __perpface23 ( 
+            _bb, _p2 , _p3, _p4, _p1) ;
+        __perpface23 ( 
+            _bb, _p3 , _p1, _p4, _p2) ;
 	}
 
     #undef  __ij
-    
-    
-    /*
-    --------------------------------------------------------
-     * MINI-BALL: min. enclosing balls. 
-    --------------------------------------------------------
-     */
-    
-    #define __miniface12(__cc, __pi, __pj, __pq) \
-        do {                                \
-    /*---------- calc. face circumball */   \
-        mini_ball_2d(__bb, __pi, __pj) ;    \
-    /*---------- keep if min-enclosing */   \
-        if (__bb[2] >= lensqr_2d(__bb, __pq))    \
-        {                                   \
-            if (__bb[2] < __cc[2])          \
-            {                               \
-                __cc[0] = __bb[0];          \
-                __cc[1] = __bb[1];          \
-                __cc[2] = __bb[2];          \
-            }                               \
-        }                                   \
-        } while (false) ;
-
-    #define __miniface13(__cc, __pi, __pj, __pq) \
-        do {                                \
-    /*---------- calc. face circumball */   \
-        mini_ball_3d(__bb, __pi, __pj) ;    \
-    /*---------- keep if min-enclosing */   \
-        if (__bb[3] >= lensqr_3d(__bb, __pq))    \
-        {                                   \
-            if (__bb[3] < __cc[3])          \
-            {                               \
-                __cc[0] = __bb[0];          \
-                __cc[1] = __bb[1];          \
-                __cc[2] = __bb[2];          \
-                __cc[3] = __bb[3];          \
-            }                               \
-        }                                   \
-        } while (false) ;
-
-    #define __miniface23(__cc, __pi, __pj, __pk, __pq) \
-        do {                                \
-    /*---------- calc. face circumball */   \
-        mini_ball_3d(__bb, __pi, __pj, __pk);    \
-    /*---------- keep if min-enclosing */   \
-        if (__bb[3] >= lensqr_3d(__bb, __pq))    \
-        {                                   \
-            if (__bb[3] < __cc[3])          \
-            {                               \
-                __cc[0] = __bb[0];          \
-                __cc[1] = __bb[1];          \
-                __cc[2] = __bb[2];          \
-                __cc[3] = __bb[3];          \
-            }                               \
-        }                                   \
-        } while (false) ;
-
-/*------------------------------------ min-ball 1dim face */
-    template <
-    typename      data_type
-             >
-    __normal_call void_type mini_ball_2d (
-    __write_ptr  (data_type) _cc,
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2
-        )
-    {
-        _cc[0] = 
-        (data_type).5*(_p1[0]+_p2[0]);
-        _cc[1] = 
-        (data_type).5*(_p1[1]+_p2[1]);
-
-        _cc[2] = (data_type).0 ;
-		_cc[2] = std::max (
-		_cc[2] , lensqr_2d(_cc, _p1));
-		_cc[2] = std::max (
-		_cc[2] , lensqr_2d(_cc, _p2));
-    }
-
-    template <
-    typename      data_type
-             >
-    __normal_call void_type mini_ball_3d (
-    __write_ptr  (data_type) _cc,
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2
-        )
-    {
-        _cc[0] = 
-        (data_type).5*(_p1[0]+_p2[0]);
-        _cc[1] = 
-        (data_type).5*(_p1[1]+_p2[1]);
-        _cc[2] = 
-        (data_type).5*(_p1[2]+_p2[2]);
-
-        _cc[3] = (data_type).0 ;
-		_cc[3] = std::max (
-		_cc[3] , lensqr_3d(_cc, _p1));
-		_cc[3] = std::max (
-		_cc[3] , lensqr_3d(_cc, _p2));
-    }
-
-/*------------------------------------ min-ball 2dim face */
-    template <
-    typename      data_type
-             >
-    __normal_call void_type mini_ball_2d (
-    __write_ptr  (data_type) _cc,
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-    __const_ptr  (data_type) _p3
-        )
-    {
-        tria_ball_2d(_cc, _p1, _p2, _p3);
-
-        data_type __bb[3] ;
-        __miniface12(_cc, _p1, _p2, _p3);
-        __miniface12(_cc, _p2, _p3, _p1);
-        __miniface12(_cc, _p3, _p1, _p2);
-    }
-
-    template <
-    typename      data_type
-             >
-    __normal_call void_type mini_ball_3d (
-    __write_ptr  (data_type) _cc,
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-    __const_ptr  (data_type) _p3
-        )
-    {
-        tria_ball_3d(_cc, _p1, _p2, _p3);
-
-        data_type __bb[4] ;
-        __miniface13(_cc, _p1, _p2, _p3);
-        __miniface13(_cc, _p2, _p3, _p1);
-        __miniface13(_cc, _p3, _p1, _p2);
-    }
-
-/*------------------------------------ min-ball 3dim face */
-    template <
-    typename      data_type
-             >
-    __normal_call void_type mini_ball_3d (
-    __write_ptr  (data_type) _cc,
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-    __const_ptr  (data_type) _p3,
-    __const_ptr  (data_type) _p4
-        )
-    {
-        tria_ball_3d( _cc, 
-            _p1, _p2, _p3, _p4) ;
-
-        data_type __bb[4];
-        __miniface23( _cc, 
-            _p1, _p2, _p3, _p4) ;
-        __miniface23( _cc, 
-            _p1, _p2, _p4, _p3) ;
-        __miniface23( _cc, 
-            _p2, _p3, _p4, _p1) ;
-        __miniface23( _cc, 
-            _p3, _p1, _p4, _p2) ;
-    }
-
-    #undef  __miniface12
-    #undef  __miniface13
-    #undef  __miniface23
+       
+    #undef  __perpface12
+    #undef  __perpface13
+    #undef  __perpface23
     
     /*
     --------------------------------------------------------

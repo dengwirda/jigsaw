@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 November, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -170,6 +170,49 @@
 	__const_ptr  (data_type) _p3
 		)
 	{
+	    // mean of condition no. + gradient-error metrics
+	    // see Shewchuk
+	
+	    // 4. * std::sqrt(3.)
+	    data_type static 
+		    constexpr _mulA = 
+	   (data_type)+6.928203230275509 ;
+	    
+	    // 4. / std::sqrt(3.)
+		data_type static 
+		    constexpr _mulB = 
+	   (data_type)+2.309401076758503 ;
+	   
+		data_type _len1 = 
+		    lensqr_2d(_p1, _p2) ;
+        data_type _len2 = 
+		    lensqr_2d(_p2, _p3) ;
+	    data_type _len3 =  
+		    lensqr_2d(_p3, _p1) ;
+
+        data_type _barA = 
+            _len1+_len2+_len3 ;
+            
+        data_type _barB = 
+            _len1*_len2*_len3 ;
+
+        _barB = std::pow(
+            _barB, (real_type)+1./3.);
+
+		data_type _area = 
+		tria_area_2d(_p1, _p2, _p3);
+
+        data_type _scrA = 
+            _mulA * _area / _barA ;
+        
+        data_type _scrB = 
+            _mulB * _area / _barB ;
+
+		return (real_type).5 * _scrA +
+		       (real_type).5 * _scrB ;
+		
+		
+	    /*
 	    // 4. * std::sqrt(3.)
 		data_type static 
 		    constexpr _scal = 
@@ -184,6 +227,7 @@
 		tria_area_2d(_p1, _p2, _p3);
 
 		return _scal * _area / _elen ;
+		*/
 	}
 
     template <
@@ -196,6 +240,48 @@
 	__const_ptr  (data_type) _p3
 		)
 	{
+	    // mean of condition no. + gradient-error metrics
+	    // see Shewchuk
+	
+	    // 4. * std::sqrt(3.)
+	    data_type static 
+		    constexpr _mulA = 
+	   (data_type)+6.928203230275509 ;
+	    
+	    // 4. / std::sqrt(3.)
+		data_type static 
+		    constexpr _mulB = 
+	   (data_type)+2.309401076758503 ;
+	   
+		data_type _len1 = 
+		    lensqr_3d(_p1, _p2) ;
+        data_type _len2 = 
+		    lensqr_3d(_p2, _p3) ;
+	    data_type _len3 =  
+		    lensqr_3d(_p3, _p1) ;
+		    
+        data_type _barA = 
+            _len1+_len2+_len3 ;
+            
+        data_type _barB = 
+            _len1*_len2*_len3 ;
+
+        _barB = std::pow(
+            _barB, (real_type)+1./3.);
+
+		data_type _area = 
+		tria_area_3d(_p1, _p2, _p3);
+		
+        data_type _scrA = 
+            _mulA * _area / _barA ;
+        
+        data_type _scrB = 
+            _mulB * _area / _barB ;
+
+		return (real_type).5 * _scrA +
+		       (real_type).5 * _scrB ;
+		       
+	    /*
 	    // 4. * std::sqrt(3.)
 		data_type static 
 		    constexpr _scal = 
@@ -210,6 +296,7 @@
 		tria_area_3d(_p1, _p2, _p3);
 
 		return _scal * _area / _elen ;
+		*/
 	}
 
     template <
@@ -263,19 +350,19 @@
 		)
 	{
 	    data_type _ob[ +3] ;
-        geometry::orthoball_2d(_ob, 
+        geometry::perp_ball_2d(_ob, 
             _p1 , _p2, _p3);
             
         data_type _o1[ +3] ;
-        geometry::orthoball_2d(_o1, 
+        geometry::perp_ball_2d(_o1, 
             _p1 , _p2) ;
             
         data_type _o2[ +3] ;
-        geometry::orthoball_2d(_o2, 
+        geometry::perp_ball_2d(_o2, 
             _p2 , _p3) ;
             
         data_type _o3[ +3] ;
-        geometry::orthoball_2d(_o3, 
+        geometry::perp_ball_2d(_o3, 
             _p3 , _p1) ;
             
 
@@ -344,8 +431,8 @@
         
 
         data_type _qq = 
-            (data_type)+.67 * _qb + 
-                (data_type)+.33 * _qe ;
+            (data_type)+.50 * _qb + 
+                (data_type)+.50 * _qe ;
 
 
 		return    _qq ;
@@ -362,19 +449,19 @@
 		)
 	{
 	    data_type _ob[ +4] ;
-        geometry::orthoball_3d(_ob, 
+        geometry::perp_ball_3d(_ob, 
             _p1 , _p2, _p3);
             
         data_type _o1[ +4] ;
-        geometry::orthoball_3d(_o1, 
+        geometry::perp_ball_3d(_o1, 
             _p1 , _p2) ;
             
         data_type _o2[ +4] ;
-        geometry::orthoball_3d(_o2, 
+        geometry::perp_ball_3d(_o2, 
             _p2 , _p3) ;
             
         data_type _o3[ +4] ;
-        geometry::orthoball_3d(_o3, 
+        geometry::perp_ball_3d(_o3, 
             _p3 , _p1) ;
             
 
@@ -443,8 +530,8 @@
         
 
         data_type _qq = 
-            (data_type)+.67 * _qb + 
-                (data_type)+.33 * _qe ;
+            (data_type)+.50 * _qb + 
+                (data_type)+.50 * _qe ;
 
 
 		return    _qq ;
