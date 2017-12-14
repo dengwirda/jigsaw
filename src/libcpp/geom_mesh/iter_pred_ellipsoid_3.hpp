@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 November, 2017
+     * Last updated: 12 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -79,39 +79,29 @@
         }
         
         __static_call
-        __inline_call void_type mini_ball (
-          __write_ptr(real_type) _ball ,
-          __const_ptr(real_type) _ipos ,
-          __const_ptr(real_type) _jpos ,
-          __const_ptr(real_type) _kpos
-            )
-        {   return geometry
-                ::mini_ball_3d (
-            _ball, _ipos, _jpos, _kpos) ;
-        }
-        
-        __static_call
         __inline_call void_type circ_ball (
           __write_ptr(real_type) _ball ,
           __const_ptr(real_type) _ipos ,
           __const_ptr(real_type) _jpos ,
-          __const_ptr(real_type) _kpos
+          __const_ptr(real_type) _kpos ,
+                      bool_type  _bind = false
             )
         {   return geometry
-                ::tria_ball_3d (
-            _ball, _ipos, _jpos, _kpos) ;
+                ::circ_ball_3d (
+            _ball, _ipos, _jpos, _kpos, _bind) ;
         }
         
         __static_call
-        __inline_call void_type orthoball (
+        __inline_call void_type perp_ball (
           __write_ptr(real_type) _ball ,
           __const_ptr(real_type) _ipos ,
           __const_ptr(real_type) _jpos ,
-          __const_ptr(real_type) _kpos
+          __const_ptr(real_type) _kpos ,
+                      bool_type  _bind = false
             )
         {   return geometry
-                ::orthoball_3d (
-            _ball, _ipos, _jpos, _kpos) ;
+                ::perp_ball_3d (
+            _ball, _ipos, _jpos, _kpos, _bind) ;
         }
         
         __static_call
