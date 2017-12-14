@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 November, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -65,10 +65,9 @@
         real_list &_csrc ,
         real_list &_cdst ,
         real_type  _lmax 
-            = (real_type) +0.50E+00 
-            *  std::sqrt( +3.00E+00),
+            = (real_type) +0.75E+00 ,
         real_type  _good 
-            = (real_type) +9.00E-01 ,
+            = (real_type) +9.75E-01 ,
         real_type  _qinc 
             = (real_type) +1.00E-08
         )
@@ -114,8 +113,7 @@
         sqrt(_pred.length_sq(_ipos, _jpos)) ;
 
         real_type  _hbar = 
-       (real_type) (1./2.) * _isiz + 
-       (real_type) (1./2.) * _jsiz ;
+            std::min(_isiz , _jsiz) ;
 
         if (_elen >= _hbar * _lmax)
             return  ;
@@ -213,7 +211,7 @@
                 ++_tria  )
         {
             real_type _ball[_dims+1] ;
-                _pred. mini_ball(_ball ,
+                _pred. perp_ball(_ball ,
                &_mesh._set1[
                 _mesh._set3[
                *_tria].node(0)].pval(0),
@@ -222,8 +220,8 @@
                *_tria].node(1)].pval(0),
                &_mesh._set1[
                 _mesh._set3[
-               *_tria].node(2)].pval(0)
-                    ) ;
+               *_tria].node(2)].pval(0),
+                    true ) ;
          
             for(_idim = _dims; 
                     _idim-- != +0 ; )
@@ -238,7 +236,7 @@
                 ++_tria  )
         {
             real_type _ball[_dims+1] ;
-                _pred. mini_ball(_ball ,
+                _pred. perp_ball(_ball ,
                &_mesh._set1[
                 _mesh._set3[
                *_tria].node(0)].pval(0),
@@ -247,8 +245,8 @@
                *_tria].node(1)].pval(0),
                &_mesh._set1[
                 _mesh._set3[
-               *_tria].node(2)].pval(0)
-                    ) ;
+               *_tria].node(2)].pval(0),
+                    true ) ;
          
             for(_idim = _dims; 
                     _idim-- != +0 ; )

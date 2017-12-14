@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 December, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -89,7 +89,7 @@
             _iter ((iptr_type) +  16  ) ,
                 
             _qtol ((real_type) +1.E-04) ,
-            _qlim ((real_type) +0.9250) , 
+            _qlim ((real_type) +0.9375) , 
             
             _zip_ ((bool_type)  true  ) ,
             _div_ ((bool_type)  true  ) ,
