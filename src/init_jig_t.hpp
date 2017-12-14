@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 August, 2017
+     * Last updated: 14 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -101,7 +101,12 @@
         _jcfg->_optm_iter = (indx_t) +16;
         
         _jcfg->_optm_qtol = (real_t) +1.E-04 ;
-        _jcfg->_optm_qlim = (real_t) +0.9250 ;  
+        _jcfg->_optm_qlim = (real_t) +0.9375 ; 
+        
+        _jcfg->_optm_tria = (indx_t) +1 ;
+        _jcfg->_optm_dual = (indx_t) +0 ;    
+        _jcfg->_optm_div_ = (indx_t) +1 ;
+        _jcfg->_optm_zip_ = (indx_t) +1 ; 
     }
     
 #   endif//__lib_jigsaw
