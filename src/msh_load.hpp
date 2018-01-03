@@ -204,6 +204,8 @@
         if (_stok.count() == +2)
         {
         this->_ftag = std::stol(_stok[1]) ;
+        this->_kind = 
+                jmsh_kind::euclidean_mesh ;
         
         _dest.push_mshid(this->_ftag , 
                          this->_kind
@@ -249,6 +251,11 @@
         {
             this->_kind = 
                 jmsh_kind::ellipsoid_dual ;
+        }
+        else
+        {
+            this->_errs.
+            push_tail("Invalid MSHID!") ;
         }
         
         _dest.push_mshid(this->_ftag , 
