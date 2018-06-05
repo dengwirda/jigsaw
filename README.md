@@ -1,4 +1,4 @@
-## `JIGSAW: An unstrutured mesh generator`
+## `JIGSAW: An unstructured mesh generator`
 
 <p align="center">
   <img src = "../master/img/bunny-TRIA3-1.png"> &nbsp
