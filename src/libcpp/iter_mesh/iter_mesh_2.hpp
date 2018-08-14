@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 9 August, 2018
+     * Last updated: 14 August, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -281,6 +281,10 @@
         
             _mdst += *_iter ;
         }
+        
+    /*--------------------- prevent element inversion */
+        _qtol *= std::max(
+            _0src, (real_type) +0.0);
    
         _msrc /= _csrc.count() ;
         _mdst /= _cdst.count() ;
