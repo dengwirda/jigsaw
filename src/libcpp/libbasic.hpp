@@ -74,7 +74,7 @@
 ------------------------------------------------------------
  */
 
-    typedef void	    void_type ;
+    typedef void        void_type ;
     typedef bool        bool_type ;
     typedef char        char_type ;
 
@@ -133,7 +133,7 @@
  * unused parameter macros
 ------------------------------------------------------------
  */
-	
+    
 #   define __unreferenced(x) ((void) x)
 
 /* 
@@ -155,13 +155,13 @@
  */
 
 #   define __isflip(__i) ( (__i)<0)
-	
+    
 #   define __doflip(__i) (-(__i)-2)
-	
+    
 #   define __unflip(__i) (((__i)<0) \
          ? __doflip(__i) : (__i)  )
-	
-	
+    
+    
 #   endif   //__LIBBASIC__
 
 

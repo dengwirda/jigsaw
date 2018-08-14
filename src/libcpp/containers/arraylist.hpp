@@ -37,9 +37,9 @@
  *
 --------------------------------------------------------
  *
- * Last updated: 04 October, 2017
+ * Last updated: 11 April, 2018
  *
- * Copyright 2013-2017
+ * Copyright 2013-2018
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -66,34 +66,34 @@
     class array_list : public 
             allocators::_item_alloc <
                 single_item < T>, A >
-	{
+    {
 /*----------------------- a dynamic array of linked-lists */
-	public	:     
-	
-    typedef T				            data_type ;
-    typedef A				            allocator ;
+    public  :     
+    
+    typedef T                           data_type ;
+    typedef A                           allocator ;
     
     typedef typename 
             allocator::size_type        size_type ;
-	typedef typename 
+    typedef typename 
             allocator::diff_type        diff_type ;
 
     typedef containers::array_list  <
                 data_type, 
-                allocator       >	    self_type ;
+                allocator       >       self_type ;
 
-	typedef containers::single_item <
-                data_type       >	    item_type ;
+    typedef containers::single_item <
+                data_type       >       item_type ;
 
     typedef containers::const_single_iterator <
                 self_type       >       _const_it ;
                 
-	typedef containers::write_single_iterator <
+    typedef containers::write_single_iterator <
                 self_type       >       _write_it ;
 
-	typedef allocators::_item_alloc <
+    typedef allocators::_item_alloc <
                 item_type, 
-                allocator       >	    item_pool ;
+                allocator       >       item_pool ;
 
     typedef containers::array   <
                 item_type * ,
@@ -118,8 +118,8 @@
         item_type *&    _item
         )
     {
-        _item = self_type::allocate(1);	
-		self_type::construct(_item,
+        _item = self_type::allocate(1); 
+        self_type::construct(_item,
                 nullptr, //link! 
             __copy(data_type,_data) ) ;
     }
@@ -129,8 +129,8 @@
         item_type *&    _item
         )
     {
-        _item = self_type::allocate(1);	
-		self_type::construct(_item,
+        _item = self_type::allocate(1); 
+        self_type::construct(_item,
                 nullptr, //link! 
             __move(data_type,_data) ) ;
     }
@@ -145,8 +145,8 @@
         item_type *_item
         )
     {
-        self_type:: _destruct(_item);		
-		self_type::deallocate(_item,+1) ;
+        self_type:: _destruct(_item);       
+        self_type::deallocate(_item,+1) ;
     }
 
     /*
@@ -261,13 +261,13 @@
     }
     
 /*-------------------------------------------- copy a-op. */
-	__inline_call self_type& operator = (
-		self_type const& _src
-		)
-	{
-		if (this != &_src)
-		{
-	    self_type _copy (
+    __inline_call self_type& operator = (
+        self_type const& _src
+        )
+    {
+        if (this != &_src)
+        {
+        self_type _copy (
             __copy(self_type, _src)) ;
 
         using std::swap ;
@@ -279,19 +279,19 @@
             _copy. _size) ;
         swap(this->_lptr, 
             _copy. _lptr) ;
-		}
-		
-		return ( *this )  ;
-	}
+        }
+        
+        return ( *this )  ;
+    }
 
 /*-------------------------------------------- move a-op. */
-	__inline_call self_type& operator = (
-		self_type &&  _src
-		)
-	{
-		if (this != &_src)
-		{
-	    self_type _copy (
+    __inline_call self_type& operator = (
+        self_type &&  _src
+        )
+    {
+        if (this != &_src)
+        {
+        self_type _copy (
             __move(self_type, _src)) ;
 
         using std::swap ;
@@ -303,10 +303,10 @@
             _copy. _size) ;
         swap(this->_lptr, 
             _copy. _lptr) ;
-		}
-		
-		return ( *this )  ;
-	}
+        }
+        
+        return ( *this )  ;
+    }
 
     /*
     --------------------------------------------------------
@@ -326,8 +326,23 @@
      */
      
     __normal_call void_type clear (
+        containers::alloc_types _kind = 
+        containers::loose_alloc
         )
     {
+    /*------------------------------ clear lists of items */
+        this->       empty(_kind) ;
+    /*------------------------------ resize backing array */
+        this->_lptr .clear(_kind) ;
+    }
+     
+    __normal_call void_type empty (
+        containers::alloc_types _kind = 
+        containers::loose_alloc
+        )
+    {
+        __unreferenced(_kind);
+    
     /*------------------------------ clear lists of items */
         typename lptr_list::_write_it
         _iter = this->_lptr.head(),
@@ -349,9 +364,6 @@
                 this->_size -= 1 ;
             }
         }
-    /*------------------------------ resize backing array */
-        this->_lptr.clear (
-            containers::loose_alloc)  ;
     }
     
     /*

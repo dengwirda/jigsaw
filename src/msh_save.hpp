@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 13 August, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -157,6 +157,7 @@
                 _file << "POINT=" << _last << "\n" ;
                 
                 iptr_type _npos  = +0 ;
+                
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_2d._tria._nset.head();
                           _iter != _rdel.
@@ -170,6 +171,32 @@
                           << _iter->pval(1) << ";"
                           << +0 << "\n" ;
                     }
+                }
+                }
+                
+                if (_jcfg._iter_opts.dual() )
+                {
+                if (_rdel._euclidean_rdel_2d.
+                        _tria._nset.count() > 0)
+                {
+            /*-------------------------- write POWER data */   
+                _file << "POWER=" 
+                      << _last << ";1" << "\n" ;
+                
+                iptr_type _npos  = +0 ;
+                
+                for (auto _iter  = _rdel.
+                _euclidean_rdel_2d._tria._nset.head();
+                          _iter != _rdel.
+                _euclidean_rdel_2d._tria._nset.tend();
+                        ++_iter, ++_npos)
+                {
+                    if (_iter->mark() >= 0 &&
+                        _nmap[_npos ] >= 0)
+                    {
+                    _file << (real_type)0. << "\n" ;
+                    }
+                }
                 }
                 }
                 
@@ -329,6 +356,7 @@
                 _file << "POINT=" << _last << "\n" ;
                 
                 iptr_type _npos  = +0 ;
+                
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_3d._tria._nset.head();
                           _iter != _rdel.
@@ -345,6 +373,33 @@
                     }
                 }
                 }
+                
+                if (_jcfg._iter_opts.dual() )
+                {
+                if (_rdel._euclidean_rdel_3d.
+                        _tria._nset.count() > 0)
+                {
+            /*-------------------------- write POWER data */                
+                _file << "POWER=" 
+                      << _last << ";1" << "\n" ;
+                
+                iptr_type _npos  = +0 ;
+                
+                for (auto _iter  = _rdel.
+                _euclidean_rdel_3d._tria._nset.head();
+                          _iter != _rdel.
+                _euclidean_rdel_3d._tria._nset.tend();
+                        ++_iter, ++_npos)
+                {
+                    if (_iter->mark() >= 0 &&
+                        _nmap[_npos ] >= 0)
+                    {
+                    _file << (real_type)0. << "\n" ;
+                    }
+                }
+                }
+                }
+                
                 if (_rdel._euclidean_rdel_3d.
                         _eset.count() > +0)
                 {
@@ -448,6 +503,253 @@
             {
                 _errv = __file_not_located ;
             }
+            
+            _file.close();
+
+        }
+        catch (...)
+        {
+            _errv = __unknown_error ;
+        }
+
+        return ( _errv ) ;
+    }
+    
+    /*
+    --------------------------------------------------------
+     * SAVE-TRIA: save *.JMSH output file.
+    --------------------------------------------------------
+     */
+     
+    template <
+    typename      jlog_data
+             >
+    __normal_call iptr_type save_tria (
+        jcfg_data &_jcfg ,
+        jlog_data &_jlog ,
+        rdel_data &_rdel
+        )
+    {
+        iptr_type _errv  = __no_error  ;
+
+        __unreferenced(_jlog) ;
+
+        try
+        {
+            containers::array<iptr_type> _nmap;
+                
+            std::ofstream _file ;
+
+            std::string _path ;
+            std::string _name ;
+            std::string _fext ; 
+            file_part(
+                _jcfg._tria_file, 
+                    _path, _name, _fext);
+
+            _file.open(
+                _jcfg._tria_file, 
+                    std::ofstream::out );
+                     
+            if (_file.is_open())
+            {
+            if (_rdel._ndim == +2 &&
+                _rdel._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+            /*-------------------------- save 2-dim. mesh */
+                _file << "# " << _name << ".msh"
+                      << "; created by " ;
+                _file << __JGSWVSTR "\n" ;
+                _file << "MSHID=2;EUCLIDEAN-MESH \n" ;
+                _file << "NDIMS=2 \n" ;
+
+                _file << std::scientific ;
+                _file << 
+                    std::setprecision(16);
+
+            /*------------ index mapping for active nodes */
+                _nmap.set_count(_rdel.
+                    _euclidean_rdel_2d._tria._nset.count() , 
+                        containers::tight_alloc, -1) ;
+
+                iptr_type _ntri = +0;
+                for (auto _iter  = _rdel.
+                _euclidean_rdel_2d._tria._tset.head();
+                          _iter != _rdel.
+                _euclidean_rdel_2d._tria._tset.tend();
+                        ++_iter  )
+                {
+                    if (_iter->mark() < +0) continue ;
+                    
+                    _ntri += +1 ;
+                    
+                    _nmap[_iter->node(0)]=1;
+                    _nmap[_iter->node(1)]=1;
+                    _nmap[_iter->node(2)]=1;
+                }
+
+                iptr_type _last  = +0;
+                for (auto _iter  = _nmap.head() ;
+                          _iter != _nmap.tend() ;
+                        ++_iter  )
+                {
+                    if ( *_iter >= +0)
+                    {
+                         *_iter = _last ++ ;
+                    }
+                }
+
+                if (_rdel._euclidean_rdel_2d.
+                        _tria._nset.count() > 0)
+                {
+            /*-------------------------- write POINT data */                
+                _file << "POINT=" << _last << "\n" ;
+                
+                iptr_type _npos  = +0 ;
+                for (auto _iter  = _rdel.
+                _euclidean_rdel_2d._tria._nset.head();
+                          _iter != _rdel.
+                _euclidean_rdel_2d._tria._nset.tend();
+                        ++_iter, ++_npos)
+                {
+                    if (_iter->mark() >= 0 &&
+                        _nmap[_npos ] >= 0)
+                    {
+                    _file << _iter->pval(0) << ";"
+                          << _iter->pval(1) << ";"
+                          << +0 << "\n" ;
+                    }
+                }
+                }
+                
+                if (_rdel._euclidean_rdel_2d.
+                        _tria._tset.count() > 0)
+                {
+            /*-------------------------- write TRIA3 data */ 
+                _file << "TRIA3=" << _ntri << "\n" ;
+                
+                for (auto _iter  = _rdel.
+                _euclidean_rdel_2d._tria._tset.head();
+                          _iter != _rdel.
+                _euclidean_rdel_2d._tria._tset.tend();
+                        ++_iter  )
+                {
+                    if (_iter->mark() < +0) continue ;
+                
+                    _file << 
+                    _nmap[_iter->node(0)] << ";" << 
+                    _nmap[_iter->node(1)] << ";" <<
+                    _nmap[_iter->node(2)] << ";" <<
+                       +0 << "\n" ;
+                }
+                }
+     
+            }
+            else
+            if (_rdel._ndim == +3 &&
+                _rdel._kind == 
+                jmsh_kind::euclidean_mesh) 
+            {
+            /*-------------------------- save 3-dim. mesh */
+                _file << "# " << _name << ".msh"
+                      << "; created by " ;
+                _file << __JGSWVSTR "\n" ;
+                _file << "MSHID=2;EUCLIDEAN-MESH \n" ;
+                _file << "NDIMS=3 \n" ;
+                
+                _file << std::scientific ;
+                _file << 
+                    std::setprecision(16);
+                    
+            /*------------ index mapping for active nodes */
+                _nmap.set_count(_rdel.
+                    _euclidean_rdel_3d._tria._nset.count() , 
+                        containers::tight_alloc, -1) ;
+
+                iptr_type _ntri  = +0;
+                for (auto _iter  = _rdel.
+                _euclidean_rdel_3d._tria._tset.head();
+                          _iter != _rdel.
+                _euclidean_rdel_3d._tria._tset.tend();
+                        ++_iter  )
+                {
+                    if (_iter->mark() < +0) continue ;
+                
+                    _ntri += +1 ;
+                    
+                    _nmap[_iter->node(0)]=1;
+                    _nmap[_iter->node(1)]=1;
+                    _nmap[_iter->node(2)]=1;
+                    _nmap[_iter->node(3)]=1;
+                }
+
+                iptr_type _last  = +0;
+                for (auto _iter  = _nmap.head() ;
+                          _iter != _nmap.tend() ;
+                        ++_iter  )
+                {
+                    if ( *_iter >= +0)
+                    {
+                         *_iter = _last ++ ;
+                    }
+                }
+
+                if (_rdel._euclidean_rdel_3d.
+                        _tria._nset.count() > 0)
+                {
+            /*-------------------------- write POINT data */                
+                _file << "POINT=" << _last << "\n" ;
+                
+                iptr_type _npos  = +0 ;
+                for (auto _iter  = _rdel.
+                _euclidean_rdel_3d._tria._nset.head();
+                          _iter != _rdel.
+                _euclidean_rdel_3d._tria._nset.tend();
+                        ++_iter, ++_npos)
+                {
+                    if (_iter->mark() >= 0 &&
+                        _nmap[_npos ] >= 0)
+                    {
+                    _file << _iter->pval(0) << ";"
+                          << _iter->pval(1) << ";"
+                          << _iter->pval(2) << ";"
+                          << +0 << "\n" ;
+                    }
+                }
+                }
+                
+                if (_rdel._euclidean_rdel_3d.
+                        _tria._tset.count() > 0)
+                {
+            /*-------------------------- write TRIA3 data */ 
+                _file << "TRIA4=" << _ntri << "\n" ;
+                
+                for (auto _iter  = _rdel.
+                _euclidean_rdel_3d._tria._tset.head();
+                          _iter != _rdel.
+                _euclidean_rdel_3d._tria._tset.tend();
+                        ++_iter  )
+                {
+                    if (_iter->mark() < +0) continue ;
+                
+                    _file << 
+                    _nmap[_iter->node(0)] << ";" << 
+                    _nmap[_iter->node(1)] << ";" <<
+                    _nmap[_iter->node(2)] << ";" <<
+                    _nmap[_iter->node(3)] << ";" <<
+                       +0 << "\n" ;
+                }
+                }
+                
+            }
+
+            }
+            else
+            {
+                _errv = __file_not_located ;
+            }
+            
             _file.close();
 
         }
@@ -546,6 +848,9 @@
             /*-------------------------- write POINT data */                
                 jigsaw_alloc_vert2 (
                      &_mmsh._vert2, _last) ;
+                     
+                jigsaw_alloc_reals (
+                     &_mmsh._power, _last) ;
                 
                 iptr_type _npos  = +0 ;
                 iptr_type _nout  = +0 ;
@@ -562,12 +867,12 @@
                         _ppos[0] = _iter->pval(0) ;
                     _mmsh._vert2._data[_nout].
                         _ppos[1] = _iter->pval(1) ;
-                        
-                    _mmsh._vert2._data[_nout].
-                        _vpwr    = (real_type)+0. ;
                     
                     _mmsh._vert2.
                         _data[_nout]._itag = 0 ;
+                        
+                    _mmsh._power.
+                    _data[_nout] = (real_type)+0. ;
                         
                     _nout = _nout + 1 ;
                     }
@@ -733,6 +1038,9 @@
             /*-------------------------- write POINT data */                
                 jigsaw_alloc_vert3 (
                      &_mmsh._vert3 , _last);
+                     
+                jigsaw_alloc_reals (
+                     &_mmsh._power , _last);
                 
                 iptr_type _npos  = +0 ;
                 iptr_type _nout  = +0 ;
@@ -752,11 +1060,11 @@
                     _mmsh._vert3._data[_nout].
                         _ppos[2] = _iter->pval(2) ;
                     
-                    _mmsh._vert3._data[_nout].
-                        _vpwr    = (real_type)+0. ;
-                    
                     _mmsh._vert3.
                         _data[_nout]._itag = 0 ;
+                        
+                    _mmsh._power.
+                    _data[_nout] = (real_type)+0. ;
                         
                     _nout = _nout + 1 ;
                     }
@@ -1019,6 +1327,8 @@
                 if (_nnum > +0)
                 {
             /*-------------------------- write POWER data */                
+                if (_jcfg._iter_opts.dual() )
+                {
                 _file << "POWER=" 
                       << _nnum << ";1" << "\n" ;
                 
@@ -1035,6 +1345,7 @@
                     {
                     _file << _iter->pval(2) << "\n" ;
                     }
+                }
                 }
                 }
                 
@@ -1198,6 +1509,8 @@
                 if (_nnum > +0)
                 {
             /*-------------------------- write POWER data */                
+                if (_jcfg._iter_opts.dual() )
+                {
                 _file << "POWER=" 
                       << _nnum << ";1" << "\n" ;
                 
@@ -1214,6 +1527,7 @@
                     {
                     _file << _iter->pval(3) << "\n" ;
                     }
+                }
                 }
                 }
                 
@@ -1299,6 +1613,7 @@
             {
                 _errv = __file_not_located ;
             }
+            
             _file.close();
 
         }
@@ -1396,6 +1711,9 @@
                 jigsaw_alloc_vert2 (
                      &_mmsh._vert2, _nnum) ;
 
+                jigsaw_alloc_reals (
+                     &_mmsh._power, _nnum) ;
+
                 iptr_type _npos  = +0 ;
                 iptr_type _nout  = +0 ;
                 
@@ -1413,11 +1731,11 @@
                     _mmsh._vert2._data[_nout].
                         _ppos[1] = _iter->pval(1) ;
                     
-                    _mmsh._vert2._data[_nout].
-                        _vpwr    = _iter->pval(2) ;
-                    
                     _mmsh._vert2.
                         _data[_nout]._itag = 0 ;
+                        
+                    _mmsh._power.
+                    _data[_nout] = _iter->pval(2) ;
                         
                     _nout = _nout + 1 ;
                     }
@@ -1571,6 +1889,9 @@
             /*-------------------------- write POINT data */                
                 jigsaw_alloc_vert3 (
                      &_mmsh._vert3, _nnum) ;
+                     
+                jigsaw_alloc_reals (
+                     &_mmsh._power, _nnum) ;
 
                 iptr_type _npos  = +0 ;
                 iptr_type _nout  = +0 ;
@@ -1591,11 +1912,11 @@
                     _mmsh._vert3._data[_nout].
                         _ppos[2] = _iter->pval(2) ;
                     
-                    _mmsh._vert3._data[_nout].
-                        _vpwr    = _iter->pval(3) ;
-                    
                     _mmsh._vert3.
                         _data[_nout]._itag = 0 ;
+                        
+                    _mmsh._power.
+                    _data[_nout] = _iter->pval(3) ;
                         
                     _nout = _nout + 1 ;
                     }

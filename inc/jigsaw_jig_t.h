@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 31 July, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -137,6 +137,17 @@
      */
      
         real_t                  _hfun_hmin ;
+        
+    /* 
+    --------------------------------------------------------
+     * BNDS_KERN - {default = 'bnd-tria'} placement of bou-
+     * ndary, enforcing conformance w.r.t the triangulation 
+     * (KERN='bnd-tria') or w.r.t the dual voronoi complex 
+     * (KERN='bnd-dual').
+    --------------------------------------------------------
+     */
+        
+        indx_t                  _bnds_kern ;
             
     /* 
     --------------------------------------------------------
@@ -216,6 +227,36 @@
      */ 
        
         real_t                  _mesh_rad3 ;
+    
+    /* 
+    --------------------------------------------------------
+     * MESH_SIZ1 - {default=4/3+eps} h(x)-based refinement
+     * multiplier for 1-dimensional elements. Edges are 
+     * refined if they are locally larger than SIZ1 * h(x). 
+    --------------------------------------------------------
+     */    
+        
+        real_t                  _mesh_siz1 ;
+       
+    /* 
+    --------------------------------------------------------
+     * MESH_SIZ2 - {default=4/3+eps} h(x)-based refinement
+     * multiplier for 2-dimensional elements. Cells are 
+     * refined if they are locally larger than SIZ2 * h(x). 
+    --------------------------------------------------------
+     */
+        
+        real_t                  _mesh_siz2 ;
+        
+    /* 
+    --------------------------------------------------------
+     * MESH_SIZ3 - {default=4/3+eps} h(x)-based refinement
+     * multiplier for 3-dimensional elements. Cells are 
+     * refined if they are locally larger than SIZ3 * h(x). 
+    --------------------------------------------------------
+     */
+        
+        real_t                  _mesh_siz3 ;
         
     /* 
     --------------------------------------------------------
@@ -354,7 +395,7 @@
     /*
     --------------------------------------------------------
      * OPTM_ZIP_ - {default= true} allow for "merge" oper-
-     * ations on sub-faces.
+     * ations on sub-faces within the optimisation stages.
     --------------------------------------------------------
      */
         
@@ -363,7 +404,7 @@
     /*
     --------------------------------------------------------
      * OPTM_DIV_ - {default= true} allow for "split" oper-
-     * ations on sub-faces.
+     * ations on sub-faces within the optimisation stages.
     --------------------------------------------------------
      */
         

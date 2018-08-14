@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 November, 2017
+     * Last updated: 21 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -48,7 +48,7 @@
 
     /*
     --------------------------------------------------------
-     * COPY-MESH: copy from mesh to complex.
+     * COPY-MESH: copy rdel-complex to tria-complex.
     --------------------------------------------------------
      */
      
@@ -73,6 +73,9 @@
             _rdel._kind ==
             jmsh_kind::euclidean_mesh)
         {
+      
+        _mesh._euclidean_mesh_2d._mesh.
+            clear(containers::loose_alloc) ;
       
         _mesh._kind = _rdel._kind ;
         _mesh._ndim = _rdel._ndim ;
@@ -115,6 +118,9 @@
             _node.pval(2) = (real_type)+0. ;
                   
             _node.hidx () = _iter->idxh () ;
+            
+            _node.fdim () = _iter->fdim () ;
+            _node.feat () = _iter->feat () ;
             
             _mesh._euclidean_mesh_2d.
                 _mesh.push_node (_node) ;
@@ -182,6 +188,9 @@
             jmsh_kind::euclidean_mesh)
         {
         
+        _mesh._euclidean_mesh_3d._mesh.
+            clear(containers::loose_alloc) ;
+        
         _mesh._kind = _rdel._kind ;
         _mesh._ndim = _rdel._ndim ;
         
@@ -234,6 +243,9 @@
             _node.pval(3) = (real_type)+0. ;
                      
             _node.hidx () = _iter->idxh () ;
+            
+            _node.fdim () = _iter->fdim () ;
+            _node.feat () = _iter->feat () ;
             
             _mesh._euclidean_mesh_3d.
                 _mesh.push_node (_node) ;
@@ -328,8 +340,9 @@
     
         return ( _errv ) ;
     }
-     
+    
+    
 #   endif   //__MSH_COPY__
 
 
-
+    

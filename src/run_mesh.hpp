@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 September, 2017
+     * Last updated: 14 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -54,12 +54,14 @@
  
     template <
     typename      geom_type ,
+    typename      init_type ,
     typename      hfun_type ,
     typename      mesh_type ,
     typename      jlog_data
              >
     __normal_call void_type mesh_euclidean_2d (
         geom_type &_geom,
+        init_type &_init,
         hfun_type &_hfun,
         mesh_type &_mesh,
         jcfg_data &_args,
@@ -89,8 +91,8 @@
                &_args._rdel_opts;
 
             rdel_func::rdel_mesh( 
-                _geom, _hfun , 
-                _mesh,
+                _geom, _init ,
+                _hfun, _mesh ,
                *_opts, _jlog )  ;
         }
         else
@@ -117,8 +119,8 @@
                &_args._rdel_opts;
 
             rdel_func::rdel_mesh( 
-                _geom, _hfun , 
-                _mesh,
+                _geom, _init ,
+                _hfun, _mesh ,
                *_opts, _jlog )  ;
         }
     }
@@ -131,12 +133,14 @@
      
     template <
     typename      geom_type ,
+    typename      init_type ,
     typename      hfun_type ,
     typename      mesh_type ,
     typename      jlog_data
              >
     __normal_call void_type mesh_euclidean_3d (
         geom_type &_geom,
+        init_type &_init,
         hfun_type &_hfun,
         mesh_type &_mesh,
         jcfg_data &_args,
@@ -166,8 +170,8 @@
                &_args._rdel_opts;
 
             rdel_func::rdel_mesh( 
-                _geom, _hfun , 
-                _mesh,
+                _geom, _init ,
+                _hfun, _mesh ,
                *_opts, _jlog )  ;
         }
         else
@@ -194,8 +198,8 @@
                &_args._rdel_opts;
 
             rdel_func::rdel_mesh( 
-                _geom, _hfun , 
-                _mesh,
+                _geom, _init ,
+                _hfun, _mesh ,
                *_opts, _jlog )  ;
         }
     }
@@ -213,6 +217,7 @@
         jcfg_data &_args,
         jlog_data &_jlog,
         geom_data &_geom,
+        mesh_data &_init,
         hfun_data &_hfun,
         rdel_data &_rdel
         )
@@ -237,6 +242,7 @@
                 
                 mesh_euclidean_2d (
                 _geom._euclidean_mesh_2d,
+                _init._euclidean_mesh_2d,
                 _hfun._constant_value_kd,
                 _rdel._euclidean_rdel_2d,
                 _args, _jlog) ;
@@ -254,6 +260,7 @@
                 
                 mesh_euclidean_2d (
                 _geom._euclidean_mesh_2d,
+                _init._euclidean_mesh_2d,
                 _hfun._euclidean_mesh_2d,
                 _rdel._euclidean_rdel_2d,
                 _args, _jlog) ;
@@ -271,6 +278,7 @@
                 
                 mesh_euclidean_2d (
                 _geom._euclidean_mesh_2d,
+                _init._euclidean_mesh_2d,
                 _hfun._euclidean_grid_2d,
                 _rdel._euclidean_rdel_2d,
                 _args, _jlog) ;
@@ -294,6 +302,7 @@
                 
                 mesh_euclidean_3d (
                 _geom._euclidean_mesh_3d,
+                _init._euclidean_mesh_3d,
                 _hfun._constant_value_kd,
                 _rdel._euclidean_rdel_3d,
                 _args, _jlog) ;
@@ -311,6 +320,7 @@
                 
                 mesh_euclidean_3d (
                 _geom._euclidean_mesh_3d,
+                _init._euclidean_mesh_3d,
                 _hfun._euclidean_mesh_3d,
                 _rdel._euclidean_rdel_3d,
                 _args, _jlog) ;
@@ -328,6 +338,7 @@
                 
                 mesh_euclidean_3d (
                 _geom._euclidean_mesh_3d,
+                _init._euclidean_mesh_3d,
                 _hfun._euclidean_grid_3d,
                 _rdel._euclidean_rdel_3d,
                 _args, _jlog) ;
@@ -350,6 +361,7 @@
                 
                 mesh_euclidean_3d (
                 _geom._ellipsoid_mesh_3d,
+                _init._euclidean_mesh_3d,
                 _hfun._constant_value_kd,
                 _rdel._euclidean_rdel_3d,
                 _args, _jlog) ;
@@ -366,12 +378,11 @@
                 
                 mesh_euclidean_3d (
                 _geom._ellipsoid_mesh_3d,
+                _init._euclidean_mesh_3d,
                 _hfun._ellipsoid_grid_3d,
                 _rdel._euclidean_rdel_3d,
                 _args, _jlog) ;
             }
-            //!! needs the ellipsoid-mesh HFUN kernel...          
-                      
             
             }
         }

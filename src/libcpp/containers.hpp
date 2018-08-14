@@ -52,8 +52,8 @@
     {
 /*----- buffer reallocation options */
     enum alloc_types
-    {	 loose_alloc, // zero manip.
-	     tight_alloc  // full manip.
+    {    loose_alloc, // zero manip.
+         tight_alloc  // full manip.
     } ;
     } //     containers
 

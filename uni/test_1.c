@@ -77,8 +77,8 @@
  
  
         _retv = jigsaw_make_mesh (
-            &_jjig, &_geom,
-                NULL , &_mesh
+            &_jjig, &_geom, NULL , 
+              NULL, &_mesh
              ) ;
  
     /*-------------------------------- print JIGSAW tria. */

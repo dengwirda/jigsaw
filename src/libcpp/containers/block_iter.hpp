@@ -70,53 +70,53 @@
         public containers::random_iterator_base
     { 
 /* random access iterator for block-wise array containers */
-    public	:
-	
-	typedef C                           container ;
-	typedef I                           iter_type ;
+    public  :
+    
+    typedef C                           container ;
+    typedef I                           iter_type ;
 
-	typedef typename 
+    typedef typename 
             container::data_type        data_type ;
-	typedef typename 
+    typedef typename 
             container::size_type        size_type ;
-	typedef typename 
+    typedef typename 
             container::diff_type        diff_type ;
     typedef typename 
             container::root_type        root_type ;
     typedef typename 
             container::leaf_type        leaf_type ;
-	
+    
     typedef block_iterator_base <
             container , 
             iter_type           >       self_type ;
 
-    public	:
+    public  :
 
 #   ifdef _DEBUG
     root_type *_ptr;    // block ptr.
     size_type  _off;    // offset
-	container *_obj;    // block obj.
+    container *_obj;    // block obj.
 #   else
     root_type *_ptr;    // block ptr.
     size_type  _off;    // offset
 #   endif
 
-    public	:
+    public  :
     
-	__inline_call block_iterator_base (
-		container *_bsrc = nullptr,
-		root_type *_psrc = nullptr, 
-		size_type  _osrc = +0
+    __inline_call block_iterator_base (
+        container *_bsrc = nullptr,
+        root_type *_psrc = nullptr, 
+        size_type  _osrc = +0
 #   ifdef _DEBUG
-		) : _ptr(_psrc) , 
-			_off(_osrc) , 
-			_obj(_bsrc) {}
+        ) : _ptr(_psrc) , 
+            _off(_osrc) , 
+            _obj(_bsrc) {}
 #   else
-		) : _ptr(_psrc) , 
-			_off(_osrc) { __unreferenced(_bsrc) ; }
+        ) : _ptr(_psrc) , 
+            _off(_osrc) { __unreferenced(_bsrc) ; }
 #   endif
 
-	__inline_call~block_iterator_base() = default ;
+    __inline_call~block_iterator_base() = default ;
 
     __inline_call block_iterator_base (
         self_type const&_src
@@ -136,109 +136,109 @@
 
 /*--------------------------------- translation operators */
 
-	__inline_call iter_type& operator++ (
-		)
-	{ /*----------------- pre-increment */
-		++this->_off;
-		return *(iter_type*)this;
-	}
-	__inline_call iter_type& operator-- (
-		)
-	{ /*----------------- pre-decrement */
-		--this->_off;
-		return *(iter_type*)this;
-	}
+    __inline_call iter_type& operator++ (
+        )
+    { /*----------------- pre-increment */
+        ++this->_off;
+        return *(iter_type*)this;
+    }
+    __inline_call iter_type& operator-- (
+        )
+    { /*----------------- pre-decrement */
+        --this->_off;
+        return *(iter_type*)this;
+    }
 
-	__inline_call 
+    __inline_call 
         iter_type operator++ ( int )
-	{ /*---------------- post-increment */
-		iter_type _tmp(*(iter_type*)this);
-		++*this;
-		return _tmp;
-	}
-	__inline_call 
+    { /*---------------- post-increment */
+        iter_type _tmp(*(iter_type*)this);
+        ++*this;
+        return _tmp;
+    }
+    __inline_call 
         iter_type operator-- ( int )
-	{ /*---------------- post-decrement */
-		iter_type _tmp(*(iter_type*)this);
-		--*this;
-		return _tmp;
-	}
+    { /*---------------- post-decrement */
+        iter_type _tmp(*(iter_type*)this);
+        --*this;
+        return _tmp;
+    }
 
-	__inline_call iter_type& operator+= (
-		size_type _off
-		)
-	{ /*--------------------- increment */
-		this->_off += _off;
-		return *(iter_type*)this;
-	}
-	__inline_call iter_type& operator-= (
-		size_type _off
-		)
-	{ /*--------------------- decrement */
-		this->_off -= _off;
-		return *(iter_type*)this;
-	}
+    __inline_call iter_type& operator+= (
+        size_type _off
+        )
+    { /*--------------------- increment */
+        this->_off += _off;
+        return *(iter_type*)this;
+    }
+    __inline_call iter_type& operator-= (
+        size_type _off
+        )
+    { /*--------------------- decrement */
+        this->_off -= _off;
+        return *(iter_type*)this;
+    }
 
-	__inline_call iter_type operator + (
-		size_type _off
-		)
-	{ /*-------------------- add offset */
-		iter_type _tmp(*(iter_type*)this);
-		return _tmp += _off;
-	}
-	__inline_call iter_type operator - (
-		size_type _off
-		)
-	{ /*-------------------- sub offset */
-		iter_type _tmp(*(iter_type*)this);
-		return _tmp -= _off;
-	}
+    __inline_call iter_type operator + (
+        size_type _off
+        )
+    { /*-------------------- add offset */
+        iter_type _tmp(*(iter_type*)this);
+        return _tmp += _off;
+    }
+    __inline_call iter_type operator - (
+        size_type _off
+        )
+    { /*-------------------- sub offset */
+        iter_type _tmp(*(iter_type*)this);
+        return _tmp -= _off;
+    }
 
-	__inline_call diff_type operator - (
-		self_type const&_src
-		) const
-	{ /*----------- iterator difference */
-		return this->_off - _src._off ; 
-	}
+    __inline_call diff_type operator - (
+        self_type const&_src
+        ) const
+    { /*----------- iterator difference */
+        return this->_off - _src._off ; 
+    }
 
 /*--------------------------------- comparative operators */
 
-	__inline_call bool_type operator== (
-		self_type const&_src
-		) const
-	{ /*--------------------- equal to */
-		return this->_off == _src._off ;
-	}
-	__inline_call bool_type operator!= (
-		self_type const&_src
-		) const
-	{ /*----------------- not equal to */
-		return this->_off != _src._off ;
-	}
-	__inline_call bool_type operator < (
-		self_type const&_src
-		) const
-	{ /*-------------------- less than */
-		return this->_off <  _src._off ;
-	}
-	__inline_call bool_type operator > (
-		self_type const&_src
-		) const
-	{ /*-------------------- more than */
-		return this->_off >  _src._off ;
-	}
-	__inline_call bool_type operator<= (
-		self_type const&_src
-		) const
-	{ /*-------- less than or equal to */
-		return this->_off <= _src._off ;
-	}
-	__inline_call bool_type operator>= (
-		self_type const&_src
-		) const
-	{ /*-------- more than or equal to */
-		return this->_off >= _src._off ;
-	}
+    __inline_call bool_type operator== (
+        self_type const&_src
+        ) const
+    { /*--------------------- equal to */
+        return this->_off == _src._off ;
+    }
+    __inline_call bool_type operator!= (
+        self_type const&_src
+        ) const
+    { /*----------------- not equal to */
+        return this->_off != _src._off ;
+    }
+    __inline_call bool_type operator < (
+        self_type const&_src
+        ) const
+    { /*-------------------- less than */
+        return this->_off <  _src._off ;
+    }
+    __inline_call bool_type operator > (
+        self_type const&_src
+        ) const
+    { /*-------------------- more than */
+        return this->_off >  _src._off ;
+    }
+    __inline_call bool_type operator<= (
+        self_type const&_src
+        ) const
+    { /*-------- less than or equal to */
+        return this->_off <= _src._off ;
+    }
+    __inline_call bool_type operator>= (
+        self_type const&_src
+        ) const
+    { /*-------- more than or equal to */
+        return this->_off >= _src._off ;
+    }
 
     } ;
 
@@ -256,36 +256,36 @@
             const_block_iterator<C> >
     { 
 /* random access iterator for block-wise array containers */
-    public	:
+    public  :
     
-	typedef C                           container ;
+    typedef C                           container ;
 
-	typedef const_block_iterator<
+    typedef const_block_iterator<
             container           >       self_type ;
-	typedef block_iterator_base < 
+    typedef block_iterator_base < 
             container , 
             self_type           >       base_type ;
 
     typedef typename 
             base_type::data_type        data_type ;
-	typedef typename 
+    typedef typename 
             base_type::size_type        size_type ;
-	typedef typename 
+    typedef typename 
             base_type::diff_type        diff_type ;
     typedef typename 
             base_type::root_type        root_type ;
     typedef typename 
             base_type::leaf_type        leaf_type ;
 
-    public	:
+    public  :
     
     __inline_call const_block_iterator (
-		container *_bsrc = nullptr,
-		root_type *_psrc = nullptr, 
-		size_type  _osrc = 0
-		) : base_type(_bsrc, _psrc, _osrc) {}
+        container *_bsrc = nullptr,
+        root_type *_psrc = nullptr, 
+        size_type  _osrc = 0
+        ) : base_type(_bsrc, _psrc, _osrc) {}
 
-	__inline_call~const_block_iterator()= default ;
+    __inline_call~const_block_iterator()= default ;
 
     __inline_call const_block_iterator (
         self_type const&_src
@@ -306,32 +306,32 @@
 /*-------------------------------- "const" access to data */
 
     __inline_call data_type const* operator-> (
-		) const
-	{   return &**this;
-	}
+        ) const
+    {   return &**this;
+    }
 
-	__inline_call data_type const& operator[] (
-		size_type _pos
-		) const
-	{   return *(*this + _pos);
-	}
+    __inline_call data_type const& operator[] (
+        size_type _pos
+        ) const
+    {   return *(*this + _pos);
+    }
 
-	__inline_call data_type const& operator * (
-		) const
-	{ /* return reference to underlying data */ 
+    __inline_call data_type const& operator * (
+        ) const
+    { /* return reference to underlying data */ 
 #       ifdef _DEBUG
-		__assert ( 
+        __assert ( 
             this->_ptr != nullptr &&
-	    "const_block_iterator: null pointer!" ) ;
-		__assert ( 
+        "const_block_iterator: null pointer!" ) ;
+        __assert ( 
             this->_off >= 0 && 
             this->_off < this->_obj->count() &&
         "const_block_iterator: out of range!" ) ;
 #       endif
-		return (*this->_ptr)
+        return (*this->_ptr)
             [this->_off / container::_size]
             [this->_off % container::_size] ;
-	}
+    }
 
     } ;
 
@@ -349,36 +349,36 @@
             write_block_iterator<C> >
     { 
 /* random access iterator for block-wise array containers */
-    public	:
+    public  :
     
-	typedef C                           container ;
+    typedef C                           container ;
 
-	typedef write_block_iterator<
+    typedef write_block_iterator<
             container           >       self_type ;
-	typedef block_iterator_base < 
+    typedef block_iterator_base < 
             container , 
             self_type           >       base_type ;
 
     typedef typename 
             base_type::data_type        data_type ;
-	typedef typename 
+    typedef typename 
             base_type::size_type        size_type ;
-	typedef typename 
+    typedef typename 
             base_type::diff_type        diff_type ;
     typedef typename 
             base_type::root_type        root_type ;
     typedef typename 
             base_type::leaf_type        leaf_type ;
 
-    public	:
+    public  :
     
     __inline_call write_block_iterator (
-		container *_bsrc = nullptr,
-		root_type *_psrc = nullptr, 
-		size_type  _osrc = 0
-		) : base_type(_bsrc, _psrc, _osrc) {}
+        container *_bsrc = nullptr,
+        root_type *_psrc = nullptr, 
+        size_type  _osrc = 0
+        ) : base_type(_bsrc, _psrc, _osrc) {}
 
-	__inline_call~write_block_iterator()= default ;
+    __inline_call~write_block_iterator()= default ;
 
     __inline_call write_block_iterator (
         self_type const&_src
@@ -399,32 +399,32 @@
 /*-------------------------------- "write" access to data */
 
     __inline_call data_type* operator-> (
-		) const
-	{   return &**this;
-	}
+        ) const
+    {   return &**this;
+    }
 
-	__inline_call data_type& operator[] (
-		size_type _pos
-		) const
-	{   return *(*this + _pos);
-	}
+    __inline_call data_type& operator[] (
+        size_type _pos
+        ) const
+    {   return *(*this + _pos);
+    }
 
-	__inline_call data_type& operator * (
-		) const
-	{ /* return reference to underlying data */ 
+    __inline_call data_type& operator * (
+        ) const
+    { /* return reference to underlying data */ 
 #       ifdef _DEBUG
-		__assert ( 
+        __assert ( 
             this->_ptr != nullptr &&
-	    "write_block_iterator: null pointer!" ) ;
-		__assert ( 
+        "write_block_iterator: null pointer!" ) ;
+        __assert ( 
             this->_off >= 0 && 
             this->_off < this->_obj->count() &&
         "write_block_iterator: out of range!" ) ;
 #       endif
-		return (*this->_ptr)
+        return (*this->_ptr)
             [this->_off / container::_size]
             [this->_off % container::_size] ;
-	}
+    }
 
     } ;
 

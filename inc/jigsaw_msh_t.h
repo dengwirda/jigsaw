@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 10 June, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -51,32 +51,30 @@
     typedef struct 
         {
         real_t                  _ppos [2] ; // coord.'s
-        real_t                  _vpwr ;     // weight
         indx_t                  _itag ;
         } jigsaw_VERT2_t ;
         
     typedef struct
         {
         real_t                  _ppos [3] ; // coord.'s
-        real_t                  _vpwr ;     // weight
         indx_t                  _itag ;
         } jigsaw_VERT3_t ;
     
     typedef struct
         {
-        indx_t                  _node [2] ;
+        indx_t                  _node [2] ; // indexing
         indx_t                  _itag ;
         } jigsaw_EDGE2_t ;
     
     typedef struct
         {
-        indx_t                  _node [3] ;
+        indx_t                  _node [3] ; // indexing
         indx_t                  _itag ;
         } jigsaw_TRIA3_t ;
         
     typedef struct
         {
-        indx_t                  _node [4] ;
+        indx_t                  _node [4] ; // indexing
         indx_t                  _itag ;
         } jigsaw_TRIA4_t ;
 
@@ -129,6 +127,8 @@
     
         jigsaw_VERT2_array_t    _vert2;
         jigsaw_VERT3_array_t    _vert3;
+    
+        jigsaw_REALS_array_t    _power;
     
         jigsaw_EDGE2_array_t    _edge2;
         jigsaw_TRIA3_array_t    _tria3;
