@@ -63,9 +63,9 @@
              >
     __normal_call iter_type lower_bound (
         iter_type _head ,
-		iter_type _tend ,
-		data_type _xval ,
-		pred_type _less
+        iter_type _tend ,
+        data_type _xval ,
+        pred_type _less
         )
     {
         iter_type _iter ;
@@ -110,9 +110,9 @@
              >
     __normal_call iter_type upper_bound (
         iter_type _head ,
-		iter_type _tend ,
-		data_type _xval ,
-		pred_type _less
+        iter_type _tend ,
+        data_type _xval ,
+        pred_type _less
         )
     {
         iter_type _iter ;

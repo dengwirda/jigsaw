@@ -61,33 +61,33 @@
     typename A
              > 
     class  _wrap_alloc
-	{ 
+    { 
 /*-------- pointer to base allocator: stateful allocators */
-	public	:
-	typedef A				                allocator ;
+    public  :
+    typedef A                               allocator ;
 
-    typedef _wrap_alloc<allocator>	        self_type ;
+    typedef _wrap_alloc<allocator>          self_type ;
 
-	typedef typename 
-            allocator::size_type	        size_type ;
-	typedef typename 
-            allocator::diff_type	        diff_type ;
+    typedef typename 
+            allocator::size_type            size_type ;
+    typedef typename 
+            allocator::diff_type            diff_type ;
 
-	private :
+    private :
 
     allocator     *_aptr ;
 
-	public	:
-	
+    public  :
+    
     /*
     --------------------------------------------------------
      * _WRAP_ALLOC: construct alloc. wrapper.
     --------------------------------------------------------
      */
  
-	__inline_call _wrap_alloc (
-		allocator *_asrc = nullptr
-		) : _aptr( _asrc ) {}
+    __inline_call _wrap_alloc (
+        allocator *_asrc = nullptr
+        ) : _aptr( _asrc ) {}
 
     __inline_call~_wrap_alloc () = default ;
     
@@ -133,56 +133,56 @@
     --------------------------------------------------------
      */
      
-	__inline_call char_type*   allocate (
-		size_type _new_count
-		) const
-	{
-		__assert( this->_aptr != nullptr &&
-	    "_wrap_alloc: null allocator!" ) ;
+    __inline_call char_type*   allocate (
+        size_type _new_count
+        ) const
+    {
+        __assert( this->_aptr != nullptr &&
+        "_wrap_alloc: null allocator!" ) ;
 
-		return this->
+        return this->
             _aptr->allocate( _new_count) ;
-	}
-	
+    }
+    
     /*
     --------------------------------------------------------
      * REALLOCATE: re-allocate buffer.
     --------------------------------------------------------
      */
      
-	__inline_call char_type* reallocate (
-	    char_type*_addr ,
-		size_type _old_count,
-		size_type _new_count
-		) const
-	{
-		__assert( this->_aptr != nullptr &&
-	    "_wrap_alloc: null allocator!" ) ;
+    __inline_call char_type* reallocate (
+        char_type*_addr ,
+        size_type _old_count,
+        size_type _new_count
+        ) const
+    {
+        __assert( this->_aptr != nullptr &&
+        "_wrap_alloc: null allocator!" ) ;
 
-		return this->_aptr->reallocate(_addr, 
-		        _old_count, 
+        return this->_aptr->reallocate(_addr, 
+                _old_count, 
                 _new_count) ;
-	}
-	
+    }
+    
     /*
     --------------------------------------------------------
      * DEALLOCATE: de-allocate buffer.
     --------------------------------------------------------
      */
-	
-	__inline_call void_type  deallocate (
+    
+    __inline_call void_type  deallocate (
         char_type*_addr ,
-		size_type _old_count
-		) const
-	{
-		__assert( this->_aptr != nullptr &&
-	    "_wrap_alloc: null allocator!" ) ;
+        size_type _old_count
+        ) const
+    {
+        __assert( this->_aptr != nullptr &&
+        "_wrap_alloc: null allocator!" ) ;
 
-	    this->_aptr->
+        this->_aptr->
             deallocate(_addr,_old_count) ;
-	}
-	
-	} ;
+    }
+    
+    } ;
     
     
     }

@@ -62,14 +62,14 @@
     typename      size_type
              >
     __inline_call real_type det_2x2 (
-	    size_type  _la,
+        size_type  _la,
     __const_ptr  (real_type) _aa
-	    )
+        )
     {   return 
         _aa[__ij(0,0,_la)] *
-		_aa[__ij(1,1,_la)] -
-		_aa[__ij(0,1,_la)] *
-		_aa[__ij(1,0,_la)] ;
+        _aa[__ij(1,1,_la)] -
+        _aa[__ij(0,1,_la)] *
+        _aa[__ij(1,0,_la)] ;
     }
 
     template <
@@ -77,27 +77,27 @@
     typename      size_type
              >
     __inline_call real_type det_3x3 (
-	    size_type  _la,
+        size_type  _la,
     __const_ptr  (real_type) _aa
-	    )
+        )
     {   return 
         _aa[__ij(0,0,_la)] * (
-		_aa[__ij(1,1,_la)] * 
-		_aa[__ij(2,2,_la)] - 
-		_aa[__ij(1,2,_la)] * 
-		_aa[__ij(2,1,_la)] ) -
+        _aa[__ij(1,1,_la)] * 
+        _aa[__ij(2,2,_la)] - 
+        _aa[__ij(1,2,_la)] * 
+        _aa[__ij(2,1,_la)] ) -
 
-		_aa[__ij(0,1,_la)] * (
-		_aa[__ij(1,0,_la)] * 
-		_aa[__ij(2,2,_la)] - 
-		_aa[__ij(1,2,_la)] * 
-		_aa[__ij(2,0,_la)] ) +
+        _aa[__ij(0,1,_la)] * (
+        _aa[__ij(1,0,_la)] * 
+        _aa[__ij(2,2,_la)] - 
+        _aa[__ij(1,2,_la)] * 
+        _aa[__ij(2,0,_la)] ) +
 
-		_aa[__ij(0,2,_la)] * (
-		_aa[__ij(1,0,_la)] * 
-		_aa[__ij(2,1,_la)] - 
-		_aa[__ij(1,1,_la)] * 
-		_aa[__ij(2,0,_la)] ) ;
+        _aa[__ij(0,2,_la)] * (
+        _aa[__ij(1,0,_la)] * 
+        _aa[__ij(2,1,_la)] - 
+        _aa[__ij(1,1,_la)] * 
+        _aa[__ij(2,0,_la)] ) ;
     }
 
     template <
@@ -105,14 +105,14 @@
     typename      size_type 
              >
     __inline_call void_type inv_2x2 (
-	    size_type  _la, 
+        size_type  _la, 
     __const_ptr  (real_type) _aa,
-	    size_type  _lx,
+        size_type  _lx,
     __write_ptr  (real_type) _xx,
         real_type &_da
-	    )
+        )
     {
-	    _da = det_2x2(_la, _aa) ;
+        _da = det_2x2(_la, _aa) ;
     
         _xx[__ij(0,0,_lx)] = 
         _aa[__ij(1,1,_la)] ;
@@ -129,68 +129,68 @@
     typename      size_type 
              >
     __inline_call void_type inv_3x3 (
-	    size_type  _la, 
+        size_type  _la, 
     __const_ptr  (real_type) _aa,
-	    size_type  _lx,
+        size_type  _lx,
     __write_ptr  (real_type) _xx,
         real_type &_da
-	    )
+        )
     {
-	    _da = det_3x3(_la, _aa) ;
+        _da = det_3x3(_la, _aa) ;
     
-	    _xx[__ij(0,0,_lx)] =
-	    _aa[__ij(2,2,_la)] * 
-	    _aa[__ij(1,1,_la)] - 
-	    _aa[__ij(2,1,_la)] * 
-	    _aa[__ij(1,2,_la)] ;
-	
-	    _xx[__ij(0,1,_lx)] =
-	    _aa[__ij(2,1,_la)] * 
-	    _aa[__ij(0,2,_la)] - 
-	    _aa[__ij(2,2,_la)] * 
-	    _aa[__ij(0,1,_la)] ;
+        _xx[__ij(0,0,_lx)] =
+        _aa[__ij(2,2,_la)] * 
+        _aa[__ij(1,1,_la)] - 
+        _aa[__ij(2,1,_la)] * 
+        _aa[__ij(1,2,_la)] ;
+    
+        _xx[__ij(0,1,_lx)] =
+        _aa[__ij(2,1,_la)] * 
+        _aa[__ij(0,2,_la)] - 
+        _aa[__ij(2,2,_la)] * 
+        _aa[__ij(0,1,_la)] ;
 
-	    _xx[__ij(0,2,_lx)] =
-	    _aa[__ij(1,2,_la)] * 
-	    _aa[__ij(0,1,_la)] - 
-	    _aa[__ij(1,1,_la)] * 
-	    _aa[__ij(0,2,_la)] ;
+        _xx[__ij(0,2,_lx)] =
+        _aa[__ij(1,2,_la)] * 
+        _aa[__ij(0,1,_la)] - 
+        _aa[__ij(1,1,_la)] * 
+        _aa[__ij(0,2,_la)] ;
 
-	    _xx[__ij(1,0,_lx)] =
-	    _aa[__ij(2,0,_la)] * 
-	    _aa[__ij(1,2,_la)] - 
-	    _aa[__ij(2,2,_la)] * 
-	    _aa[__ij(1,0,_la)] ;
-	
-	    _xx[__ij(1,1,_lx)] =
-	    _aa[__ij(2,2,_la)] * 
-	    _aa[__ij(0,0,_la)] - 
-	    _aa[__ij(2,0,_la)] * 
-	    _aa[__ij(0,2,_la)] ;
-	
-	    _xx[__ij(1,2,_lx)] =
-	    _aa[__ij(1,0,_la)] * 
-	    _aa[__ij(0,2,_la)] - 
-	    _aa[__ij(1,2,_la)] * 
-	    _aa[__ij(0,0,_la)] ;
+        _xx[__ij(1,0,_lx)] =
+        _aa[__ij(2,0,_la)] * 
+        _aa[__ij(1,2,_la)] - 
+        _aa[__ij(2,2,_la)] * 
+        _aa[__ij(1,0,_la)] ;
+    
+        _xx[__ij(1,1,_lx)] =
+        _aa[__ij(2,2,_la)] * 
+        _aa[__ij(0,0,_la)] - 
+        _aa[__ij(2,0,_la)] * 
+        _aa[__ij(0,2,_la)] ;
+    
+        _xx[__ij(1,2,_lx)] =
+        _aa[__ij(1,0,_la)] * 
+        _aa[__ij(0,2,_la)] - 
+        _aa[__ij(1,2,_la)] * 
+        _aa[__ij(0,0,_la)] ;
 
-	    _xx[__ij(2,0,_lx)] =
-	    _aa[__ij(2,1,_la)] * 
-	    _aa[__ij(1,0,_la)] - 
-	    _aa[__ij(2,0,_la)] * 
-	    _aa[__ij(1,1,_la)] ;
+        _xx[__ij(2,0,_lx)] =
+        _aa[__ij(2,1,_la)] * 
+        _aa[__ij(1,0,_la)] - 
+        _aa[__ij(2,0,_la)] * 
+        _aa[__ij(1,1,_la)] ;
 
-	    _xx[__ij(2,1,_lx)] =
-	    _aa[__ij(2,0,_la)] * 
-	    _aa[__ij(0,1,_la)] - 
-	    _aa[__ij(2,1,_la)] * 
-	    _aa[__ij(0,0,_la)] ;
-	
-	    _xx[__ij(2,2,_lx)] =
-	    _aa[__ij(1,1,_la)] * 
-	    _aa[__ij(0,0,_la)] - 
-	    _aa[__ij(1,0,_la)] * 
-	    _aa[__ij(0,1,_la)] ;
+        _xx[__ij(2,1,_lx)] =
+        _aa[__ij(2,0,_la)] * 
+        _aa[__ij(0,1,_la)] - 
+        _aa[__ij(2,1,_la)] * 
+        _aa[__ij(0,0,_la)] ;
+    
+        _xx[__ij(2,2,_lx)] =
+        _aa[__ij(1,1,_la)] * 
+        _aa[__ij(0,0,_la)] - 
+        _aa[__ij(1,0,_la)] * 
+        _aa[__ij(0,1,_la)] ;
     }
           
     /*
@@ -204,9 +204,9 @@
              >
     __normal_call void_type circ_ball_2d (  // forward dec's
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	              bool_type  _in = false
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+                  bool_type  _in = false
         ) ;
         
     template <
@@ -214,9 +214,9 @@
              >
     __normal_call void_type circ_ball_3d (  // forward dec's
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	              bool_type  _in = false
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+                  bool_type  _in = false
         ) ;
         
     template <
@@ -224,10 +224,10 @@
              >
     __normal_call void_type circ_ball_2d (  // forward dec's
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
-	              bool_type  _in = false
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+                  bool_type  _in = false
         ) ;
         
     template <
@@ -235,10 +235,10 @@
              >
     __normal_call void_type circ_ball_3d (  // forward dec's
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
-	              bool_type  _in = false
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+                  bool_type  _in = false
         ) ;
 
     template <
@@ -246,11 +246,11 @@
              >
     __normal_call void_type circ_ball_3d (  // forward dec's
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
-	__const_ptr  (real_type) _p4 ,
-	              bool_type  _in = false
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+    __const_ptr  (real_type) _p4 ,
+                  bool_type  _in = false
         ) ;
 
     #define __circface12(__cc, __pi, __pj, __pq) \
@@ -312,21 +312,21 @@
     template <
     typename      data_type
              >
-	__inline_call void_type tria_norm_3d (  // forward dec's
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3,
-	__write_ptr  (data_type) _nv
-		 ) ;
+    __inline_call void_type tria_norm_3d (  // forward dec's
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __write_ptr  (data_type) _nv
+         ) ;
     
     template <
     typename      real_type
              >
     __normal_call void_type circ_ball_2d (
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	              bool_type  _in
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+                  bool_type  _in
         )
     {
         _cc[0] = 
@@ -337,10 +337,10 @@
         __unreferenced(_in);
 
         _cc[2] = (real_type)+0. ;
-		_cc[2] = std::max (
-		_cc[2] , lensqr_2d(_cc, _p1));
-		_cc[2] = std::max (
-		_cc[2] , lensqr_2d(_cc, _p2));
+        _cc[2] = std::max (
+        _cc[2] , lensqr_2d(_cc, _p1));
+        _cc[2] = std::max (
+        _cc[2] , lensqr_2d(_cc, _p2));
     }
 
     template <
@@ -348,9 +348,9 @@
              >
     __normal_call void_type circ_ball_3d (
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	              bool_type  _in
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+                  bool_type  _in
         )
     {
         _cc[0] = 
@@ -363,30 +363,30 @@
         __unreferenced(_in);
 
         _cc[3] = (real_type)+0. ;
-		_cc[3] = std::max (
-		_cc[3] , lensqr_3d(_cc, _p1));
-		_cc[3] = std::max (
-		_cc[3] , lensqr_3d(_cc, _p2));
+        _cc[3] = std::max (
+        _cc[3] , lensqr_3d(_cc, _p1));
+        _cc[3] = std::max (
+        _cc[3] , lensqr_3d(_cc, _p2));
     }
      
     template <
     typename      real_type
              >
-	__normal_call void_type circ_ball_2d (
-	__write_ptr  (real_type) _bb ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
+    __normal_call void_type circ_ball_2d (
+    __write_ptr  (real_type) _bb ,
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
                   bool_type  _in
-		)
-	{
-		real_type _xm[2*2] ;
-		real_type _xi[2*2] ;
-		_xm[__ij(0,0,2)] = _p2[0]-_p1[0] ;
-		_xm[__ij(0,1,2)] = _p2[1]-_p1[1] ;
+        )
+    {
+        real_type _xm[2*2] ;
+        real_type _xi[2*2] ;
+        _xm[__ij(0,0,2)] = _p2[0]-_p1[0] ;
+        _xm[__ij(0,1,2)] = _p2[1]-_p1[1] ;
 
-		_xm[__ij(1,0,2)] = _p3[0]-_p1[0] ;
-		_xm[__ij(1,1,2)] = _p3[1]-_p1[1] ;
+        _xm[__ij(1,0,2)] = _p3[0]-_p1[0] ;
+        _xm[__ij(1,1,2)] = _p3[1]-_p1[1] ;
 
         real_type _xr[2*1] ;
         _xr[0] = (real_type)+.5 * (
@@ -402,14 +402,14 @@
         _xm[__ij(1,1,2)] ) ;
 
         real_type  _dd;
-		inv_2x2(2, _xm, 2, _xi, _dd) ;
+        inv_2x2(2, _xm, 2, _xi, _dd) ;
         _bb[0] = (
         _xi[__ij(0,0,2)] * _xr[0] +
-		_xi[__ij(0,1,2)] * _xr[1] )  ;
+        _xi[__ij(0,1,2)] * _xr[1] )  ;
 
         _bb[1] = (
         _xi[__ij(1,0,2)] * _xr[0] +
-		_xi[__ij(1,1,2)] * _xr[1] )  ;
+        _xi[__ij(1,1,2)] * _xr[1] )  ;
 
         _bb[0] /= _dd ;
         _bb[1] /= _dd ;
@@ -428,11 +428,11 @@
         
         _db[0] = (
         _xi[__ij(0,0,2)] * _ee[0] +
-		_xi[__ij(0,1,2)] * _ee[1] )  ;
-		
-		_db[1] = (
+        _xi[__ij(0,1,2)] * _ee[1] )  ;
+        
+        _db[1] = (
         _xi[__ij(1,0,2)] * _ee[0] +
-		_xi[__ij(1,1,2)] * _ee[1] )  ;
+        _xi[__ij(1,1,2)] * _ee[1] )  ;
 
         _bb[0]+= _db[0] / _dd ;
         _bb[1]+= _db[1] / _dd ;
@@ -444,39 +444,39 @@
         _bb[ 1] += _p1[1]  ;
         
         if (!_in)  return  ;
-	
-	    real_type __bf[3]  ;
+    
+        real_type __bf[3]  ;
         __circface12( _bb, _p1, _p2, _p3);
         __circface12( _bb, _p2, _p3, _p1);
         __circface12( _bb, _p3, _p1, _p2);
-	}
+    }
 
     template <
     typename      real_type
              >
-	__normal_call void_type circ_ball_3d (
-	__write_ptr  (real_type) _bb ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
+    __normal_call void_type circ_ball_3d (
+    __write_ptr  (real_type) _bb ,
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
                   bool_type  _in
-		)
-	{
+        )
+    {
         real_type _nv[4*1] ;
-		tria_norm_3d(_p1, _p2, _p3, _nv) ;
+        tria_norm_3d(_p1, _p2, _p3, _nv) ;
 
-		real_type _xm[3*3] ;
-		real_type _xi[3*3] ;
-		_xm[__ij(0,0,3)] = _p2[0]-_p1[0] ;
-		_xm[__ij(0,1,3)] = _p2[1]-_p1[1] ;
+        real_type _xm[3*3] ;
+        real_type _xi[3*3] ;
+        _xm[__ij(0,0,3)] = _p2[0]-_p1[0] ;
+        _xm[__ij(0,1,3)] = _p2[1]-_p1[1] ;
         _xm[__ij(0,2,3)] = _p2[2]-_p1[2] ;
         
         _xm[__ij(1,0,3)] = _p3[0]-_p1[0] ;
-		_xm[__ij(1,1,3)] = _p3[1]-_p1[1] ;
+        _xm[__ij(1,1,3)] = _p3[1]-_p1[1] ;
         _xm[__ij(1,2,3)] = _p3[2]-_p1[2] ;
         
         _xm[__ij(2,0,3)] = _nv[0] ;
-		_xm[__ij(2,1,3)] = _nv[1] ;
+        _xm[__ij(2,1,3)] = _nv[1] ;
         _xm[__ij(2,2,3)] = _nv[2] ;
 
         real_type _xr[3*1] ;
@@ -499,20 +499,20 @@
         _xr[2] = (real_type)+.0 ;
 
         real_type  _dd;
-		inv_3x3(3, _xm, 3, _xi, _dd) ;
+        inv_3x3(3, _xm, 3, _xi, _dd) ;
         _bb[0] = (
         _xi[__ij(0,0,3)] * _xr[0] +
-		_xi[__ij(0,1,3)] * _xr[1] +
+        _xi[__ij(0,1,3)] * _xr[1] +
         _xi[__ij(0,2,3)] * _xr[2] )  ;
-		
+        
         _bb[1] = (
         _xi[__ij(1,0,3)] * _xr[0] +
-		_xi[__ij(1,1,3)] * _xr[1] +
+        _xi[__ij(1,1,3)] * _xr[1] +
         _xi[__ij(1,2,3)] * _xr[2] )  ;
 
         _bb[2] = (
         _xi[__ij(2,0,3)] * _xr[0] +
-	    _xi[__ij(2,1,3)] * _xr[1] +
+        _xi[__ij(2,1,3)] * _xr[1] +
         _xi[__ij(2,2,3)] * _xr[2] )  ;
 
         _bb[0] /= _dd ;
@@ -540,17 +540,17 @@
         
         _db[0] = (
         _xi[__ij(0,0,3)] * _ee[0] +
-		_xi[__ij(0,1,3)] * _ee[1] +
+        _xi[__ij(0,1,3)] * _ee[1] +
         _xi[__ij(0,2,3)] * _ee[2] )  ;
-		
+        
         _db[1] = (
         _xi[__ij(1,0,3)] * _ee[0] +
-		_xi[__ij(1,1,3)] * _ee[1] +
+        _xi[__ij(1,1,3)] * _ee[1] +
         _xi[__ij(1,2,3)] * _ee[2] )  ;
 
         _db[2] = (
         _xi[__ij(2,0,3)] * _ee[0] +
-	    _xi[__ij(2,1,3)] * _ee[1] +
+        _xi[__ij(2,1,3)] * _ee[1] +
         _xi[__ij(2,2,3)] * _ee[2] )  ;
         
         _bb[0]+= _db[0] / _dd ;
@@ -563,39 +563,39 @@
         _bb[ 0] += _p1[0]  ;
         _bb[ 1] += _p1[1]  ;
         _bb[ 2] += _p1[2]  ;
-	
-	    if (!_in)  return  ;
-	
-	    real_type __bf[4]  ;
+    
+        if (!_in)  return  ;
+    
+        real_type __bf[4]  ;
         __circface13( _bb, _p1, _p2, _p3);
         __circface13( _bb, _p2, _p3, _p1);
         __circface13( _bb, _p3, _p1, _p2);
-	}
+    }
 
     template <
     typename      real_type
              >
-	__normal_call void_type circ_ball_3d (
-	__write_ptr  (real_type) _bb ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
+    __normal_call void_type circ_ball_3d (
+    __write_ptr  (real_type) _bb ,
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
                   bool_type  _in
-		)
-	{
-	    real_type _xm[3*3] ;
-		real_type _xi[3*3] ;
-		_xm[__ij(0,0,3)] = _p2[0]-_p1[0] ;
-		_xm[__ij(0,1,3)] = _p2[1]-_p1[1] ;
+        )
+    {
+        real_type _xm[3*3] ;
+        real_type _xi[3*3] ;
+        _xm[__ij(0,0,3)] = _p2[0]-_p1[0] ;
+        _xm[__ij(0,1,3)] = _p2[1]-_p1[1] ;
         _xm[__ij(0,2,3)] = _p2[2]-_p1[2] ;
         
         _xm[__ij(1,0,3)] = _p3[0]-_p1[0] ;
-		_xm[__ij(1,1,3)] = _p3[1]-_p1[1] ;
+        _xm[__ij(1,1,3)] = _p3[1]-_p1[1] ;
         _xm[__ij(1,2,3)] = _p3[2]-_p1[2] ;
         
         _xm[__ij(2,0,3)] = _p4[0]-_p1[0] ;
-		_xm[__ij(2,1,3)] = _p4[1]-_p1[1] ;
+        _xm[__ij(2,1,3)] = _p4[1]-_p1[1] ;
         _xm[__ij(2,2,3)] = _p4[2]-_p1[2] ;
 
         real_type _xr[3*1] ;
@@ -623,21 +623,21 @@
         _xm[__ij(2,2,3)] *
         _xm[__ij(2,2,3)] ) ;
 
-    	real_type  _dd;
-		inv_3x3(3, _xm, 3, _xi, _dd) ;
+        real_type  _dd;
+        inv_3x3(3, _xm, 3, _xi, _dd) ;
         _bb[0] = (
         _xi[__ij(0,0,3)] * _xr[0] +
-		_xi[__ij(0,1,3)] * _xr[1] +
+        _xi[__ij(0,1,3)] * _xr[1] +
         _xi[__ij(0,2,3)] * _xr[2] )  ;
-		
+        
         _bb[1] = (
         _xi[__ij(1,0,3)] * _xr[0] +
-		_xi[__ij(1,1,3)] * _xr[1] +
+        _xi[__ij(1,1,3)] * _xr[1] +
         _xi[__ij(1,2,3)] * _xr[2] )  ;
 
         _bb[2] = (
         _xi[__ij(2,0,3)] * _xr[0] +
-	    _xi[__ij(2,1,3)] * _xr[1] +
+        _xi[__ij(2,1,3)] * _xr[1] +
         _xi[__ij(2,2,3)] * _xr[2] )  ;
 
         _bb[0] /= _dd ;
@@ -665,17 +665,17 @@
         
         _db[0] = (
         _xi[__ij(0,0,3)] * _ee[0] +
-		_xi[__ij(0,1,3)] * _ee[1] +
+        _xi[__ij(0,1,3)] * _ee[1] +
         _xi[__ij(0,2,3)] * _ee[2] )  ;
-		
+        
         _db[1] = (
         _xi[__ij(1,0,3)] * _ee[0] +
-		_xi[__ij(1,1,3)] * _ee[1] +
+        _xi[__ij(1,1,3)] * _ee[1] +
         _xi[__ij(1,2,3)] * _ee[2] )  ;
 
         _db[2] = (
         _xi[__ij(2,0,3)] * _ee[0] +
-	    _xi[__ij(2,1,3)] * _ee[1] +
+        _xi[__ij(2,1,3)] * _ee[1] +
         _xi[__ij(2,2,3)] * _ee[2] )  ;
 
         _bb[0]+= _db[0] / _dd ;
@@ -700,9 +700,9 @@
             _bb, _p2, _p3, _p4, _p1) ;
         __circface23( 
             _bb, _p3, _p1, _p4, _p2) ;
-	}
-	
-	#undef  __circface12
+    }
+    
+    #undef  __circface12
     #undef  __circface13
     #undef  __circface23
     
@@ -717,9 +717,9 @@
              >
     __normal_call void_type perp_ball_2d (  // forward dec's
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	              bool_type  _in = false
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+                  bool_type  _in = false
         ) ;
         
     template <
@@ -727,9 +727,9 @@
              >
     __normal_call void_type perp_ball_3d (  // forward dec's
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	              bool_type  _in = false
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+                  bool_type  _in = false
         ) ;
         
     template <
@@ -737,10 +737,10 @@
              >
     __normal_call void_type perp_ball_2d (  // forward dec's
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
-	              bool_type  _in = false
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+                  bool_type  _in = false
         ) ;
         
     template <
@@ -748,10 +748,10 @@
              >
     __normal_call void_type perp_ball_3d (  // forward dec's
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
-	              bool_type  _in = false
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+                  bool_type  _in = false
         ) ;
 
     template <
@@ -759,11 +759,11 @@
              >
     __normal_call void_type perp_ball_3d (  // forward dec's
     __write_ptr  (real_type) _cc ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
-	__const_ptr  (real_type) _p4 ,
-	              bool_type  _in = false
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+    __const_ptr  (real_type) _p4 ,
+                  bool_type  _in = false
         ) ;
 
     #define __perpface12(__cc, __pi, __pj, __pq)    \
@@ -819,7 +819,7 @@
         }                                   \
         } while (false) ;
      
-	/*
+    /*
     --------------------------------------------------------
      * PERP-BALL: perpendicular (orthogonal) balls. 
     --------------------------------------------------------
@@ -828,20 +828,20 @@
     template <
     typename      real_type
              >
-	__normal_call void_type perp_ball_2d (
-	__write_ptr  (real_type) _bb ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	              bool_type  _in
-		)
-	{
-	    real_type _dd[3*1] ;
-	    _dd[0] = _p1[0] - _p2[0] ;
-	    _dd[1] = _p1[1] - _p2[1] ;
-	    _dd[2] = _p1[2] - _p2[2] ;
-	    
-	    real_type _dp = 
-	        geometry::lensqr_2d(_dd) ;
+    __normal_call void_type perp_ball_2d (
+    __write_ptr  (real_type) _bb ,
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+                  bool_type  _in
+        )
+    {
+        real_type _dd[3*1] ;
+        _dd[0] = _p1[0] - _p2[0] ;
+        _dd[1] = _p1[1] - _p2[1] ;
+        _dd[2] = _p1[2] - _p2[2] ;
+        
+        real_type _dp = 
+            geometry::lensqr_2d(_dd) ;
 
         real_type _tt = 
             (real_type).5 * 
@@ -853,42 +853,42 @@
         std::min((real_type)1., _tt) ;
             _tt  = 
         std::max((real_type)0., _tt) ;
-	    }
-	    
-	    _bb[0] = 
-	    _p1[0] -  _tt * _dd[0] ;
-	    _bb[1] = 
-	    _p1[1] -  _tt * _dd[1] ;
-	    
-	    real_type _r1 = 
-	    geometry::lensqr_2d(_p1, _bb);
-	    real_type _r2 = 
-	    geometry::lensqr_2d(_p2, _bb);
-	    
-	    _r1 -= _p1[2] ;
-	    _r2 -= _p2[2] ;
-	    
-	    _bb[2] = std::max (_r1, _r2) ;
-	}
-	
-	template <
+        }
+        
+        _bb[0] = 
+        _p1[0] -  _tt * _dd[0] ;
+        _bb[1] = 
+        _p1[1] -  _tt * _dd[1] ;
+        
+        real_type _r1 = 
+        geometry::lensqr_2d(_p1, _bb);
+        real_type _r2 = 
+        geometry::lensqr_2d(_p2, _bb);
+        
+        _r1 -= _p1[2] ;
+        _r2 -= _p2[2] ;
+        
+        _bb[2] = std::max (_r1, _r2) ;
+    }
+    
+    template <
     typename      real_type
              >
-	__normal_call void_type perp_ball_3d (
-	__write_ptr  (real_type) _bb ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	              bool_type  _in
-		)
-	{
-	    real_type _dd[4*1] ;
-	    _dd[0] = _p1[0] - _p2[0] ;
-	    _dd[1] = _p1[1] - _p2[1] ;
-	    _dd[2] = _p1[2] - _p2[2] ;
-	    _dd[3] = _p1[3] - _p2[3] ;
-	    
-	    real_type _dp = 
-	        geometry::lensqr_3d(_dd) ;
+    __normal_call void_type perp_ball_3d (
+    __write_ptr  (real_type) _bb ,
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+                  bool_type  _in
+        )
+    {
+        real_type _dd[4*1] ;
+        _dd[0] = _p1[0] - _p2[0] ;
+        _dd[1] = _p1[1] - _p2[1] ;
+        _dd[2] = _p1[2] - _p2[2] ;
+        _dd[3] = _p1[3] - _p2[3] ;
+        
+        real_type _dp = 
+            geometry::lensqr_3d(_dd) ;
 
         real_type _tt = 
             (real_type).5 * 
@@ -900,44 +900,44 @@
         std::min((real_type)1., _tt) ;
             _tt  = 
         std::max((real_type)0., _tt) ;
-	    }
-	    
-	    _bb[0] = 
-	    _p1[0] -  _tt * _dd[0] ;
-	    _bb[1] = 
-	    _p1[1] -  _tt * _dd[1] ;
-	    _bb[2] = 
-	    _p1[2] -  _tt * _dd[2] ;
-	    
-	    real_type _r1 = 
-	    geometry::lensqr_3d(_p1, _bb);
-	    real_type _r2 = 
-	    geometry::lensqr_3d(_p2, _bb);
-	    
-	    _r1 -= _p1[3] ;
-	    _r2 -= _p2[3] ;
-	    
-	    _bb[3] = std::max (_r1, _r2) ;
-	}
+        }
+        
+        _bb[0] = 
+        _p1[0] -  _tt * _dd[0] ;
+        _bb[1] = 
+        _p1[1] -  _tt * _dd[1] ;
+        _bb[2] = 
+        _p1[2] -  _tt * _dd[2] ;
+        
+        real_type _r1 = 
+        geometry::lensqr_3d(_p1, _bb);
+        real_type _r2 = 
+        geometry::lensqr_3d(_p2, _bb);
+        
+        _r1 -= _p1[3] ;
+        _r2 -= _p2[3] ;
+        
+        _bb[3] = std::max (_r1, _r2) ;
+    }
      
     template <
     typename      real_type
              >
-	__normal_call void_type perp_ball_2d (
-	__write_ptr  (real_type) _bb ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
-	              bool_type  _in
-		)
-	{
-		real_type _xm[2*2] ;
-		real_type _xi[2*2] ;
-		_xm[__ij(0,0,2)] = _p2[0]-_p1[0] ;
-		_xm[__ij(0,1,2)] = _p2[1]-_p1[1] ;
+    __normal_call void_type perp_ball_2d (
+    __write_ptr  (real_type) _bb ,
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+                  bool_type  _in
+        )
+    {
+        real_type _xm[2*2] ;
+        real_type _xi[2*2] ;
+        _xm[__ij(0,0,2)] = _p2[0]-_p1[0] ;
+        _xm[__ij(0,1,2)] = _p2[1]-_p1[1] ;
 
-		_xm[__ij(1,0,2)] = _p3[0]-_p1[0] ;
-		_xm[__ij(1,1,2)] = _p3[1]-_p1[1] ;
+        _xm[__ij(1,0,2)] = _p3[0]-_p1[0] ;
+        _xm[__ij(1,1,2)] = _p3[1]-_p1[1] ;
 
         real_type _xr[2*1] ;
         _xr[0] = (real_type)+.5 * (
@@ -959,14 +959,14 @@
         _xr[1]-= (real_type)+.5 * _w31 ;   
         
         real_type  _dd;
-		inv_2x2(2, _xm, 2, _xi, _dd) ;
+        inv_2x2(2, _xm, 2, _xi, _dd) ;
         _bb[0] = (
         _xi[__ij(0,0,2)] * _xr[0] +
-		_xi[__ij(0,1,2)] * _xr[1] )  ;
+        _xi[__ij(0,1,2)] * _xr[1] )  ;
 
         _bb[1] = (
         _xi[__ij(1,0,2)] * _xr[0] +
-		_xi[__ij(1,1,2)] * _xr[1] )  ;
+        _xi[__ij(1,1,2)] * _xr[1] )  ;
 
         _bb[0] /= _dd ;
         _bb[1] /= _dd ;
@@ -985,11 +985,11 @@
         
         _db[0] = (
         _xi[__ij(0,0,2)] * _ee[0] +
-		_xi[__ij(0,1,2)] * _ee[1] )  ;
-		
-		_db[1] = (
+        _xi[__ij(0,1,2)] * _ee[1] )  ;
+        
+        _db[1] = (
         _xi[__ij(1,0,2)] * _ee[0] +
-		_xi[__ij(1,1,2)] * _ee[1] )  ;
+        _xi[__ij(1,1,2)] * _ee[1] )  ;
 
         _bb[0]+= _db[0] / _dd ;
         _bb[1]+= _db[1] / _dd ;
@@ -997,54 +997,54 @@
 
         _bb[ 0] += _p1[0]  ;
         _bb[ 1] += _p1[1]  ;
-	
-	    real_type _r1 = 
-	    geometry::lensqr_2d(_p1, _bb) ;
-	    real_type _r2 = 
-	    geometry::lensqr_2d(_p2, _bb) ;
-	    real_type _r3 = 
-	    geometry::lensqr_2d(_p3, _bb) ;
-	
-	    _r1     -= _p1[2]  ;
-	    _r2     -= _p2[2]  ;
-	    _r3     -= _p3[2]  ;
-	
-	    _bb[2] = (_r1+_r2+_r3) / (real_type)3. ;
-	    
-	    if (!_in)  return  ;
-	
-	    real_type __bf[3]  ;
+    
+        real_type _r1 = 
+        geometry::lensqr_2d(_p1, _bb) ;
+        real_type _r2 = 
+        geometry::lensqr_2d(_p2, _bb) ;
+        real_type _r3 = 
+        geometry::lensqr_2d(_p3, _bb) ;
+    
+        _r1     -= _p1[2]  ;
+        _r2     -= _p2[2]  ;
+        _r3     -= _p3[2]  ;
+    
+        _bb[2] = (_r1+_r2+_r3) / (real_type)3. ;
+        
+        if (!_in)  return  ;
+    
+        real_type __bf[3]  ;
         __perpface12(_bb, _p1, _p2, _p3) ;
         __perpface12(_bb, _p2, _p3, _p1) ;
         __perpface12(_bb, _p3, _p1, _p2) ;
-	}
+    }
 
     template <
     typename      real_type
              >
-	__normal_call void_type perp_ball_3d (
-	__write_ptr  (real_type) _bb ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
-	              bool_type  _in
-		)
-	{
+    __normal_call void_type perp_ball_3d (
+    __write_ptr  (real_type) _bb ,
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+                  bool_type  _in
+        )
+    {
         real_type _nv[4*1] ;
-		tria_norm_3d(_p1, _p2, _p3, _nv) ;
+        tria_norm_3d(_p1, _p2, _p3, _nv) ;
 
-		real_type _xm[3*3] ;
-		real_type _xi[3*3] ;
-		_xm[__ij(0,0,3)] = _p2[0]-_p1[0] ;
-		_xm[__ij(0,1,3)] = _p2[1]-_p1[1] ;
+        real_type _xm[3*3] ;
+        real_type _xi[3*3] ;
+        _xm[__ij(0,0,3)] = _p2[0]-_p1[0] ;
+        _xm[__ij(0,1,3)] = _p2[1]-_p1[1] ;
         _xm[__ij(0,2,3)] = _p2[2]-_p1[2] ;
         
         _xm[__ij(1,0,3)] = _p3[0]-_p1[0] ;
-		_xm[__ij(1,1,3)] = _p3[1]-_p1[1] ;
+        _xm[__ij(1,1,3)] = _p3[1]-_p1[1] ;
         _xm[__ij(1,2,3)] = _p3[2]-_p1[2] ;
         
         _xm[__ij(2,0,3)] = _nv[0] ;
-		_xm[__ij(2,1,3)] = _nv[1] ;
+        _xm[__ij(2,1,3)] = _nv[1] ;
         _xm[__ij(2,2,3)] = _nv[2] ;
 
         real_type _xr[3*1] ;
@@ -1073,20 +1073,20 @@
         _xr[2] = (real_type)+.0 ;
 
         real_type  _dd;
-		inv_3x3(3, _xm, 3, _xi, _dd) ;
+        inv_3x3(3, _xm, 3, _xi, _dd) ;
         _bb[0] = (
         _xi[__ij(0,0,3)] * _xr[0] +
-		_xi[__ij(0,1,3)] * _xr[1] +
+        _xi[__ij(0,1,3)] * _xr[1] +
         _xi[__ij(0,2,3)] * _xr[2] )  ;
-		
+        
         _bb[1] = (
         _xi[__ij(1,0,3)] * _xr[0] +
-		_xi[__ij(1,1,3)] * _xr[1] +
+        _xi[__ij(1,1,3)] * _xr[1] +
         _xi[__ij(1,2,3)] * _xr[2] )  ;
 
         _bb[2] = (
         _xi[__ij(2,0,3)] * _xr[0] +
-	    _xi[__ij(2,1,3)] * _xr[1] +
+        _xi[__ij(2,1,3)] * _xr[1] +
         _xi[__ij(2,2,3)] * _xr[2] )  ;
 
         _bb[0] /= _dd ;
@@ -1114,17 +1114,17 @@
         
         _db[0] = (
         _xi[__ij(0,0,3)] * _ee[0] +
-		_xi[__ij(0,1,3)] * _ee[1] +
+        _xi[__ij(0,1,3)] * _ee[1] +
         _xi[__ij(0,2,3)] * _ee[2] )  ;
-		
+        
         _db[1] = (
         _xi[__ij(1,0,3)] * _ee[0] +
-		_xi[__ij(1,1,3)] * _ee[1] +
+        _xi[__ij(1,1,3)] * _ee[1] +
         _xi[__ij(1,2,3)] * _ee[2] )  ;
 
         _db[2] = (
         _xi[__ij(2,0,3)] * _ee[0] +
-	    _xi[__ij(2,1,3)] * _ee[1] +
+        _xi[__ij(2,1,3)] * _ee[1] +
         _xi[__ij(2,2,3)] * _ee[2] )  ;
         
         _bb[0]+= _db[0] / _dd ;
@@ -1135,52 +1135,52 @@
         _bb[ 0] += _p1[0]  ;
         _bb[ 1] += _p1[1]  ;
         _bb[ 2] += _p1[2]  ;
-	
-	    real_type _r1 = 
-	    geometry::lensqr_3d(_p1, _bb) ;
-	    real_type _r2 = 
-	    geometry::lensqr_3d(_p2, _bb) ;
-	    real_type _r3 = 
-	    geometry::lensqr_3d(_p3, _bb) ;
-	
-	    _r1     -= _p1[3]  ;
-	    _r2     -= _p2[3]  ;
-	    _r3     -= _p3[3]  ;
-	
-	    _bb[3] = (_r1+_r2+_r3) / (real_type)3. ;
-	    
-	    if (!_in)  return  ;
-	
-	    real_type __bf[4]  ;
+    
+        real_type _r1 = 
+        geometry::lensqr_3d(_p1, _bb) ;
+        real_type _r2 = 
+        geometry::lensqr_3d(_p2, _bb) ;
+        real_type _r3 = 
+        geometry::lensqr_3d(_p3, _bb) ;
+    
+        _r1     -= _p1[3]  ;
+        _r2     -= _p2[3]  ;
+        _r3     -= _p3[3]  ;
+    
+        _bb[3] = (_r1+_r2+_r3) / (real_type)3. ;
+        
+        if (!_in)  return  ;
+    
+        real_type __bf[4]  ;
         __perpface13(_bb, _p1, _p2, _p3) ;
         __perpface13(_bb, _p2, _p3, _p1) ;
         __perpface13(_bb, _p3, _p1, _p2) ;
-	}
+    }
 
     template <
     typename      real_type
              >
-	__normal_call void_type perp_ball_3d (
-	__write_ptr  (real_type) _bb ,
-	__const_ptr  (real_type) _p1 ,
-	__const_ptr  (real_type) _p2 ,
-	__const_ptr  (real_type) _p3 ,
+    __normal_call void_type perp_ball_3d (
+    __write_ptr  (real_type) _bb ,
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
-	              bool_type  _in
-		)
-	{
-	    real_type _xm[3*3] ;
-		real_type _xi[3*3] ;
-		_xm[__ij(0,0,3)] = _p2[0]-_p1[0] ;
-		_xm[__ij(0,1,3)] = _p2[1]-_p1[1] ;
+                  bool_type  _in
+        )
+    {
+        real_type _xm[3*3] ;
+        real_type _xi[3*3] ;
+        _xm[__ij(0,0,3)] = _p2[0]-_p1[0] ;
+        _xm[__ij(0,1,3)] = _p2[1]-_p1[1] ;
         _xm[__ij(0,2,3)] = _p2[2]-_p1[2] ;
         
         _xm[__ij(1,0,3)] = _p3[0]-_p1[0] ;
-		_xm[__ij(1,1,3)] = _p3[1]-_p1[1] ;
+        _xm[__ij(1,1,3)] = _p3[1]-_p1[1] ;
         _xm[__ij(1,2,3)] = _p3[2]-_p1[2] ;
         
         _xm[__ij(2,0,3)] = _p4[0]-_p1[0] ;
-		_xm[__ij(2,1,3)] = _p4[1]-_p1[1] ;
+        _xm[__ij(2,1,3)] = _p4[1]-_p1[1] ;
         _xm[__ij(2,2,3)] = _p4[2]-_p1[2] ;
 
         real_type _xr[3*1] ;
@@ -1208,21 +1208,21 @@
         _xm[__ij(2,2,3)] *
         _xm[__ij(2,2,3)] ) ;
 
-    	real_type  _dd;
-		inv_3x3(3, _xm, 3, _xi, _dd) ;
+        real_type  _dd;
+        inv_3x3(3, _xm, 3, _xi, _dd) ;
         _bb[0] = (
         _xi[__ij(0,0,3)] * _xr[0] +
-		_xi[__ij(0,1,3)] * _xr[1] +
+        _xi[__ij(0,1,3)] * _xr[1] +
         _xi[__ij(0,2,3)] * _xr[2] )  ;
-		
+        
         _bb[1] = (
         _xi[__ij(1,0,3)] * _xr[0] +
-		_xi[__ij(1,1,3)] * _xr[1] +
+        _xi[__ij(1,1,3)] * _xr[1] +
         _xi[__ij(1,2,3)] * _xr[2] )  ;
 
         _bb[2] = (
         _xi[__ij(2,0,3)] * _xr[0] +
-	    _xi[__ij(2,1,3)] * _xr[1] +
+        _xi[__ij(2,1,3)] * _xr[1] +
         _xi[__ij(2,2,3)] * _xr[2] )  ;
 
         _bb[0] /= _dd ;
@@ -1251,17 +1251,17 @@
         
         _db[0] = (
         _xi[__ij(0,0,3)] * _ee[0] +
-		_xi[__ij(0,1,3)] * _ee[1] +
+        _xi[__ij(0,1,3)] * _ee[1] +
         _xi[__ij(0,2,3)] * _ee[2] )  ;
-		
+        
         _db[1] = (
         _xi[__ij(1,0,3)] * _ee[0] +
-		_xi[__ij(1,1,3)] * _ee[1] +
+        _xi[__ij(1,1,3)] * _ee[1] +
         _xi[__ij(1,2,3)] * _ee[2] )  ;
 
         _db[2] = (
         _xi[__ij(2,0,3)] * _ee[0] +
-	    _xi[__ij(2,1,3)] * _ee[1] +
+        _xi[__ij(2,1,3)] * _ee[1] +
         _xi[__ij(2,2,3)] * _ee[2] )  ;
 
         _bb[0]+= _db[0] / _dd ;
@@ -1272,24 +1272,24 @@
         _bb[ 0] += _p1[0]  ;
         _bb[ 1] += _p1[1]  ;
         _bb[ 2] += _p1[2]  ;
-	
-	    real_type _r1 = 
-	    geometry::lensqr_3d(_p1, _bb) ;
-	    real_type _r2 = 
-	    geometry::lensqr_3d(_p2, _bb) ;
-	    real_type _r3 = 
-	    geometry::lensqr_3d(_p3, _bb) ;
-	    real_type _r4 = 
-	    geometry::lensqr_3d(_p4, _bb) ;
-	
-	    _r1     -= _p1[3]  ;
-	    _r2     -= _p2[3]  ;
-	    _r3     -= _p3[3]  ;
-	    _r4     -= _p4[3]  ;
-	
-	    _bb[3] = (_r1+_r2+_r3+_r4)/(real_type)4. ;
-	    
-	    if (!_in) return   ;
+    
+        real_type _r1 = 
+        geometry::lensqr_3d(_p1, _bb) ;
+        real_type _r2 = 
+        geometry::lensqr_3d(_p2, _bb) ;
+        real_type _r3 = 
+        geometry::lensqr_3d(_p3, _bb) ;
+        real_type _r4 = 
+        geometry::lensqr_3d(_p4, _bb) ;
+    
+        _r1     -= _p1[3]  ;
+        _r2     -= _p2[3]  ;
+        _r3     -= _p3[3]  ;
+        _r4     -= _p4[3]  ;
+    
+        _bb[3] = (_r1+_r2+_r3+_r4)/(real_type)4. ;
+        
+        if (!_in) return   ;
         
         real_type __bf[4]  ;
         __perpface23 ( 
@@ -1300,7 +1300,7 @@
             _bb, _p2 , _p3, _p4, _p1) ;
         __perpface23 ( 
             _bb, _p3 , _p1, _p4, _p2) ;
-	}
+    }
 
     #undef  __ij
        
@@ -1319,8 +1319,8 @@
              >
     __normal_call void_type mass_ball_2d (
     __write_ptr  (data_type) _bb,
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2
         )
     {
         _bb[0] = _p1[0] ;
@@ -1345,8 +1345,8 @@
              >
     __normal_call void_type mass_ball_3d (
     __write_ptr  (data_type) _bb,
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2
         )
     {
         _bb[0] = _p1[0] ;
@@ -1375,9 +1375,9 @@
              >
     __normal_call void_type mass_ball_2d (
     __write_ptr  (data_type) _bb,
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3
         )
     {
         _bb[0] = _p1[0] ;
@@ -1407,9 +1407,9 @@
              >
     __normal_call void_type mass_ball_3d (
     __write_ptr  (data_type) _bb,
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3
         )
     {
         _bb[0] = _p1[0] ;
@@ -1444,10 +1444,10 @@
              >
     __normal_call void_type mass_ball_3d (
     __write_ptr  (data_type) _bb,
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3,
-	__const_ptr  (data_type) _p4
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4
         )
     {
         _bb[0] = _p1[0] ;

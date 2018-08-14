@@ -37,12 +37,12 @@ The first step is to compile the code! The `JIGSAW` src can be found in <a href=
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
-	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG -I libcpp -static-libstdc++ 
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG -static-libstdc++ 
 	jigsaw.cpp -o jigsaw64r
 	
 can be used to build a `JIGSAW` executable, while:
 
-	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -I libcpp -static-libstdc++ 
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -static-libstdc++ 
 	jigsaw.cpp -shared -o libjigsaw64r.so
 
 can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
@@ -53,7 +53,6 @@ can be used to build a `JIGSAW` shared library. See the headers in <a href="../m
 
 	* Create a new, empty MSVC project.
 	* Import the jigsaw.cpp file, this contains the main() entry-point.
-	* Modify the MSVC project settings to include the "../src/" and "../src/libcpp/" directories.
 
 #### `Folder Structure`
 
@@ -86,7 +85,7 @@ This program may be freely redistributed under the condition that the copyright 
 
 If you make use of `JIGSAW` please make reference to the following. The algorithmic developments behind `JIGSAW` have been the subject of a number of publications, originally stemming from my PhD research at the University of Sydney:
 
-`[1]` - Darren Engwirda: Generalised primal-dual grids for unstructured co-volume schemes, under review, https://arxiv.org/abs/1712.02657, 2017.
+`[1]` - Darren Engwirda: Generalised primal-dual grids for unstructured co-volume schemes, to appear: J. Comp. Phys., https://arxiv.org/abs/1712.02657, 2017.
 
 `[2]` - Darren Engwirda, Conforming Restricted Delaunay Mesh Generation for Piecewise Smooth Complexes, Procedia Engineering, Volume 163, Pages 84-96, ISSN 1877-7058, https://doi.org/10.1016/j.proeng.2016.11.024, 2016.
 

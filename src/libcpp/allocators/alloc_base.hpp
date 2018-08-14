@@ -60,16 +60,16 @@
     namespace allocators {
 
     class   basic_alloc
-	{
+    {
 /*-------- raw byte allocator: wrap malloc, realloc, free */
-	public  :
-	
-	typedef std::ptrdiff_t		        diff_type;
-	typedef std::size_t 		        size_type;
+    public  :
+    
+    typedef std::ptrdiff_t              diff_type;
+    typedef std::size_t                 size_type;
 
     typedef basic_alloc                 self_type;
 
-	public	:
+    public  :
     
     /*
     --------------------------------------------------------
@@ -77,70 +77,70 @@
     --------------------------------------------------------
      */
           
-	__static_call
-	__inline_call char_type*   allocate (
-		size_type _new_count
-		)
-	{ 
+    __static_call
+    __inline_call char_type*   allocate (
+        size_type _new_count
+        )
+    { 
     /*---------------------- delegate to malloc & friends */
-		char_type* _addr = 
-	        (char_type*)std::malloc(_new_count) ;
+        char_type* _addr = 
+            (char_type*)std::malloc(_new_count) ;
 
     /*------------------------------ throw on alloc fails */
-		if ( _new_count != +0 &&
+        if ( _new_count != +0 &&
              nullptr == _addr )
         throw std::bad_alloc ();
 
     /*------------------------------ return memory buffer */
-		return ( _addr ) ;
-	}
-	
+        return ( _addr ) ;
+    }
+    
     /*
     --------------------------------------------------------
      * REALLOCATE: re-allocate buffer.
     --------------------------------------------------------
      */
      
-	__static_call
-	__inline_call char_type* reallocate (
+    __static_call
+    __inline_call char_type* reallocate (
         char_type*_addr ,
-		size_type _old_count,
-		size_type _new_count
-		)
-	{ 
+        size_type _old_count,
+        size_type _new_count
+        )
+    { 
         __unreferenced(_old_count) ;
 
     /*---------------------- delegate to malloc & friends */
-		char_type* _nptr = 
-	   (char_type*)std::realloc(_addr,_new_count) ;
+        char_type* _nptr = 
+       (char_type*)std::realloc(_addr,_new_count) ;
 
     /*------------------------------ throw on alloc fails */
-		if ( _new_count != +0 &&
+        if ( _new_count != +0 &&
              nullptr == _nptr )
         throw std::bad_alloc ();
     
     /*------------------------------ return memory buffer */
-		return ( _nptr ) ;
-	}
-	
+        return ( _nptr ) ;
+    }
+    
     /*
     --------------------------------------------------------
      * DEALLOCATE: de-allocate buffer.
     --------------------------------------------------------
      */
  
-	__static_call
-	__inline_call void_type  deallocate (
+    __static_call
+    __inline_call void_type  deallocate (
         char_type*_addr ,
-		size_type _old_count
-		)
-	{ 
+        size_type _old_count
+        )
+    { 
         __unreferenced(_old_count);
 
     /*---------------------- delegate to malloc & friends */
-	    if (nullptr != _addr) 
+        if (nullptr != _addr) 
             std::free( _addr) ;
-	}
+    }
 
     } ;
 

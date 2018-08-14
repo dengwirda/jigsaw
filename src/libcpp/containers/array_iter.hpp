@@ -68,41 +68,41 @@
         public containers::random_iterator_base
     { 
 /* random access iterator for contiguous array containers */
-    public	:
+    public  :
     
-	typedef C                           container ;
-	typedef I                           iter_type ;
+    typedef C                           container ;
+    typedef I                           iter_type ;
 
-	typedef typename 
+    typedef typename 
             container::data_type        data_type ;
-	typedef typename 
+    typedef typename 
             container::diff_type        diff_type ;
-	typedef typename 
+    typedef typename 
             container::size_type        size_type ;
-	
+    
     typedef array_iterator_base <
             container , 
             iter_type           >       self_type ;
 
-    public	:
+    public  :
 
 #   ifdef _DEBUG
     data_type* _ptr;    // array item
-	container* _obj;    // array obj.
+    container* _obj;    // array obj.
 #   else
     data_type* _ptr;    // array item
 #   endif
 
-    public	:
+    public  :
     
-	__inline_call array_iterator_base (
-		data_type *_psrc = nullptr,
-		container *_osrc = nullptr
+    __inline_call array_iterator_base (
+        data_type *_psrc = nullptr,
+        container *_osrc = nullptr
 #   ifdef _DEBUG
-		) : _ptr(_psrc), 
-			_obj(_osrc) {}
+        ) : _ptr(_psrc), 
+            _obj(_osrc) {}
     #else
-		) : _ptr(_psrc) { __unreferenced(_osrc) ; }
+        ) : _ptr(_psrc) { __unreferenced(_osrc) ; }
 #   endif
 
     __inline_call~array_iterator_base() = default ;
@@ -125,111 +125,111 @@
 
 /*--------------------------------- translation operators */
 
-	__inline_call iter_type& operator++ (
-		)
-	{ /*----------------- pre-increment */
-		++this->_ptr;
-		return *(iter_type*)this;
-	}
-	__inline_call iter_type& operator-- (
-		)
-	{ /*----------------- pre-decrement */
-		--this->_ptr;
-		return *(iter_type*)this;
-	}
+    __inline_call iter_type& operator++ (
+        )
+    { /*----------------- pre-increment */
+        ++this->_ptr;
+        return *(iter_type*)this;
+    }
+    __inline_call iter_type& operator-- (
+        )
+    { /*----------------- pre-decrement */
+        --this->_ptr;
+        return *(iter_type*)this;
+    }
 
-	__inline_call iter_type& operator+= (
-		size_type _off
-		)
-	{ /*--------------------- increment */
-		this->_ptr += _off ;
-		return *(iter_type*)this;
-	}
-	__inline_call iter_type& operator-= (
-		size_type _off
-		)
-	{ /*--------------------- decrement */
-		this->_ptr -= _off ;
-		return *(iter_type*)this;
-	}
+    __inline_call iter_type& operator+= (
+        size_type _off
+        )
+    { /*--------------------- increment */
+        this->_ptr += _off ;
+        return *(iter_type*)this;
+    }
+    __inline_call iter_type& operator-= (
+        size_type _off
+        )
+    { /*--------------------- decrement */
+        this->_ptr -= _off ;
+        return *(iter_type*)this;
+    }
 
-	__inline_call 
+    __inline_call 
         iter_type operator++ ( int )
-	{ /*---------------- post-increment */
-		iter_type _tmp(*(iter_type*)this);
-		++*this;
-		return _tmp;
-	}
-	__inline_call 
+    { /*---------------- post-increment */
+        iter_type _tmp(*(iter_type*)this);
+        ++*this;
+        return _tmp;
+    }
+    __inline_call 
         iter_type operator-- ( int )
-	{ /*---------------- post-decrement */
-		iter_type _tmp(*(iter_type*)this);
-		--*this;
-		return _tmp;
-	}
+    { /*---------------- post-decrement */
+        iter_type _tmp(*(iter_type*)this);
+        --*this;
+        return _tmp;
+    }
 
-	__inline_call iter_type operator + (
-		size_type _off
-		)
-	{ /*-------------------- add offset */
-		iter_type _tmp(*(iter_type*)this);
-		return _tmp += _off;
-	}
-	__inline_call iter_type operator - (
-		size_type _off
-		)
-	{ /*-------------------- sub offset */
-		iter_type _tmp(*(iter_type*)this);
-		return _tmp -= _off;
-	}
+    __inline_call iter_type operator + (
+        size_type _off
+        )
+    { /*-------------------- add offset */
+        iter_type _tmp(*(iter_type*)this);
+        return _tmp += _off;
+    }
+    __inline_call iter_type operator - (
+        size_type _off
+        )
+    { /*-------------------- sub offset */
+        iter_type _tmp(*(iter_type*)this);
+        return _tmp -= _off;
+    }
 
-	__inline_call diff_type operator - (
-		self_type const& _src
-		) const
-	{ /*----------- iterator difference */ 
-		return this->_ptr - _src._ptr; 
-	}
+    __inline_call diff_type operator - (
+        self_type const& _src
+        ) const
+    { /*----------- iterator difference */ 
+        return this->_ptr - _src._ptr; 
+    }
 
 /*--------------------------------- comparative operators */
 
-	__inline_call bool_type operator== (
-		self_type const& _src
-		) const
-	{ /*--------------------- equal to */
-		return this->_ptr == _src._ptr ;
-	}
-	__inline_call bool_type operator!= (
-		self_type const& _src
-		) const
-	{ /*----------------- not equal to */
-		return this->_ptr != _src._ptr ;
-	}
+    __inline_call bool_type operator== (
+        self_type const& _src
+        ) const
+    { /*--------------------- equal to */
+        return this->_ptr == _src._ptr ;
+    }
+    __inline_call bool_type operator!= (
+        self_type const& _src
+        ) const
+    { /*----------------- not equal to */
+        return this->_ptr != _src._ptr ;
+    }
 
-	__inline_call bool_type operator < (	
-		self_type const& _src
-		) const
-	{ /*-------------------- less than */
-		return this->_ptr <  _src._ptr ;
-	}
-	__inline_call bool_type operator > (
-		self_type const& _src
-		) const
-	{ /*-------------------- more than */
-		return this->_ptr >  _src._ptr ;
-	}
+    __inline_call bool_type operator < (    
+        self_type const& _src
+        ) const
+    { /*-------------------- less than */
+        return this->_ptr <  _src._ptr ;
+    }
+    __inline_call bool_type operator > (
+        self_type const& _src
+        ) const
+    { /*-------------------- more than */
+        return this->_ptr >  _src._ptr ;
+    }
 
-	__inline_call bool_type operator<= (
-		self_type const& _src
-		) const
-	{ /*-------- less than or equal to */
-		return this->_ptr <= _src._ptr ;
-	}
-	__inline_call bool_type operator>= (
-		self_type const& _src
-		) const
-	{ /*-------- more than or equal to */
-		return this->_ptr >= _src._ptr ;
-	}
+    __inline_call bool_type operator<= (
+        self_type const& _src
+        ) const
+    { /*-------- less than or equal to */
+        return this->_ptr <= _src._ptr ;
+    }
+    __inline_call bool_type operator>= (
+        self_type const& _src
+        ) const
+    { /*-------- more than or equal to */
+        return this->_ptr >= _src._ptr ;
+    }
 
     } ;
 
@@ -247,31 +247,31 @@
             const_array_iterator<C> >
     { 
 /* random access iterator for contiguous array containers */
-    public	:
+    public  :
     
-	typedef C                           container ;
+    typedef C                           container ;
 
-	typedef const_array_iterator<
+    typedef const_array_iterator<
             container           >       self_type ;
-	typedef array_iterator_base < 
+    typedef array_iterator_base < 
             container , 
             self_type           >       base_type ;
 
-	typedef typename 
+    typedef typename 
             base_type::data_type        data_type ;
-	typedef typename 
+    typedef typename 
             base_type::diff_type        diff_type ;
-	typedef typename 
+    typedef typename 
             base_type::size_type        size_type ;
 
-    public	:
+    public  :
     
-	__inline_call const_array_iterator (
-		data_type *_psrc = nullptr,
-		container *_osrc = nullptr
-		) : base_type(_psrc, _osrc) {}
+    __inline_call const_array_iterator (
+        data_type *_psrc = nullptr,
+        container *_osrc = nullptr
+        ) : base_type(_psrc, _osrc) {}
 
-	__inline_call~const_array_iterator()= default ;
+    __inline_call~const_array_iterator()= default ;
 
     __inline_call const_array_iterator (
         self_type const&_src
@@ -292,32 +292,32 @@
 /*-------------------------------- "const" access to data */
 
     __inline_call data_type const* operator-> (
-		) const
-	{   return &**this ;
-	}
+        ) const
+    {   return &**this ;
+    }
 
-	__inline_call data_type const& operator[] (
-		size_type _pos
-		) const
-	{   return *(*this + _pos);
-	}
+    __inline_call data_type const& operator[] (
+        size_type _pos
+        ) const
+    {   return *(*this + _pos);
+    }
 
-	__inline_call data_type const& operator * (
-		) const
-	{ /* return reference to underlying data */ 
+    __inline_call data_type const& operator * (
+        ) const
+    { /* return reference to underlying data */ 
 #       ifdef _DEBUG
-		__assert ( 
+        __assert ( 
             this->_ptr != nullptr   && 
-	    "const_array_iterator: null pointer!" ) ;
-		__assert ( 
+        "const_array_iterator: null pointer!" ) ;
+        __assert ( 
                 this->_ptr >= 
             this->_obj->head()._ptr &&
-		        this->_ptr <= 
+                this->_ptr <= 
             this->_obj->tail()._ptr &&
         "const_array_iterator: out of range!" ) ;
 #       endif
-		return ( *this->_ptr ); 
-	}
+        return ( *this->_ptr ); 
+    }
 
     } ;
 
@@ -335,31 +335,31 @@
             write_array_iterator<C> >
     { 
 /* random access iterator for contiguous array containers */
-    public	:
+    public  :
     
-	typedef C                           container ;
-	
-	typedef write_array_iterator<
+    typedef C                           container ;
+    
+    typedef write_array_iterator<
             container           >       self_type ;
-	typedef array_iterator_base < 
+    typedef array_iterator_base < 
             container , 
             self_type           >       base_type ;
 
-	typedef typename 
+    typedef typename 
             base_type::data_type        data_type ;
-	typedef typename 
+    typedef typename 
             base_type::diff_type        diff_type ;
-	typedef typename 
+    typedef typename 
             base_type::size_type        size_type ;
 
-    public	:
-	
-	__inline_call write_array_iterator (
-		data_type *_psrc = nullptr,
-		container *_osrc = nullptr
-		) : base_type(_psrc, _osrc) {}
+    public  :
+    
+    __inline_call write_array_iterator (
+        data_type *_psrc = nullptr,
+        container *_osrc = nullptr
+        ) : base_type(_psrc, _osrc) {}
 
-	__inline_call~write_array_iterator()= default ;
+    __inline_call~write_array_iterator()= default ;
 
     __inline_call write_array_iterator (
         self_type const&_src
@@ -380,32 +380,32 @@
 /*-------------------------------- "write" access to data */
 
     __inline_call data_type* operator-> (
-		) const
-	{   return &**this ;
-	}
+        ) const
+    {   return &**this ;
+    }
 
-	__inline_call data_type& operator[] (
-		size_type _pos
-		) const
-	{   return *(*this + _pos) ;
-	}
+    __inline_call data_type& operator[] (
+        size_type _pos
+        ) const
+    {   return *(*this + _pos) ;
+    }
 
-	__inline_call data_type& operator * (
-		) const
-	{ /* return reference to underlying data */ 
+    __inline_call data_type& operator * (
+        ) const
+    { /* return reference to underlying data */ 
 #       ifdef _DEBUG
-		__assert ( 
+        __assert ( 
             this->_ptr != nullptr   && 
-	    "write_array_iterator: null pointer!" ) ;
-		__assert ( 
+        "write_array_iterator: null pointer!" ) ;
+        __assert ( 
                 this->_ptr >= 
             this->_obj->head()._ptr &&
-		        this->_ptr <= 
+                this->_ptr <= 
             this->_obj->tail()._ptr &&
         "write_array_iterator: out of range!" ) ;
 #       endif
-		return ( *this->_ptr ) ; 
-	}
+        return ( *this->_ptr ) ; 
+    }
 
     } ;
 

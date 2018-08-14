@@ -63,17 +63,17 @@
     typename A
              > 
     class obj_alloc : public A
-	{ 
+    { 
 /*---------------- typed allocator wrapper for obj. types */
-	public	:
-	
-	typedef D	                        data_type ;
-	typedef A		                    allocator ;
+    public  :
+    
+    typedef D                           data_type ;
+    typedef A                           allocator ;
 
-	typedef typename 
-            allocator::size_type	    size_type ;
-	typedef typename 
-            allocator::diff_type	    diff_type ;
+    typedef typename 
+            allocator::size_type        size_type ;
+    typedef typename 
+            allocator::diff_type        diff_type ;
 
     typedef obj_alloc <
             data_type ,
@@ -87,11 +87,11 @@
     --------------------------------------------------------
      */
      
-	__inline_call obj_alloc (
-		allocator const&_asrc = allocator()
-		) : allocator(  _asrc )
-	{ /*------ construct base from _asrc */
-	}
+    __inline_call obj_alloc (
+        allocator const&_asrc = allocator()
+        ) : allocator(  _asrc )
+    { /*------ construct base from _asrc */
+    }
 
     __inline_call~obj_alloc ()   = default;
     
@@ -117,161 +117,161 @@
     --------------------------------------------------------
      */
  
-	__inline_call data_type*   allocate (
-		size_type _new_count
-		)
-	{   return (data_type*)allocator::allocate (
-		    _new_count * sizeof(data_type));
-	}
-	
+    __inline_call data_type*   allocate (
+        size_type _new_count
+        )
+    {   return (data_type*)allocator::allocate (
+            _new_count * sizeof(data_type));
+    }
+    
     /*
     --------------------------------------------------------
      * REALLOCATE: re-allocate obj. buffer.
     --------------------------------------------------------
      */
      
-	__inline_call data_type* reallocate (
+    __inline_call data_type* reallocate (
         data_type*_addr,
-		size_type _old_alloc ,
-		size_type _new_alloc ,
-		size_type _old_count
-		)
-	{
-	/*------------------------- allocate a new raw buffer */
-		data_type *_rptr = 
-			(data_type *)allocator:: allocate (
-				_new_alloc * sizeof(data_type))  ;
-	
-	/*---- copy objects to new buffer and free old buffer */
-		if (_addr != nullptr)
-		{
-			__write_ptr(data_type) _head = _addr ; 
-			__write_ptr(data_type) _tail ; 
-			__write_ptr(data_type) _item = _rptr ;
-			
-		/*--- number of ctor'd items to be moved to _rptr */
-			size_type _new_count = std::min (
-				_old_count, _new_alloc);
-				
-		/*-------------------- move items between buffers */
-			_tail = _addr + _new_count;
-			for ( ; _head != _tail; ++_head, 
+        size_type _old_alloc ,
+        size_type _new_alloc ,
+        size_type _old_count
+        )
+    {
+    /*------------------------- allocate a new raw buffer */
+        data_type *_rptr = 
+            (data_type *)allocator:: allocate (
+                _new_alloc * sizeof(data_type))  ;
+    
+    /*---- copy objects to new buffer and free old buffer */
+        if (_addr != nullptr)
+        {
+            __write_ptr(data_type) _head = _addr ; 
+            __write_ptr(data_type) _tail ; 
+            __write_ptr(data_type) _item = _rptr ;
+            
+        /*--- number of ctor'd items to be moved to _rptr */
+            size_type _new_count = std::min (
+                _old_count, _new_alloc);
+                
+        /*-------------------- move items between buffers */
+            _tail = _addr + _new_count;
+            for ( ; _head != _tail; ++_head, 
                                     ++_item) 
-			{ 
+            { 
             /*----- move ctor'd items from _addr to _rptr */
-				construct(_item, std::move(*_head)) ;
-				_destruct(_head) ;
-			}
-			_tail = _addr + _old_count;
-			for ( ; _head != _tail; ++_head) 
-			{ 
+                construct(_item, std::move(*_head)) ;
+                _destruct(_head) ;
+            }
+            _tail = _addr + _old_count;
+            for ( ; _head != _tail; ++_head) 
+            { 
             /*---- _destruct all remaining items in _addr */
-				_destruct(_head) ;
-			}
-			
-			allocator:: deallocate((char_type*)_addr, 
-				_old_alloc * sizeof(data_type)) ;
-		}
-		
-		return ( _rptr ) ;
-	}
-	
+                _destruct(_head) ;
+            }
+            
+            allocator:: deallocate((char_type*)_addr, 
+                _old_alloc * sizeof(data_type)) ;
+        }
+        
+        return ( _rptr ) ;
+    }
+    
     /*
     --------------------------------------------------------
      * DEALLOCATE: de-allocate obj. buffer.
     --------------------------------------------------------
      */
      
-	__inline_call void_type  deallocate (
-	    data_type*_addr,
-		size_type _old_alloc
-		)
-	{ 
+    __inline_call void_type  deallocate (
+        data_type*_addr,
+        size_type _old_alloc
+        )
+    { 
     /*----------------------------- free non-null buffers */
-		if (_addr != nullptr)
-		allocator::deallocate (
-		    (char_type*)_addr , 
+        if (_addr != nullptr)
+        allocator::deallocate (
+            (char_type*)_addr , 
                 _old_alloc * sizeof(data_type)) ;
-	}
-	
-	
+    }
+    
+    
     /*
     --------------------------------------------------------
      * _DESTRUCT: destory allocated object.
     --------------------------------------------------------
      */
      
-	__static_call
-	__inline_call void_type _destruct (
+    __static_call
+    __inline_call void_type _destruct (
         data_type* _xptr
-		) 
-	{ 
+        ) 
+    { 
         __unreferenced(_xptr);
         
         _xptr->~data_type () ; 
-	}
-	
+    }
+    
     /*
     --------------------------------------------------------
      * CONSTRUCT: regular object construction.
     --------------------------------------------------------
      */
      
-	__static_call
-	__inline_call void_type construct ( // _def c'tor obj.
-	    data_type* _xptr
-		) 
-	{   new(_xptr) data_type ; 
-	}
-	
-	__static_call
-	__inline_call void_type construct ( // copy c'tor obj.
-	    data_type* _xptr,
-		data_type const&_xval
-		) 
-	{   new( _xptr)data_type (
+    __static_call
+    __inline_call void_type construct ( // _def c'tor obj.
+        data_type* _xptr
+        ) 
+    {   new(_xptr) data_type ; 
+    }
+    
+    __static_call
+    __inline_call void_type construct ( // copy c'tor obj.
+        data_type* _xptr,
+        data_type const&_xval
+        ) 
+    {   new( _xptr)data_type (
             __copy(data_type, _xval)) ;
-	}
-	
-	__static_call
-	__inline_call void_type construct ( // move c'tor obj.
-	    data_type* _xptr,
-		data_type&&_xval
-		) 
-	{   new( _xptr)data_type (
+    }
+    
+    __static_call
+    __inline_call void_type construct ( // move c'tor obj.
+        data_type* _xptr,
+        data_type&&_xval
+        ) 
+    {   new( _xptr)data_type (
             __move(data_type, _xval)) ;
-	}
-	
-	template <
+    }
+    
+    template <
     typename...   data_part
              >
-	__static_call
-	__inline_call void_type construct (
-	    data_type  * _xptr,
+    __static_call
+    __inline_call void_type construct (
+        data_type  * _xptr,
         data_part const&... _part
-		)
-	{   new(_xptr)data_type(_part...) ;
-	}
-	
-	} ;
-	
-	
-	template <
+        )
+    {   new(_xptr)data_type(_part...) ;
+    }
+    
+    } ;
+    
+    
+    template <
     typename D , 
     typename A 
              > 
     class pod_alloc : public A
-	{ 
+    { 
 /*---------------------- buffer allocator for "pod" types */
-	public	:
-	
-	typedef D				            data_type ;
-	typedef A				            allocator ;
+    public  :
+    
+    typedef D                           data_type ;
+    typedef A                           allocator ;
 
-	typedef typename 
-            allocator::size_type	    size_type ;
-	typedef typename 
-            allocator::diff_type	    diff_type ;
+    typedef typename 
+            allocator::size_type        size_type ;
+    typedef typename 
+            allocator::diff_type        diff_type ;
 
     typedef pod_alloc <
             data_type ,
@@ -285,11 +285,11 @@
     --------------------------------------------------------
      */
      
-	__inline_call pod_alloc (
-		allocator const&_asrc = allocator()
-		) : allocator(  _asrc )
-	{ /*------ construct base from _asrc */
-	}
+    __inline_call pod_alloc (
+        allocator const&_asrc = allocator()
+        ) : allocator(  _asrc )
+    { /*------ construct base from _asrc */
+    }
 
     __inline_call~pod_alloc ()   = default;
     
@@ -315,91 +315,91 @@
     --------------------------------------------------------
      */
      
-	__inline_call data_type*   allocate (
-		size_type _new_alloc
-		)
-	{   return (data_type *)allocator::  allocate (
-			_new_alloc * sizeof(data_type)) ;
-	}
-	
+    __inline_call data_type*   allocate (
+        size_type _new_alloc
+        )
+    {   return (data_type *)allocator::  allocate (
+            _new_alloc * sizeof(data_type)) ;
+    }
+    
     /*
     --------------------------------------------------------
      * REALLOCATE: re-allocate obj. buffer.
     --------------------------------------------------------
      */
      
-	__inline_call data_type* reallocate (
-	    data_type*_addr,
-		size_type _old_alloc,
-		size_type _new_alloc,
-		size_type 
-		)
-	{   return (data_type *)allocator::reallocate (
-			   (char_type *)_addr ,
-			_old_alloc * sizeof(data_type),
-			_new_alloc * sizeof(data_type)) ; 
-	}
-	
+    __inline_call data_type* reallocate (
+        data_type*_addr,
+        size_type _old_alloc,
+        size_type _new_alloc,
+        size_type 
+        )
+    {   return (data_type *)allocator::reallocate (
+               (char_type *)_addr ,
+            _old_alloc * sizeof(data_type),
+            _new_alloc * sizeof(data_type)) ; 
+    }
+    
     /*
     --------------------------------------------------------
      * DEALLOCATE: de-allocate obj. buffer.
     --------------------------------------------------------
      */
  
-	__inline_call void_type  deallocate (
-	    data_type*_addr,
-		size_type _old_alloc
-		)
-	{   if (_addr != nullptr) 
-		allocator:: deallocate((char_type*) _addr , 
-	        _old_alloc * sizeof(data_type)) ;
-	}
-	
+    __inline_call void_type  deallocate (
+        data_type*_addr,
+        size_type _old_alloc
+        )
+    {   if (_addr != nullptr) 
+        allocator:: deallocate((char_type*) _addr , 
+            _old_alloc * sizeof(data_type)) ;
+    }
+    
     /*
     --------------------------------------------------------
      * _DESTRUCT: destory allocated object.
     --------------------------------------------------------
      */
      
-	__static_call
-	__inline_call void_type _destruct (
-	    data_type*
-	    ) { /* do nothing */ }
-	
+    __static_call
+    __inline_call void_type _destruct (
+        data_type*
+        ) { /* do nothing */ }
+    
     /*
     --------------------------------------------------------
      * CONSTRUCT: regular object construction.
     --------------------------------------------------------
      */
      
-	__static_call
-	__inline_call void_type construct (	// _def c'tor obj.
+    __static_call
+    __inline_call void_type construct ( // _def c'tor obj.
     __write_ptr  (data_type)
-		) {/* do nothing */}
-		
-	__static_call
-	__inline_call void_type construct (	// copy c'tor obj.
-	__write_ptr  (data_type) _xptr,
-		data_type const&_xval
-		) { *_xptr = _xval ; }
-		
-	__static_call
-	__inline_call void_type construct (	// move c'tor obj.
+        ) {/* do nothing */}
+        
+    __static_call
+    __inline_call void_type construct ( // copy c'tor obj.
     __write_ptr  (data_type) _xptr,
-		data_type  &&_xval
-		) { *_xptr = _xval ; }
+        data_type const&_xval
+        ) { *_xptr = _xval ; }
+        
+    __static_call
+    __inline_call void_type construct ( // move c'tor obj.
+    __write_ptr  (data_type) _xptr,
+        data_type  &&_xval
+        ) { *_xptr = _xval ; }
 
     template <
     typename...   data_part
              >
-	__static_call
-	__inline_call void_type construct (
-	    data_type  * _xptr,
+    __static_call
+    __inline_call void_type construct (
+        data_type  * _xptr,
         data_part const&... _part
-		)
-	{   new(_xptr)data_type(_part...) ;
-	}
-	
+        )
+    {   new(_xptr)data_type(_part...) ;
+    }
+    
     } ;
 
 
@@ -409,22 +409,22 @@
     bool     F 
              >
     class  loc_alloc : public  obj_alloc <D, A>
-	{ 
+    { 
 /*----- specialisation to derive from _POD if flag = TRUE */
-	public	:
-	
-	typedef D				    data_type ;
-	typedef A				    allocator ;
+    public  :
+    
+    typedef D                   data_type ;
+    typedef A                   allocator ;
 
-	typedef obj_alloc <
+    typedef obj_alloc <
             data_type , 
-            allocator >	        base_type ;
+            allocator >         base_type ;
 
     typedef loc_alloc <
             data_type ,
             allocator , F >     self_type ;
 
-	public	:
+    public  :
 
     /*
     --------------------------------------------------------
@@ -432,11 +432,11 @@
     --------------------------------------------------------
      */
      
-	__inline_call loc_alloc (
-		allocator const&_asrc = allocator()
-		) : base_type(  _asrc )
-	{ /*------ construct base from _asrc */
-	}
+    __inline_call loc_alloc (
+        allocator const&_asrc = allocator()
+        ) : base_type(  _asrc )
+    { /*------ construct base from _asrc */
+    }
 
     __inline_call~loc_alloc ()   = default;
     
@@ -456,8 +456,8 @@
         self_type  &&    _src  
             )                    = default;
 
-	} ;
-	
+    } ;
+    
 
     template <
     typename D , 
@@ -465,23 +465,23 @@
              >
     class loc_alloc<D, A, true> : 
                     public pod_alloc<D, A>
-	{
+    {
 /*----- specialisation to derive from _POD if flag = TRUE */
-	public	:
-	
-	typedef D				    data_type ;
-	typedef A				    allocator ;
+    public  :
+    
+    typedef D                   data_type ;
+    typedef A                   allocator ;
 
     typedef pod_alloc <
             data_type , 
-            allocator >	        base_type ;
+            allocator >         base_type ;
 
     typedef loc_alloc <
             data_type ,
             allocator , 
             true      >         self_type ;
 
-	public	:
+    public  :
 
     /*
     --------------------------------------------------------
@@ -489,11 +489,11 @@
     --------------------------------------------------------
      */
 
-	__inline_call loc_alloc (
-		allocator const&_asrc = allocator()
-		) : base_type(  _asrc )
-	{ /*------ construct base from _asrc */
-	}
+    __inline_call loc_alloc (
+        allocator const&_asrc = allocator()
+        ) : base_type(  _asrc )
+    { /*------ construct base from _asrc */
+    }
 
     __inline_call~loc_alloc ()   = default;
     
@@ -513,24 +513,24 @@
         self_type  &&    _src  
             )                    = default;
 
-	} ;
-	
-	
-	template <
+    } ;
+    
+    
+    template <
     typename D , 
     typename A = basic_alloc
              >
     class _item_alloc : public  loc_alloc <
                                 D , A , 
                     std::is_pod<D>::value >
-	{ 
+    { 
 /*-------------- type-aware item alloc - public interface */
-	public	:
-	
-	typedef D	                data_type ;
-	typedef A	                allocator ;
+    public  :
+    
+    typedef D                   data_type ;
+    typedef A                   allocator ;
 
-	typedef loc_alloc   <
+    typedef loc_alloc   <
             data_type   , 
             allocator   , 
     std::is_pod<D>::value>      base_type ;
@@ -539,7 +539,7 @@
             data_type   ,
             allocator   >       self_type ;
 
-	public	:
+    public  :
 
     /*
     --------------------------------------------------------
@@ -547,11 +547,11 @@
     --------------------------------------------------------
      */
 
-	__inline_call _item_alloc (
-		allocator const&_asrc = allocator()
-		) : base_type ( _asrc)
-	{ /*------ construct base from _asrc */
-	}
+    __inline_call _item_alloc (
+        allocator const&_asrc = allocator()
+        ) : base_type ( _asrc)
+    { /*------ construct base from _asrc */
+    }
 
     __inline_call~_item_alloc () = default;
     

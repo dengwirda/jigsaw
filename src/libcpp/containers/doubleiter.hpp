@@ -62,50 +62,50 @@
     typename L,
     typename I
              >
-    class double_iterator_base_	: 
+    class double_iterator_base_ : 
         public containers::double_iterator_base
     { 
 /*---------------------- iterator for doubly-linked lists */
-    public	:
+    public  :
     
-	typedef L                           list_type ;
-	typedef I                           iter_type ;
-	
+    typedef L                           list_type ;
+    typedef I                           iter_type ;
+    
     typedef typename 
             list_type::data_type        data_type ;
-	typedef typename 
-            list_type::item_type        item_type ;	
-	typedef typename 
+    typedef typename 
+            list_type::item_type        item_type ; 
+    typedef typename 
             list_type::size_type        size_type ;
-	typedef typename 
+    typedef typename 
             list_type::diff_type        diff_type ;
     
-	typedef double_iterator_base_ <
+    typedef double_iterator_base_ <
             list_type , 
             iter_type             >     self_type ;
 
-    public	:
+    public  :
 
 #   ifdef _DEBUG
     item_type* _ptr;    // list item
-	list_type* _obj;	// list obj.
+    list_type* _obj;    // list obj.
 #   else
     item_type* _ptr;    // list item
 #   endif
 
-    public	:
-	
-	__inline_call double_iterator_base_ (
-		item_type *_psrc = nullptr,
-		list_type *_lsrc = nullptr
+    public  :
+    
+    __inline_call double_iterator_base_ (
+        item_type *_psrc = nullptr,
+        list_type *_lsrc = nullptr
 #   ifdef _DEBUG
-		) : _ptr(_psrc) , 
-			_obj(_lsrc) {}
+        ) : _ptr(_psrc) , 
+            _obj(_lsrc) {}
 #   else
-		) : _ptr(_psrc) { __unreferenced(_lsrc) ; }
+        ) : _ptr(_psrc) { __unreferenced(_lsrc) ; }
 #   endif
 
-	__inline_call~double_iterator_base_ (
+    __inline_call~double_iterator_base_ (
         )                               = default ;
     __inline_call double_iterator_base_ (
         self_type const&_src
@@ -125,86 +125,86 @@
 
 /*--------------------------------- translation operators */
 
-	__inline_call iter_type &operator++ (
-		)
-	{
+    __inline_call iter_type &operator++ (
+        )
+    {
 #       ifdef _DEBUG
-		__assert( this->_ptr != nullptr &&
+        __assert( this->_ptr != nullptr &&
         "double_iterator: null link!" ) ;
 #       endif
-		this->_ptr = this->_ptr->next() ;
-		return *(iter_type*)this;
-	}
+        this->_ptr = this->_ptr->next() ;
+        return *(iter_type*)this;
+    }
     __inline_call iter_type &operator-- (
-		)
-	{
+        )
+    {
 #       ifdef _DEBUG
-		__assert( this->_ptr != nullptr &&
+        __assert( this->_ptr != nullptr &&
         "double_iterator: null link!" ) ;
 #       endif
-		this->_ptr = this->_ptr->prev() ;
-		return *(iter_type*)this;
-	}
+        this->_ptr = this->_ptr->prev() ;
+        return *(iter_type*)this;
+    }
 
-	__inline_call 
+    __inline_call 
         iter_type operator++ ( int )
-	{
-		iter_type _tmp(*(iter_type*)this) ;
-		++*this;
-		return _tmp;
-	}
+    {
+        iter_type _tmp(*(iter_type*)this) ;
+        ++*this;
+        return _tmp;
+    }
     __inline_call 
         iter_type operator-- ( int )
-	{
-		iter_type _tmp(*(iter_type*)this) ;
-		--*this;
-		return _tmp;
-	}
+    {
+        iter_type _tmp(*(iter_type*)this) ;
+        --*this;
+        return _tmp;
+    }
 
-	__inline_call iter_type &operator+= (
-		size_type _off
-		)
-	{ /* traverse list pointers */
-		for ( ; _off > 0; --_off)++*this ;
-		return *(iter_type*)this ;
-	}
+    __inline_call iter_type &operator+= (
+        size_type _off
+        )
+    { /* traverse list pointers */
+        for ( ; _off > 0; --_off)++*this ;
+        return *(iter_type*)this ;
+    }
     __inline_call iter_type &operator-= (
-		size_type _off
-		)
-	{ /* traverse list pointers */
-		for ( ; _off > 0; --_off)--*this ;
-		return *(iter_type*)this ;
-	}
+        size_type _off
+        )
+    { /* traverse list pointers */
+        for ( ; _off > 0; --_off)--*this ;
+        return *(iter_type*)this ;
+    }
 
-	__inline_call iter_type operator + (
-		size_type _off
-		) const
-	{
-		iter_type _tmp(*(iter_type*)this) ;
-		return _tmp += _off;
-	}
+    __inline_call iter_type operator + (
+        size_type _off
+        ) const
+    {
+        iter_type _tmp(*(iter_type*)this) ;
+        return _tmp += _off;
+    }
     __inline_call iter_type operator - (
-		size_type _off
-		) const
-	{
-		iter_type _tmp(*(iter_type*)this) ;
-		return _tmp -= _off;
-	}
+        size_type _off
+        ) const
+    {
+        iter_type _tmp(*(iter_type*)this) ;
+        return _tmp -= _off;
+    }
 
 /*--------------------------------- comparative operators */
 
-	__inline_call bool_type operator == (
-		self_type const&_src
-		) const
-	{
-		return this->_ptr == _src._ptr ;
-	}
-	__inline_call bool_type operator != (
-		self_type const&_src
-		) const
-	{
-		return this->_ptr != _src._ptr ;
-	}
+    __inline_call bool_type operator == (
+        self_type const&_src
+        ) const
+    {
+        return this->_ptr == _src._ptr ;
+    }
+    __inline_call bool_type operator != (
+        self_type const&_src
+        ) const
+    {
+        return this->_ptr != _src._ptr ;
+    }
 
     } ;
 
@@ -219,39 +219,39 @@
              > 
     class const_double_iterator: public 
             double_iterator_base_<L, 
-		    const_double_iterator<L> >
+            const_double_iterator<L> >
     {
 /*---------------------- iterator for doubly-linked lists */
-    public	:
-	
-	typedef L                           list_type ;
+    public  :
+    
+    typedef L                           list_type ;
 
     typedef const_double_iterator<
             list_type            >      self_type ;
-	typedef double_iterator_base_< 
+    typedef double_iterator_base_< 
             list_type , 
             self_type            >      base_type ;
 
     typedef typename 
             base_type::data_type        data_type ;
-	typedef typename 
-            base_type::item_type        item_type ;	
-	typedef typename 
+    typedef typename 
+            base_type::item_type        item_type ; 
+    typedef typename 
             base_type::size_type        size_type ;
-	typedef typename 
+    typedef typename 
             base_type::diff_type        diff_type ;
 
     typedef data_type const&            const_ref ;
     typedef data_type const*            const_ptr ;
 
     public  :
-	
-	__inline_call const_double_iterator (
-		item_type *_psrc = nullptr,
-		list_type *_lsrc = nullptr
-		) : base_type(_psrc, _lsrc) {}
+    
+    __inline_call const_double_iterator (
+        item_type *_psrc = nullptr,
+        list_type *_lsrc = nullptr
+        ) : base_type(_psrc, _lsrc) {}
 
-	__inline_call~const_double_iterator (
+    __inline_call~const_double_iterator (
         )                              =  default ;
     __inline_call const_double_iterator (
         self_type const&_src
@@ -271,21 +271,21 @@
 
 /*-------------------------------- "const" access to data */
 
-	__inline_call const_ref operator * (
-		) const 
-	{
+    __inline_call const_ref operator * (
+        ) const 
+    {
 #       ifdef _DEBUG
-		__assert( this->_ptr != nullptr &&
+        __assert( this->_ptr != nullptr &&
         "double_iterator: null pointer!");
 #       endif
-		return this->_ptr->_data;
-	}
+        return this->_ptr->_data;
+    }
 
-	__inline_call const_ptr operator-> (
-		) const { return &**this ;   }
+    __inline_call const_ptr operator-> (
+        ) const { return &**this ;   }
 
-	__inline_call item_type const*item ( 
-		) const { return this->_ptr; }
+    __inline_call item_type const*item ( 
+        ) const { return this->_ptr; }
     
     } ;
 
@@ -300,39 +300,39 @@
              > 
     class write_double_iterator: public 
             double_iterator_base_<L, 
-		    write_double_iterator<L> >
+            write_double_iterator<L> >
     {
 /*---------------------- iterator for doubly-linked lists */
-    public	:
+    public  :
     
-	typedef L                           list_type ;
+    typedef L                           list_type ;
 
     typedef write_double_iterator<
             list_type            >      self_type ;
-	typedef double_iterator_base_< 
+    typedef double_iterator_base_< 
             list_type , 
             self_type            >      base_type ;
 
     typedef typename 
             base_type::data_type        data_type ;
-	typedef typename 
-            base_type::item_type        item_type ;	
-	typedef typename 
+    typedef typename 
+            base_type::item_type        item_type ; 
+    typedef typename 
             base_type::size_type        size_type ;
-	typedef typename 
+    typedef typename 
             base_type::diff_type        diff_type ;
 
     typedef data_type &                 write_ref ;
     typedef data_type *                 write_ptr ;
 
     public  :
-	
-	__inline_call write_double_iterator (
-		item_type *_psrc = nullptr,
-		list_type *_lsrc = nullptr
-		) : base_type(_psrc, _lsrc) {}
+    
+    __inline_call write_double_iterator (
+        item_type *_psrc = nullptr,
+        list_type *_lsrc = nullptr
+        ) : base_type(_psrc, _lsrc) {}
 
-	__inline_call~write_double_iterator (
+    __inline_call~write_double_iterator (
         )                              =  default ;
     __inline_call write_double_iterator (
         self_type const&_src
@@ -352,21 +352,21 @@
 
 /*-------------------------------- "write" access to data */
 
-	__inline_call write_ref operator * (
-		) const 
-	{
+    __inline_call write_ref operator * (
+        ) const 
+    {
 #       ifdef _DEBUG
-		__assert( this->_ptr != nullptr &&
+        __assert( this->_ptr != nullptr &&
         "double_iterator: null pointer!");
 #       endif
-		return this->_ptr->_data;
-	}
+        return this->_ptr->_data;
+    }
 
-	__inline_call write_ptr operator-> (
-		) const { return &**this ;   }
+    __inline_call write_ptr operator-> (
+        ) const { return &**this ;   }
 
-	__inline_call item_type*item ( 
-		) const { return this->_ptr; }
+    __inline_call item_type*item ( 
+        ) const { return this->_ptr; }
     
     } ;
 

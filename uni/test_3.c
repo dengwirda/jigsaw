@@ -77,7 +77,7 @@
      *  v:2 o-------o-------o v:8
      *      |       |       |
      *      |       |       |
-     *      |       | v:4   |
+     *      |      v:4      |
      *  v:1 o-------o-------o v:7
      *      |       |       |
      *      |       |       |
@@ -136,8 +136,8 @@
  
  
         _retv = jigsaw_make_mesh (
-            &_jjig, &_geom,
-                &_hfun, &_mesh
+            &_jjig, &_geom, NULL ,
+            &_hfun, &_mesh
              ) ;
  
     /*-------------------------------- print JIGSAW tria. */

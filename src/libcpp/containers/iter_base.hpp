@@ -59,51 +59,51 @@
      */
      
     class null_iterator_kind 
-	    { /*------ non-iterator types */
-	    } ;
+        { /*------ non-iterator types */
+        } ;
     class base_iterator_kind
-	    { /*------ all iterator types */
-	    } ;
+        { /*------ all iterator types */
+        } ;
     class single_iterator_kind
-	    : public   base_iterator_kind
-	    { /* unidirectional iterators */
-	    } ;
+        : public   base_iterator_kind
+        { /* unidirectional iterators */
+        } ;
     class double_iterator_kind 
-	    : public single_iterator_kind
-	    { /* bi-directional iterators */
-	    } ;
+        : public single_iterator_kind
+        { /* bi-directional iterators */
+        } ;
     class random_iterator_kind 
-	    : public double_iterator_kind
-	    { /* random--access iterators */
-	    } ;
+        : public double_iterator_kind
+        { /* random--access iterators */
+        } ;
     class pointer_iterator_kind
-	    : public random_iterator_kind
-	    { /* iterators as raw pointer */
-	    } ;
+        : public random_iterator_kind
+        { /* iterators as raw pointer */
+        } ;
 
     class iterator_base
-	    { /*--------- "non-iterator" base type */
-	    public	:
-	    typedef   null_iterator_kind    iter_kind ;
-	    } ;
+        { /*--------- "non-iterator" base type */
+        public  :
+        typedef   null_iterator_kind    iter_kind ;
+        } ;
     class single_iterator_base
-	    : public iterator_base
-	    { /* unidirectional iterator base type */
-	    public	:
-	    typedef single_iterator_kind    iter_kind ;
-	    } ;
+        : public iterator_base
+        { /* unidirectional iterator base type */
+        public  :
+        typedef single_iterator_kind    iter_kind ;
+        } ;
     class double_iterator_base
-	    : public iterator_base
-	    { /* bi-directional iterator base type */
-	    public	:
-	    typedef double_iterator_kind    iter_kind ;
-	    } ;
+        : public iterator_base
+        { /* bi-directional iterator base type */
+        public  :
+        typedef double_iterator_kind    iter_kind ;
+        } ;
     class random_iterator_base
-	    : public iterator_base
-	    { /* random--access iterator base type */
-	    public	:
-	    typedef random_iterator_kind    iter_kind ;
-	    } ;
+        : public iterator_base
+        { /* random--access iterator base type */
+        public  :
+        typedef random_iterator_kind    iter_kind ;
+        } ;
 
     /*
     --------------------------------------------------------
@@ -116,33 +116,33 @@
     bool     flag_kind
              >
     class iterator_traits_base
-	    { 
+        { 
     /*-------------- real iterator types store their kind */
-	    public	:
-	    typedef typename 
+        public  :
+        typedef typename 
                 iter_type::iter_kind    iter_kind ;
         typedef typename 
                 iter_type::data_type    data_type ;
         typedef typename 
                 iter_type::diff_type    diff_type ;
-	    typedef typename 
+        typedef typename 
                 iter_type::size_type    size_type ;
-	    } ;
+        } ;
 
     template <
     typename iter_type
              >
     class iterator_traits_base<iter_type, false >
-	    { 
+        { 
     /*-------------- noniterator types assigned null kind */
-	    public	:
-	    typedef null_iterator_kind      iter_kind ;
+        public  :
+        typedef null_iterator_kind      iter_kind ;
         typedef typename 
                 std::remove_pointer<
                     iter_type>::type    data_type ;
         typedef std::size_t             size_type ;
         typedef std::ptrdiff_t          diff_type ;
-	    } ;
+        } ;
 
     template <
     typename iter_type
@@ -151,9 +151,9 @@
             iterator_traits_base <iter_type ,
               std::is_base_of
            <iterator_base,iter_type>::value >
-	    { 
+        { 
     /*--------------------------------- just wraps base!! */ 
-	    } ;
+        } ;
 
     /*
     --------------------------------------------------------

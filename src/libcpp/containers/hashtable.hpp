@@ -66,14 +66,14 @@
              >
     class hash_table  :
         public containers::array_list<D,A>
-	{
+    {
 /*------------------------- a dynamic, chained hash-table */
-	public	:     
-	
-    typedef D				            data_type ;
-    typedef H				            hash_type ;
-	typedef P				            pred_type ;
-    typedef A				            allocator ;
+    public  :     
+    
+    typedef D                           data_type ;
+    typedef H                           hash_type ;
+    typedef P                           pred_type ;
+    typedef A                           allocator ;
     
     typedef containers::array_list  <
                     data_type   ,
@@ -81,12 +81,12 @@
     
     typedef typename
             base_type::size_type        size_type ;
-	typedef typename
-	        base_type::diff_type        diff_type ;
-	typedef typename
-	        base_type::item_type        item_type ;
-	typedef typename
-	        base_type::lptr_list        lptr_list ;
+    typedef typename
+            base_type::diff_type        diff_type ;
+    typedef typename
+            base_type::item_type        item_type ;
+    typedef typename
+            base_type::lptr_list        lptr_list ;
    
     typedef typename
             base_type::_write_it        _write_it ;
@@ -97,7 +97,7 @@
                     data_type   , 
                     hash_type   ,
                     pred_type   , 
-                    allocator   >	    self_type ;
+                    allocator   >       self_type ;
 
     size_type static const _mini_count = +8 ;
 
