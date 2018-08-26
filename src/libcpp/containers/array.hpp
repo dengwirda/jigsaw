@@ -41,9 +41,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 21 August, 2018
  *
- * Copyright 2013-2017
+ * Copyright 2013-2018
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -202,6 +202,7 @@
         this->_ptrs[_hptr] = nullptr;
         this->_ptrs[_tptr] = nullptr;
         this->_ptrs[_lptr] = nullptr;
+        
         copy_iter(_size,_dsrc,
         __cont::null_iterator_kind()) ;
     }
@@ -219,6 +220,7 @@
         this->_ptrs[_hptr] = nullptr;
         this->_ptrs[_tptr] = nullptr;
         this->_ptrs[_lptr] = nullptr;
+        
         copy_iter(_head,_tail,
             __cont::iter_kind(_head)) ;
     }
@@ -329,27 +331,58 @@
         if (_new_alloc  < _cur_count )
         {   
     /*---------------------------------------- dec. alloc */
-            set_count(_new_alloc,__cont::loose_alloc) ;
+            set_count(_new_alloc,
+                __cont::loose_alloc) ;
             
+            if (_new_alloc > 0 )
+            {
             this->_ptrs[_hptr] = 
             self_type::reallocate(this->_ptrs[_hptr], 
-                _cur_alloc, _new_alloc, _new_alloc );
+                _cur_alloc, 
+                _new_alloc, 
+                _new_alloc) ;
+                
             this->_ptrs[_tptr] = 
             this->_ptrs[_hptr] + _new_alloc ;
             this->_ptrs[_lptr] = 
             this->_ptrs[_hptr] + _new_alloc ;
+            }
+            else
+            {
+            self_type::deallocate(this->_ptrs[_hptr], 
+                _cur_alloc) ;
+                
+            this->_ptrs[_hptr] = nullptr ;
+            this->_ptrs[_tptr] = nullptr ;
+            this->_ptrs[_lptr] = nullptr ;
+            }
         }
         else
         if (_new_alloc != _cur_alloc )
         {
     /*---------------------------------------- inc. alloc */
+            if (_new_alloc > 0 )
+            {
             this->_ptrs[_hptr] = 
             self_type::reallocate(this->_ptrs[_hptr], 
-                _cur_alloc, _new_alloc, _cur_count );
+                _cur_alloc, 
+                _new_alloc, 
+                _cur_count) ;
+                
             this->_ptrs[_tptr] = 
             this->_ptrs[_hptr] + _cur_count ;
             this->_ptrs[_lptr] = 
             this->_ptrs[_hptr] + _new_alloc ;
+            }
+            else
+            { 
+            self_type::deallocate(this->_ptrs[_hptr], 
+                _cur_alloc) ;
+                
+            this->_ptrs[_hptr] = nullptr ;
+            this->_ptrs[_tptr] = nullptr ;
+            this->_ptrs[_lptr] = nullptr ;
+            }
         }
     }
     

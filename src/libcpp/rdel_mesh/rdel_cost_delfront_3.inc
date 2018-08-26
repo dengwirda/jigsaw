@@ -256,7 +256,7 @@
 
     /*------------------------- calc. refinement priority */
         _fdat._cost = _prat * _pmax[3] ;
-    
+      
         _fdat._imax =    _fnod[0] ;
         _fdat._imax = std::max(
             _fdat._imax, _fnod[1]);
@@ -359,25 +359,25 @@
         _tbal[2] = _mesh.
             _tria.tria(_tpos)->circ(+2);
   
-        _tbal[ 3] = (real_type)+.0 ; 
-        _tbal[ 3]+= 
+        _tbal[3] = (real_type)+.0 ; 
+        _tbal[3]+= 
             geometry::lensqr_3d (_tbal, 
                &_mesh._tria.node(
                     _tnod[0])->pval(0)) ;
-        _tbal[ 3]+= 
+        _tbal[3]+= 
             geometry::lensqr_3d (_tbal, 
                &_mesh._tria.node(
                     _tnod[1])->pval(0)) ;
-        _tbal[ 3]+= 
+        _tbal[3]+= 
             geometry::lensqr_3d (_tbal, 
                &_mesh._tria.node(
                     _tnod[2])->pval(0)) ;
-        _tbal[ 3]+= 
+        _tbal[3]+= 
             geometry::lensqr_3d (_tbal, 
                &_mesh._tria.node(
                     _tnod[3])->pval(0)) ;
 
-        _tbal[ 3]/= (real_type)+4. ;
+        _tbal[3]/= (real_type)+4. ;
 
     /*------------------------- evaluate "in--out" status */
         if (_part<=-1)
@@ -413,6 +413,7 @@
         
     /*--------------------------------- find 2-face radii */
         real_type  _frad[4] ;
+        real_type  _frat[4] ;
         iptr_type  _fnum ;
         for(_fnum = +4; _fnum-- != +0; )
         {
@@ -436,7 +437,32 @@
            &_mesh._tria.
              node(_fnod[2])->pval(0)) ;
 
-            _frad[_fnum] = _fbal[ 3]  ;
+            real_type _ll12 = 
+                geometry::lensqr_3d (
+           &_mesh._tria.
+             node(_fnod[0])->pval(0),
+           &_mesh._tria.
+             node(_fnod[1])->pval(0)) ;
+             
+            real_type _ll23 = 
+                geometry::lensqr_3d (
+           &_mesh._tria.
+             node(_fnod[1])->pval(0),
+           &_mesh._tria.
+             node(_fnod[2])->pval(0)) ;
+
+            real_type _ll31 = 
+                geometry::lensqr_3d (
+           &_mesh._tria.
+             node(_fnod[2])->pval(0),
+           &_mesh._tria.
+             node(_fnod[0])->pval(0)) ;
+
+            _frad[_fnum] = _fbal[ 3] ;
+            
+            _frat[_fnum] = _fbal[ 3] / 
+                std::min(_ll12, 
+                    std::min(_ll23, _ll31));
         }
         
     /*--------------------------------- find min/max edge */
@@ -502,14 +528,11 @@
         real_type _erat = _tbal[   +3] / 
                           _llen[_emin] ;
                           
-        real_type _frat = _frad[_fmax] / 
-                          _llen[_emin] ;
-                          
         __unreferenced(   _erat) ;
-        __unreferenced(   _frat) ;
         
-    /*------------------------- calc. refinement priority */
-        _tdat._cost = _erat * _tbal[3] ;
+    /*------------------------- calc. refinement priority */        
+        _tdat._cost = 
+            _erat / _frat[_fmin] * _tbal[3] ;
 
         _tdat._imax =    _tnod[0] ;
         _tdat._imax = std::max(

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 August, 2018
+     * Last updated: 20 August, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -281,11 +281,11 @@
         
             _mdst += *_iter ;
         }
-        
+   
     /*--------------------- prevent element inversion */
         _qtol *= std::max(
             _0src, (real_type) +0.0);
-   
+        
         _msrc /= _csrc.count() ;
         _mdst /= _cdst.count() ;
         
@@ -1253,7 +1253,7 @@
         iptr_list _aset, _bset , _cset ;
         real_list _told, _tnew , _ttmp ;
         real_list _dold, _dnew ;
-    
+       
         for (auto _node = 
             _mesh._set1.count() ; _node-- != +0; )
         {
@@ -1317,8 +1317,9 @@
                         _div_edge( _geom, _mesh, 
                             _hfun, _pred, 
                             _hval, _opts,*_eadj, 
-                            _move, _iset,
-                            _told, _tnew, _ltol, 
+                            _move, _iset, _jset,
+                            _told, _tnew, _ttmp,
+                            _dold, _dnew, _ltol, 
                             _good, _qinc) ;    
                         
                         if (_move)
@@ -1332,8 +1333,9 @@
                         _div_edge( _geom, _mesh, 
                             _hfun, _pred, 
                             _hval, _opts,*_eadj, 
-                            _move, _iset,
-                            _told, _tnew) ;
+                            _move, _iset, _jset,
+                            _told, _tnew, _ttmp,
+                            _dold, _dnew) ;
                             
                         if (_move)
                         {
@@ -1584,7 +1586,7 @@
             
           //real_type _DLIM = + 0.99250 ;
             real_type _DLIM = 
-                std::pow(_TLIM, +1./5.) ;
+                std::pow(_TLIM, +1./8.) ;
     
     /*------------------------------ update mesh geometry */
     #       ifdef  __use_timers

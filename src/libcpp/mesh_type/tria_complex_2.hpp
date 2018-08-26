@@ -43,8 +43,8 @@
 
     #pragma once
 
-    #ifndef __TRIA_COMPLEX_2___
-    #define __TRIA_COMPLEX_2___
+    #ifndef __TRIA_COMPLEX_2__
+    #define __TRIA_COMPLEX_2__
 
     namespace mesh {
 

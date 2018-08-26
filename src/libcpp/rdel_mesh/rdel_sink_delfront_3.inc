@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 22 August, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -63,7 +63,7 @@
         rdel_opts &_args
         )
     {
-        class ring_pred
+        class sink_pred
             {
     /*-------------------- helper: find "sink" candidates */
             public  :
@@ -75,7 +75,7 @@
                 iptr_type _fnod[ 3] ;
 
             public  :
-            __inline_call ring_pred (
+            __inline_call sink_pred (
                 iptr_type*_fsrc
                 )
             {
@@ -117,7 +117,7 @@
                     _tnod[3] == _fnod[2] )
                     _same += +1 ;
             
-                return ( _same >= +2 ) ;
+                return ( _same >= +1 ) ;
             }
             } ;
 
@@ -129,9 +129,9 @@
     /*-------------------------------- find list of sinks */
         containers::
             array<iptr_type>  _tset;
-        _tset. set_alloc(+16);
+        _tset. set_alloc(+64);
         _mesh._tria.walk_tria(_tadj, 
-         ring_pred(&_fnod[0]),_tset) ;
+         sink_pred(&_fnod[0]),_tset) ;
         
         typename 
             mesh_type::face_list _fset (
@@ -140,9 +140,9 @@
             +.8,_mesh._fset.get_alloc()
             ) ;
 
-        real_type _safe = _args.snk2() *
+        real_type _near = _args.snk2() *
                           _args.snk2() ;
-        _safe *= _fbal[3] ;
+        _near *= _fbal[3] ;
 
         real_type static const _ftol = 
             std::pow(
@@ -220,20 +220,22 @@
                 _junk ,  _sbal , _feat , 
                 _topo ,  _itag ) ;
 
-            real_type  _dist = 
+            real_type  _dsqr = 
             geometry::lensqr_3d(_fbal,_sbal);
 
-            if (_dist    < _safe   )
+            if (_dsqr    < _near   )
+            {
             if (_best    < _sbal[3])
             {
                 _best    = _sbal[3];
 
                 _kind    = 
-                 rdel_opts::sink_kind ;
+                 rdel_opts::sink_kind  ;
 
                 _ppos[0] = _sbal[0];
                 _ppos[1] = _sbal[1];
                 _ppos[2] = _sbal[2];
+            }
             }
         }
         }
@@ -254,6 +256,7 @@
         hfun_type &_size,
         mesh_type &_mesh,
         iptr_type  _tpos,
+        iptr_type *_tnod,
         real_type *_tbal,
         real_type *_ppos,
         rdel_opts &_args
@@ -264,27 +267,21 @@
     /*-------------------- helper: find "sink" candidates */
             public  :
             
-            typedef typename 
+            typedef typename
                 mesh_type::tria_type tria_type ;
             
             public  :
-                mesh_type*_mesh ;
-                real_type _safe ;
-                
-                real_type _tbal[ 4] ;
+                iptr_type _tnod[ 4] ;
 
             public  :
             __inline_call sink_pred (
-                mesh_type*_msrc ,
-                real_type*_tbal ,
-                real_type _stol
-                ) : _mesh(_msrc),
-                    _safe(_stol)
-            {   
-                this->_tbal[0] = _tbal[ 0] ;
-                this->_tbal[1] = _tbal[ 1] ;
-                this->_tbal[2] = _tbal[ 2] ;
-                this->_tbal[3] = _tbal[ 3] ;
+                iptr_type*_tsrc
+                )
+            {
+                this->_tnod[0] = _tsrc[ 0];
+                this->_tnod[1] = _tsrc[ 1];
+                this->_tnod[2] = _tsrc[ 2];
+                this->_tnod[3] = _tsrc[ 3];
             }
 
             __inline_call bool_type operator() (
@@ -293,19 +290,38 @@
                 iptr_type _fpos
                 )
             {
-                real_type  _ball[3] = {
-                _tria.tria(_tpos)->circ(+0) ,
-                _tria.tria(_tpos)->circ(+1) ,
-                _tria.tria(_tpos)->circ(+2)
+                iptr_type _nadj[4] = {
+                _tria.tria(_tpos)->node(0),
+                _tria.tria(_tpos)->node(1),
+                _tria.tria(_tpos)->node(2),
+                _tria.tria(_tpos)->node(3)
                     } ;
 
                 __unreferenced(_fpos) ;
 
-                real_type _blen = 
-                    geometry::lensqr_3d(
-                        this->_tbal, _ball) ;
-
-                return _blen < this->_safe  ;
+                iptr_type _same = +0;
+                if (_nadj[0] == _tnod[0] ||
+                    _nadj[0] == _tnod[1] ||
+                    _nadj[0] == _tnod[2] ||
+                    _nadj[0] == _tnod[3] )
+                    _same += +1 ;
+                if (_nadj[1] == _tnod[0] ||
+                    _nadj[1] == _tnod[1] ||
+                    _nadj[1] == _tnod[2] ||
+                    _nadj[1] == _tnod[3] )
+                    _same += +1 ;
+                if (_nadj[2] == _tnod[0] ||
+                    _nadj[2] == _tnod[1] ||
+                    _nadj[2] == _tnod[2] ||
+                    _nadj[2] == _tnod[3] )
+                    _same += +1 ;
+                if (_nadj[3] == _tnod[0] ||
+                    _nadj[3] == _tnod[1] ||
+                    _nadj[3] == _tnod[2] ||
+                    _nadj[3] == _tnod[3] )
+                    _same += +1 ;
+                
+                return  _same >=  +1  ;
             }
             } ;
 
@@ -316,16 +332,15 @@
         __unreferenced(_size);
         
     /*-------------------------------- find list of sinks */
-        real_type _safe = _args.snk3()*
+        real_type _near = _args.snk3()*
                           _args.snk3();
-        _safe *= _tbal[3] ;
+        _near *= _tbal[3] ;
 
         containers::
             array <iptr_type>  _tset;
         _tset. set_alloc(+64);
         _mesh._tria.walk_tria( _tpos, 
-            sink_pred(&_mesh, 
-                _tbal, _safe), _tset) ;
+         sink_pred(&_tnod[0]), _tset) ;
 
         real_type static const _ftol = 
             std::pow(
@@ -344,22 +359,22 @@
         {
             if ( *_iter == _tpos) continue;
 
-            iptr_type _tnod[4];
-            _tnod[0] = _mesh.
+            iptr_type  _nadj[4];
+            _nadj[0] = _mesh.
             _tria.tria(*_iter)->node(0);
-            _tnod[1] = _mesh.
+            _nadj[1] = _mesh.
             _tria.tria(*_iter)->node(1);
-            _tnod[2] = _mesh.
+            _nadj[2] = _mesh.
             _tria.tria(*_iter)->node(2);
-            _tnod[3] = _mesh.
+            _nadj[3] = _mesh.
             _tria.tria(*_iter)->node(3);
 
             typename mesh_type::
                      tria_data _tdat ;
-            _tdat._node[ 0] = _tnod[ 0];
-            _tdat._node[ 1] = _tnod[ 1];
-            _tdat._node[ 2] = _tnod[ 2];
-            _tdat._node[ 3] = _tnod[ 3];
+            _tdat._node[ 0] = _nadj[ 0];
+            _tdat._node[ 1] = _nadj[ 1];
+            _tdat._node[ 2] = _nadj[ 2];
+            _tdat._node[ 3] = _nadj[ 3];
             
             typename mesh_type::
                      tria_list::
@@ -382,36 +397,42 @@
             _ball[2] = _mesh.
                _tria.tria(*_iter)->circ(2);
       
-            _ball[ 3] = (real_type)+.0 ; 
-            _ball[ 3]+= 
+            _ball[3] = (real_type)+.0 ; 
+            _ball[3]+= 
                 geometry::lensqr_3d (_ball, 
                    &_mesh._tria.node(
-                        _tnod[0])->pval(0)) ;
-            _ball[ 3]+= 
+                        _nadj[0])->pval(0)) ;
+            _ball[3]+= 
                 geometry::lensqr_3d (_ball, 
                     &_mesh._tria.node(
-                        _tnod[1])->pval(0)) ;
-            _ball[ 3]+= 
+                        _nadj[1])->pval(0)) ;
+            _ball[3]+= 
                 geometry::lensqr_3d (_ball, 
                     &_mesh._tria.node(
-                        _tnod[2])->pval(0)) ;
-            _ball[ 3]+= 
+                        _nadj[2])->pval(0)) ;
+            _ball[3]+= 
                 geometry::lensqr_3d (_ball, 
                     &_mesh._tria.node(
-                        _tnod[3])->pval(0)) ;
+                        _nadj[3])->pval(0)) ;
             
-            _ball[ 3]/= (real_type)+4. ;            
+            _ball[3]/= (real_type)+4. ;            
 
+            real_type _dsqr = geometry
+                ::lensqr_3d(_tbal, _ball) ;
+
+            if (_dsqr    < _near   )
+            {
             if (_best    < _ball[3])
             {
                 _kind    =  
-                 rdel_opts::sink_kind  ;
+                    rdel_opts::sink_kind  ;
 
                 _best    = _ball[3];
 
                 _ppos[0] = _ball[0];
                 _ppos[1] = _ball[1];
                 _ppos[2] = _ball[2];
+            }
             }
         }
 

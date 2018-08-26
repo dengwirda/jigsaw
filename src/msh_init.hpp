@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 March, 2018
+     * Last updated: 21 August, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -77,6 +77,8 @@
             _euclidean_mesh_2d._mesh._set1.tend() ;
                     ++_iter )
             {
+                if (_iter->mark() < 0) continue ;
+            
                 if (_iter->feat() 
                         == mesh::null_feat)
                     _iter->fdim() = 2  ;
@@ -154,6 +156,8 @@
             _euclidean_mesh_3d._mesh._set1.tend() ;
                     ++_iter )
             {
+                if (_iter->mark() < 0) continue ;
+            
                 if (_iter->feat() 
                         == mesh::null_feat)
                     _iter->fdim() = 3  ;
