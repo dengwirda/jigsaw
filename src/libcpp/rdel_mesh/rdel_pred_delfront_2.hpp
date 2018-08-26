@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 March, 2018
+     * Last updated: 22 August, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -260,6 +260,10 @@
                 return ( true ) ;
             }
         }
+        else
+        {
+        return ( true  ) ;
+        }
 
         return ( false ) ;
     }
@@ -377,21 +381,21 @@
         _tbal[1] = _mesh.
             _tria.tria(_tpos)->circ(1);
   
-        _tbal[ 2] = (real_type)+.0 ; 
-        _tbal[ 2]+= 
+        _tbal[2] = (real_type)+.0 ; 
+        _tbal[2]+= 
             geometry::lensqr_2d (_tbal, 
                 &_mesh._tria.node(
                     _tnod[0])->pval(0)) ;
-        _tbal[ 2]+= 
+        _tbal[2]+= 
             geometry::lensqr_2d (_tbal, 
                 &_mesh._tria.node(
                     _tnod[1])->pval(0)) ;
-        _tbal[ 2]+= 
+        _tbal[2]+= 
             geometry::lensqr_2d (_tbal, 
                 &_mesh._tria.node(
                     _tnod[2])->pval(0)) ;
         
-        _tbal[ 2]/= (real_type)+3. ;
+        _tbal[2]/= (real_type)+3. ;
 
     /*--------------------------------- find edge lengths */
         real_type _llen[3] ;
@@ -464,17 +468,7 @@
                 }
             }       
         }
-      
-    /*--------------------------------- pop face indexing */
-        iptr_type _enod [ +3];
-        mesh_type::tria_type::tria_type::
-        face_node(_enod, _emin, +2, +1);
-        _enod[0] = _mesh._tria.
-            tria(_tpos)->node(_enod[0]);
-        _enod[1] = _mesh._tria.
-            tria(_tpos)->node(_enod[1]);
-
-
+    
     /*-------------------------- ask for "frontal" status */ 
         if(!ring_edge(_mesh,_tpos,_emin))
         {
@@ -482,7 +476,7 @@
             {
         /*---------------------- reject as "void" element */
                 uint32_t _hash = 
-                hash_ball(_tbal) % +32u ;
+                hash_ball(_tbal) % +8u  ;
                     
                 _tdat._mark += 
                     std::max(1u, _hash) ;
@@ -491,15 +485,19 @@
             }
             else
             {
-        /*---------------------- default to circumcentres */
-                _kind     = 
-                 rdel_opts::circ_kind ;
-                 
-                _ppos[ 0] = _tbal[ 0] ;
-                _ppos[ 1] = _tbal[ 1] ;
+        /*----------------------------- just fall through */
             }
         }
-
+    
+    /*--------------------------------- get face indexing */
+        iptr_type _enod [ +3];
+        mesh_type::tria_type::tria_type::
+        face_node(_enod, _emin, +2, +1);
+        _enod[0] = _mesh._tria.
+            tria(_tpos)->node(_enod[0]);
+        _enod[1] = _mesh._tria.
+            tria(_tpos)->node(_enod[1]);
+        
     /*----------------------------------- calc. edge-ball */
         real_type _ebal [ +3];
         geometry::circ_ball_2d(_ebal,
@@ -551,7 +549,7 @@
     /*----------------------- attempt sink-type placement */
             _kind  = tria_sink(_geom, 
                 _size, _mesh , 
-                _tpos, _tbal , 
+                _tpos, _tnod , _tbal, 
                 _ppos, _args ) ;
         }
         if (_kind == rdel_opts::null_kind ||

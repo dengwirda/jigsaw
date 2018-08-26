@@ -142,7 +142,7 @@
             (data_type *)allocator:: allocate (
                 _new_alloc * sizeof(data_type))  ;
     
-    /*---- copy objects to new buffer and free old buffer */
+    /*------- copy objects to new buffer, free old buffer */
         if (_addr != nullptr)
         {
             __write_ptr(data_type) _head = _addr ; 
@@ -158,14 +158,14 @@
             for ( ; _head != _tail; ++_head, 
                                     ++_item) 
             { 
-            /*----- move ctor'd items from _addr to _rptr */
+        /*--------- move ctor'd items from _addr to _rptr */
                 construct(_item, std::move(*_head)) ;
                 _destruct(_head) ;
             }
             _tail = _addr + _old_count;
             for ( ; _head != _tail; ++_head) 
             { 
-            /*---- _destruct all remaining items in _addr */
+        /*-------- _destruct all remaining items in _addr */
                 _destruct(_head) ;
             }
             

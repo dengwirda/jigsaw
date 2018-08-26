@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 July, 2018
+     * Last updated: 21 August, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -1045,7 +1045,8 @@
                  this->_tria._set1.tend() ;
                     ++_ipos  )
             {
-                if (_ipos->fdim() == _fdim)
+                if (_ipos->mark() >= 0 && 
+                        _ipos->fdim () == _fdim)
                 {
                 real_type _dmin  = 
                     +std::numeric_limits

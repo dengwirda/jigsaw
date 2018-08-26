@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 25 August, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -69,10 +69,10 @@
         _hint  =_hfun   .null_hint () ;
 
         real_type static const _rtol = 
-            (real_type)+1.E-03;
+            (real_type)+1.00E-03 ;
             
         real_type static const _epsb = 
-            (real_type)+9.E-01;
+            (real_type)+9.50E-01 ;
      
         __unreferenced(_args) ;
      
@@ -209,10 +209,10 @@
         _hint  =_hfun   .null_hint () ;
 
         real_type static const _rtol = 
-            (real_type)+1.E-03;
-
+            (real_type)+1.00E-03 ;
+            
         real_type static const _epsb = 
-            (real_type)+9.E-01;
+            (real_type)+9.50E-01 ;
             
         real_type static const _alth = 
             (real_type)std::sqrt(3.)/2. ;
@@ -364,10 +364,10 @@
         __unreferenced(_geom) ;
 
         real_type static const _rtol = 
-            (real_type)+1.E-03;
-
+            (real_type)+1.00E-03 ;
+            
         real_type static const _epsb = 
-            (real_type)+9.E-01;
+            (real_type)+9.50E-01 ;
             
         real_type static const _alth = 
             (real_type)std::sqrt(6.)/3. ;
@@ -445,14 +445,12 @@
                 _kind = 
                  rdel_opts::offh_kind;
             }
-          
+            
             if (_dist >= _dvec[4])  // off-centre limiter 
             {
                 _dist =  _dvec[4];
                 _kind = 
                  rdel_opts::offc_kind;
-
-                return ( _kind ) ;
             }
             
             if (_dist >= _dvec[3] * _epsb) 
@@ -464,7 +462,7 @@
                 _kind = 
                  rdel_opts::circ_kind;
                  
-                 return  _kind;
+                 return  _kind ;
             }
             
             _dist -= _pert * _dist ;

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 7 August, 2018
+     * Last updated: 20 August, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -247,18 +247,24 @@
                   _tria != _iset.tend();
                 ++_tria  )
         {
-            real_type _ball[_dims+1] ;
-                _pred. perp_ball(_ball ,
-               &_mesh._set1[
+            real_type _ball[_dims];
+            for(_idim = _dims; 
+                    _idim-- != +0 ; )
+            {
+                _ball[_idim] = 
+                _mesh._set1[
                 _mesh._set3[
-               *_tria].node(0)].pval(0),
-               &_mesh._set1[
+            *_tria].node(0)].pval(_idim) + 
+                _mesh._set1[
                 _mesh._set3[
-               *_tria].node(1)].pval(0),
-               &_mesh._set1[
+            *_tria].node(1)].pval(_idim) + 
+                _mesh._set1[
                 _mesh._set3[
-               *_tria].node(2)].pval(0),
-                    true ) ;
+            *_tria].node(2)].pval(_idim) ;
+                
+                _ball[_idim]/= 
+                    (real_type)+3.;
+            }
          
             for(_idim = _dims; 
                     _idim-- != +0 ; )
@@ -272,18 +278,24 @@
                   _tria != _jset.tend();
                 ++_tria  )
         {
-            real_type _ball[_dims+1] ;
-                _pred. perp_ball(_ball ,
-               &_mesh._set1[
+            real_type _ball[_dims];
+            for(_idim = _dims; 
+                    _idim-- != +0 ; )
+            {
+                _ball[_idim] = 
+                _mesh._set1[
                 _mesh._set3[
-               *_tria].node(0)].pval(0),
-               &_mesh._set1[
+            *_tria].node(0)].pval(_idim) + 
+                _mesh._set1[
                 _mesh._set3[
-               *_tria].node(1)].pval(0),
-               &_mesh._set1[
+            *_tria].node(1)].pval(_idim) + 
+                _mesh._set1[
                 _mesh._set3[
-               *_tria].node(2)].pval(0),
-                    true ) ;
+            *_tria].node(2)].pval(_idim) ;
+                
+                _ball[_idim]/= 
+                    (real_type)+3.;
+            }
          
             for(_idim = _dims; 
                     _idim-- != +0 ; )
@@ -299,28 +311,32 @@
                          _jset.count() ) ;
         }
         
-        _pbal[_dims+0] = (real_type) +0. ;
-    
+        _pbal[_dims]  = (real_type)+0. ;
+        _pbal[_dims] += 
+            _iptr->pval(_dims) ;
+        _pbal[_dims] += 
+            _jptr->pval(_dims) ;
+            
+        _pbal[_dims] /= (real_type)+2. ;
+            
     /*--------------------------------- try to merge edge */
         typename mesh_type
-               ::node_type _ndat ;
+               ::node_type  _ndat ;
         typename mesh_type
-               ::tri3_type _tdat ;
-        
-        _ndat.hidx() = 
-            size_type::null_hint() ;
+               ::tri3_type  _tdat ;
             
-        _ndat.fdim() =   +2;
+        _ndat.fdim() =   +2 ;
         _ndat.feat() = 
-            mesh::null_feat;
+            mesh::null_feat ;
                
-        for(_idim = _dims+1; _idim-- != 0; )
+        for(_idim =_dims+1; _idim-- != 0 ; )
         {
-            _ndat.pval(_idim) = 
-                    _pbal[_idim] ;
+        _ndat.pval(_idim) = _pbal[_idim] ;
         }
   
-    /*--------------------------------- push node at PBAL */      
+        _ndat.hidx() = 
+            size_type::null_hint() ;
+        
         iptr_type _inew =
             _mesh.push_node(_ndat) ;
             

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 December, 2017
+     * Last updated: 22 August, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -237,13 +237,6 @@
         list_type &_tset
         )
     {
-        
-    //!! this is nasty -- what if multiple surfaces??
-        bool_type static _init = false ;
-
-
-        bool_type _ring = false;
-
         typename mesh_type::
                  edge_data _edat;
         _edat._node[0] = _enod[0] ;
@@ -261,11 +254,8 @@
         {
             if (_eptr->_data._kind 
                     ==  mesh::good_item )
-            _ring = true ;
+            return ( true ) ;
         }
-
-        if(!_ring)
-        {
 
         iptr_type _fpos ;
         for (auto _tpos  = _tset.head(); 
@@ -323,17 +313,12 @@
             {
                 if (_fptr->_data._kind 
                         ==  mesh::good_item )
-                {
-                    _init = true ;
-                    _ring = true ; break ;
-                }
+                return ( true ) ;
             }
         }
         }
 
-        }
-
-        return ( _init ? _ring : true )  ;
+        return ( false ) ;
     }
    
     /*
@@ -406,6 +391,10 @@
                         ==  mesh::good_item)
                 return ( true ) ;
             }
+        }
+        else
+        {
+        return ( true  ) ;
         }
 
         return ( false ) ;
@@ -618,13 +607,13 @@
             _fadj, _tset ) ;
                 
     /*-------------------------- ask for "frontal" status */ 
-        if(!ring_edge(_mesh,_enod,_tset))
+        if(!ring_edge(_mesh, _enod, _tset))
         {
             if (_fdat._mark <= +512)    // finite cycles! //
             {
         /*---------------------- reject as "void" element */
                 uint32_t _hash = 
-                hash_ball(_pmax) % +32u ;
+                hash_ball(_pmax) % +8u  ;
                     
                 _fdat._mark += 
                     std::max(1u, _hash) ;
@@ -633,13 +622,7 @@
             }
             else
             {
-        /*---------------------- default to circumcentres */
-                _kind     = 
-                 rdel_opts::circ_kind ;
-                 
-                _ppos[ 0] = _pmax[ 0] ;
-                _ppos[ 1] = _pmax[ 1] ;
-                _ppos[ 2] = _pmax[ 2] ;
+        /*----------------------------- just fall through */
             }
         }
 
@@ -792,25 +775,25 @@
         _tbal[2] = _mesh.
             _tria.tria(_tpos)->circ(2);
   
-        _tbal[ 3] = (real_type)+.0 ; 
-        _tbal[ 3]+= 
+        _tbal[3] = (real_type)+.0 ; 
+        _tbal[3]+= 
             geometry::lensqr_3d (_tbal, 
                &_mesh._tria.node(
                     _tnod[0])->pval(0)) ;
-        _tbal[ 3]+= 
+        _tbal[3]+= 
             geometry::lensqr_3d (_tbal, 
                &_mesh._tria.node(
                     _tnod[1])->pval(0)) ;
-        _tbal[ 3]+= 
+        _tbal[3]+= 
             geometry::lensqr_3d (_tbal, 
                &_mesh._tria.node(
                     _tnod[2])->pval(0)) ;
-        _tbal[ 3]+= 
+        _tbal[3]+= 
             geometry::lensqr_3d (_tbal, 
                &_mesh._tria.node(
                     _tnod[3])->pval(0)) ;
         
-        _tbal[ 3]/= (real_type)+4. ;
+        _tbal[3]/= (real_type)+4. ;
 
     /*--------------------------------- find edge lengths */
         real_type _llen[6] ;
@@ -862,7 +845,7 @@
              tria(_tpos)->node(_fnod[ 2]);
 
             real_type _fbal [ +4];
-            geometry::circ_ball_3d(_fbal ,
+            geometry::circ_ball_3d(_fbal,
                &_mesh._tria.
                  node(_fnod[0])->pval(0),
                &_mesh._tria.
@@ -936,7 +919,7 @@
             {
         /*---------------------- reject as "void" element */
                 uint32_t _hash = 
-                hash_ball(_tbal) % +32u ;
+                hash_ball(_tbal) % +8u  ;
                     
                 _tdat._mark += 
                     std::max(1u, _hash) ;
@@ -945,13 +928,7 @@
             }
             else
             {
-        /*---------------------- default to circumcentres */
-                _kind     = 
-                 rdel_opts::circ_kind ;
-                 
-                _ppos[ 0] = _tbal[ 0] ;
-                _ppos[ 1] = _tbal[ 1] ;
-                _ppos[ 2] = _tbal[ 2] ;
+        /*----------------------------- just fall through */
             }
         }
 
@@ -984,7 +961,7 @@
 
     /*----------------------------------- calc. face-ball */
         real_type _fbal [ +4];
-        geometry::circ_ball_3d(_fbal,   //!! mini-ball??
+        geometry::circ_ball_3d(_fbal,
            &_mesh._tria.
              node(_fnod[0])->pval(0),
            &_mesh._tria.
@@ -1015,8 +992,7 @@
         real_type _rfac = 
             std::sqrt(_fbal[ +3]) ;
         real_type _rtri = 
-            std::sqrt(_elen) * 
-                _args.off3() ;
+        std::sqrt(_elen) * _args.off3() ;
 
         if (_rtri > _rfac)
         _dvec[4] =  _rtri + std::sqrt (
@@ -1037,7 +1013,7 @@
     /*----------------------- attempt sink-type placement */
             _kind  = tria_sink(_geom, 
                 _size, _mesh , 
-                _tpos, _tbal , 
+                _tpos, _tnod , _tbal, 
                 _ppos, _args ) ;
         }
         if (_kind == rdel_opts::null_kind ||

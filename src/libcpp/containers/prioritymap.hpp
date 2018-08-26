@@ -39,7 +39,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 17 August, 2018
  *
  * Copyright 2013-2017
  * Darren Engwirda
@@ -476,8 +476,40 @@
         data_type &_data
         )
     {
-    /*---------------------------- _pop root, return data */
-        _pop( +0,  _data);
+    /*---------------------------- _pop item, return data */
+        size_type _hpos =   +0 ;
+        kptr_type _kptr ;
+        _kptr =    this->_heap[_hpos]._kptr ;    
+        _data = 
+        std::move (this->_heap[_hpos]._data);
+    /*----------------------- push "hole" to lower levels */
+        if (this->_heap.head() + _hpos != 
+            this->_heap.tail() )
+        {
+        /*------- sort "hole" at root to updated position */
+            _write_it _ipos =  push_lower (
+                this->_heap.head() ,  
+                this->_heap.tail() - 1    , 
+                this->_heap.head() + _hpos, 
+                this->_heap.tail()-> _data) ;
+
+        /*------- copy current tail into updated position */
+            _ipos->_data = std::move(
+                this->_heap.tail()-> _data) ;
+            _ipos->_kptr = std::move(
+                this->_heap.tail()-> _kptr) ;
+
+        /*------------------ update mapping for tail item */
+            this->_keys[_ipos->_kptr] =
+                _ipos  - this->_heap.head() ;
+        }
+        this->_heap._pop_tail();
+ 
+        this->_keys[_kptr] = 
+        std::numeric_limits<kptr_type>::max() ;
+         
+        this->
+        _free.push_tail(_kptr) ;
     }
     
     __inline_call void_type _pop (
@@ -493,25 +525,26 @@
         data_type &_data
         )
     {
-    /*---------------------------- _pop root, return data */
+    /*---------------------------- _pop item, return data */
+        size_type _hpos = this->_keys[_kptr];
         _data = 
-        std::move(this->_heap[_kptr]._data) ;
+        std::move (this->_heap[_hpos]._data);
     /*----------------------- push "hole" to lower levels */
-        if (this->_heap.head() + _kptr != 
+        if (this->_heap.head() + _hpos != 
             this->_heap.tail() )
         {
         /*------- sort "hole" at root to updated position */
             _write_it _ipos =  push_lower (
                 this->_heap.head() ,  
                 this->_heap.tail() - 1    , 
-                this->_heap.head() + _kptr, 
+                this->_heap.head() + _hpos, 
                 this->_heap.tail()-> _data) ;
 
         /*------- copy current tail into updated position */
-            _ipos->_data = 
-            std::move(this->_heap.tail()->_data) ;
-            _ipos->_kptr = 
-            std::move(this->_heap.tail()->_kptr) ;
+            _ipos->_data = std::move(
+                this->_heap.tail()-> _data) ;
+            _ipos->_kptr = std::move(
+                this->_heap.tail()-> _kptr) ;
 
         /*------------------ update mapping for tail item */
             this->_keys[_ipos->_kptr] =
@@ -519,7 +552,11 @@
         }
         this->_heap._pop_tail();
         
-        this->_free.push_tail(_kptr);
+        this->_keys[_kptr] = 
+        std::numeric_limits<kptr_type>::max() ;
+         
+        this->
+        _free.push_tail(_kptr) ;
     }
         
     /*
@@ -533,20 +570,22 @@
         data_type const&_data
         )
     {/*------------------ move "hole" to updated position */
+        size_type _hpos = 
+            this->_keys[_kptr];
         _write_it _ipos ;
         if (this->_pred(_data ,
-            this->_heap[_kptr]. _data))
+            this->_heap[_hpos]. _data))
         /*-------------------- push "hole" to upper level */
             _ipos = push_upper (
             this-> _heap.head(), 
-            this-> _heap.head()+_kptr , 
+            this-> _heap.head()+_hpos , 
         __copy(data_type,_data)) ;
         else
         /*-------------------- push "hole" to lower level */
             _ipos = push_lower (
             this-> _heap.head(),  
             this-> _heap.tail(), 
-            this-> _heap.head()+_kptr , 
+            this-> _heap.head()+_hpos , 
         __copy(data_type,_data)) ;
 
     /*------------------------ copy this data into "hole" */
@@ -564,20 +603,22 @@
         data_type &&_data
         )
     {/*------------------ move "hole" to updated position */
+        size_type _hpos = 
+            this->_keys[_kptr];
         _write_it _ipos ;
         if (this->_pred(_data ,
-            this->_heap[_kptr]. _data))
+            this->_heap[_hpos]. _data))
         /*-------------------- push "hole" to upper level */
             _ipos = push_upper (
             this-> _heap.head(), 
-            this-> _heap.head()+_kptr , 
+            this-> _heap.head()+_hpos , 
         __copy(data_type,_data)) ;
         else
         /*-------------------- push "hole" to lower level */
             _ipos = push_lower (
             this-> _heap.head(),  
             this-> _heap.tail(), 
-            this-> _heap.head()+_kptr , 
+            this-> _heap.head()+_hpos , 
         __copy(data_type,_data)) ;
 
     /*------------------------ copy this data into "hole" */
