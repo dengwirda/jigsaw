@@ -56,7 +56,7 @@
     __normal_call void_type walk_tria_list (
         iptr_type  _elem,
         fptr_type  _flag,
-        func_type  _pred,
+        func_type &_pred,
         iptr_list &_list
         )
     {
@@ -97,7 +97,7 @@
         algorithms::qsort(_list.head(), 
                           _list.tend(), 
                 std::less<iptr_type>()) ;
-
+        
     /*------------------------------ unmark list of trias */
         for (typename iptr_list::
                 size_type _iter = +0 ; 

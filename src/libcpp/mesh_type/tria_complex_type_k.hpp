@@ -43,8 +43,8 @@
  
 #   pragma once
 
-#   ifndef __TRIA_COMPLEX_TYPE_K___
-#   define __TRIA_COMPLEX_TYPE_K___
+#   ifndef __TRIA_COMPLEX_TYPE_K__
+#   define __TRIA_COMPLEX_TYPE_K__
 
     namespace mesh {
 
@@ -561,7 +561,7 @@
 
 /*
 ------------------------------------------------------------
- * BASE-TRIA-3: 3-simplex type for TRIA-COMPLEX-K.
+ * BASE-TRIA-4: 3-simplex type for TRIA-COMPLEX-K.
 ------------------------------------------------------------
  * IPTR-TYPE - signed-integer typedef.
 ------------------------------------------------------------

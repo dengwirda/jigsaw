@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 13 April, 2018
+     * Last updated: 17 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -184,7 +184,8 @@
         /*------------------------- form "new" rDT cavity */
             mode_type  _dim0=null_mode;
             push_rdel( _geom, _hfun , 
-                _mesh, _nnew, _tnew , 
+                _mesh,  true,
+                _nnew, _tnew, 
                 _escr, _ecav, 
                 _fscr, _fcav,
                 _tscr, _tcav,

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 June, 2018
+     * Last updated: 10 September, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -140,12 +140,14 @@
         std::int32_t  /*_irow*/,
         double      * /*_vdat*/
         ) { }
-    __normal_call void_type open_parts (
+    __normal_call void_type open_bound (
         std::int32_t  /*_nrow*/
         ) { }
-    __normal_call void_type push_parts (
+    __normal_call void_type push_bound (
         std::int32_t  /*_irow*/,
-        std::int32_t* /*_pdat*/
+        std::int32_t  /*_itag*/,
+        std::int32_t  /*_inum*/,
+        std::int32_t  /*_kind*/
         ) { }
     __normal_call void_type open_coord (
         std::int32_t  /*_idim*/,
@@ -1158,6 +1160,78 @@
             if (--_nrow == +0) break ;
         }        
     }
+    
+    /*
+    --------------------------------------------------------
+     * READ-BOUND: read BOUND data section
+    --------------------------------------------------------
+     */
+    
+    template <
+        typename  dest_type
+             >
+    __normal_call void_type read_bound (
+        std::ifstream&_ffid ,
+        string_tokens&_stok ,
+        dest_type    &_dest
+        )
+    {
+    /*----------------------------------------- read head */
+        std::int32_t _nrow = -1;
+        std::int32_t _irow = +0;
+        if (_stok.count() == +2)
+        {
+            _nrow = std::stol(_stok[1]);
+        }
+        else
+        {
+            this->_errs.
+            push_tail("Invalid BOUND!");
+        }
+        
+        _dest.open_bound(_nrow);
+   
+    /*----------------------------------------- read data */
+        std::string _line;
+        while (std::getline(_ffid, _line))
+        {
+            try
+            {
+            containers::
+                array<std::string> _tstr ;
+                
+            find_toks (_line, ";", _tstr);
+       
+            if (_tstr.count() == +3)
+            {
+                std::int32_t _itag =
+                    std::stol(_tstr[0]);
+                
+                std::int32_t _inum =
+                    std::stol(_tstr[1]);
+                
+                std::int32_t _kind =
+                    std::stol(_tstr[2]);
+                
+                _dest.push_bound (
+                _irow, _itag , _inum, _kind);
+            }
+            else
+            {
+                this->_errs.push_tail(_line);
+            }
+            
+            }
+            catch (...)
+            {
+                this->_errs.push_tail(_line);
+            }
+            
+            _irow += +1 ;
+            
+            if (--_nrow == +0) break ;
+        }        
+    }
 
     /*
     --------------------------------------------------------
@@ -1283,6 +1357,12 @@
             if (_stok[0] == "PYRA5")
                 {
                 read_pyra5(_ffid, _stok, 
+                           _dest) ;
+                }
+            else
+            if (_stok[0] == "BOUND")
+                {
+                read_bound(_ffid, _stok, 
                            _dest) ;
                 }
                           

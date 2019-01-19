@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 August, 2018
+     * Last updated: 23 November, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -187,6 +187,15 @@
         {   return geometry
                 ::dual_quality_3d (
                    _ipos, _jpos, _kpos, _lpos) ;
+        }
+        
+        __static_call
+        __inline_call real_type innerprod (
+          __const_ptr(real_type) _avec ,
+          __const_ptr(real_type) _bvec
+            )
+        {   return geometry
+                ::dot_3d (_avec, _bvec) ;
         }
         
         __static_call

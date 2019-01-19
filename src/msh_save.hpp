@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 13 August, 2018
+     * Last updated: 10 September, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -224,8 +224,8 @@
                     _nmap[_item->_data._node[0]]
                           << ";" << 
                     _nmap[_item->_data._node[1]]
-                          << ";"
-                          << +0  << "\n" ;               
+                          << ";" << 
+                    _item->_data._part << "\n" ;             
                     }
                 }
                 }
@@ -256,8 +256,8 @@
                     _nmap[_item->_data._node[1]]
                           << ";" << 
                     _nmap[_item->_data._node[2]]
-                          << ";"
-                          << +0  << "\n" ;               
+                          << ";" << 
+                    _item->_data._part << "\n" ;
                     }
                 }
                 }
@@ -424,8 +424,8 @@
                     _nmap[_item->_data._node[0]]
                           << ";" << 
                     _nmap[_item->_data._node[1]]
-                          << ";"
-                          << +0  << "\n" ;               
+                          << ";" << 
+                    _item->_data._part << "\n" ;
                     }
                 }
                 }
@@ -456,8 +456,8 @@
                     _nmap[_item->_data._node[1]]
                           << ";" << 
                     _nmap[_item->_data._node[2]]
-                          << ";"
-                          << +0  << "\n" ;               
+                          << ";" << 
+                    _item->_data._part << "\n" ;
                     }
                 }
                 }
@@ -490,8 +490,8 @@
                     _nmap[_item->_data._node[2]]
                           << ";" << 
                     _nmap[_item->_data._node[3]]
-                          << ";"
-                          << +0  << "\n" ;               
+                          << ";" << 
+                    _item->_data._part << "\n" ;
                     }
                 }
                 }
@@ -907,8 +907,8 @@
                         _node[1] = 
                         _nmap[_item->_data._node[1]] ;
                     
-                    _mmsh._edge2.
-                        _data[_eout]._itag = +0 ;
+                    _mmsh._edge2._data[_eout].
+                        _itag = _item->_data._part ;
                         
                     _eout = _eout + 1 ;               
                     }
@@ -946,8 +946,8 @@
                         _node[2] = 
                         _nmap[_item->_data._node[2]] ;
                     
-                    _mmsh._tria3.
-                        _data[_tout]._itag = +0 ;
+                    _mmsh._tria3._data[_tout].
+                        _itag = _item->_data._part ;
                         
                     _tout = _tout + 1 ;               
                     }
@@ -1098,8 +1098,8 @@
                         _node[1] = 
                         _nmap[_item->_data._node[1]] ;
                     
-                    _mmsh._edge2.
-                        _data[_eout]._itag = +0 ;
+                    _mmsh._edge2._data[_eout].
+                        _itag = _item->_data._part ;
                         
                     _eout = _eout + 1 ;
                     }
@@ -1137,8 +1137,8 @@
                         _node[2] = 
                         _nmap[_item->_data._node[2]] ;
                     
-                    _mmsh._tria3.
-                        _data[_fout]._itag = +0 ;
+                    _mmsh._tria3._data[_fout].
+                        _itag = _item->_data._part ;
                         
                     _fout = _fout + 1 ;               
                     }
@@ -1179,8 +1179,8 @@
                         _node[3] = 
                         _nmap[_item->_data._node[3]] ;
                     
-                    _mmsh._tria4.
-                        _data[_tout]._itag = +0 ;
+                    _mmsh._tria4._data[_tout].
+                        _itag = _item->_data._part ;
                         
                     _tout = _tout + 1 ;               
                     }
@@ -1367,7 +1367,8 @@
                     _nmap[_iter->node(0)] << ";" 
                           << 
                     _nmap[_iter->node(1)] << ";"
-                          << +0 << "\n" ;
+                          << 
+                    _iter->itag() << "\n"  ;
                     }
                 }
                 }
@@ -1392,7 +1393,8 @@
                     _nmap[_iter->node(1)] << ";"
                           << 
                     _nmap[_iter->node(2)] << ";"
-                          << +0 << "\n" ;
+                          << 
+                    _iter->itag() << "\n"  ;
                     }
                 }
                 }
@@ -1549,7 +1551,8 @@
                     _nmap[_iter->node(0)] << ";" 
                           << 
                     _nmap[_iter->node(1)] << ";"
-                          << +0 << "\n" ;
+                          << 
+                    _iter->itag() << "\n"  ;
                     }
                 }
                 }
@@ -1574,7 +1577,8 @@
                     _nmap[_iter->node(1)] << ";"
                           << 
                     _nmap[_iter->node(2)] << ";"
-                          << +0 << "\n" ;
+                          << 
+                    _iter->itag() << "\n"  ;
                     }
                 }
                 }
@@ -1601,7 +1605,8 @@
                     _nmap[_iter->node(2)] << ";"
                           << 
                     _nmap[_iter->node(3)] << ";"
-                          << +0 << "\n" ;
+                          << 
+                    _iter->itag() << "\n"  ;
                     }
                 }
                 }
@@ -1611,7 +1616,7 @@
             }
             else
             {
-                _errv = __file_not_located ;
+                _errv = __file_not_located  ;
             }
             
             _file.close();
@@ -1766,7 +1771,8 @@
                             = _nmap[_iter->node(1)] ;
                             
                     _mmsh._edge2.
-                        _data[_eout]._itag = +0; 
+                        _data[_eout].
+                            _itag = _iter->itag() ; 
                         
                     _eout = _eout + 1 ;                    
                     }
@@ -1800,7 +1806,8 @@
                             = _nmap[_iter->node(2)] ;
                             
                     _mmsh._tria3.
-                        _data[_tout]._itag = +0;
+                        _data[_tout].
+                            _itag = _iter->itag() ; 
                         
                     _tout = _tout + 1 ;
                     }
@@ -1947,7 +1954,8 @@
                             = _nmap[_iter->node(1)] ;
                             
                     _mmsh._edge2.
-                        _data[_eout]._itag = +0; 
+                        _data[_eout].
+                            _itag = _iter->itag() ;  
                         
                     _eout = _eout + 1 ;                    
                     }
@@ -1981,7 +1989,8 @@
                             = _nmap[_iter->node(2)] ;
                             
                     _mmsh._tria3.
-                        _data[_fout]._itag = +0;
+                        _data[_fout].
+                            _itag = _iter->itag() ; 
                         
                     _fout = _fout + 1 ;
                     }
@@ -2018,7 +2027,8 @@
                             = _nmap[_iter->node(3)] ;
                             
                     _mmsh._tria4.
-                        _data[_tout]._itag = +0;
+                        _data[_tout].
+                            _itag = _iter->itag() ; 
                         
                     _tout = _tout + 1 ;
                     }

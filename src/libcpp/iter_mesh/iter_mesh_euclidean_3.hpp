@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 March, 2018
+     * Last updated: 10 September, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -62,13 +62,13 @@ template <
     typedef I                       iptr_type ;
     
     typedef mesh::tria_complex_edge_2 <
-            iptr_type >             edge_type ;
+            iptr_type >             edge_base ;
                 
     typedef mesh::tria_complex_tria_3 <
-            iptr_type >             face_type ;
+            iptr_type >             face_base ;
             
     typedef mesh::tria_complex_tria_4 <
-            iptr_type >             tria_type ;
+            iptr_type >             tria_base ;
     
     typedef mesh::tria_complex_node_4 <
             iptr_type , 
@@ -109,6 +109,63 @@ template <
         __inline_call char_type const& feat (
             ) const
         {   return  this->_feat ;
+        }
+        } ;
+        
+    class edge_type : public edge_base
+        {
+    /*------------------------- edge type for ITER-MESH-2 */
+        public  :
+        
+        iptr_type                     _itag ;
+        
+        public  :
+        
+        __inline_call iptr_type      & itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        } ;
+    
+    class face_type : public face_base
+        {
+    /*------------------------- face type for ITER-MESH-2 */
+        public  :
+        
+        iptr_type                     _itag ;
+        
+        public  :
+        
+        __inline_call iptr_type      & itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        } ;
+        
+    class tria_type : public tria_base
+        {
+    /*------------------------- tria type for ITER-MESH-2 */
+        public  :
+        
+        iptr_type                     _itag ;
+        
+        public  :
+        
+        __inline_call iptr_type      & itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
         }
         } ;
     

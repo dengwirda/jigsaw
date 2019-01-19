@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 August, 2017
+     * Last updated: 18 January, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -340,10 +340,42 @@
                 _mesh._euclidean_mesh_3d,
                 _args, _jlog) ;
             }
-            
+            else
+            if (_hfun._ndim == +3 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*----------- with euclidean-mesh HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +3 ;
+             
+                iter_ellipsoid_3d (
+                _geom._ellipsoid_mesh_3d,
+                _hfun._euclidean_mesh_3d,
+                _mesh._euclidean_mesh_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +3 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_grid)
+            {
+        /*----------- with euclidean-grid HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +3 ;
+             
+                iter_ellipsoid_3d (
+                _geom._ellipsoid_mesh_3d,
+                _hfun._euclidean_grid_3d,
+                _mesh._euclidean_mesh_3d,
+                _args, _jlog) ;
             }
             
-               
+            }                
         }
         catch (...)
         {

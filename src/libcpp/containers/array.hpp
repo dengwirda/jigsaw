@@ -99,7 +99,7 @@
         enum {_hptr, _tptr, _lptr} ;
 
     containers::
-    fixed_array<__write_ptr(data_type),+3>  _ptrs ;
+    fixed_array<__write_ptr(data_type),+3>      _ptrs ;
 
     private :
 
@@ -112,7 +112,7 @@
     { /* _def construct sequence */
         for ( ; _head != _tail ; ++_head)
         {
-            self_type::construct(&*_head) ;
+        self_type::construct(&*_head) ;
         }
     }   
     __normal_call void_type ctor_iter (
@@ -123,8 +123,8 @@
     { /* copy construct sequence */
         for ( ; _head != _tail ; ++_head) 
         {
-            self_type::construct(&*_head, 
-                                   _data) ;
+        self_type::construct(&*_head, 
+                               _data) ;
         }
     }
     
@@ -137,11 +137,42 @@
     {
         for ( ; _head != _tail ; ++_head)
         {
-            self_type::_destruct(&*_head) ;
+        self_type::_destruct(&*_head) ;
         }
     }
     
 /*------------------------------ helper - inc. allocation */
+
+    __inline_call size_type num_alloc (
+        size_type _new_count
+        )
+    {
+        if (_new_count > (size_type)1024)
+        {
+            size_type _num_block = 
+            _new_count / (size_type)1024;
+            
+            _new_count = 
+                (_num_block + 1) * +1024;
+            
+            return (_new_count * 3) / 2 ;
+        }
+        else
+        if (_new_count > (size_type) +4 )
+        {
+            size_type _num_block = 
+            _new_count / (size_type) +4 ;
+            
+            _new_count = 
+                (_num_block + 1) * +4 ;
+            
+            return (_new_count * 2) / 1 ;
+        }
+        else
+        {
+            return  _new_count ;
+        }
+    }
 
     __inline_call void_type inc_alloc (
         size_type _new_count
@@ -149,12 +180,9 @@
     { /* Grow allocation as geometric series */
         if (alloc() < _new_count)
         {
-        if (alloc() <= +64)
-        set_alloc(std::max((alloc()*2)/1,_new_count));
-        else
-        /* from x^n = 1 + ... + x^(n-2)  */
-        set_alloc(std::max((alloc()*3)/2,_new_count));
-        }
+            set_alloc(
+            num_alloc(_new_count) ) ;
+        }     
     }
     
 /*------------------------------ helper - copy allocation */

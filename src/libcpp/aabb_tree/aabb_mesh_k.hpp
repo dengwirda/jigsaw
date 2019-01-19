@@ -106,8 +106,8 @@
         face_list& _fset ,
         tree_type& _tree ,
         REAL_TYPE* _btol ,
-        IPTR_TYPE  _nbox = + 32,
-        push_pred  _push = push_aabb ()
+        IPTR_TYPE  _nbox =  + 32,
+        push_pred  _push =  push_aabb()
         )
     {
         IPTR_TYPE constexpr _nnod = 

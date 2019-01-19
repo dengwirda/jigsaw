@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 04 May, 2017
+ * Last updated: 21 December, 2018
  *
- * Copyright 2013-2017
+ * Copyright 2013-2018
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -63,8 +63,10 @@
 
 #   include "containers/single_list.hpp"
 #   include "containers/double_list.hpp"
+#   include "containers/basic_stack.hpp"
 
 #   include "containers/arraylist.hpp"
+
 #   include "containers/hashtable.hpp"
 
 #   include "containers/priorityset.hpp"

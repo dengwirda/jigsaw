@@ -360,7 +360,9 @@
 /*-------------------------------- return container alloc */
     __inline_call allocator get_alloc(
         ) const
-    {   return static_cast<allocator>( *this ) ;
+    {   
+        return 
+        static_cast <allocator>( *this ) ;
     }
   
 /*------------------------------ "const" access iterators */
@@ -782,7 +784,7 @@
             this->_nobj +=  +1 ;
 
             return _write_it(
-                _this_item, (self_type*)this);
+            _this_item, (self_type*)this) ;
         }
     }
     
@@ -792,17 +794,19 @@
         data_type const&_data
         )
     {
-        item_type *_prev_item, *_next_item ;
+        item_type *_prev_item, *_next_item;
         if ((_prev_item = 
              _prev_iter. item()) == nullptr)
         { /* push onto list head */
-            return push_head(__copy(data_type,_data)) ;
+            return push_head(
+                 __copy(data_type,_data)) ;
         }
         else
         if ((_next_item = 
              _prev_item->next()) == nullptr)
         { /* push onto list tail */
-            return push_tail(__copy(data_type,_data)) ;
+            return push_tail(
+                 __copy(data_type,_data)) ;
         }
         else
         { /* insert in middle of list */
@@ -819,7 +823,7 @@
             this->_nobj +=  +1 ;
 
             return _write_it(
-                _this_item, (self_type*)this);
+            _this_item, (self_type*)this) ;
         }
     }
     
@@ -829,17 +833,19 @@
         data_type &&_data
         )
     {
-        item_type *_prev_item, *_next_item ;
+        item_type *_prev_item, *_next_item;
         if ((_prev_item = 
              _prev_iter. item()) == nullptr)
         { /* push onto list head */
-            return push_head(__move(data_type,_data)) ;
+            return push_head(
+                 __move(data_type,_data)) ;
         }
         else
         if ((_next_item = 
              _prev_item->next()) == nullptr)
         { /* push onto list tail */
-            return push_tail(__move(data_type,_data)) ;
+            return push_tail(
+                 __move(data_type,_data)) ;
         }
         else
         { /* insert in middle of list */
@@ -856,7 +862,7 @@
             this->_nobj +=  +1 ;
 
             return _write_it(
-                _this_item, (self_type*)this);
+            _this_item, (self_type*)this) ;
         }
     }
 
@@ -891,7 +897,7 @@
             this->_nobj +=  +1 ;
 
             return _write_it(
-                _this_item, (self_type*)this);
+            _this_item, (self_type*)this) ;
         }
     }
     
@@ -901,17 +907,19 @@
         data_type const&_data
         )
     {
-        item_type *_prev_item, *_next_item ;
+        item_type *_prev_item, *_next_item;
         if ((_next_item = 
              _next_iter. item()) == nullptr)
         { /* push onto list tail */
-            return push_tail(__copy(data_type,_data)) ;
+            return push_tail(
+                 __copy(data_type,_data)) ;
         }
         else
         if ((_prev_item = 
              _next_item->prev()) == nullptr)
         { /* push onto list head */
-            return push_head(__copy(data_type,_data)) ;
+            return push_head(
+                 __copy(data_type,_data)) ;
         }
         else
         { /* insert in middle of list */
@@ -928,7 +936,7 @@
             this->_nobj +=  +1 ;
 
             return _write_it(
-                _this_item, (self_type*)this);
+            _this_item, (self_type*)this) ;
         }
     }
     
@@ -938,17 +946,19 @@
         data_type && _data
         )
     {
-        item_type *_prev_item, *_next_item ;
+        item_type *_prev_item, *_next_item;
         if ((_next_item = 
              _next_iter. item()) == nullptr)
         { /* push onto list tail */
-            return push_tail(__move(data_type,_data)) ;
+            return push_tail(
+                 __move(data_type,_data)) ;
         }
         else
         if ((_prev_item = 
              _next_item->prev()) == nullptr)
         { /* push onto list head */
-            return push_head(__move(data_type,_data)) ;
+            return push_head(
+                 __move(data_type,_data)) ;
         }
         else
         { /* insert in middle of list */
@@ -965,7 +975,7 @@
             this->_nobj +=  +1 ;
 
             return _write_it(
-                _this_item, (self_type*)this);
+            _this_item, (self_type*)this) ;
         }
     }
 
@@ -974,8 +984,9 @@
         _write_it _this_iter
         )
     {
-        __assert( _this_iter.item() != nullptr &&
-            "double_list.erase: null iterator!");   
+        __assert ( 
+            _this_iter.item() != nullptr &&
+            "list.erase: null iterator!") ;   
     /* _pop item, re-link, _destruct//deallocate */
         item_type 
        *_this_item = _this_iter. item() ,

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 April, 2018
+     * Last updated: 23 November, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -326,10 +326,6 @@
         real_type &_ladj
         )
     {
-        real_type static const _ZERO = 
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), +.80) ;
-            
         real_type static const _HINC = 
             std::pow(std::numeric_limits
                 <real_type>::epsilon(), +.50) ;
@@ -342,16 +338,13 @@
             std::pow(std::numeric_limits
                 <real_type>::epsilon(), +.25) ;
     
-        real_type _qmin =
-            +std::numeric_limits
-                <real_type>::infinity() ;
-        
         __unreferenced(_hfun);
         __unreferenced(_pred); // for MSVC...
-
-        iptr_type _tnum = +0 ;
-        
-        _ladj = (real_type)0.;
+    
+    /*------------------ calc. local characteristic scale */
+        real_type _qmin =
+            +std::numeric_limits
+                <real_type>::infinity();
         
         real_type _bmin[_dims] = {
            +std::numeric_limits
@@ -361,6 +354,10 @@
            -std::numeric_limits
                 <real_type>::infinity()
             } ;
+        
+        iptr_type _tnum = +0 ;
+        
+        _ladj = (real_type)0.;
         
         real_type _dqdx[_dims] = {
             (real_type) +0.0 } ;
@@ -419,13 +416,14 @@
                     _pmid[_idim])  ;
             }
             
-            real_type _llen = 
-                std::sqrt(_pred.length_sq (
-                    _pmid, &_node->pval(0))) ;
+            real_type _lsqr = 
+                _pred.length_sq (
+                    _pmid, &_node->pval(0))  ;
             
-            _ladj +=  _llen ;
+            _ladj +=  _lsqr ;
         }
 
+    /*------------------ adj. gradients w.r.t. W: dQ / dw */
         real_type _qbar , _qlow ;
         _qbar = (real_type) +1. ;
         _qlow = (real_type) +0. ;
@@ -447,11 +445,13 @@
         
             real_type _qtri = _cost[_tnum];
             
+        /*-------------- only do gradients for 'poor' set */
             if (_qtri <=  _qlim)
             {
                 for (auto _idim = _dims ; 
                           _idim-- != 0; )
-                {      
+                {
+            /*---------- local iter. on finite-diff. step */      
                 real_type _binc = _bmax[_idim] -
                                   _bmin[_idim] ;
            
@@ -465,6 +465,8 @@
                 
                 for (auto _iter = +0; _iter++ != +8; )
                 {
+                
+                /*------ centred finite-diff. for dQ / dw */
                     _node->pval(_idim) = 
                        _save[_idim] + _hdel;
                         
@@ -474,13 +476,13 @@
 
                     real_type _scr1 = 
                         _pred .cost_tria (
-                   &_mesh._set1[
-                    _tptr->node(0)].pval(0),
-                   &_mesh._set1[
-                    _tptr->node(1)].pval(0),
-                   &_mesh._set1[
-                    _tptr->node(2)].pval(0)
-                        ) ;
+                       &_mesh._set1[
+                        _tptr->node(0)].pval(0),
+                       &_mesh._set1[
+                        _tptr->node(1)].pval(0),
+                       &_mesh._set1[
+                        _tptr->node(2)].pval(0)
+                            ) ;
                     
                     _node->pval(_idim) = 
                        _save[_idim] - _hdel;
@@ -490,25 +492,26 @@
 
                     real_type _scr0 = 
                         _pred .cost_tria (
-                   &_mesh._set1[
-                    _tptr->node(0)].pval(0),
-                   &_mesh._set1[
-                    _tptr->node(1)].pval(0),
-                   &_mesh._set1[
-                    _tptr->node(2)].pval(0)
-                        ) ;
+                       &_mesh._set1[
+                        _tptr->node(0)].pval(0),
+                       &_mesh._set1[
+                        _tptr->node(1)].pval(0),
+                       &_mesh._set1[
+                        _tptr->node(2)].pval(0)
+                            ) ;
                 
-                    _sdel = _scr1 - _scr0 ;
-                    _sabs = 
-                        std::abs(_sdel);
-                    
                     _sbar = std::max(
                         std::abs(_scr1),
-                            std::abs(_scr0)) ;
+                            std::abs(_scr0));
+                    
+                    _sdel =_scr1-_scr0 ;
+                    
+                    _sabs = std::abs(_sdel) ;
                     
                     _node->pval(_idim) 
                         = _save[_idim] ;
  
+                /*------ try to adjust step on rel. diff. */
                     if (_sabs > (real_type)0.)
                     {                   
                     if (_sabs > _RMAX * _sbar)
@@ -527,6 +530,7 @@
                     else { break ; }
                 }
             
+            /*---------- finalise gradient and accumulate */
                 _dqdx[_idim]+= _sdel / _hsum ;
             
                 }
@@ -536,6 +540,7 @@
             }
             else
             {
+            /*---------- accumulate metrics in 'good' set */
                 _qbar += _qtri ; _hnum += +1 ; 
             }
         }
@@ -549,6 +554,7 @@
             
             _qlow /=  _lnum ;
             _ladj /=  _tnum ;
+            _ladj  =  std::sqrt (_ladj) ;
         }
 
         if (_hnum > +0)
@@ -556,10 +562,11 @@
             _qbar /=  _hnum ;
         }
         
+    /*------------------ 1st ord. Taylor-series step est. */
         real_type _scal = 
             std::sqrt(_pred.length_sq(_dqdx)) ;
         
-        if (_scal <= _ZERO * _ladj)
+        if (_scal ==  (real_type) +0. )
         {
             for (auto _idim = _dims; _idim-- != +0; )
             {
@@ -576,7 +583,7 @@
             }
         
             _scal = (_qbar - _qlow) /
-            _pred .length_sq(_line, _dqdx) ;
+            _pred .innerprod(_line, _dqdx) ;
             
             _scal = std::min(_scal, _ladj) ;
             

@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 13 August, 2018
+ * Last updated: 09 January, 2019
  *
- * Copyright 2013-2018
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -61,6 +61,9 @@
 
 #   include "aabbtree.hpp"
 #   include "meshtype.hpp"
+
+#   include "geom_type/geom_base_2.hpp"
+#   include "geom_type/geom_base_3.hpp"
 
 #   include "geom_type/geom_mesh_euclidean_2.hpp"
 #   include "geom_type/geom_mesh_euclidean_3.hpp"

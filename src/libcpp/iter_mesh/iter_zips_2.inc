@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 August, 2018
+     * Last updated: 27 December, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -68,14 +68,14 @@
         real_list &_tsrc ,
         real_list &_tdst ,
         real_list &_ttmp ,
-        real_list &_dsrc ,
+        real_list &_dtmp ,
         real_list &_ddst ,
+        real_type  _TLIM ,
+        real_type  _DLIM ,
         real_type  _lmax 
-            = (real_type) +0.80E+00 ,
-        real_type  _good 
-            = (real_type) +9.25E-01 ,
+            = (real_type) +8.00E-01 ,
         real_type  _qinc 
-            = (real_type) +1.00E-08
+            = (real_type) +1.00E-04
         )
     {
         __unreferenced(_pred) ;         // for MSVC...
@@ -107,7 +107,7 @@
         _tsrc.set_count(+0) ;
         _tdst.set_count(+0) ;
         _ttmp.set_count(+0) ;
-        _dsrc.set_count(+0) ;
+        _dtmp.set_count(+0) ;
         _ddst.set_count(+0) ;
     
     /*--------------------------------- exit if FEAT node */    
@@ -237,7 +237,7 @@
         real_type _TMIN = 
         std::min( _minA, _minB);
         
-        if (_TMIN>_good) return;
+        if (_TMIN>_TLIM) return;
         
     /*--------------------------------- get adjacent ball */
         real_type _pbal[_dims+1] = {   
@@ -363,6 +363,9 @@
                 _tptr->node(1) ;
             _tdat.node(2) = 
                 _tptr->node(2) ;
+                
+            _tdat.itag () = 
+                _tptr->itag () ;
        
             if (_tdat. node(0) == 
                 _edat. node(0) ) 
@@ -393,6 +396,9 @@
                 _tptr->node(1) ;
             _tdat.node(2) = 
                 _tptr->node(2) ;
+                
+            _tdat.itag () = 
+                _tptr->itag () ;
        
             if (_tdat. node(0) == 
                 _edat. node(1) ) 
@@ -417,10 +423,10 @@
         for (auto _iloc = +0; _iloc != _INUM ; 
                 ++_iloc )
         {
-            bool_type _move = false ;
+            iptr_type _move = (iptr_type) -1 ;
         
             _ttmp.set_count(0) ;
-            _dsrc.set_count(0) ;
+            _dtmp.set_count(0) ;
         
             real_type  _minC = 
             loop_tscr( _mesh, _pred , 
@@ -430,29 +436,29 @@
             real_type  _minD = 
             loop_dscr( _mesh, _pred , 
                        _cset, 
-                       _dsrc ) ;
+                       _dtmp ) ;
             
             move_node( _geom, _mesh ,
                 _hfun, _pred, _hval , 
                 _opts, _nptr, +1    , 
                 _move, _cset, 
                 _ttmp, _tdst,
-                _dsrc, _ddst, 
-                _minC, _good,
-                _minD, _good ) ;
+                _dtmp, _ddst, 
+                _minC, _TLIM,
+                _minD, _DLIM ) ;
                
-            if (_move) continue;
+            if (_move > 0) continue ;
             
             move_node( _geom, _mesh ,
                 _hfun, _pred, _hval , 
                 _opts, _nptr, +2    , 
                 _move, _cset, 
                 _ttmp, _tdst,
-                _dsrc, _ddst, 
-                _minC, _good,
-                _minD, _good ) ;
+                _dtmp, _ddst, 
+                _minC, _TLIM,
+                _minD, _DLIM ) ;
                
-            if (_move) continue;
+            if (_move > 0) continue ;
             
             break ;
         }
@@ -463,8 +469,11 @@
         loop_tscr(_mesh, _pred, _cset, 
                   _tdst) ;
     
+        real_type constexpr 
+            _GOOD = (real_type) +1.00;
+    
         move_okay(_tdst, _tsrc, _okay, 
-                  _good,
+        std::sqrt(_GOOD) ,
                   _qinc) ;
               
         if (_okay)

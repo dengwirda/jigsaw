@@ -38,9 +38,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 May, 2017
+     * Last updated: 06 September, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -522,7 +522,7 @@
              >
     class _item_alloc : public  loc_alloc <
                                 D , A , 
-                    std::is_pod<D>::value >
+    std::is_trivially_copyable <D>::value >
     { 
 /*-------------- type-aware item alloc - public interface */
     public  :
@@ -533,7 +533,8 @@
     typedef loc_alloc   <
             data_type   , 
             allocator   , 
-    std::is_pod<D>::value>      base_type ;
+    std::is_trivially_copyable <D>::value > 
+                                base_type ;
 
     typedef _item_alloc <
             data_type   ,

@@ -132,11 +132,11 @@ class dd_flt
     
     __inline_call operator double (
         )
-    {   return ( (double)hi() ) ;
+    {   return ( (double)(hi()+lo()) ) ;
     }
     __inline_call operator int    (
         )
-    {   return ( (int   )hi() ) ;
+    {   return ( (int   )(hi()+lo()) ) ;
     }
     
     

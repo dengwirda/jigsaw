@@ -108,6 +108,19 @@
     template <
     typename      data_type
              >
+    __inline_call void_type line_norm_2d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __write_ptr  (data_type) _nv
+         )
+    {
+        _nv[0] = _p1[1] - _p2[1];
+        _nv[1] = _p2[0] - _p1[0];
+    }
+
+    template <
+    typename      data_type
+             >
     __inline_call void_type tria_norm_3d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
@@ -218,23 +231,6 @@
 
         return (data_type).67* _scrA +
                (data_type).33* _scrB ;
-                
-        /*
-        // 4. * std::sqrt(3.)
-        data_type static 
-            constexpr _scal = 
-       (data_type)+6.928203230275509 ;
-    
-        data_type _elen = 
-            lensqr_2d(_p1, _p2) + 
-            lensqr_2d(_p2, _p3) + 
-            lensqr_2d(_p3, _p1) ;
-
-        data_type _area = 
-        tria_area_2d(_p1, _p2, _p3);
-
-        return _scal * _area / _elen ;
-        */
     }
 
     template <
@@ -295,23 +291,6 @@
 
         return (data_type).67* _scrA +
                (data_type).33* _scrB ;
-               
-        /*
-        // 4. * std::sqrt(3.)
-        data_type static 
-            constexpr _scal = 
-       (data_type)+6.928203230275509 ;
-    
-        data_type _elen = 
-            lensqr_3d(_p1, _p2) + 
-            lensqr_3d(_p2, _p3) + 
-            lensqr_3d(_p3, _p1) ;
-
-        data_type _area = 
-        tria_area_3d(_p1, _p2, _p3);
-
-        return _scal * _area / _elen ;
-        */
     }
 
     template <
@@ -448,8 +427,8 @@
          */
         
         data_type _qq = 
-            (data_type)+.67 * _qb + 
-                (data_type)+.33 * _qe ;
+            (data_type)+.75 * _qb + 
+                (data_type)+.25 * _qe ;
 
         return    _qq ;
     }
@@ -548,8 +527,8 @@
          */
          
         data_type _qq = 
-            (data_type)+.67 * _qb + 
-                (data_type)+.33 * _qe ;
+            (data_type)+.75 * _qb + 
+                (data_type)+.25 * _qe ;
 
         return    _qq ;
     }

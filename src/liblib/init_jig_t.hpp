@@ -121,12 +121,8 @@
         _jcfg->_optm_div_ = (indx_t) +1 ;
         _jcfg->_optm_zip_ = (indx_t) +1 ; 
     }
-    
-#   endif//__lib_jigsaw
 
-#   undef  SIZ1
-#   undef  SIZ2
-#   undef  SIZ3
+#   endif//__lib_jigsaw
 
 #   endif
     

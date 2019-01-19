@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 March, 2018
+     * Last updated: 10 September, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -147,6 +147,9 @@
             _face.node(1) = 
                 _item->_data._node[1] ;
             
+            _face.itag () = 
+                _item->_data._part;
+            
             _mesh._euclidean_mesh_2d.
                 _mesh.push_edge (_face) ;
             }
@@ -174,6 +177,9 @@
                 _item->_data._node[1] ;
             _face.node(2) = 
                 _item->_data._node[2] ;
+                
+            _face.itag () = 
+                _item->_data._part;
             
             _mesh._euclidean_mesh_2d.
                 _mesh.push_tri3 (_face) ;
@@ -271,6 +277,9 @@
                 _item->_data._node[0] ;
             _face.node(1) = 
                 _item->_data._node[1] ;
+                
+            _face.itag () = 
+                _item->_data._part;
             
             _mesh._euclidean_mesh_3d.
                 _mesh.push_edge (_face) ;
@@ -299,6 +308,9 @@
                 _item->_data._node[1] ;
             _face.node(2) = 
                 _item->_data._node[2] ;
+                
+            _face.itag () = 
+                _item->_data._part;
             
             _mesh._euclidean_mesh_3d.
                 _mesh.push_tri3 (_face) ;
@@ -320,18 +332,21 @@
             {
             typename mesh_data::
                 euclidean_mesh_3d::
-            mesh_type::tri4_type _tria;
-            _tria.node(0) = 
+            mesh_type::tri4_type _face;
+            _face.node(0) = 
                 _item->_data._node[0] ;
-            _tria.node(1) = 
+            _face.node(1) = 
                 _item->_data._node[1] ;
-            _tria.node(2) = 
+            _face.node(2) = 
                 _item->_data._node[2] ;
-            _tria.node(3) = 
+            _face.node(3) = 
                 _item->_data._node[3] ;
             
+            _face.itag () = 
+                _item->_data._part;
+            
             _mesh._euclidean_mesh_3d.
-                _mesh.push_tri4 (_tria) ;
+                _mesh.push_tri4 (_face) ;
             }
             }
         }

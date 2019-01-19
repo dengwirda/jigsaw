@@ -198,7 +198,7 @@
     __inline_call real_type  plen (
         iptr_type
         ) const
-    {   return   (real_type) +0.00 ;
+    {   return   (real_type)+0.E+0 ;
     }
     
     } ;

@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 13 August, 2018
+ * Last updated: 29 December, 2018
  *
  * Copyright 2013-2018
  * Darren Engwirda
@@ -49,10 +49,13 @@
     namespace mesh
     {
 /*-------------------------- classification of mesh items */
-    char_type null_item = 0;
-    char_type void_item = 1;
-    char_type ring_item = 2;
-    char_type good_item = 3; 
+    char_type constexpr null_item = 0 ;
+    char_type constexpr void_item = 1 ;
+    char_type constexpr ring_item = 2 ;
+    char_type constexpr good_item = 3 ; 
+    
+    char_type constexpr null_ball = 0 ;
+    char_type constexpr feat_ball = 1 ;
     }
  
 #   include "containers.hpp"
@@ -85,6 +88,9 @@
 
 #   include "rdel_mesh/rdel_mesh_2.hpp"
 #   include "rdel_mesh/rdel_mesh_3.hpp"
+
+#   include "rdel_mesh/rdel_make_2.hpp"
+#   include "rdel_mesh/rdel_make_3.hpp"
 
 #   include "rdel_mesh/rvor_mesh_2.hpp"
 #   include "rdel_mesh/rvor_mesh_3.hpp"

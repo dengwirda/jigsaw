@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 August, 2018
+     * Last updated: 09 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -100,7 +100,7 @@
         _mesh._tria.
          node(_enod[0])->pval(2)
             } ;
-         
+      
         _hint = _mesh._tria.
             node (_enod[0])->idxh() ;
 
@@ -120,7 +120,16 @@
         _ppos[ 0] = _sbal[ 0] ;
         _ppos[ 1] = _sbal[ 1] ;
         _ppos[ 2] = _sbal[ 2] ;
-        
+
+        typename
+        geom_type::ball_type _ball;
+        _ball.
+        _pmid[ 0] = _ipos[ 0] ;
+        _ball.
+        _pmid[ 1] = _ipos[ 1] ;
+        _ball.
+        _pmid[ 2] = _ipos[ 2] ;
+
         real_type static const  _seps = 
             (real_type)std::sqrt(
        +std::numeric_limits<real_type>::epsilon());
@@ -129,8 +138,9 @@
 
         real_type _pert =
            ((real_type)(_hash % +4096)) / +4096 ;
+        _pert  +=   + 1 ;
         _pert  *= _seps ;
-
+        
         for(iptr_type _iter = +0; _iter++ != +8 ; )
         {
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
@@ -160,9 +170,9 @@
             _dist -= _pert * _dist ;
 
             cosine_intersect _pred(_ipos,_dvec);
+            _ball._rrad  = _dist ;
             if (!_geom.intersect (
-                 _ipos, 
-                 _dist, _pred) )
+                 _ball, _pred) )
                 return  rdel_opts::null_kind;
             if (!_pred. _find  )
                 return  rdel_opts::null_kind;
@@ -230,15 +240,29 @@
          node(_enod[1])->pval(0) , 
         _mesh._tria.
          node(_enod[1])->idxh()) ;
-        
-        _hint = 
-            _mesh._tria.
-         node(_enod[0])->idxh()  ;
+       
+        _hint = _mesh._tria.
+            node (_enod[0])->idxh() ;
 
         _ppos[ 0] = _sbal[ 0] ;
         _ppos[ 1] = _sbal[ 1] ;
         _ppos[ 2] = _sbal[ 2] ;
-        
+
+        typename
+        geom_type::disc_type _disc;
+        _disc.
+        _pmid[ 0] = _pmid[ 0] ;
+        _disc.
+        _pmid[ 1] = _pmid[ 1] ;
+        _disc.
+        _pmid[ 2] = _pmid[ 2] ;
+        _disc.
+        _nvec[ 0] = _evec[ 0] ;
+        _disc.
+        _nvec[ 1] = _evec[ 1] ;
+        _disc.
+        _nvec[ 2] = _evec[ 2] ;
+
         real_type _epsh = 
        +std::numeric_limits<real_type>::infinity();
         
@@ -250,8 +274,9 @@
 
         real_type _pert =
            ((real_type)(_hash % +4096)) / +4096 ;
+        _pert  +=   + 1 ;
         _pert  *= _seps ;
-    
+        
         for(iptr_type _iter = +0; _iter++ != +8 ; )
         {
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
@@ -314,8 +339,9 @@
             _dist -= _pert * _dist ;
             
             cosine_intersect _pred(_pmid,_dvec);
+            _disc._rrad =  _dist ;
             if (!_geom.intersect (
-                 _pmid, _evec, _dist , 
+                 _disc, 
                  _sbal, _pred) )
                 return  rdel_opts::null_kind;
             if (!_pred. _find  )
@@ -393,7 +419,7 @@
          node(_fnod[2])->idxh()) ;
       
         _hint = _mesh._tria.
-            node(_fnod[0])->idxh() ;
+            node (_fnod[0])->idxh() ;
 
         _ppos[ 0] = _tbal[ 0] ;
         _ppos[ 1] = _tbal[ 1] ;
@@ -407,6 +433,7 @@
 
         real_type _pert =
            ((real_type)(_hash % +4096)) / +4096 ;
+        _pert  +=   + 1 ;
         _pert  *= _seps ;
       
         for(iptr_type _iter = +0; _iter++ != +8 ; )

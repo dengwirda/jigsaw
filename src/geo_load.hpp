@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 April, 2018
+     * Last updated: 31 December, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -243,6 +243,52 @@
                 // do nothing...
             }
         }
+    /*---------------------------------- parse BOUND data */
+        __normal_call void_type push_bound (
+            std::int32_t  _ipos ,
+            std::int32_t  _itag ,
+            std::int32_t  _inum ,
+            std::int32_t  _kind
+            )
+        {
+            __unreferenced(_ipos) ;
+            __unreferenced(_kind) ;
+
+            if (this->_kind == 
+                    jmsh_kind::euclidean_mesh)
+            {
+                typename 
+                geom_data::euclidean_mesh_2d
+                    ::part_data _pdat ;
+                _pdat[0] = _itag;
+                _pdat[1] = _inum;
+                
+                this->_geom->
+                   _euclidean_mesh_2d.
+                        _part.push(_pdat) ;
+            }
+            else
+            if (this->_ndim == +3 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_mesh)
+            {
+                typename 
+                geom_data::euclidean_mesh_3d
+                    ::part_data _pdat ;
+                _pdat[0] = _itag;
+                _pdat[1] = _inum;
+                
+                this->_geom->
+                   _euclidean_mesh_3d.
+                        _part.push(_pdat) ;
+            }
+            else
+            if (this->_kind == 
+                    jmsh_kind::ellipsoid_mesh)
+            {
+                //!! do things here...
+            } 
+        }
         } ;
     
     /*---------------------------------- parse GEOM. file */
@@ -425,6 +471,10 @@
                 JIGSAW_ELLIPSOID_MESH )
         {
     /*--------------------------------- ellipsoid-mesh-3d */
+            _geom._kind 
+                = jmsh_kind::ellipsoid_mesh ;
+            _geom._ndim = +3;
+    
             if (_gmsh._radii._size==+3)
             {
             _geom._ellipsoid_mesh_3d.
@@ -433,9 +483,16 @@
                 _radB = _gmsh._radii._data[1] ;
             _geom._ellipsoid_mesh_3d.
                 _radC = _gmsh._radii._data[2] ;
-                
-            //!! blah, also need coastlines...
-                
+            }
+            else
+            if (_gmsh._radii._size==+1)
+            {
+            _geom._ellipsoid_mesh_3d.
+                _radA = _gmsh._radii._data[0] ;
+            _geom._ellipsoid_mesh_3d.
+                _radB = _gmsh._radii._data[0] ;
+            _geom._ellipsoid_mesh_3d.
+                _radC = _gmsh._radii._data[0] ;
             }
         }
         
