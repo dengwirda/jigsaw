@@ -41,9 +41,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 21 December, 2018
  *
- * Copyright 2013-2017
+ * Copyright 2013-2018
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -130,7 +130,6 @@
     }
 
     } ;
-
 
     template <
     typename D ,
@@ -346,9 +345,11 @@
     }
     
 /*-------------------------------- return container alloc */
-    __inline_call allocator get_alloc(
+    __inline_call allocator get_alloc (
         ) const
-    {   return static_cast<allocator>( *this ) ;
+    {   
+        return 
+        static_cast <allocator>( *this ) ;
     }
   
 /*------------------------------ "const" access iterators */
@@ -626,7 +627,7 @@
         { /* list became empty */
             this->_tptr =  nullptr;
         }
-        this->_count -= 1 ;
+        this->_nobj -= 1 ;
 
     /* _destruct and deallocate old head */
         self_type:: _destruct(_head_item) ;     
@@ -672,7 +673,7 @@
                 _this_item, _next_item);
             
             _prev_item->next() = _this_item;
-            this->_count += +1 ;
+            this->_nobj += +1 ;
 
             return _write_it(
               _this_item, (self_type*)this);
@@ -689,13 +690,15 @@
         if ((_prev_item = 
              _prev_iter. item()) == nullptr)
         { /*----- push onto list head */
-            return push_head(__copy(data_type,_data)) ;
+            return push_head(
+                 __copy(data_type,_data));
         }
         else
         if ((_next_item = 
              _prev_item->next()) == nullptr)
         { /*----- push onto list tail */
-            return push_tail(__copy(data_type,_data)) ;
+            return push_tail(
+                 __copy(data_type,_data));
         }
         else
         { /* insert in middle of list */
@@ -706,7 +709,7 @@
                     __copy(data_type,_data)) ;
             
             _prev_item->next() = _this_item;
-            this->_count += +1 ;
+            this->_nobj += +1 ;
 
             return _write_it(
               _this_item, (self_type*)this);
@@ -723,13 +726,15 @@
         if ((_prev_item = 
              _prev_iter. item()) == nullptr)
         { /*----- push onto list head */
-            return push_head(__move(data_type,_data)) ;
+            return push_head(
+                 __move(data_type,_data));
         }
         else
         if ((_next_item = 
              _prev_item->next()) == nullptr)
         { /*----- push onto list tail */
-            return push_tail(__move(data_type,_data)) ;
+            return push_tail(
+                 __move(data_type,_data));
         }
         else
         { /* insert in middle of list */
@@ -740,7 +745,7 @@
                     __move(data_type,_data)) ;
             
             _prev_item->next() = _this_item;            
-            this->_count += +1 ;
+            this->_nobj += +1 ;
 
             return _write_it(
               _this_item, (self_type*)this);
@@ -753,8 +758,9 @@
         _write_it _this_iter
         )
     {
-        __assert( _this_iter.item() != nullptr &&
-            "single_list.erase: null iterator!");
+        __assert ( 
+            _this_iter.item() != nullptr &&
+            "list.erase: null iterator!");
     /* _pop item, re-link, _destruct//deallocate */
         item_type 
        *_this_item = _this_iter. item() ,
@@ -764,18 +770,18 @@
 
         if (_prev_item == nullptr)
         {/* re-link item neighbours at list head */
-            __assert( 
+            __assert ( 
                 this->_hptr == _this_item &&
-            "single_list.erase: _bad iterator!") ;                      
+            "list.erase: _bad iterator!" ) ;                      
             this->_hptr = _next_item ;
             if (_next_item == nullptr) 
             this->_tptr = _next_item ;
         }
         else        
         {/* re-link item neighbours in list mid  */
-            __assert( 
+            __assert ( 
                 _prev_next  == _this_item &&
-            "single_list.erase: _bad iterator!") ;          
+            "list.erase: _bad iterator!" ) ;          
             _prev_item->next() 
                         = _next_item ;                      
             if (_next_item == nullptr) 
@@ -788,7 +794,7 @@
     }
 
     } ;
-
+    
 #   undef  __cont
 
 

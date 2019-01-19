@@ -343,7 +343,7 @@
     
 /*------------------------------------- peek at heap item */
     __inline_call data_type const& peek (
-        size_type  _hpos
+        size_type  _hpos   = +0
         ) const
     {   return this->_heap[_hpos]._data ;
     }
@@ -486,22 +486,22 @@
         if (this->_heap.head() + _hpos != 
             this->_heap.tail() )
         {
-        /*------- sort "hole" at root to updated position */
-            _write_it _ipos =  push_lower (
-                this->_heap.head() ,  
-                this->_heap.tail() - 1    , 
-                this->_heap.head() + _hpos, 
-                this->_heap.tail()-> _data) ;
+    /*----------- sort "hole" at root to updated position */
+        _write_it _ipos =  push_lower (
+            this->_heap.head() ,  
+            this->_heap.tail() - 1    , 
+            this->_heap.head() + _hpos, 
+            this->_heap.tail()-> _data) ;
 
-        /*------- copy current tail into updated position */
-            _ipos->_data = std::move(
-                this->_heap.tail()-> _data) ;
-            _ipos->_kptr = std::move(
-                this->_heap.tail()-> _kptr) ;
+    /*----------- copy current tail into updated position */
+        _ipos->_data = std::move(
+            this->_heap.tail()-> _data) ;
+        _ipos->_kptr = std::move(
+            this->_heap.tail()-> _kptr) ;
 
-        /*------------------ update mapping for tail item */
-            this->_keys[_ipos->_kptr] =
-                _ipos  - this->_heap.head() ;
+    /*---------------------- update mapping for tail item */
+        this->_keys[_ipos->_kptr] =
+            _ipos  - this->_heap.head() ;
         }
         this->_heap._pop_tail();
  
@@ -533,22 +533,22 @@
         if (this->_heap.head() + _hpos != 
             this->_heap.tail() )
         {
-        /*------- sort "hole" at root to updated position */
-            _write_it _ipos =  push_lower (
-                this->_heap.head() ,  
-                this->_heap.tail() - 1    , 
-                this->_heap.head() + _hpos, 
-                this->_heap.tail()-> _data) ;
+    /*----------- sort "hole" at root to updated position */
+        _write_it _ipos =  push_lower (
+            this->_heap.head() ,  
+            this->_heap.tail() - 1    , 
+            this->_heap.head() + _hpos, 
+            this->_heap.tail()-> _data) ;
 
-        /*------- copy current tail into updated position */
-            _ipos->_data = std::move(
-                this->_heap.tail()-> _data) ;
-            _ipos->_kptr = std::move(
-                this->_heap.tail()-> _kptr) ;
+    /*----------- copy current tail into updated position */
+        _ipos->_data = std::move(
+            this->_heap.tail()-> _data) ;
+        _ipos->_kptr = std::move(
+            this->_heap.tail()-> _kptr) ;
 
-        /*------------------ update mapping for tail item */
-            this->_keys[_ipos->_kptr] =
-                _ipos  - this->_heap.head() ;
+    /*---------------------- update mapping for tail item */
+        this->_keys[_ipos->_kptr] =
+            _ipos  - this->_heap.head() ;
         }
         this->_heap._pop_tail();
         
@@ -643,14 +643,18 @@
 #       ifdef _DEBUG
     /*------------------ test relationships for all nodes */
         size_type _ipos = +1 ;
-        size_type _iend = this->_heap.count() ;
+        size_type _iend = 
+        this->_heap.count () ;        
         for ( ; _ipos < _iend; ++_ipos)
         {
-            size_type _ppos = (_ipos-1)/_nfan ;
-        /*-------------- heap is invalid if lower < upper */
-            if (this->_pred(this->_heap[_ipos], 
-                            this->_heap[_ppos])
-                        )
+    /*------------------ heap is invalid if lower < upper */
+            size_type _ppos = 
+                (_ipos - 1)/_nfan ;
+        
+            if (this->_pred(
+                this->_heap[_ipos], 
+                this->_heap[_ppos]
+                )   )
                 return false ;
         }
 #       endif

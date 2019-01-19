@@ -47,151 +47,6 @@
 #   define __TRIA_BALL_K__
 
     namespace geometry {
-    
-    /*
-    --------------------------------------------------------
-     * small matrix utilities. 
-    --------------------------------------------------------
-     */
-      
-#   define __ij(__ir , __ic , __nr) \
-              ((__ir)+(__ic)*(__nr))
-
-    template <
-    typename      real_type, 
-    typename      size_type
-             >
-    __inline_call real_type det_2x2 (
-        size_type  _la,
-    __const_ptr  (real_type) _aa
-        )
-    {   return 
-        _aa[__ij(0,0,_la)] *
-        _aa[__ij(1,1,_la)] -
-        _aa[__ij(0,1,_la)] *
-        _aa[__ij(1,0,_la)] ;
-    }
-
-    template <
-    typename      real_type, 
-    typename      size_type
-             >
-    __inline_call real_type det_3x3 (
-        size_type  _la,
-    __const_ptr  (real_type) _aa
-        )
-    {   return 
-        _aa[__ij(0,0,_la)] * (
-        _aa[__ij(1,1,_la)] * 
-        _aa[__ij(2,2,_la)] - 
-        _aa[__ij(1,2,_la)] * 
-        _aa[__ij(2,1,_la)] ) -
-
-        _aa[__ij(0,1,_la)] * (
-        _aa[__ij(1,0,_la)] * 
-        _aa[__ij(2,2,_la)] - 
-        _aa[__ij(1,2,_la)] * 
-        _aa[__ij(2,0,_la)] ) +
-
-        _aa[__ij(0,2,_la)] * (
-        _aa[__ij(1,0,_la)] * 
-        _aa[__ij(2,1,_la)] - 
-        _aa[__ij(1,1,_la)] * 
-        _aa[__ij(2,0,_la)] ) ;
-    }
-
-    template <
-    typename      real_type,
-    typename      size_type 
-             >
-    __inline_call void_type inv_2x2 (
-        size_type  _la, 
-    __const_ptr  (real_type) _aa,
-        size_type  _lx,
-    __write_ptr  (real_type) _xx,
-        real_type &_da
-        )
-    {
-        _da = det_2x2(_la, _aa) ;
-    
-        _xx[__ij(0,0,_lx)] = 
-        _aa[__ij(1,1,_la)] ;
-        _xx[__ij(1,1,_lx)] = 
-        _aa[__ij(0,0,_la)] ;
-        _xx[__ij(0,1,_lx)] = 
-       -_aa[__ij(0,1,_la)] ;
-        _xx[__ij(1,0,_lx)] = 
-       -_aa[__ij(1,0,_la)] ;
-    }
-
-    template <
-    typename      real_type,
-    typename      size_type 
-             >
-    __inline_call void_type inv_3x3 (
-        size_type  _la, 
-    __const_ptr  (real_type) _aa,
-        size_type  _lx,
-    __write_ptr  (real_type) _xx,
-        real_type &_da
-        )
-    {
-        _da = det_3x3(_la, _aa) ;
-    
-        _xx[__ij(0,0,_lx)] =
-        _aa[__ij(2,2,_la)] * 
-        _aa[__ij(1,1,_la)] - 
-        _aa[__ij(2,1,_la)] * 
-        _aa[__ij(1,2,_la)] ;
-    
-        _xx[__ij(0,1,_lx)] =
-        _aa[__ij(2,1,_la)] * 
-        _aa[__ij(0,2,_la)] - 
-        _aa[__ij(2,2,_la)] * 
-        _aa[__ij(0,1,_la)] ;
-
-        _xx[__ij(0,2,_lx)] =
-        _aa[__ij(1,2,_la)] * 
-        _aa[__ij(0,1,_la)] - 
-        _aa[__ij(1,1,_la)] * 
-        _aa[__ij(0,2,_la)] ;
-
-        _xx[__ij(1,0,_lx)] =
-        _aa[__ij(2,0,_la)] * 
-        _aa[__ij(1,2,_la)] - 
-        _aa[__ij(2,2,_la)] * 
-        _aa[__ij(1,0,_la)] ;
-    
-        _xx[__ij(1,1,_lx)] =
-        _aa[__ij(2,2,_la)] * 
-        _aa[__ij(0,0,_la)] - 
-        _aa[__ij(2,0,_la)] * 
-        _aa[__ij(0,2,_la)] ;
-    
-        _xx[__ij(1,2,_lx)] =
-        _aa[__ij(1,0,_la)] * 
-        _aa[__ij(0,2,_la)] - 
-        _aa[__ij(1,2,_la)] * 
-        _aa[__ij(0,0,_la)] ;
-
-        _xx[__ij(2,0,_lx)] =
-        _aa[__ij(2,1,_la)] * 
-        _aa[__ij(1,0,_la)] - 
-        _aa[__ij(2,0,_la)] * 
-        _aa[__ij(1,1,_la)] ;
-
-        _xx[__ij(2,1,_lx)] =
-        _aa[__ij(2,0,_la)] * 
-        _aa[__ij(0,1,_la)] - 
-        _aa[__ij(2,1,_la)] * 
-        _aa[__ij(0,0,_la)] ;
-    
-        _xx[__ij(2,2,_lx)] =
-        _aa[__ij(1,1,_la)] * 
-        _aa[__ij(0,0,_la)] - 
-        _aa[__ij(1,0,_la)] * 
-        _aa[__ij(0,1,_la)] ;
-    }
           
     /*
     --------------------------------------------------------
@@ -322,7 +177,7 @@
     template <
     typename      real_type
              >
-    __normal_call void_type circ_ball_2d (
+    __inline_call void_type circ_ball_2d (
     __write_ptr  (real_type) _cc ,
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
@@ -346,7 +201,7 @@
     template <
     typename      real_type
              >
-    __normal_call void_type circ_ball_3d (
+    __inline_call void_type circ_ball_3d (
     __write_ptr  (real_type) _cc ,
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
@@ -1302,8 +1157,6 @@
             _bb, _p3 , _p1, _p4, _p2) ;
     }
 
-    #undef  __ij
-       
     #undef  __perpface12
     #undef  __perpface13
     #undef  __perpface23

@@ -31,12 +31,73 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 9 August, 2018
+     * Last updated: 17 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
+     *
+    --------------------------------------------------------
+     *
+     * This class defines the "restricted" delaunay mesh
+     * generation scheme for domains in R^2. This is the 
+     * top-level class, implementing the main method loops:
+     * "sampling" the geometry and incrementally refining 
+     * to convergence. In brief: a set of priority queues
+     * are maintained for the nodes, edges, faces and cells
+     * in the rDT, with new refinement points inserted to
+     * eliminate any remaining "bad" simplexes.
+     *
+     * The algorithm is parameterised by various templated
+     * types: MESH-TYPE which holds the rDT, MESH-PRED that
+     * defines the refinement strategy, GEOM-TYPE which 
+     * represents the domain geometry, and HFUN-TYPE which
+     * represents the "mesh-spacing" function h(x). These
+     * predicates derive from base classes defining common
+     * functionality.
+     *
+     * My implementation is described in:
+     *
+     * D. Engwirda and D. Ivers, (2016): Off-centre Steiner 
+     * points for Delaunay-refinement on curved surfaces, 
+     * Computer-Aided Design, 72, pp. 157-171, 
+     * http://dx.doi.org/10.1016/j.cad.2015.10.007
+     *
+     * D. Engwirda, (2016): "Conforming restricted Delaunay 
+     * mesh generation for piecewise smooth complexes", 
+     * Procedia Engineering, 163, pp. 84-96, 
+     * http://dx.doi.org/10.1016/j.proeng.2016.11.024
+     *
+     * D. Engwirda, (2014): "Locally-optimal Delaunay-
+     * refinement and optimisation-based mesh generation", 
+     * Ph.D. Thesis, School of Mathematics and Statistics, 
+     * Univ. of Sydney. 
+     * http://hdl.handle.net/2123/13148
+     *
+     * building on various previous works on rDT methods, 
+     * including (primarily):
+     *
+     * J.D. Boissonnat, S. Oudot, (2005): "Provably Good 
+     * Sampling and Meshing of Surfaces", Graphical Models, 
+     * 67, pp. 405-451,
+     * https://doi.org/10.1016/j.gmod.2005.01.004
+     *
+     * C. Jamin, P. Alliez, M. Yvinec, and J.D. Boissonnat, 
+     * (2015): "CGALmesh: a generic framework for Delaunay 
+     * mesh generation", ACM Transactions on Mathematical 
+     * Software (TOMS), 41, pp. 23
+     * https://doi.org/10.1145/2699463
+     *
+     * L. Rineau, M. Yvinec, (2008): "Meshing 3D Domains 
+     * Bounded by Piecewise Smooth Surfaces", Proc. of the 
+     * 16th International Meshing Roundtable, pp. 443-460,
+     * https://doi.org/10.1007/978-3-540-75103-8_25
+     *
+     * S.W. Cheng, T.K. Dey, E.A. Ramos, (2010): "Delaunay 
+     * Refinement for Piecewise Smooth Complexes", 
+     * Discrete & Computational Geometry, 43, pp. 121-166,
+     * https://doi.org/10.1007/s00454-008-9109-3
      *
     --------------------------------------------------------
      */
@@ -75,10 +136,7 @@
     typedef typename 
             allocator::size_type            uint_type ;
 
-    char_type static constexpr null_ball = +0 ;
-    char_type static constexpr feat_ball = +1 ;
-
-    typedef char_type mode_type ;
+    typedef char_type  mode_type ;
     
     char_type static constexpr null_mode = +0 ;
     char_type static constexpr node_mode = +1 ;
@@ -114,6 +172,10 @@
     typedef mesh::rdel_params       <
                 real_type, 
                 iptr_type           >       rdel_opts ;
+
+    typedef mesh::rdel_timers       <
+                real_type ,
+                iptr_type           >       rdel_stat ;
 
     typedef containers::array       <
                 iptr_type           >       iptr_list ;
@@ -399,6 +461,7 @@
         geom_type &_geom ,
         hfun_type &_hfun ,
         mesh_type &_mesh ,
+        bool_type  _init ,
         iptr_list &_nnew ,
         iptr_list &_tnew ,
         edat_list &_ecav ,
@@ -438,7 +501,8 @@
         }
     /*-------------------- init. restricted triangulation */
         push_rdel( _geom, _hfun, 
-            _mesh, _nnew, _tnew, 
+            _mesh, _init, 
+            _nnew, _tnew, 
             _escr, _ecav, 
             _tscr, _tcav,
             _bscr, _bcav,    
@@ -451,6 +515,182 @@
      * INIT-MESH: init. the bounding DT. 
     --------------------------------------------------------
      */
+
+    template <
+    typename      init_type
+             >
+    __static_call
+    __normal_call void_type init_sort (
+        init_type &_init,
+        iptr_list &_iset
+        )
+    {
+        typedef geom_tree::aabb_node_base_k     
+                           tree_node ;
+
+        typedef geom_tree::aabb_item_node_k <
+            real_type,
+            iptr_type, 2>  tree_item ;
+                    
+        typedef geom_tree::aabb_tree <
+            tree_item, 2,
+            tree_node,
+            allocator   >  tree_type ;
+                
+        containers::array<tree_item> _bbox;
+       
+    /*------------------------------ initialise aabb-tree */ 
+        iptr_type _npos  = 0 ;
+        tree_type _tree  ;
+        for (auto _node  = 
+            _init._mesh._set1.head() ; 
+                  _node != 
+            _init._mesh._set1.tend() ;
+                ++_node, ++_npos)
+        {
+            if (_node->mark() >= +0)
+            {
+            
+            _bbox.push_tail() ;
+            _bbox.tail()->
+                pval(0) = _node->pval( 0) ;
+            _bbox.tail()->
+                pval(1) = _node->pval( 1) ;
+  
+            _bbox.tail()->
+                ipos () = _npos ;
+            
+            }
+        }
+       
+        iptr_type _NBOX = 
+            (iptr_type) std::pow (8, 2) ;       // 8^ndim
+       
+        _tree.load(_bbox.head(),
+                   _bbox.tend(), _NBOX) ;
+        
+    /*------------------------------ randomised tree sort */    
+        _tree.brio(_iset) ;
+    }
+
+    template <
+    typename      init_type
+             >
+    __static_call
+    __normal_call void_type init_init (
+        init_type &_init,
+        mesh_type &_mesh
+        )
+    {
+    /*------------------------------ form insertion order */
+        iptr_type _hint  = -1 ;
+        iptr_list _iset  ;
+        init_sort(_init, _iset) ;
+        
+    /*------------------------------ find "central" point */
+        iptr_type _imid  = -1 ;
+        real_type _dmin  = 
+           +std::numeric_limits
+                <real_type>::infinity();
+                        
+        real_type _pmid[2] ;
+        _pmid[0] = (real_type) +0. ;
+        _pmid[1] = (real_type) +0. ;
+        
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
+        {
+             auto _node = 
+           &_init._mesh._set1 [*_iter] ;
+            
+            _pmid[0] += _node->pval(0) ;
+            _pmid[1] += _node->pval(1) ;
+        }
+        
+        _pmid[0] /= _iset.count () ;
+        _pmid[1] /= _iset.count () ;
+        
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
+        {
+             auto _node = 
+           &_init._mesh._set1 [*_iter] ;
+        
+            real_type _dsqr = 
+            geometry::lensqr_2d(
+               &_node->pval(0), _pmid) ;
+                   
+            if (_dsqr < _dmin)
+            {
+                _dmin = _dsqr;
+                _imid =*_iter;
+            }
+        }
+    
+    /*------------------------------ seed mesh from init. */
+        if (_imid > -1)
+        {
+             auto _node = 
+           &_init._mesh._set1 [ _imid] ;
+        
+            iptr_type _npos = -1 ;
+            if (_mesh._tria.push_node(
+               &_node->pval(0) , 
+                _npos, _hint ) )
+            {
+            
+            _mesh._tria.node
+                (_npos)->fdim() 
+                    = _node->fdim() ;
+                        
+            _mesh._tria.node
+                (_npos)->feat() 
+                    = _node->feat() ;
+                    
+            _mesh._tria.node
+                (_npos)->topo() = 2 ;  
+            
+            _hint = _mesh._tria.
+                node(_npos)->next() ;
+            
+            }
+        }
+        
+    /*------------------------------ seed mesh from init. */
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
+        {
+            if (*_iter == _imid) continue;
+            
+             auto _node = 
+           &_init._mesh._set1 [*_iter] ;
+        
+            iptr_type _npos = -1 ;
+            if (_mesh._tria.push_node(
+               &_node->pval(0) , 
+                _npos, _hint ) )
+            {
+            
+            _mesh._tria.node
+                (_npos)->fdim() 
+                    = _node->fdim() ;
+                        
+            _mesh._tria.node
+                (_npos)->feat() 
+                    = _node->feat() ;
+                    
+            _mesh._tria.node
+                (_npos)->topo() = 2 ;  
+            
+            _hint = _mesh._tria.
+                node(_npos)->next() ;
+            
+            }
+        }
+    }
 
     template <
     typename      init_type
@@ -514,39 +754,16 @@
         _tria.node(+2)->topo() = +0 ;
     
     /*------------------------------ seed feat from geom. */
-        _geom.seed_feat(_mesh, _opts) ;
+        _geom.
+         seed_feat(_mesh, _opts) ;
                         
     /*------------------------------ seed mesh from init. */
-        for (auto _node  = 
-            _init._mesh._set1.head(); 
-                  _node != 
-            _init._mesh._set1.tend();
-                ++_node  )
-        {
-            if (_node->mark() >= +0)
-            {
-            iptr_type _npos = -1 ;
-            if (_mesh._tria.push_node (
-               &_node->pval(0), _npos))
-            {
-                _mesh._tria.node
-                    (_npos)->fdim() 
-                        = _node->fdim() ;
-                        
-                _mesh._tria.node
-                    (_npos)->feat() 
-                        = _node->feat() ;
-                        
-                _mesh._tria.node
-                    (_npos)->topo() = 2 ;  
-                    
-            }     
-            }
-        }
+         
+         init_init(_init, _mesh) ;
         
     /*------------------------------ seed mesh from geom. */
-        _geom.seed_mesh(_mesh, _opts) ;
-            
+        _geom.
+         seed_mesh(_mesh, _opts) ;           
     }
 
     /*
@@ -570,7 +787,7 @@
         )
     {   
         mode_type _mode = null_mode ;
-        
+                
     /*------------------------------ push log-file header */
         _dump.push (
     "#------------------------------------------------------------\n"
@@ -578,8 +795,23 @@
     "#------------------------------------------------------------\n"
             ) ;
 
+    #   ifdef  __use_timers
+        typename std ::chrono::
+        high_resolution_clock::
+            time_point _ttic ;
+        typename std ::chrono::
+        high_resolution_clock::
+            time_point _ttoc ;
+        typename std ::chrono::
+        high_resolution_clock _time ;
+
+        __unreferenced(_time) ; // why does MSVC need this??
+    #   endif//__use_timers
+
     /*------------------------------ ensure deterministic */  
         std::srand( +1 ) ;
+
+        rdel_stat _tcpu  ;
 
     /*------------------------------ init. list workspace */
         iptr_list _nnew, _nold ;
@@ -613,7 +845,7 @@
         typename mesh_type::node_hash(),
         typename mesh_type::node_pred(), 
             +.8,_mesh._nset.get_alloc()) ;
-        
+
         typename 
             mesh_type::edge_list _pedg (
         typename mesh_type::edge_hash(),
@@ -628,15 +860,24 @@
             iptr_type , 
             rdel_opts::last_kind> _tnod;
 
-        _enod.fill( +0 ) ;
-        _tnod.fill( +0 ) ;
+        _enod.fill(  +0 ) ;
+        _tnod.fill(  +0 ) ;
 
     /*------------------------------ initialise mesh obj. */
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
         init_mesh( _geom , _init, _hfun, 
-            _mesh, _args ) ;
+            _mesh, _args );
+
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;       
+        _tcpu._mesh_seed += 
+            _tcpu.time_span(_ttic,_ttoc) ;
+    #   endif//__use_timers
         
-    /*-------------------- calc. size-func for seed nodes */ 
-       
+    /*-------------------- calc. size-func for seed nodes */        
         for (auto _node  = 
             _mesh._tria._nset.head(); 
                   _node != 
@@ -646,12 +887,11 @@
             if (_node->mark() >= +0)
             {
                 _node->idxh()  = 
-                    hfun_type::null_hint();
+                 hfun_type::null_hint () ;
             }
         }
 
     /*-------------------- main: refine edges/faces/trias */
-    
         iptr_type _pass = +0   ;
     
         for(bool_type _done=false; !_done ; )
@@ -685,14 +925,25 @@
             if (_mode == null_mode )
             {
         /*------------------------- init. protecting ball */
-                _mode  = node_mode ;
+    #           ifdef  __use_timers
+                _ttic = _time.now() ;
+    #           endif//__use_timers
+                
+                _mode  = node_mode;
              
                 init_rdel( _geom, _hfun, 
-                    _mesh, _nnew, _tnew, 
+                    _mesh, false, 
+                    _nnew, _tnew, 
                     _edat, _escr, 
                     _tdat, _tscr,
                     _bdat, _bscr, _pass, 
-                    _mode, _args)  ;
+                    _mode, _args) ;
+
+    #           ifdef  __use_timers
+                _ttoc = _time.now() ;           
+                _tcpu._node_init += 
+                    _tcpu.time_span(_ttic,_ttoc) ;
+    #           endif//__use_timers
             }
        
             if (_mode == node_mode &&
@@ -701,14 +952,25 @@
                     _bdat. empty() )
             {
         /*------------------------- init. restricted edge */
-                _mode  = edge_mode ;
+    #           ifdef  __use_timers
+                _ttic = _time.now() ;
+    #           endif//__use_timers
+
+                _mode  = edge_mode;
                
                 init_rdel( _geom, _hfun, 
-                    _mesh, _nnew, _tnew, 
+                    _mesh,  true,// init. circum. for rDT
+                    _nnew, _tnew, 
                     _edat, _escr, 
                     _tdat, _tscr,
                     _bdat, _bscr, _pass, 
-                    _mode, _args)  ;
+                    _mode, _args) ;
+
+    #           ifdef  __use_timers
+                _ttoc = _time.now() ;           
+                _tcpu._edge_init += 
+                    _tcpu.time_span(_ttic,_ttoc) ;
+    #           endif//__use_timers
             }          
             if (_mode == edge_mode && 
                     _eepq. empty() &&
@@ -725,14 +987,25 @@
                     _edat. empty() )
             {
         /*------------------------- init. restricted tria */
-                _mode  = tria_mode ;
+    #           ifdef  __use_timers
+                _ttic = _time.now() ;
+    #           endif//__use_timers
+                
+                _mode  = tria_mode;
         
                 init_rdel( _geom, _hfun, 
-                    _mesh, _nnew, _tnew, 
+                    _mesh, false, 
+                    _nnew, _tnew, 
                     _edat, _escr, 
                     _tdat, _tscr,
                     _bdat, _bscr, _pass, 
-                    _mode, _args)  ;
+                    _mode, _args) ;
+    
+    #           ifdef  __use_timers
+                _ttoc = _time.now() ;           
+                _tcpu._tria_init += 
+                    _tcpu.time_span(_ttic,_ttoc) ;
+    #           endif//__use_timers
             }
 
         /*------------- refine "bad" sub-faces until done */
@@ -752,6 +1025,10 @@
             if (!_nbpq.empty() )
             {
         /*----------------------------- refine "bad" ball */
+    #           ifdef  __use_timers
+                _ttic = _time.now() ;
+    #           endif//__use_timers
+
                 _kind =_bad_ball( _geom,
                     _hfun, _mesh, _mode,
                     _pedg, _nnew, _nold,
@@ -759,12 +1036,22 @@
                     _etmp, _edat, _escr,
                     _tdat, _tscr, 
                     _bdat, _bscr, _tdim, 
-                    _pass, _args)  ;
+                    _pass, _args) ;
+
+    #           ifdef  __use_timers
+                _ttoc = _time.now() ;           
+                _tcpu._node_rule += 
+                    _tcpu.time_span(_ttic,_ttoc) ;
+    #           endif//__use_timers
             }
             else
             if (!_eepq.empty() )
             {
         /*----------------------------- refine "bad" edge */
+    #           ifdef  __use_timers
+                _ttic = _time.now() ;
+    #           endif//__use_timers
+
                 _kind =_bad_edge( _geom, 
                     _hfun, _mesh, _mode,
                     _pedg, _nnew, _nold, 
@@ -772,12 +1059,22 @@
                     _etmp, _edat, _escr, 
                     _tdat, _tscr, 
                     _bdat, _bscr, _tdim, 
-                    _pass, _args)  ;
+                    _pass, _args) ;
+
+    #           ifdef  __use_timers
+                _ttoc = _time.now() ;           
+                _tcpu._edge_rule += 
+                    _tcpu.time_span(_ttic,_ttoc) ;
+    #           endif//__use_timers
             }
             else
             if (!_etpq.empty() )
             {
         /*----------------------------- refine "bad" topo */
+    #           ifdef  __use_timers
+                _ttic = _time.now() ;
+    #           endif//__use_timers
+
                 _kind =_bad_etop( _geom, 
                     _hfun, _mesh, _mode, 
                     _pedg, _nnew, _nold, 
@@ -786,12 +1083,22 @@
                     _etmp, _edat, _escr, 
                     _tdat, _tscr, 
                     _bdat, _bscr, _tdim, 
-                    _pass, _args)  ;
+                    _pass, _args) ;
+
+    #           ifdef  __use_timers
+                _ttoc = _time.now() ;           
+                _tcpu._edge_rule += 
+                    _tcpu.time_span(_ttic,_ttoc) ;
+    #           endif//__use_timers
             }
             else
             if (!_ttpq.empty() )
             {
         /*----------------------------- refine "bad" tria */
+    #           ifdef  __use_timers
+                _ttic = _time.now() ;
+    #           endif//__use_timers
+
                 _kind =_bad_tria( _geom, 
                     _hfun, _mesh, _mode, 
                     _pedg, _nnew, _nold,
@@ -799,7 +1106,13 @@
                     _etmp, _edat, _escr,
                     _tdat, _tscr, 
                     _bdat, _bscr, _tdim, 
-                    _pass, _args)  ;
+                    _pass, _args) ;
+
+    #           ifdef  __use_timers
+                _ttoc = _time.now() ;           
+                _tcpu._tria_rule += 
+                    _tcpu.time_span(_ttic,_ttoc) ;
+    #           endif//__use_timers
             }
         /*----------------------------- meshing converged */
             else { _done = true ;  }
@@ -809,8 +1122,7 @@
         /*----------------------------- output to logfile */
                 std::stringstream _sstr;
                 _sstr << std::setw(11) <<
-                    _pass
-                      << std::setw(13) << 
+                _pass << std::setw(13) << 
                     _mesh._eset.count()
                       << std::setw(13) << 
                     _mesh._tset.count()
@@ -963,7 +1275,6 @@
         /*
         if (_args.verb() >= +2 )
         {
-       
     //-------------------- push refinement memory metrics *
         
         _dump.push("\n")  ;
@@ -975,11 +1286,43 @@
         
         if (_args.verb() >= +2 )
         {
-    
     /*-------------------- push refinement scheme metrics */
         
         _dump.push("\n")  ;
         _dump.push("  REFINE statistics... \n") ;
+        _dump.push("\n")  ;
+
+        _dump.push("  MESH-SEED = ") ;
+        _dump.push(
+        std::to_string (_tcpu._mesh_seed)) ;
+        _dump.push("\n")  ;
+
+        _dump.push("  NODE-INIT = ") ;
+        _dump.push(
+        std::to_string (_tcpu._node_init)) ;
+        _dump.push("\n")  ;
+        _dump.push("  NODE-RULE = ") ;
+        _dump.push(
+        std::to_string (_tcpu._node_rule)) ;
+        _dump.push("\n")  ;
+        
+        _dump.push("  EDGE-INIT = ") ;
+        _dump.push(
+        std::to_string (_tcpu._edge_init)) ;
+        _dump.push("\n")  ;
+        _dump.push("  EDGE-RULE = ") ;
+        _dump.push(
+        std::to_string (_tcpu._edge_rule)) ;
+        _dump.push("\n")  ;
+
+        _dump.push("  TRIA-INIT = ") ;
+        _dump.push(
+        std::to_string (_tcpu._tria_init)) ;
+        _dump.push("\n")  ;
+        _dump.push("  TRIA-RULE = ") ;
+        _dump.push(
+        std::to_string (_tcpu._tria_rule)) ;
+        _dump.push("\n")  ;
         _dump.push("\n")  ;
 
         _dump.push("  |TYPE-1| (edge) = ") ;

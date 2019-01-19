@@ -7,12 +7,11 @@
   <img src = "../master/img/bunny-TRIA4-3.png">
 </p>
 
-`JIGSAW` is a computational library for unstructured mesh generation; designed to generate high-quality Delaunay triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes both `refinement`-based algorithms for the construction of new meshes, as well as `optimisation`-driven techniques designed to improve existing grids.
+`JIGSAW` is a computational library for unstructured mesh generation and tessellation; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes `refinement`-based algorithms for the construction of new meshes, `optimisation`-driven techniques for the improvement of existing grids, as well as routines to assemble (restricted) Delaunay tessellations and Voronoi complexes.
 
 This package provides the underlying `C++` source for `JIGSAW`; defining a basic command-line interface and a `C`-format `API`. A <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including a range of additional facilities for file I/O, mesh visualisation and post-processing operations can be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
 
 `JIGSAW` has been compiled and tested on various `64-bit` `Linux` , `Windows` and `Mac` based platforms. 
-
 
 ## `Code Structure`
 
@@ -37,15 +36,23 @@ The first step is to compile the code! The `JIGSAW` src can be found in <a href=
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
-	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG -static-libstdc++ 
-	jigsaw.cpp -o jigsaw64r
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG
+	-D __cmd_jigsaw -static-libstdc++ jigsaw.cpp
+	-o jigsaw64r
 	
-can be used to build a `JIGSAW` executable, while:
+will build the main `JIGSAW` cmd-line executable,
 
-	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -static-libstdc++ 
-	jigsaw.cpp -shared -o libjigsaw64r.so
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG
+	-D __cmd_tripod -static-libstdc++ jigsaw.cpp
+	-o tripod64r
+	
+will build the `TRIPOD` cmd-line utility (`JIGSAW`'s tessellation infrastructure) and,
 
-can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG
+	-D __lib_jigsaw -static-libstdc++ jigsaw.cpp
+	-shared -o libjigsaw64r.so
+
+will build `JIGSAW` as shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
 #### `On Windows`
 
@@ -72,8 +79,7 @@ On LNX-64 platforms:
 ````
 In this example, a high-quality tetrahedral mesh is generated for the 'stanford-bunny' geometry and the result is written to file. The input geometry is specified as a triangulated surface, and is read from `../jigsaw/geo/bunny.msh`. The volume and surface mesh outputs are written to `../jigsaw/out/bunny.msh`. Edit `example.jig` for a description of `JIGSAW`'s configuration options. 
 
-Additional information, documentation, online tutorials and references are available <a href="http://sites.google.com/site/dengwirda/jigsaw">here</a>. A repository of 3D surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>.
-
+A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/uni/">`../uni/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/inc/">`../inc/`</a>. A repository of 3D surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>.
 
 ## `License`
 
@@ -81,9 +87,9 @@ This program may be freely redistributed under the condition that the copyright 
 
 `DISCLAIMER`:  Neither I nor: Columbia University, the Massachusetts Institute of Technology, the University of Sydney, nor the National Aeronautics and Space Administration warrant this code in any way whatsoever.  This code is provided "as-is" to be used at your own risk.
 
-## `Attribution!`
+## `References`
 
-If you make use of `JIGSAW` please make reference to the following. The algorithmic developments behind `JIGSAW` have been the subject of a number of publications, originally stemming from my PhD research at the University of Sydney:
+There are a number of publications that describe the algorithms used in `JIGSAW` in detail. If you make use of `JIGSAW` in your work, please consider including a reference to the following:
 
 `[1]` - Darren Engwirda: Generalised primal-dual grids for unstructured co-volume schemes, J. Comp. Phys., 375, pp. 155-176, https://doi.org/10.1016/j.jcp.2018.07.025, 2018.
 

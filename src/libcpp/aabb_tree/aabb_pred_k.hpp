@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 10 September, 2017
+ * Last updated: 31 December, 2018
  *
- * Copyright 2013-2017
+ * Copyright 2013-2018
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -232,8 +232,8 @@
     __const_ptr  (real_type) _bmin,
     __const_ptr  (real_type) _bmax
         ) const
-    {
-    /*-------------------------------- test bbox. overlap */
+    {  
+    /*--------------------------------- test bbox overlap */
         for (auto _idim = _dims; _idim-- != +0; )
         {
         if (_bmin[_idim] > this->_rmax[_idim] ||
@@ -242,31 +242,7 @@
             return ( false )  ;
         }
 
-    /*-------------------------------- endpoints enclosed */
-        bool_type _ends[+2];
-        _ends[+0] =  true;
-        _ends[+1] =  true;
-        
-        for (auto _idim = _dims; _idim-- != +0; )
-        {
-    /*------------------------------------- test i-th end */
-        if (_bmin[_idim] > this->_ipos[_idim] ||
-            _bmax[_idim] < this->_ipos[_idim] )
-            _ends[+0] = false ;
-            
-    /*------------------------------------- test j-th end */
-        if (_bmin[_idim] > this->_jpos[_idim] ||
-            _bmax[_idim] < this->_jpos[_idim] )
-            _ends[+1] = false ;
-        }
-        
-        if (_ends[+0] || _ends[+1])
-        {
-    /*------------------------------------- quick return! */
-            return (  true )  ;
-        }
-
-    /*------------------ test for line-face intersections */
+    /*--------------------------------- line-face overlap */
         real_type _tmin = 
             -std::numeric_limits
                 <real_type>::infinity() ;
@@ -289,10 +265,12 @@
                     std::min(_ival, _jval)) ;
                     
             _tmax = std::min(_tmax, 
-                    std::max(_ival, _jval)) ; 
+                    std::max(_ival, _jval)) ;
+                    
+            if (_tmax < _tmin) return false ; 
         }
         
-        return ( _tmax >= _tmin ) ;
+        return ( true ) ;
     }
     
     } ;

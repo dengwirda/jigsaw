@@ -397,6 +397,60 @@
         
         } ;
 
+    /*
+    --------------------------------------------------------
+     * RDEL-TIMERS: cpu timers for RDEL-MESH-K
+    --------------------------------------------------------
+     */
+    
+    template <
+    typename R , 
+    typename I
+             >
+    class rdel_timers
+        {
+        public  :
+        
+        typedef R                       real_type ;
+        typedef I                       iptr_type ;
+        
+        typedef rdel_timers<R, I>       self_type ;
+        
+        real_type   _mesh_seed = (real_type)  +0. ;
+        real_type   _node_init = (real_type)  +0. ;
+        real_type   _node_rule = (real_type)  +0. ;
+        real_type   _edge_init = (real_type)  +0. ;
+        real_type   _edge_rule = (real_type)  +0. ;
+        real_type   _face_init = (real_type)  +0. ;
+        real_type   _face_rule = (real_type)  +0. ;
+        real_type   _tria_init = (real_type)  +0. ;
+        real_type   _tria_rule = (real_type)  +0. ;
+        
+        public  :
+  
+    /*-------------------------------------- elapsed time */
+   
+    #   ifdef  __use_timers
+    
+        __inline_call double time_span (
+            typename std::
+                chrono::high_resolution_clock
+                    ::time_point const& _ttic,
+            typename std::
+                chrono::high_resolution_clock
+                    ::time_point const& _ttoc
+            )
+        {
+            return (double)(
+                std::chrono::duration_cast<
+                std::chrono::microseconds >
+                (_ttoc-_ttic).count()) / +1.0E+06 ;
+        }
+
+    #   endif//__use_timers
+        
+        } ;
+
     }
 
 #   endif // __RDEL_PARAMS__

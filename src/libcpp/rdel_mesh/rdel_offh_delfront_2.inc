@@ -115,6 +115,13 @@
         _ppos[ 0] = _sbal[ 0] ;
         _ppos[ 1] = _sbal[ 1] ;
         
+        typename
+        geom_type::ball_type _ball;
+        _ball.
+        _pmid[ 0] = _ipos[ 0] ;
+        _ball.
+        _pmid[ 1] = _ipos[ 1] ;
+        
         real_type static const  _seps = 
             (real_type)std::sqrt(
        +std::numeric_limits<real_type>::epsilon());
@@ -123,8 +130,9 @@
 
         real_type _pert =
            ((real_type)(_hash % +4096)) / +4096 ;
+        _pert  +=   + 1 ;
         _pert  *= _seps ;
-
+        
         for(iptr_type _iter = +0; _iter++ != +8 ; )
         {
             _nsiz[ 2] = _hfun.eval (_ppos, _hint) ;
@@ -153,10 +161,10 @@
             _dist -= _pert * _dist ;
             
             cosine_intersect _pred(_ipos,_dvec);
+            _ball._rrad  = _dist ;
             if (!_geom.intersect (
-                 _ipos, 
-                 _dist, _pred) )
-                return  rdel_opts::null_kind ;
+                 _ball, _pred) )
+                return  rdel_opts::null_kind;
             if (!_pred. _find  )
                 return  rdel_opts::null_kind ;
             
@@ -237,8 +245,9 @@
 
         real_type _pert =
            ((real_type)(_hash % +4096)) / +4096 ;
+        _pert  +=   + 1 ;
         _pert  *= _seps ;
- 
+        
         for(iptr_type _iter = +0; _iter++ != +8 ; )
         {
             _kind    = rdel_opts::offh_kind ;
@@ -259,12 +268,13 @@
 
             if (_dsqr < _near)
             {                       // min.-space limiter
-                _dist = 
-           +std::numeric_limits<real_type>::infinity();
+                _dist = std::numeric_limits
+                    <real_type>::infinity() ;
             }
             else
             {
-                _dist = (real_type) std::sqrt( _dsqr) ;
+                _dist = 
+                (real_type)std::sqrt(_dsqr) ;
             }
             
             if (_dist > _alth * _hmid)  

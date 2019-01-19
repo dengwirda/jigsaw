@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 June, 2018
+     * Last updated: 20 December, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -51,32 +51,63 @@
     typedef struct 
         {
         real_t                  _ppos [2] ; // coord.'s
-        indx_t                  _itag ;
+        indx_t                  _itag ;     // ID tag
         } jigsaw_VERT2_t ;
         
     typedef struct
         {
         real_t                  _ppos [3] ; // coord.'s
-        indx_t                  _itag ;
+        indx_t                  _itag ;     // ID tag
         } jigsaw_VERT3_t ;
     
     typedef struct
         {
         indx_t                  _node [2] ; // indexing
-        indx_t                  _itag ;
+        indx_t                  _itag ;     // ID tag
         } jigsaw_EDGE2_t ;
     
     typedef struct
         {
         indx_t                  _node [3] ; // indexing
-        indx_t                  _itag ;
+        indx_t                  _itag ;     // ID tag
         } jigsaw_TRIA3_t ;
         
     typedef struct
         {
         indx_t                  _node [4] ; // indexing
-        indx_t                  _itag ;
+        indx_t                  _itag ;     // ID tag
+        } jigsaw_QUAD4_t ;
+        
+    typedef struct
+        {
+        indx_t                  _node [4] ; // indexing
+        indx_t                  _itag ;     // ID tag
         } jigsaw_TRIA4_t ;
+        
+    typedef struct
+        {
+        indx_t                  _node [8] ; // indexing
+        indx_t                  _itag ;     // ID tag
+        } jigsaw_HEXA8_t ;
+        
+    typedef struct
+        {
+        indx_t                  _node [6] ; // indexing
+        indx_t                  _itag ;     // ID tag
+        } jigsaw_WEDG6_t ;
+        
+    typedef struct
+        {
+        indx_t                  _node [5] ; // indexing
+        indx_t                  _itag ;     // ID tag
+        } jigsaw_PYRA5_t ;
+        
+    typedef struct
+        {
+        indx_t                  _itag ;     // ID tag
+        indx_t                  _indx ;     // MSH num.
+        indx_t                  _kind ;     // MSH obj.
+        } jigsaw_BOUND_t ;
 
 /*------------------------------------------- array types */    
     
@@ -107,8 +138,44 @@
     typedef struct
         {
         indx_t                  _size ;
+        jigsaw_QUAD4_t         *_data ;
+        } jigsaw_QUAD4_array_t ;
+        
+    typedef struct
+        {
+        indx_t                  _size ;
         jigsaw_TRIA4_t         *_data ;
         } jigsaw_TRIA4_array_t ;
+        
+    typedef struct
+        {
+        indx_t                  _size ;
+        jigsaw_HEXA8_t         *_data ;
+        } jigsaw_HEXA8_array_t ;
+        
+    typedef struct
+        {
+        indx_t                  _size ;
+        jigsaw_WEDG6_t         *_data ;
+        } jigsaw_WEDG6_array_t ;
+        
+    typedef struct
+        {
+        indx_t                  _size ;
+        jigsaw_PYRA5_t         *_data ;
+        } jigsaw_PYRA5_array_t ;
+        
+    typedef struct
+        {
+        indx_t                  _size ;
+        jigsaw_BOUND_t         *_data ;
+        } jigsaw_BOUND_array_t ;
+    
+    typedef struct
+        {
+        indx_t                  _size ;
+        indx_t                 *_data ;
+        } jigsaw_INDEX_array_t ;
         
     typedef struct
         {
@@ -131,16 +198,23 @@
         jigsaw_REALS_array_t    _power;
     
         jigsaw_EDGE2_array_t    _edge2;
-        jigsaw_TRIA3_array_t    _tria3;
-        jigsaw_TRIA4_array_t    _tria4;
         
+        jigsaw_TRIA3_array_t    _tria3;
+        jigsaw_QUAD4_array_t    _quad4;
+        
+        jigsaw_TRIA4_array_t    _tria4;
+        jigsaw_HEXA8_array_t    _hexa8;
+        jigsaw_WEDG6_array_t    _wedg6;
+        jigsaw_PYRA5_array_t    _pyra5;
+        
+        jigsaw_BOUND_array_t    _bound;
         
     /* if (_flags == ELLIPSOID_MESH) */
         
         jigsaw_REALS_array_t    _radii;
         
-       
     /* if (_flags == EUCLIDEAN_GRID) */
+    /* OR (_flags == ELLIPSOID_GRID) */
        
         jigsaw_REALS_array_t    _xgrid;
         jigsaw_REALS_array_t    _ygrid;
@@ -149,9 +223,10 @@
 
     /* if (_flags == EUCLIDEAN_MESH) */
     /* OR (_flags == EUCLIDEAN_GRID) */
+    /* OR (_flags == ELLIPSOID_MESH) */
+    /* OR (_flags == ELLIPSOID_GRID) */
     
         jigsaw_REALS_array_t    _value;
-       
        
     /* if (_flags == EUCLIDEAN_DUAL) */
     

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 December, 2017
+     * Last updated: 19 December, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -286,6 +286,9 @@
          auto _jptr = 
         _mesh._set3.head() + _jtri ;
     
+        if ( _iptr->itag() != 
+             _jptr->itag() )   return ;
+    
         iptr_type _inod [3] ;
         iptr_type _jnod [3] ;
         for(auto _inum = 3; _inum-- != 0; )
@@ -339,12 +342,16 @@
         _tdat.node(1) = _jnod[2] ;
         _tdat.node(2) = _inod[2] ;
         
+        _tdat.itag () = _iptr->itag() ;
+        
         _tnew.push_tail(
             _mesh.push_tri3(_tdat)) ;
         
         _tdat.node(0) = _jnod[0] ;
         _tdat.node(1) = _inod[2] ;
         _tdat.node(2) = _jnod[2] ;
+        
+        _tdat.itag () = _jptr->itag() ;
         
         _tnew.push_tail(
             _mesh.push_tri3(_tdat)) ;         

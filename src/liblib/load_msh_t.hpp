@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 July, 2018
+     * Last updated: 30 December, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -429,6 +429,39 @@
             this->_errv =__invalid_argument ;
             }
         }
+        
+    /*-------------------------------- open BOUND section */
+        __normal_call void_type open_bound (
+            std::int32_t  _nrow
+            ) 
+        {
+            jigsaw_alloc_bound (
+               &this->_jmsh->_bound, _nrow) ;
+        }        
+    /*-------------------------------- push BOUND section */
+        __normal_call void_type push_bound (
+            std::int32_t  _ipos,
+            std::int32_t  _itag,
+            std::int32_t  _inum,
+            std::int32_t  _kind
+            )
+        {
+            if (_ipos < this->_jmsh->_bound._size)
+            {
+            this->_jmsh->_bound.
+                _data[_ipos]._itag =  _itag ;
+            this->_jmsh->_bound.
+                _data[_ipos]._indx =  _inum ;
+            this->_jmsh->_bound.
+                _data[_ipos]._kind =  _kind ;
+                      
+            }
+            else
+            {
+            this->_errv =__invalid_argument ;
+            }
+        }
+        
     /*-------------------------------- open VALUE section */
         __normal_call void_type open_value (
             std::int32_t  _nrow,

@@ -3,14 +3,19 @@
     // for cmd-jigsaw:
     //
     // g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
-    // -static-libstdc++ jigsaw.cpp -o jigsaw64r
+    // -D __cmd_jigsaw -static-libstdc++ jigsaw.cpp 
+    // -o jigsaw64r
+    //
+    // g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
+    // -D __cmd_tripod -static-libstdc++ jigsaw.cpp 
+    // -o tripod64r
     //
     //
     // for lib-jigsaw:
     //
     // g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC 
-    // -D NDEBUG -static-libstdc++ jigsaw.cpp -shared 
-    // -o libjigsaw64r.so
+    // -D NDEBUG -D __lib_jigsaw -static-libstdc++ jigsaw.cpp 
+    // -shared -o libjigsaw64r.so
     //
 
     /*
@@ -25,13 +30,13 @@
      * \_8"       Y8""8D                                
      *
     --------------------------------------------------------
-     * JIGSAW: an unstructured mesh generation package.
+     * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * JIGSAW release 0.9.7.x
-     * Last updated: 13 August, 2018
+     * JIGSAW release 0.9.8.x
+     * Last updated: 12 January, 2019
      *
-     * Copyright 2013 -- 2018
+     * Copyright 2013 -- 2019
      * Darren Engwirda
      * darren.engwirda@columbia.edu
      * https://github.com/dengwirda
@@ -76,9 +81,35 @@
      * three-dimensional operations, catering to a variety 
      * of planar, surface and volumetric configurations.
      *
-     * JIGSAW has grown out of my Ph.D. research, in which
-     * I explored early versions of both the refinement and
-     * optimisation-based algorithms described here:
+     * JIGSAW's 'frontal' Delaunay-refinement algorithms
+     * are described here:
+     *
+     * D. Engwirda, D. Ivers, (2016): "Off-centre Steiner 
+     * points for Delaunay-refinement on curved surfaces", 
+     * Computer-Aided Design, 72, pp. 157-171, 
+     * http://dx.doi.org/10.1016/j.cad.2015.10.007
+     *
+     * D. Engwirda, (2016): "Conforming restricted Delaunay 
+     * mesh generation for piecewise smooth complexes", 
+     * Procedia Engineering, 163, pp. 84-96, 
+     * http://dx.doi.org/10.1016/j.proeng.2016.11.024
+     *
+     * D. Engwirda, (2015): "Voronoi-based point-placement 
+     * for three-dimensional Delaunay-refinement", 
+     * Procedia Engineering, 124, pp. 330-342, 
+     * http://dx.doi.org/10.1016/j.proeng.2015.10.143
+     *
+     * JIGSAW's hybrid, optimisation-based mesh improvement
+     * schemes are discussed here: 
+     *
+     * D. Engwirda, (2018): "Generalised primal-dual grids 
+     * for unstructured co-volume schemes, J. Comp. Phys., 
+     * 375, pp. 155-176, 
+     * https://doi.org/10.1016/j.jcp.2018.07.025 
+     *
+     * JIGSAW originally grew out of my Ph.D. research, in 
+     * which I explored initial versions of the refinement 
+     * and optimisation-based algorithms:
      *
      * D. Engwirda, (2014): "Locally-optimal Delaunay-
      * refinement and optimisation-based mesh generation", 
@@ -88,10 +119,59 @@
      *
     --------------------------------------------------------
      *
-     * JIGSAW builds on a variety of "standard" algorithms,
-     * building upon technqiues described in, for instance:
+     * JIGSAW's "restricted" Delaunay refinement strategies
+     * are generalisations of the methods developed in:
      *
-     * S. Cheng, T. Dey & J. Shewchuk, (2012): "Delaunay 
+     * J.D. Boissonnat, S. Oudot, (2005): "Provably Good 
+     * Sampling and Meshing of Surfaces", Graphical Models, 
+     * 67, pp. 405-451,
+     * https://doi.org/10.1016/j.gmod.2005.01.004
+     *
+     * L. Rineau, M. Yvinec, (2008): "Meshing 3D Domains 
+     * Bounded by Piecewise Smooth Surfaces", Proc. of the 
+     * 16th International Meshing Roundtable, pp. 443-460,
+     * https://doi.org/10.1007/978-3-540-75103-8_25
+     *
+     * C. Jamin, P. Alliez, M. Yvinec, and J.D. Boissonnat, 
+     * (2015): "CGALmesh: a generic framework for Delaunay 
+     * mesh generation", ACM Transactions on Mathematical 
+     * Software (TOMS), 41, pp. 23
+     * https://doi.org/10.1145/2699463
+     *
+     * S.W. Cheng, T.K. Dey, E.A. Ramos, (2010): "Delaunay 
+     * Refinement for Piecewise Smooth Complexes", 
+     * Discrete & Computational Geometry, 43, pp. 121-166,
+     * https://doi.org/10.1007/s00454-008-9109-3
+     *
+     * JIGSAW employs a "hybrid" mesh-optimisation approach
+     * based on a combination of ODT techniques and direct
+     * gradient-based optimisation:
+     *
+     * L. Chen, J.C. Xu, (2004): "Optimal Delaunay 
+     * triangulations, J. Comp. Math., 22, pp. 299–308,
+     * https://www.jstor.org/stable/43693155
+     *
+     * L.A. Freitag, C. Ollivier-Gooch, (1997): "Tetrahedral 
+     * mesh improvement using swapping and smoothing", 
+     * International Journal for Numerical Methods in 
+     * Engineering 40 (21), pp. 3979-4002,
+     * https://doi.org/10.1002/(SICI)1097-0207
+     * (19971115)40:21<3979::AID-NME251>3.0.CO;2-9 
+     *
+     * B.M. Klingner, J.R. Shewchuk, (2008)" "Aggressive 
+     * Tetrahedral Mesh Improvement", Proc. of the 16th 
+     * International Meshing Roundtable, pp. 3-23,
+     * https://doi.org/10.1007/978-3-540-75103-8_1
+     *
+     * P. Mullen, P. Memari, F. de Goes, M. Desbrun, (2011): 
+     * "HOT: Hodge-optimized triangulations", ACM 
+     * Transactions on Graphics (TOG), 30 (4) pp. 103,
+     * https://doi.org/10.1145/2010324.1964998
+     *
+     * Core theory and techniques for Delaunay tessellation
+     * and refinement can be found (for example) here:
+     *
+     * S. Cheng, T. Dey and J. Shewchuk, (2012): "Delaunay 
      * mesh generation", CRC Press.
      *
      * Additional references are provided inline throughout 
@@ -101,8 +181,26 @@
      */
 
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.7"
+#   define __jloglndv   \
+"#------------------------------------------------------------\n"
 
+//  define __cmd_jigsaw               // the cmd-ln exe's
+//  define __cmd_tripod
+//  define __cmd_marche
+
+//  define __lib_jigsaw               // a shared library
+
+#   if !defined(__cmd_jigsaw) && \
+       !defined(__cmd_tripod) && \
+       !defined(__cmd_marche) && \
+       !defined(__lib_jigsaw)
+
+    /*---------------------------------- build by default */
+#       define  __cmd_jigsaw
+
+#   endif
+
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.8"
 
     /*---------------------------------- for i/o on files */
    
@@ -135,10 +233,6 @@
 #   include "libcpp/rdelmesh.hpp"
 #   include "libcpp/itermesh.hpp"
 
-    /*---------------------------------- JIGSAW's userlib */
-
-//  define __lib_jigsaw               // define makes lib
-
     extern  "C" 
     {
 #   include "../inc/lib_jigsaw.h"
@@ -151,7 +245,8 @@
         
     struct jmsh_kind {   
         enum enum_data {
-            euclidean_mesh      = +0 ,
+            null_mesh_kind      = +0 ,
+            euclidean_mesh ,
             euclidean_grid ,
             euclidean_dual ,
             ellipsoid_mesh ,
@@ -281,7 +376,8 @@
         iptr_type               _ndim = +0;
 
         jmsh_kind ::
-        enum_data               _kind ;
+        enum_data               _kind = 
+                            jmsh_kind::null_mesh_kind ;
 
         euclidean_mesh_2d       _euclidean_mesh_2d ;
         euclidean_mesh_3d       _euclidean_mesh_3d ;
@@ -349,7 +445,8 @@
         iptr_type               _ndim = +0;
         
         jmsh_kind ::
-        enum_data               _kind ;
+        enum_data               _kind = 
+                            jmsh_kind::null_mesh_kind ;
       
         constant_value_kd       _constant_value_kd ;
       
@@ -410,7 +507,8 @@
         iptr_type               _ndim = +0;
 
         jmsh_kind ::
-        enum_data               _kind ;
+        enum_data               _kind = 
+                            jmsh_kind::null_mesh_kind ;
                 
         euclidean_rdel_2d       _euclidean_rdel_2d ;
         euclidean_rdel_3d       _euclidean_rdel_3d ;
@@ -441,7 +539,8 @@
         iptr_type               _ndim = +0;
 
         jmsh_kind ::
-        enum_data               _kind ;
+        enum_data               _kind = 
+                            jmsh_kind::null_mesh_kind ;
                 
         euclidean_mesh_2d       _euclidean_mesh_2d ;
         euclidean_mesh_3d       _euclidean_mesh_3d ;
@@ -591,45 +690,9 @@
     
     #   include "run_mesh.hpp"
     #   include "run_iter.hpp"
+    #   include "run_tria.hpp"
 
 
-    /*
-    --------------------------------------------------------
-     * JLOG-HEAD: write header for *.LOG file.
-    --------------------------------------------------------
-     */
- 
-    template <
-    typename      jlog_data
-             >
-    __normal_call void_type jlog_head (
-        jlog_data &_jlog
-        )
-    {
-    /*-- NB: silliness re. escape sequences */
-        _jlog.push (
-    " \n"
-    "#------------------------------------------------------------\n"
-    "#\n"
-    "#   ,o, ,o,       /                                 \n"
-    "#    `   `  e88~88e  d88~\\   /~~~8e Y88b    e    / \n"
-    "#   888 888 88   88 C888         88b Y88b  d8b  /   \n"
-    "#   888 888 \"8b_d8\"  Y88b   e88~-888  Y888/Y88b/  \n"
-    "#   888 888  /        888D C88   888   Y8/  Y8/     \n"
-    "#   88P 888 Cb      \\_88P   \"8b_-888    Y    Y    \n"
-    "# \\_8\"       Y8\"\"8D                             \n"
-    "#\n"
-    "#------------------------------------------------------------\n"
-    "# JIGSAW: an unstructured mesh generation package.  \n"
-    "#------------------------------------------------------------\n"
-    " \n"
-    "  " __JGSWVSTR "\n\n"
-        ) ;
-    }
-    
-        #define __jloglndv              \
-    "#------------------------------------------------------------\n"
- 
     /*
     --------------------------------------------------------
      * TIME-SPAN: elapsed sec. between markers.
@@ -686,915 +749,16 @@
 
     /*
     --------------------------------------------------------
-     * MAIN: jumping-off point for JIGSAW!
+     * Jumping-off points for CMD + LIB JIGSAW!
     --------------------------------------------------------
      */
  
-#   ifdef __lib_jigsaw
-
-#   include "liblib/init_jig_t.hpp"
-#   include "liblib/init_msh_t.hpp"
-
-#   include "liblib/load_jig_t.hpp"
-#   include "liblib/load_msh_t.hpp"
-
-#   include "liblib/save_jig_t.hpp"
-#   include "liblib/save_msh_t.hpp"
- 
-    __normal_call
-        iptr_type jigsaw_make_mesh (    // lib-jigsaw
-        jigsaw_jig_t *_jjig ,
-        jigsaw_msh_t *_gmsh ,
-        jigsaw_msh_t *_imsh ,
-        jigsaw_msh_t *_hmsh ,
-        jigsaw_msh_t *_mmsh
-        )
-    {
-        iptr_type _retv = +0;
+    #   include "jigsaw.hpp"
+    #   include "tripod.hpp"
     
-        hfun_data _hfun ;               // HFUN data
-        geom_data _geom ;               // GEOM data
-        rdel_data _rdel ;               // TRIA data
-        mesh_data _mesh ;               // MESH data
-        jcfg_data _jcfg ;
+//  #   include "marche.hpp"
+
+//  #   include "stitch.hpp"
     
-#       ifdef  __use_timers
-        typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttic ;
-        typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttoc ;
-        typename std ::chrono::
-        high_resolution_clock _time;
-        
-        __unreferenced(_time) ;
-#       endif//__use_timers
-    
-    /*--------------------------------- init. output data */    
-        jigsaw_init_msh_t(_mmsh) ;
-    
-    /*--------------------------------- setup *.JLOG data */
-        if (_jjig != nullptr )
-        {
-            _jcfg._verbosity = _jjig->_verbosity ;
-        }
-        jlog_null _jlog(_jcfg) ;
-        jlog_head(_jlog) ;
-        
-    /*--------------------------------- parse *.JCFG data */
-        if (_jjig != nullptr )
-        {
-            _jlog.push (
-                "  Reading CFG. data...\n\n" ) ;
 
-#           ifdef  __use_timers        
-            _ttic   = _time.now();
-#           endif//__use_timers
-        
-            if ((_retv = copy_jcfg (
-                 _jcfg, 
-                 _jlog,*_jjig)) != __no_error)
-            {
-                return  _retv ;
-            }    
-            
-            if ((_retv = test_jcfg (
-                 _jcfg, _jlog)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-            _jlog.push (
-                "  CFG. data summary...\n\n" ) ;
-
-            if ((_retv = echo_jcfg (
-                 _jcfg, _jlog)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-#           ifdef  __use_timers            
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-        if (_gmsh != nullptr )
-        {
-    /*--------------------------------- parse *.GEOM data */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Reading GEOM data...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = copy_geom (
-                 _jcfg, _jlog , 
-                 _geom,*_gmsh)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-            if ((_retv = test_geom (
-                 _jcfg, 
-                 _jlog, _geom)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-        if (_gmsh != nullptr )
-        {
-    /*--------------------------------- parse *.GEOM data */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Forming GEOM data...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            _geom.init_geom(_jcfg) ;
-            
-            if (_jcfg._verbosity > 0 )
-            {
-
-            _jlog.push (
-                "  GEOM data summary...\n\n" ) ;
-
-            if ((_retv = echo_geom (
-                 _jcfg, 
-                 _jlog, _geom)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-            }
-
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-
-        if (_imsh != nullptr )
-        {
-    /*--------------------------------- parse *.INIT data */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Reading INIT data...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = copy_init (
-                 _jcfg, _jlog, 
-                 _mesh,*_mmsh)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-            if ((_retv = test_init (
-                 _jcfg, 
-                 _jlog, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-        if (_imsh != nullptr )
-        {
-    /*--------------------------------- assemble init-con */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Forming INIT data...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            _mesh._euclidean_mesh_2d.
-                _mesh.make_ptrs();
-            _mesh._euclidean_mesh_3d.
-                _mesh.make_ptrs();
-
-            if (_jcfg._verbosity > 0 )
-            {
-
-            _jlog.push (
-                "  INIT data summary...\n\n" ) ;
-
-            if ((_retv = echo_init (
-                 _jcfg, 
-                 _jlog, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-            }
-            
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-        if (_hmsh != nullptr )
-        {
-    /*--------------------------------- parse *.HFUN data */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Reading HFUN data...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = copy_hfun (
-                 _jcfg, _jlog , 
-                 _hfun,*_hmsh)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-            if ((_retv = test_hfun (
-                 _jcfg, 
-                 _jlog, _hfun)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-#           ifdef  __use_timers             
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-        if (_gmsh != nullptr )
-        {
-    /*--------------------------------- assemble size-fun */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Forming HFUN data...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = init_hfun (
-                 _jcfg, _jlog ,
-                 _geom, _hfun)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-            _hfun.init_hfun (_jcfg);
-            
-            if (_jcfg._verbosity > 0 )
-            {
-
-            _jlog.push (
-                "  HFUN data summary...\n\n" ) ;
-            
-            if ((_retv = echo_hfun (
-                 _jcfg, 
-                 _jlog, _hfun)) != __no_error)
-            {
-                return  _retv ;
-            } 
-                       
-            }
-
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-        if (_gmsh != nullptr )
-        {
-            if(_jcfg._rdel_opts.iter() != +0 )
-            {
-    /*--------------------------------- call mesh routine */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Generate rDT MESH...\n\n" ) ;
-                
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = make_mesh (
-                 _jcfg, _jlog ,
-                 _geom, _mesh , 
-                 _hfun, _rdel)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-#           ifdef  __use_timers         
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-            }
-        }
-        
-        if (_gmsh != nullptr )
-        {
-    /*--------------------------------- call copy routine */
-            if(_jcfg._rdel_opts.iter() != +0 &&
-               _jcfg._iter_opts.iter() != +0 )
-            {
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Pushing MESH data...\n\n" ) ;
-
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = copy_mesh (
-                 _jcfg, _jlog ,
-                 _rdel, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-            }
-        }
-        
-        if (_gmsh != nullptr )
-        {
-            if(_jcfg._iter_opts.iter() != +0 )
-            {
-    /*--------------------------------- call iter routine */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  MESH optimisation...\n\n" ) ;
-
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = init_mesh (
-                 _jcfg, 
-                 _jlog, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-            if ((_retv = iter_mesh (
-                 _jcfg, _jlog ,
-                 _geom, 
-                 _hfun, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-            }
-        }
-        
-        if (_gmsh != nullptr )
-        {
-    /*--------------------------------- dump mesh to data */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Writing MESH file...\n\n" ) ;
-
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if (_jcfg._rdel_opts.iter() != +0 &&
-                _jcfg._iter_opts.iter() == +0 )
-            {
-
-            if ((_retv = save_msht (
-                 _jcfg, _jlog , 
-                 _rdel,*_mmsh)) != __no_error)
-            {
-                return  _retv ;
-            }
-        
-            }    
-            else
-            {
-
-            if ((_retv = save_msht (
-                 _jcfg, _jlog , 
-                 _mesh,*_mmsh)) != __no_error)
-            {
-                return  _retv ;
-            }
-        
-            }
-
-#           ifdef  __use_timers         
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-    /*-------------------------- success, if we got here! */
-
-        return ( _retv ) ;
-    }
-        
-#   else
- 
-    __normal_call iptr_type   main (    // cmd-jigsaw
-        int           _argc , 
-        char        **_argv
-        )
-    {
-        hfun_data _hfun ;               // HFUN data
-        geom_data _geom ;               // GEOM data
-        rdel_data _rdel ;               // TRIA data
-        mesh_data _mesh ;               // MESH data
-        
-#       ifdef  __use_timers
-        typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttic ;
-        typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttoc ;
-        typename std ::chrono::
-        high_resolution_clock _time;
-        
-        __unreferenced(_time) ;
-#       endif//__use_timers
-        
-    /*-------------------------- find *.JFCG file in args */    
-        iptr_type _retv = -1  ;
-        jcfg_data _jcfg ;
-        for (; _argc-- != +0; )
-        {
-            std::string _ssrc(_argv[_argc]) ;
-            
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
-            file_part ( _ssrc ,
-                _path , _name , _fext)  ;
-
-            if (_ssrc.find("-whoami") == 0)
-            {
-                _retv = -2 ;
-                
-                std::cout << __JGSWVSTR ;
-                std::cout <<  std::endl ;
-                
-                break ;
-            }
-
-            if (_fext.find("jig") == 0)
-            {
-                _retv = +0 ;
-
-                _jcfg._jcfg_file =_ssrc ;
-
-                _jcfg._file_path =_path ;
-                _jcfg._file_name =_name ;
-
-                break ;
-            }
-        }
-        if (_retv != +0) return ( _retv ) ;
-
-    /*--------------------------------- setup *.JLOG file */
-        jlog_text _jlog(_jcfg) ;
-        jlog_head(_jlog) ;
-      
-        if(!_jcfg._jcfg_file.empty())
-        {
-    /*--------------------------------- parse *.JCFG file */
-            _jlog.push (
-                "  Reading CFG. file...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-        
-            if ((_retv = read_jcfg (
-                 _jcfg, _jlog)) != __no_error)
-            {
-                return  _retv ;
-            }           
-            
-            if ((_retv = test_jcfg (
-                 _jcfg, _jlog)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-            _jlog.push (
-                "  CFG. data summary...\n\n" ) ;
-
-            if ((_retv = echo_jcfg (
-                 _jcfg, _jlog)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-
-        if(!_jcfg._geom_file.empty())
-        {
-    /*--------------------------------- parse *.GEOM file */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Reading GEOM file...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = read_geom (
-                 _jcfg, 
-                 _jlog, _geom)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-            if ((_retv = test_geom (
-                 _jcfg, 
-                 _jlog, _geom)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-
-        if(!_jcfg._geom_file.empty())
-        {
-    /*--------------------------------- assemble geometry */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Forming GEOM data...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            _geom.init_geom(_jcfg) ;
-            
-            if (_jcfg._verbosity > 0 )
-            {
-
-            _jlog.push (
-                "  GEOM data summary...\n\n" ) ;
-
-            if ((_retv = echo_geom (
-                 _jcfg, 
-                 _jlog, _geom)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-            }
-
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-        if(!_jcfg._init_file.empty())
-        {
-    /*--------------------------------- parse *.INIT file */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Reading INIT file...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = read_init (
-                 _jcfg, 
-                 _jlog, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-            if ((_retv = test_init (
-                 _jcfg, 
-                 _jlog, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-        if(!_jcfg._init_file.empty())
-        {
-    /*--------------------------------- assemble init-con */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Forming INIT data...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            _mesh._euclidean_mesh_2d.
-                _mesh.make_ptrs();
-            _mesh._euclidean_mesh_3d.
-                _mesh.make_ptrs();
-
-            if (_jcfg._verbosity > 0 )
-            {
-
-            _jlog.push (
-                "  INIT data summary...\n\n" ) ;
-
-            if ((_retv = echo_init (
-                 _jcfg, 
-                 _jlog, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-            }
-            
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-
-        if(!_jcfg._hfun_file.empty())
-        {
-    /*--------------------------------- parse *.HFUN file */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Reading HFUN file...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = read_hfun (
-                 _jcfg, 
-                 _jlog, _hfun)) != __no_error)
-            {
-                return  _retv ;
-            }
-            
-            if ((_retv = test_hfun (
-                 _jcfg, 
-                 _jlog, _hfun)) != __no_error)
-            {
-                return  _retv ;
-            }
-             
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-        if(!_jcfg._geom_file.empty())
-        {
-    /*--------------------------------- assemble size-fun */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Forming HFUN data...\n\n" ) ;
-        
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = init_hfun (
-                 _jcfg, _jlog ,
-                 _geom, _hfun)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-            _hfun.init_hfun (_jcfg);
-
-            if (_jcfg._verbosity > 0 )
-            {
-
-            _jlog.push (
-                "  HFUN data summary...\n\n" ) ;
-            
-            if ((_retv = echo_hfun (
-                 _jcfg, 
-                 _jlog, _hfun)) != __no_error)
-            {
-                return  _retv ;
-            } 
-                       
-            }
-
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-        
-        if(!_jcfg._geom_file.empty())
-        {
-            if(_jcfg._rdel_opts.iter() != +0 )
-            {
-    /*--------------------------------- call mesh routine */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Generate rDT MESH...\n\n" ) ;
-
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = make_mesh (
-                 _jcfg, _jlog ,
-                 _geom, _mesh ,
-                 _hfun, _rdel)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-#           ifdef  __use_timers         
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-            }
-        }
-        
-        if(!_jcfg._geom_file.empty() &&
-           !_jcfg._tria_file.empty() )
-        {
-    /*--------------------------------- dump tria to file */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Writing TRIA file...\n\n" ) ;
-
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = save_tria (
-                 _jcfg, 
-                 _jlog, _rdel)) != __no_error)
-            {
-                return  _retv ;
-            }
-        
-#           ifdef  __use_timers         
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-
-        if(!_jcfg._geom_file.empty())
-        {
-            if(_jcfg._rdel_opts.iter() != +0 &&
-               _jcfg._iter_opts.iter() != +0 )
-            {
-    /*--------------------------------- call copy routine */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Pushing MESH data...\n\n" ) ;
-
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = copy_mesh (
-                 _jcfg, _jlog ,
-                 _rdel, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-            }
-        }
-        
-        if(!_jcfg._geom_file.empty())
-        {
-            if(_jcfg._iter_opts.iter() != +0 )
-            {
-    /*--------------------------------- call iter routine */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  MESH optimisation...\n\n" ) ;
-
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if ((_retv = init_mesh (
-                 _jcfg, 
-                 _jlog, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-            if ((_retv = iter_mesh (
-                 _jcfg, _jlog ,
-                 _geom, 
-                 _hfun, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-            }
-        }
-        
-        if(!_jcfg._geom_file.empty() &&
-           !_jcfg._mesh_file.empty() )
-        {
-    /*--------------------------------- dump mesh to file */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Writing MESH file...\n\n" ) ;
-
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if (_jcfg._rdel_opts.iter() != +0 &&
-                _jcfg._iter_opts.iter() == +0 )
-            {
-
-            if ((_retv = save_jmsh (
-                 _jcfg, 
-                 _jlog, _rdel)) != __no_error)
-            {
-                return  _retv ;
-            }
-        
-            }    
-            else
-            {
-
-            if ((_retv = save_jmsh (
-                 _jcfg, 
-                 _jlog, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
-        
-            }
-
-#           ifdef  __use_timers         
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-        }
-
-    /*-------------------------- success, if we got here! */
-
-        return ( _retv ) ;
-    }
-
-        
-#   endif   //__lib_jigsaw
-
-    
     

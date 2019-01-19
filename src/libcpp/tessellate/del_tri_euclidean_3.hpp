@@ -207,7 +207,7 @@
                 &_lpos[ 0] ,
                 &_xpos[ 0] ) ;
                 
-            return (_sign < (double)+0.0) ;
+            return (_sign <= (double)0.0) ;
         }
         } ; 
 

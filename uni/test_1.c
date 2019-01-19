@@ -64,22 +64,22 @@
         _geom._vert2._size = +4 ;
         
         _geom._edge2._data = &_edge2[0] ;
-        _geom._edge2._size = +4 ;
-            
+        _geom._edge2._size = +4 ;            
         
     /*-------------------------------- build JIGSAW tria. */
         
-        _jjig._verbosity = +1 ;
+        _jjig._verbosity =   +1 ;
         
+        _jjig._hfun_hmax = 0.10 ;
         _jjig._hfun_scal = 
-            JIGSAW_HFUN_RELATIVE ;
-        _jjig._hfun_hmax = 0.1;
- 
- 
-        _retv = jigsaw_make_mesh (
-            &_jjig, &_geom, NULL , 
-              NULL, &_mesh
-             ) ;
+            JIGSAW_HFUN_RELATIVE;
+        
+        _retv = jigsaw (
+            &_jjig, // the config. opts
+            &_geom, // geom. data
+              NULL, // empty init. data 
+              NULL, // empty hfun. data
+            &_mesh) ;
  
     /*-------------------------------- print JIGSAW tria. */
 
@@ -103,7 +103,7 @@
                 _ipos != _mesh._tria3._size ; 
                    ++_ipos )
         {
-            printf("%i, %i, %i\n",
+            printf("%d, %d, %d\n",
             _mesh._tria3.
                 _data[_ipos]._node[0],
             _mesh._tria3.
@@ -116,7 +116,7 @@
         jigsaw_free_msh_t(&_mesh);
  
         printf (
-    "JIGSAW returned code: %i \n", _retv) ;
+    "JIGSAW returned code: %d \n", _retv) ;
  
  
         return _retv ;

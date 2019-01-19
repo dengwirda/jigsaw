@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 April, 2018
+     * Last updated: 09 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -224,7 +224,15 @@
             _mesh._tria.
                 node(_nadj)->topo() ;
              
-    /*--------------------- find intersections with GEOM. */       
+    /*--------------------- find intersections with GEOM. */     
+        typename
+        geom_type::ball_type _pdat, _hdat ;
+        _pdat._pmid[0] = _ball._ball[0] ;
+        _pdat._pmid[1] = _ball._ball[1] ;
+        
+        _hdat._pmid[0] = _ball._ball[0] ;
+        _hdat._pmid[1] = _ball._ball[1] ;
+        
         mesh::keep_all_2d <
             real_type ,
                 iptr_type > _pred ;
@@ -234,35 +242,49 @@
         
         for (auto _iter = 32; _iter-- != 0 ; )
         {         
+            bool_type _okay = true;  
+            
             _pred.clear() ;
             _halo.clear() ;
                 
-            real_type _prad = 
+            _pdat._rrad = 
            (real_type)+1.0 * _ball._ball[2] ;
            
-            real_type _hrad = 
+            _hdat._rrad =  
            (real_type)+1.5 * _ball._ball[2] ;
-                
-            bool_type _okay = true;         
+             
             _okay = _okay & _geom.intersect (
-               &_ball._ball[0], 
-                    _prad, _pred) ; // actual!
-                    
+                    _pdat, _pred) ; // actual!
+            
+            if(!_okay)
+            {
+                _ball._ball[2] *=   // reduce R for GEOM.
+                    (real_type) +.67 ;
+                continue ;
+            }
+            else
+            if (_pred._inum !=  _ndeg)
+            {
+                _ball._ball[2] *=   // reduce R for TOPO.
+                    (real_type) +.67 ;
+                continue ;
+            }
+            
             _okay = _okay & _geom.intersect (
-               &_ball._ball[0], 
-                    _hrad, _halo) ; // bracket
+                    _hdat, _halo) ; // bracket
                                     
             if(!_okay)
             {
                 _ball._ball[2] *=   // reduce R for GEOM.
                     (real_type) +.67 ;
+                continue ;
             }
             else
-            if (_pred._inum != _ndeg ||
-                _halo._inum != _ndeg )
+            if (_halo._inum !=  _ndeg)
             {
                 _ball._ball[2] *=   // reduce R for TOPO.
                     (real_type) +.67 ;
+                continue ;
             }
             else { break ; }
         }  

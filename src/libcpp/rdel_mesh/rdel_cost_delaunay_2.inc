@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 September, 2017
+     * Last updated: 29 December, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -161,39 +161,14 @@
         _tria.tria(_tpos)->node(+2)
             } ;
 
-    /*--------------------------------- tria circumcentre */
+    /*--------------------------------- calc. circumballs */
         real_type  _tbal[3] ;
-        _tbal[0] = _mesh.
-            _tria.tria(_tpos)->circ(+0) ;
-        _tbal[1] = _mesh.
-            _tria.tria(_tpos)->circ(+1) ;
-  
-        _tbal[2] = (real_type)+.0 ; 
-        _tbal[2]+= 
-            geometry::lensqr_2d (_tbal, 
-               &_mesh._tria.node(
-                    _tnod[0])->pval(0)) ;
-        _tbal[2]+= 
-            geometry::lensqr_2d (_tbal, 
-               &_mesh._tria.node(
-                    _tnod[1])->pval(0)) ;
-        _tbal[2]+= 
-            geometry::lensqr_2d (_tbal, 
-               &_mesh._tria.node(
-                    _tnod[2])->pval(0)) ;
-                    
-        _tbal[2]/= (real_type)+3. ;
-        
-    /*------------------------- evaluate "in--out" status */
-        if (_part<=-1)
-        if(!_geom.is_inside(&_tbal[+0]))
-        {
-    /*------------------------- is not a restricted facet */
-            return   ;
-        }
-        
-        _part =   +0 ;  //!! this should come from GEOM!!
-
+        if (!base_type::tria_ball ( 
+            _geom, _mesh, 
+            _tpos, _tbal, _part)  )
+    /*--------------------------------- is not restricted */
+            return  ;
+    
     /*--------------------------------- find edge lengths */
         real_type  _llen[3] ;
         iptr_type  _enum ;

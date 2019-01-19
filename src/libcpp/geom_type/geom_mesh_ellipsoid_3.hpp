@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 March, 2018
+     * Last updated: 16 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -52,7 +52,8 @@
     typename R ,
     typename I 
              >
-    class geom_mesh_ellipsoid_3d
+    class geom_mesh_ellipsoid_3d : 
+            public  geom_base_3d<R, I>
     {
     public  :
     
@@ -64,6 +65,19 @@
     typedef geom_mesh_ellipsoid_3d  <
                 real_type ,
                 iptr_type    >      geom_type ;
+
+    typedef geom_base_3d     <
+                real_type ,
+                iptr_type    >      base_type ;
+    
+    typedef typename 
+            base_type::line_type    line_type ;
+    typedef typename 
+            base_type::flat_type    flat_type ;
+    typedef typename 
+            base_type::disc_type    disc_type ;
+    typedef typename 
+            base_type::ball_type    ball_type ;
                 
     public  :
     
@@ -105,6 +119,25 @@
         
     //!! blah something about coastlines...
         
+    }
+    
+    /*
+    --------------------------------------------------------
+     * HAVE-FEAT: TRUE if has k-dim. FEAT.
+    --------------------------------------------------------
+     */
+    
+    __inline_call bool_type have_feat (
+        iptr_type _fdim
+        )
+    {
+        if (_fdim == +2)
+            return (  true ) ;
+        else
+        if (_fdim == +1)
+            return ( false ) ;
+        else
+            return ( false ) ;
     }
     
     /*
@@ -271,7 +304,7 @@
     
     /*
     --------------------------------------------------------
-     * LINE-SURF: helper!
+     * LINE-SURF: helper to compute intersections.
     --------------------------------------------------------
      */
     
@@ -363,24 +396,19 @@
     
     /*
     --------------------------------------------------------
-     * INTERSECT: compute poly-edge intersections.
+     * INTERSECT: find FLAT/1-GEOM. intersections.
     --------------------------------------------------------
      */
-     
+    
     template <
-        typename  poly_list ,
         typename  hits_func
              >
     __normal_call bool_type intersect (
-        real_type *_ppos ,
-        real_type *_nvec ,
-        poly_list &_poly ,
+        flat_type &_flat ,
         hits_func &_hfun
         )
     {
-        __unreferenced(_ppos) ;
-        __unreferenced(_nvec) ;
-        __unreferenced(_poly) ;
+        __unreferenced(_flat) ;
         __unreferenced(_hfun) ;
     
         return ( false ) ;
@@ -388,7 +416,7 @@
     
     /*
     --------------------------------------------------------
-     * INTERSECT: compute ball-edge intersections.
+     * INTERSECT: find BALL/1-GEOM. intersections.
     --------------------------------------------------------
      */
      
@@ -396,14 +424,11 @@
         typename  hits_func
              >
     __normal_call bool_type intersect (
-        real_type *_cmid ,
-        real_type  _rsiz ,
+        ball_type &_ball ,
         hits_func &_hfun
         )
     {
-    
-        __unreferenced(_cmid) ;
-        __unreferenced(_rsiz) ;
+        __unreferenced(_ball) ;
         __unreferenced(_hfun) ;
     
         return ( false ) ;
@@ -411,7 +436,7 @@
     
     /*
     --------------------------------------------------------
-     * INTERSECT: compute line-face intersections.
+     * INTERSECT: find LINE/2-GEOM. intersections.
     --------------------------------------------------------
      */
      
@@ -419,12 +444,21 @@
         typename  hits_func
              >
     __normal_call bool_type intersect (
-        real_type *_ipos ,
-        real_type *_jpos ,
+        line_type &_line ,
         hits_func &_hfun
         )
     {
         bool_type _find = false ;
+
+        real_type _ipos[3] ;
+        _ipos[0] =_line._ipos[0];
+        _ipos[1] =_line._ipos[1];
+        _ipos[2] =_line._ipos[2];
+
+        real_type _jpos[3] ;
+        _jpos[0] =_line._jpos[0];
+        _jpos[1] =_line._jpos[1];
+        _jpos[2] =_line._jpos[2];
 
         real_type _ttaa, _ttbb;
         if (line_surf(_ipos, _jpos, _ttaa, _ttbb))
@@ -481,13 +515,13 @@
                          _itag) ;
             }
         }
-
+        
         return ( _find ) ;
     }
       
     /*
     --------------------------------------------------------
-     * INTERSECT: compute disk-face intersections.
+     * INTERSECT: find DISC/2-GEOM. intersections.
     --------------------------------------------------------
      */
      
@@ -495,21 +529,17 @@
         typename  hits_func
              >
     __normal_call bool_type intersect (
-        real_type *_cmid ,
-        real_type *_nvec ,
-        real_type  _rsiz ,
-        real_type *_ball ,
+        disc_type &_disc ,
+        real_type *_sbal ,
         hits_func &_hfun
         )
     {
-        __unreferenced(_nvec) ;
-        
         bool_type _find = false ;
 
         real_type  _bvec[3] = {
-        _ball[0] - _cmid[0] ,
-        _ball[1] - _cmid[1] ,
-        _ball[2] - _cmid[2]
+        _sbal[0] - _disc._pmid[0] ,
+        _sbal[1] - _disc._pmid[1] ,
+        _sbal[2] - _disc._pmid[2]
             } ;
         real_type  _blen = 
         geometry::length_3d(_bvec) ;
@@ -517,21 +547,20 @@
         _bvec[1]/= _blen ;
         _bvec[2]/= _blen ;
 
-        _bvec[0]*= _rsiz ;
-        _bvec[1]*= _rsiz ;
-        _bvec[2]*= _rsiz ;
+        _bvec[0]*= _disc._rrad;
+        _bvec[1]*= _disc._rrad;
+        _bvec[2]*= _disc._rrad;
 
         real_type  _tpos[3] = {
-        _cmid[0] + _bvec[0] ,
-        _cmid[1] + _bvec[1] ,
-        _cmid[2] + _bvec[2] ,
+        _disc._pmid[0] + _bvec[0] ,
+        _disc._pmid[1] + _bvec[1] ,
+        _disc._pmid[2] + _bvec[2] ,
             } ;
             
         real_type  _circ[3] = {
             (real_type) +0. ,
             (real_type) +0. ,
-            (real_type) +0.
-            } ;
+            (real_type) +0. } ;
 
         real_type _ttaa;
         real_type _ttbb;
@@ -587,7 +616,7 @@
                          _itag) ;
             }
         }
-
+    
         return ( _find ) ;
     }
     

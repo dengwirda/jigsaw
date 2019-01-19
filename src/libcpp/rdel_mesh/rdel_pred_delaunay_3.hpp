@@ -39,6 +39,51 @@
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
+     *
+     * This class defines the behaviour of the "standard"
+     * restricted delaunay refinement scheme for meshes
+     * in R^3. Routines are provided to assess the 
+     * "restricted-ness" of faces, to compute refinement 
+     * "costs" (priorities), and to insert new vertices.
+     *
+     * My implementation is described in:
+     *
+     * D. Engwirda and D. Ivers, (2016): Off-centre Steiner 
+     * points for Delaunay-refinement on curved surfaces, 
+     * Computer-Aided Design, 72, pp. 157-171, 
+     * http://dx.doi.org/10.1016/j.cad.2015.10.007
+     *
+     * D. Engwirda, (2016): "Conforming restricted Delaunay 
+     * mesh generation for piecewise smooth complexes", 
+     * Procedia Engineering, 163, pp. 84-96, 
+     * http://dx.doi.org/10.1016/j.proeng.2016.11.024
+     *
+     * D. Engwirda, (2014): "Locally-optimal Delaunay-
+     * refinement and optimisation-based mesh generation", 
+     * Ph.D. Thesis, School of Mathematics and Statistics, 
+     * Univ. of Sydney. 
+     * http://hdl.handle.net/2123/13148
+     *
+     * which is based on various previous works, including
+     * (primarily):
+     *
+     * J.D. Boissonnat, S. Oudot, (2005): "Provably Good 
+     * Sampling and Meshing of Surfaces", Graphical Models, 
+     * 67, pp. 405-451,
+     * https://doi.org/10.1016/j.gmod.2005.01.004
+     *
+     * C. Jamin, P. Alliez, M. Yvinec, and J.D. Boissonnat, 
+     * (2015): "CGALmesh: a generic framework for Delaunay 
+     * mesh generation", ACM Transactions on Mathematical 
+     * Software (TOMS), 41, pp. 23
+     * https://doi.org/10.1145/2699463
+     *
+     * S.W. Cheng, T.K. Dey, E.A. Ramos, (2010): "Delaunay 
+     * Refinement for Piecewise Smooth Complexes", 
+     * Discrete & Computational Geometry, 43, pp. 121-166,
+     * https://doi.org/10.1007/s00454-008-9109-3
+     *
+    --------------------------------------------------------
      */
 
 #   pragma once

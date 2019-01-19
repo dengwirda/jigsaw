@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 April, 2018
+     * Last updated: 17 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -127,8 +127,8 @@
         rdel_opts &_opts
         )
     {
-        __unreferenced (_geom) ;
-        __unreferenced (_opts) ;
+        __unreferenced ( _geom ) ;
+        __unreferenced ( _opts ) ;
     
         if (_mesh._tria.
              node(_npos)->feat()==hard_feat)
@@ -181,8 +181,8 @@
         )
     {
     /*-------------------------------- correct node dims? */       
-        iptr_type _fdim =+0 ;
-        for(iptr_type _node =+3; _node-- != +0; )
+        iptr_type _fdim =+0;
+        for (auto _node =+3; _node-- != +0; )
         {
         if (_mesh._tria.node (
             _mesh._tria.tria (
@@ -193,7 +193,7 @@
         if (_fdim  < +2 ) return ;
 
     /*-------------------------------- check "restricted" */
-        for(char_type _fpos =+3; _fpos-- != +0; )
+        for (auto _fpos =+3; _fpos-- != +0; )
         {
         /*---------------------------- extract face nodes */
             iptr_type _tnod[ +3] ;
@@ -217,12 +217,12 @@
                     std::less<iptr_type>()) ;
 
             edge_data _fdat;
-            _fdat._node[0] = _tnod[0] ;
-            _fdat._node[1] = _tnod[1] ;
+            _fdat._node[0] = _tnod[ 0] ;
+            _fdat._node[1] = _tnod[ 1] ;
 
             edge_cost _cdat;
-            _cdat._node[0] = _tnod[0] ;
-            _cdat._node[1] = _tnod[1] ;
+            _cdat._node[0] = _tnod[ 0] ;
+            _cdat._node[1] = _tnod[ 1] ;
 
             typename mesh_type::
                      edge_list::
@@ -242,7 +242,8 @@
             _fdat._pass    = _pass;
 
             _fdat._tadj    = _tpos;
-            _fdat._eadj    = _fpos;
+            _fdat._eadj    = 
+                (char_type)  _fpos;
             _fdat._dups    = +0; // count num. dup's
                                  // only in hash-set
             
@@ -282,7 +283,7 @@
 
             _edge_test.push (_fdat) ;
 
-        } // for(iptr_type _fpos = +3 ; _fpos-- != +0 ; )
+        } // for (auto _fpos = +3; _fpos-- != +0; )
     }
     
     /*
@@ -327,16 +328,16 @@
                 return ;
 
             tria_data _tdat;
-            _tdat._node[0] = _tnod[0] ;
-            _tdat._node[1] = _tnod[1] ;
-            _tdat._node[2] = _tnod[2] ;
+            _tdat._node[0] = _tnod[ 0] ;
+            _tdat._node[1] = _tnod[ 1] ;
+            _tdat._node[2] = _tnod[ 2] ;
 
             _tdat._tadj    = _tpos;
 
             tria_cost _cdat;
-            _cdat._node[0] = _tnod[0] ;
-            _cdat._node[1] = _tnod[1] ;
-            _cdat._node[2] = _tnod[2] ;
+            _cdat._node[0] = _tnod[ 0] ;
+            _cdat._node[1] = _tnod[ 1] ;
+            _cdat._node[2] = _tnod[ 2] ;
 
             typename mesh_type::
                      tria_list::
@@ -435,9 +436,10 @@
         geom_type &_geom ,
         hfun_type &_hfun ,
         mesh_type &_mesh ,
+        bool_type  _init ,      // true to init. circball
         iptr_list &_nnew ,
         iptr_list &_tnew ,
-        escr_list &_escr ,
+        escr_list &_escr ,      // lists of new rDT faces
         edat_list &_edat ,
         tscr_list &_tscr ,
         tdat_list &_tdat ,
@@ -445,8 +447,8 @@
         ball_list &_bdat ,
         iptr_type  _sign ,
         iptr_type  _pass ,
-        mode_type  _dim0 ,
-        mode_type  _dim1 ,
+        mode_type  _dim0 ,      // lo rDT dim. to examine 
+        mode_type  _dim1 ,      // hi rDT dim. to examine
         rdel_opts &_opts
         )
     {
@@ -485,6 +487,7 @@
                   _iter != _tnew.tend(); 
                 ++_iter  )
         {
+            if (_init)
             tria_circ(_mesh,*_iter) ;
         }
     

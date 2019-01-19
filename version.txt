@@ -10,8 +10,39 @@
 #   \_8"       Y8""8D                             
 #
 #------------------------------------------------------------
-#   JIGSAW: an unstructured mesh generation package 
+#   JIGSAW: an unstructured mesh generation library 
 #------------------------------------------------------------
+
+  * Version 0.9.8:
+    -------------
+
+  - Support for "multi-part" domains and "internal"
+    constraints. An additional geometry index BOUND
+    can be used to define how edges/faces in the 
+    domain are associated with various enclosed 
+    areas/volumes, known as "parts". While the full 
+    domain is (always) meshed as a conforming tess-
+    ellation, individual sub-meshes for each "part" 
+    can be identified via an ID tag. "Internal" 
+    constraints (those that don't define the bound-
+    ary of any "part") may also be specified.
+
+  - Support for standalone generation of restricted
+    Delaunay tessellations via the cmd-line utility
+    TRIPOD. This tool exposes JIGSAW's internal rDT
+    infrastructure, allowing restricted structures
+    to be assembled given a set of points and a ge-
+    omtry definition. TRIPOD shares common I/O pro-
+    tocols, options, etc with JIGSAW.
+ 
+  - Revisions to JIGSAW's core rDT predicates, ado-
+    pting a "halfplane clipping" test to determine
+    intersections between the dual-complex and the
+    geometry. The new approach (still employing an
+    "epsilon" floating-point model) should be more
+    numerically robust, especially for domains with
+    "sharp-features" in R^3.
+ 
 
   * Version 0.9.6:
     -------------

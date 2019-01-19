@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 13 April, 2018
+     * Last updated: 09 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -234,43 +234,68 @@
              node(_nadj)->topo() ;
              
     /*--------------------- find intersections with geom. */       
+        typename
+        geom_type::ball_type _pdat, _hdat ;
+        _pdat._pmid[0] = _ball._ball[0] ;
+        _pdat._pmid[1] = _ball._ball[1] ;
+        _pdat._pmid[2] = _ball._ball[2] ;
+        
+        _hdat._pmid[0] = _ball._ball[0] ;
+        _hdat._pmid[1] = _ball._ball[1] ;
+        _hdat._pmid[2] = _ball._ball[2] ;
+        
         mesh::keep_all_3d <
             real_type ,
             iptr_type > _pred ;
         mesh::keep_all_3d <
             real_type ,
             iptr_type > _halo ;
-        
-        for (auto _iter = 32; _iter-- != 0 ; )
+
+        for(auto _iter = 32; _iter-- != 0 ; )
         {         
+            bool_type _okay = true ;
+            
             _pred.clear() ;
             _halo.clear() ;
                 
-            real_type _prad = 
+            _pdat._rrad = 
            (real_type)+1.0 * _ball._ball[3] ;
            
-            real_type _hrad = 
+            _hdat._rrad =  
            (real_type)+1.5 * _ball._ball[3] ;
-                
-            bool_type _okay = true;         
+             
             _okay = _okay & _geom.intersect (
-               &_ball._ball[0], 
-                    _prad, _pred) ; // actual!
-                    
-            _okay = _okay & _geom.intersect (
-               &_ball._ball[0], 
-                    _hrad, _halo) ; // bracket
+                    _pdat, _pred) ; // actual!
                                     
             if(!_okay)
             {
                 _ball._ball[3] *=   // reduce rad. for geom.
                     (real_type) +.67 ;
+                continue ;
             }
             else
             if (_pred._inum !=  _ndeg)
             {
                 _ball._ball[3] *=   // reduce rad. for topo.
                     (real_type) +.67 ;
+                continue ;
+            }
+
+            _okay = _okay & _geom.intersect (
+                    _hdat, _halo) ; // bracket
+
+            if(!_okay)
+            {
+                _ball._ball[3] *=   // reduce rad. for geom.
+                    (real_type) +.67 ;
+                continue ;
+            }
+            else
+            if (_halo._inum !=  _ndeg)
+            {
+                _ball._ball[3] *=  // reduce rad. for topo.
+                    (real_type) +.67 ;
+                continue ;
             }
             else { break ; }
         }  

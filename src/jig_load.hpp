@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 July, 2018
+     * Last updated: 02 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -78,7 +78,8 @@
         __normal_call void_type push_verbosity (
             std::int32_t  _verb
             ) 
-        { 
+        {
+            this->_jjig->_verbosity = _verb ;
             this->_jjig->
            _rdel_opts.verb() = _verb;
             this->_jjig->
@@ -440,13 +441,14 @@
         try
         {
     /*------------------------------------- MISC keywords */
+            _jcfg._verbosity = 
+                         _jjig._verbosity ;
             _jcfg._rdel_opts.
                 verb() = _jjig._verbosity ;
             _jcfg._iter_opts.
                 verb() = _jjig._verbosity ;
-    
-    /*------------------------------------- BNDS keywords */
             
+    /*------------------------------------- BNDS keywords */
             if (_jjig._bnds_kern == 
                     JIGSAW_BNDS_TRIACELL)
             _jcfg._bnds_pred = 

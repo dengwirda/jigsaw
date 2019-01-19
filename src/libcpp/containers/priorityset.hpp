@@ -275,7 +275,7 @@
     
 /*------------------------------------- peek at heap item */
     __inline_call data_type const& peek (
-        size_type  _hpos
+        size_type  _hpos    = +0
         ) const
     {   return this->_heap[_hpos] ;
     }
@@ -338,8 +338,8 @@
         this->_heap.push_tail() ;
     /*---------------- sort "hole" for data into position */
         _write_it _ipos = push_upper (
-            this->_heap.head() , 
-            this->_heap.head() + _tpos , 
+            this->_heap.head()  , 
+            this->_heap.head()+_tpos , 
         __copy(data_type,_data));
     /*---------------- copy new data into sorted position */
         *_ipos  = 
@@ -355,8 +355,8 @@
         this->_heap.push_tail() ;
     /*---------------- sort "hole" for data into position */
         _write_it _ipos = push_upper (
-            this->_heap.head() , 
-            this->_heap.head() + _tpos , 
+            this->_heap.head()  , 
+            this->_heap.head()+_tpos , 
         __copy(data_type,_data));
     /*---------------- copy new data into sorted position */
         *_ipos  = 
@@ -403,15 +403,15 @@
     /*--------- push "hole" at HPOS into updated position */
         if (this->_heap.count() > 1)
         {
-        /*---------- find new position for "hole" at HPOS */
-            _write_it _ipos = push_lower (
-                this->_heap.head() ,  
-                this->_heap.tail() -    1 , 
-                this->_heap.head() + _hpos, 
-               *this->_heap.tail());
-        /*---------- copy tail data into updated position */
+    /*---------- find new position for "hole" at HPOS */
+        _write_it _ipos = push_lower (
+            this->_heap.head() ,  
+            this->_heap.tail()-   1  , 
+            this->_heap.head()+_hpos , 
+           *this->_heap.tail());
+    /*---------- copy tail data into updated position */
            *_ipos = 
-            std::move(*this->_heap.tail());
+        std::move(*this->_heap.tail());
         } 
         this->_heap._pop_tail() ;
     }
@@ -428,14 +428,18 @@
 #       ifdef _DEBUG
     /*------------------ test relationships for all nodes */
         size_type _ipos = +1 ;
-        size_type _iend = this->_heap.count() ;
+        size_type _iend = 
+        this->_heap.count () ;        
         for ( ; _ipos < _iend; ++_ipos)
         {
-            size_type _ppos = (_ipos-1)/_nfan ;
-        /*-------------- heap is invalid if lower < upper */
-            if (this->_pred(this->_heap[_ipos], 
-                            this->_heap[_ppos])
-                        )
+    /*------------------ heap is invalid if lower < upper */
+            size_type _ppos = 
+                (_ipos - 1)/_nfan ;
+        
+            if (this->_pred(
+                this->_heap[_ipos], 
+                this->_heap[_ppos]
+                )   )
                 return false ;
         }
 #       endif
