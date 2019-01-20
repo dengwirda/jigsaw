@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 December, 2018
+     * Last updated: 19 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -186,7 +186,7 @@
     
     void jigsaw_alloc_vert2 (               // _new-alloc
         jigsaw_VERT2_array_t *_vert2 ,
-        indx_t _size
+        size_t _size
         )
     {
         _vert2->_size = _size ;       
@@ -194,7 +194,7 @@
             std::malloc(
         _size * sizeof (jigsaw_VERT2_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -210,7 +210,7 @@
     
     void jigsaw_alloc_vert3 (               // _new-alloc
         jigsaw_VERT3_array_t *_vert3 ,
-        indx_t _size
+        size_t _size
         )
     {
         _vert3->_size = _size ;       
@@ -218,7 +218,7 @@
             std::malloc(
         _size * sizeof (jigsaw_VERT3_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -236,7 +236,7 @@
     
     void jigsaw_alloc_edge2 (               // _new-alloc
         jigsaw_EDGE2_array_t *_edge2 ,
-        indx_t _size
+        size_t _size
         )
     {
         _edge2->_size = _size ;       
@@ -244,7 +244,7 @@
             std::malloc(
         _size * sizeof (jigsaw_EDGE2_t)) ;  
     
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -260,7 +260,7 @@
  
     void jigsaw_alloc_tria3 (               // _new-alloc
         jigsaw_TRIA3_array_t *_tria3 ,
-        indx_t _size
+        size_t _size
         )
     {
         _tria3->_size = _size ;       
@@ -268,7 +268,7 @@
             std::malloc(
         _size * sizeof (jigsaw_TRIA3_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -286,7 +286,7 @@
     
     void jigsaw_alloc_quad4 (               // _new-alloc
         jigsaw_QUAD4_array_t *_quad4 ,
-        indx_t _size
+        size_t _size
         )
     {
         _quad4->_size = _size ;       
@@ -294,7 +294,7 @@
             std::malloc(
         _size * sizeof (jigsaw_QUAD4_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -314,7 +314,7 @@
     
     void jigsaw_alloc_tria4 (               // _new-alloc
         jigsaw_TRIA4_array_t *_tria4 ,
-        indx_t _size
+        size_t _size
         )
     {
         _tria4->_size = _size ;       
@@ -322,7 +322,7 @@
             std::malloc(
         _size * sizeof (jigsaw_TRIA4_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -342,7 +342,7 @@
     
     void jigsaw_alloc_hexa8 (               // _new-alloc
         jigsaw_HEXA8_array_t *_hexa8 ,
-        indx_t _size
+        size_t _size
         )
     {
         _hexa8->_size = _size ;       
@@ -350,7 +350,7 @@
             std::malloc(
         _size * sizeof (jigsaw_HEXA8_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -378,7 +378,7 @@
     
     void jigsaw_alloc_wedg6 (               // _new-alloc
         jigsaw_WEDG6_array_t *_wedg6 ,
-        indx_t _size
+        size_t _size
         )
     {
         _wedg6->_size = _size ;       
@@ -386,7 +386,7 @@
             std::malloc(
         _size * sizeof (jigsaw_WEDG6_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -410,7 +410,7 @@
     
     void jigsaw_alloc_pyra5 (               // _new-alloc
         jigsaw_PYRA5_array_t *_pyra5 ,
-        indx_t _size
+        size_t _size
         )
     {
         _pyra5->_size = _size ;       
@@ -418,7 +418,7 @@
             std::malloc(
         _size * sizeof (jigsaw_PYRA5_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -440,7 +440,7 @@
     
     void jigsaw_alloc_bound (               // _new-alloc
         jigsaw_BOUND_array_t *_bound ,
-        indx_t _size
+        size_t _size
         )
     {
         _bound->_size = _size ;       
@@ -448,7 +448,7 @@
             std::malloc(
         _size * sizeof (jigsaw_BOUND_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -463,7 +463,7 @@
 
     void jigsaw_alloc_index (               // _new-alloc
         jigsaw_INDEX_array_t *_index ,
-        indx_t _size
+        size_t _size
         )
     {
         _index->_size = _size ;       
@@ -471,7 +471,7 @@
             std::malloc (
                 _size * sizeof (indx_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {
@@ -482,7 +482,7 @@
 
     void jigsaw_alloc_reals (               // _new-alloc
         jigsaw_REALS_array_t *_reals ,
-        indx_t _size
+        size_t _size
         )
     {
         _reals->_size = _size ;       
@@ -490,7 +490,7 @@
             std::malloc (
                 _size * sizeof (real_t)) ;
             
-        for (indx_t _item  = (indx_t) +0 ; 
+        for (size_t _item  = (size_t) +0 ; 
                     _item != _size ; 
                   ++_item  )
         {

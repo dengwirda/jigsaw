@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 June, 2018
+     * Last updated: 19 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -71,7 +71,7 @@
             std::int32_t         _ftag ;
             jmsh_kind::
             enum_data            _kind ;
-            std::int32_t         _ndim ;
+            std:: size_t         _ndim ;
         public  :
     /*---------------------------------- construct reader */
         __normal_call init_reader (
@@ -90,7 +90,7 @@
         }
     /*---------------------------------- parse NDIMS data */
         __normal_call void_type push_ndims (
-            std::int32_t  _ndim
+            std:: size_t  _ndim
             )
         {   
             this->_ndim = _ndim ;
@@ -99,7 +99,7 @@
         }
     /*---------------------------------- parse POINT data */
         __normal_call void_type push_point (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             double       *_pval ,
             std::int32_t  _itag
             )
@@ -163,7 +163,7 @@
         }
     /*---------------------------------- parse EDGE2 data */
         __normal_call void_type push_edge2 (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
@@ -203,7 +203,7 @@
         }
     /*---------------------------------- parse TRIA3 data */
         __normal_call void_type push_tria3 (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
@@ -245,7 +245,7 @@
         }
     /*---------------------------------- parse TRIA4 data */
         __normal_call void_type push_tria4 (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
@@ -349,7 +349,7 @@
                 = jmsh_kind::euclidean_mesh ;
             _init._ndim = +2;
     
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _imsh._vert2._size ; 
                     ++_ipos )
             {
@@ -378,7 +378,7 @@
                     _mesh.push_node(_ndat,false);
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _imsh._edge2._size ; 
                     ++_ipos )
             {
@@ -394,7 +394,7 @@
                     _mesh.push_edge(_edat,false);
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _imsh._tria3._size ; 
                     ++_ipos )
             {
@@ -421,7 +421,7 @@
                 = jmsh_kind::euclidean_mesh ;
             _init._ndim = +3;
     
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _imsh._vert3._size ; 
                     ++_ipos )
             {
@@ -452,7 +452,7 @@
                     _mesh.push_node(_ndat,false);
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _imsh._edge2._size ; 
                     ++_ipos )
             {
@@ -468,7 +468,7 @@
                     _mesh.push_edge(_edat,false);
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _imsh._tria3._size ; 
                     ++_ipos )
             {
@@ -486,7 +486,7 @@
                     _mesh.push_tri3(_tdat,false);
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _imsh._tria4._size ; 
                     ++_ipos )
             {

@@ -813,33 +813,55 @@
         __unreferenced(_hfun) ;
 
     /*------------------------------ initialise mesh bbox */
-        real_type _plen[ +3];
-        _plen[ 0] = _geom._bmax[ 0] - 
-                    _geom._bmin[ 0] ;
-        _plen[ 1] = _geom._bmax[ 1] - 
-                    _geom._bmin[ 1] ;
-        _plen[ 2] = _geom._bmax[ 2] - 
-                    _geom._bmin[ 2] ;
-
+        real_type _pmin[ 3] ;
+        real_type _pmax[ 3] ;
+        _pmin[ 0] = _geom._bmin[ 0] ;
+        _pmin[ 1] = _geom._bmin[ 1] ;
+        _pmin[ 2] = _geom._bmin[ 2] ;
+        _pmax[ 0] = _geom._bmax[ 0] ;
+        _pmax[ 1] = _geom._bmax[ 1] ;
+        _pmax[ 2] = _geom._bmax[ 2] ;
+        
+        for (auto _node  = 
+            _init._mesh._set1.head(); 
+                  _node != 
+            _init._mesh._set1.tend();
+                ++_node  )
+        {
+        if (_node->mark() >= + 0 )
+        {
+        _pmin[ 0] = std::min(
+        _pmin[ 0], _node->pval(0)) ;
+        _pmax[ 0] = std::max(
+        _pmax[ 0], _node->pval(0)) ;
+        
+        _pmin[ 1] = std::min(
+        _pmin[ 1], _node->pval(1)) ;
+        _pmax[ 1] = std::max(
+        _pmax[ 1], _node->pval(1)) ;
+        
+        _pmin[ 2] = std::min(
+        _pmin[ 2], _node->pval(2)) ;
+        _pmax[ 2] = std::max(
+        _pmax[ 2], _node->pval(2)) ;     
+        }
+        }
+  
+        real_type _plen[ 3] = {
+        _pmax[ 0] - _pmin[ 0] ,
+        _pmax[ 1] - _pmin[ 1] ,
+        _pmax[ 2] - _pmin[ 2] ,
+            } ;  
         _plen[ 0]*= (real_type)+2.0 ;
         _plen[ 1]*= (real_type)+2.0 ;
         _plen[ 2]*= (real_type)+2.0 ;
-
-        real_type _pmin[ +3];
-        real_type _pmax[ +3];
-        _pmin[ 0] = _geom._bmin[ 0] - 
-                          _plen[ 0] ;
-        _pmin[ 1] = _geom._bmin[ 1] - 
-                          _plen[ 1] ;
-        _pmin[ 2] = _geom._bmin[ 2] - 
-                          _plen[ 2] ;
-
-        _pmax[ 0] = _geom._bmax[ 0] + 
-                          _plen[ 0] ;
-        _pmax[ 1] = _geom._bmax[ 1] + 
-                          _plen[ 1] ;
-        _pmax[ 2] = _geom._bmax[ 2] + 
-                          _plen[ 2] ;
+        
+        _pmin[ 0]-= _plen[ 0] ;
+        _pmin[ 1]-= _plen[ 1] ;
+        _pmin[ 2]-= _plen[ 2] ;
+        _pmax[ 0]+= _plen[ 0] ;
+        _pmax[ 1]+= _plen[ 1] ;
+        _pmax[ 2]+= _plen[ 2] ;
 
         _mesh.
         _tria.push_root(_pmin, _pmax) ;

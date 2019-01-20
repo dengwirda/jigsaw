@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 December, 2018
+     * Last updated: 19 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -71,7 +71,7 @@
             std::int32_t         _ftag ;
             jmsh_kind::
             enum_data            _kind ;
-            std::int32_t         _ndim ;
+            std:: size_t         _ndim ;
         public  :
     /*---------------------------------- construct reader */
         __normal_call geom_reader (
@@ -102,7 +102,7 @@
         }
     /*---------------------------------- parse NDIMS data */
         __normal_call void_type push_ndims (
-            std::int32_t  _ndim
+            std:: size_t  _ndim
             )
         {   
             this->_ndim = _ndim ;
@@ -111,7 +111,7 @@
         }
     /*---------------------------------- parse POINT data */
         __normal_call void_type push_point (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             double       *_pval ,
             std::int32_t  _itag
             )
@@ -159,7 +159,7 @@
         }
     /*---------------------------------- parse EDGE2 data */
         __normal_call void_type push_edge2 (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
@@ -206,7 +206,7 @@
         }
     /*---------------------------------- parse TRIA3 data */
         __normal_call void_type push_tria3 (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
@@ -245,23 +245,23 @@
         }
     /*---------------------------------- parse BOUND data */
         __normal_call void_type push_bound (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             std::int32_t  _itag ,
             std::int32_t  _inum ,
             std::int32_t  _kind
             )
         {
             __unreferenced(_ipos) ;
-            __unreferenced(_kind) ;
-
+            
             if (this->_kind == 
                     jmsh_kind::euclidean_mesh)
             {
                 typename 
                 geom_data::euclidean_mesh_2d
                     ::part_data _pdat ;
-                _pdat[0] = _itag;
-                _pdat[1] = _inum;
+                _pdat.itag () = _itag ;
+                _pdat.indx () = _inum ;
+                _pdat.kind () = _kind ;
                 
                 this->_geom->
                    _euclidean_mesh_2d.
@@ -275,8 +275,9 @@
                 typename 
                 geom_data::euclidean_mesh_3d
                     ::part_data _pdat ;
-                _pdat[0] = _itag;
-                _pdat[1] = _inum;
+                _pdat.itag () = _itag ;
+                _pdat.indx () = _inum ;
+                _pdat.kind () = _kind ;
                 
                 this->_geom->
                    _euclidean_mesh_3d.
@@ -361,7 +362,7 @@
                 = jmsh_kind::euclidean_mesh ;
             _geom._ndim = +2;
     
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _gmsh._vert2._size ; 
                     ++_ipos )
             {
@@ -379,7 +380,7 @@
                 _tria.push_node(_ndat , false) ;
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _gmsh._edge2._size ; 
                     ++_ipos )
             {
@@ -397,6 +398,24 @@
                 _tria.push_edge(_edat , false) ;
             }
             
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _gmsh._bound._size ; 
+                    ++_ipos )
+            {
+                typename 
+                geom_data::euclidean_mesh_2d
+                    ::part_data _pdat ;
+                _pdat.itag () = _gmsh.
+                    _bound._data[_ipos]._itag ;
+                _pdat.indx () = _gmsh.
+                    _bound._data[_ipos]._indx ;
+                _pdat.kind () = _gmsh.
+                    _bound._data[_ipos]._kind ;
+                
+                _geom._euclidean_mesh_2d.
+                      _part.push(_pdat) ;
+            }
+            
             }
             else
             if (_gmsh._vert3._size > 0)
@@ -406,7 +425,7 @@
                 = jmsh_kind::euclidean_mesh ;
             _geom._ndim = +3;
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _gmsh._vert3._size ; 
                     ++_ipos )
             {
@@ -426,7 +445,7 @@
                 _tria.push_node(_ndat , false) ;
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _gmsh._edge2._size ; 
                     ++_ipos )
             {
@@ -444,7 +463,7 @@
                 _tria.push_edge(_edat , false) ;
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _gmsh._tria3._size ; 
                     ++_ipos )
             {
@@ -462,6 +481,24 @@
             
                 _geom._euclidean_mesh_3d.
                 _tria.push_tri3(_tdat , false) ;
+            }
+     
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _gmsh._bound._size ; 
+                    ++_ipos )
+            {
+                typename 
+                geom_data::euclidean_mesh_3d
+                    ::part_data _pdat ;
+                _pdat.itag () = _gmsh.
+                    _bound._data[_ipos]._itag ;
+                _pdat.indx () = _gmsh.
+                    _bound._data[_ipos]._indx ;
+                _pdat.kind () = _gmsh.
+                    _bound._data[_ipos]._kind ;
+                
+                _geom._euclidean_mesh_3d.
+                      _part.push(_pdat) ;
             }
      
             }        
@@ -591,7 +628,8 @@
             iptr_type _imax = 
             std::numeric_limits<iptr_type>::min() ;
 
-            iptr_type _nmax = +0 ;
+            iptr_type _nnPT = +0 ;
+            iptr_type _nnE2 = +0 ;
 
             for (auto _iter  = _geom.
             _euclidean_mesh_2d._tria._set1.head() ;
@@ -599,9 +637,9 @@
             _euclidean_mesh_2d._tria._set1.tend() ;
                     ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
+                if (_iter->mark() < 0) continue;
                 
-                _nmax += +1  ;
+                _nnPT += +1  ;
             }
 
             for (auto _iter  = _geom.
@@ -610,7 +648,7 @@
             _euclidean_mesh_2d._tria._set2.tend() ;
                     ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
+                if (_iter->mark() < 0) continue;
                 
                 _imin = std::min(
                     _imin, _iter->node(0)) ;
@@ -620,14 +658,61 @@
                     _imax, _iter->node(0)) ;
                 _imax = std::max(
                     _imax, _iter->node(1)) ;
+                    
+                _nnE2 +=    +1 ;
+                
+                if (_imin < +0 || 
+                        _imax >= _nnPT)
+                {
+                    _errv = __invalid_argument ;
+                }            
             }
 
-            if (_imin < +0 || _imax>=_nmax)
+            if (_errv != __no_error)
             {
-                _jlog.push (
-    "**input error: GEOM. tria. indexing is incorrect.\n") ;
-        
-                _errv = __invalid_argument ;
+                _jlog.  push (
+    "**input error: GEOM. EDGE2 indexing is incorrect.\n") ;
+
+                return _errv ;
+            }
+            
+            for (auto _iter  = _geom.
+            _euclidean_mesh_2d._part._lptr.head() ;
+                      _iter != _geom.
+            _euclidean_mesh_2d._part._lptr.tend() ;
+                    ++_iter  )
+            {
+                if (*_iter == nullptr) continue;
+                    
+                for (auto _pptr  = *_iter ;
+                    _pptr != nullptr;
+                    _pptr  = _pptr->_next )
+                {
+                    
+                if (_pptr->_data.kind() 
+                         == JIGSAW_EDGE2_TAG )
+                {
+                if (_pptr->_data.indx() <  +0 ||
+                    _pptr->_data.indx() >= _nnE2 
+                    )
+                {
+                    _errv = __invalid_argument ;
+                }
+                }
+                else
+                {
+                    _errv = __invalid_argument ;
+                }
+                    
+                }
+            }
+            
+            if (_errv != __no_error)
+            {
+                _jlog.  push (
+    "**input error: GEOM. BOUND indexing is incorrect.\n") ;
+    
+                return _errv ;
             }
         }
         else
@@ -641,7 +726,9 @@
             iptr_type _imax = 
             std::numeric_limits<iptr_type>::min() ;
 
-            iptr_type _nmax = +0 ;
+            iptr_type _nnPT = +0 ;
+            iptr_type _nnE2 = +0 ;
+            iptr_type _nnT3 = +0 ;
 
             for (auto _iter  = _geom.
             _euclidean_mesh_3d._tria._set1.head() ;
@@ -651,7 +738,7 @@
             {
                 if (_iter->mark() < 0) continue ;
                 
-                _nmax += +1  ;
+                _nnPT += +1  ;
             }
 
             for (auto _iter  = _geom.
@@ -670,6 +757,22 @@
                     _imax, _iter->node(0)) ;
                 _imax = std::max(
                     _imax, _iter->node(1)) ;
+                    
+                _nnE2 +=    +1 ;
+                
+                if (_imin < +0 || 
+                        _imax >= _nnPT)
+                {
+                    _errv = __invalid_argument ;
+                }
+            }
+
+            if (_errv != __no_error)
+            {
+                _jlog.  push (
+    "**input error: GEOM. EDGE2 indexing is incorrect.\n") ;
+
+                return _errv ;
             }
 
             for (auto _iter  = _geom.
@@ -692,14 +795,61 @@
                     _imax, _iter->node(1)) ;
                 _imax = std::max(
                     _imax, _iter->node(2)) ;
+                    
+                _nnT3 +=    +1 ;
+                
+                if (_imin < +0 || 
+                        _imax >= _nnPT)
+                {
+                    _errv = __invalid_argument ;
+                }
             }
 
-            if (_imin < +0 || _imax>=_nmax)
+            if (_errv != __no_error)
             {
-                _jlog.push (
-    "**input error: GEOM. tria. indexing is incorrect.\n") ;
-        
-                _errv = __invalid_argument ;
+                _jlog.  push (
+    "**input error: GEOM. TRIA3 indexing is incorrect.\n") ;
+
+                return _errv ;
+            }
+            
+            for (auto _iter  = _geom.
+            _euclidean_mesh_3d._part._lptr.head() ;
+                      _iter != _geom.
+            _euclidean_mesh_3d._part._lptr.tend() ;
+                    ++_iter  )
+            {
+                if (*_iter == nullptr) continue;
+                    
+                for (auto _pptr  = *_iter ;
+                    _pptr != nullptr;
+                    _pptr  = _pptr->_next )
+                {
+                
+                if (_pptr->_data.kind() 
+                         == JIGSAW_TRIA3_TAG )
+                {
+                if (_pptr->_data.indx() <  +0 ||
+                    _pptr->_data.indx() >= _nnT3 
+                    )
+                {
+                    _errv = __invalid_argument ;
+                }
+                }
+                else
+                {
+                    _errv = __invalid_argument ;
+                }
+                    
+                }
+            }
+            
+            if (_errv != __no_error)
+            {
+                _jlog.  push (
+    "**input error: GEOM. BOUND indexing is incorrect.\n") ;
+    
+                return _errv ;
             }
         }
         else
@@ -715,7 +865,7 @@
                 _radC <= (real_type)  +0. )
             {
                 _jlog.push (
-    "**input error: GEOM. radii entries are incorrect.\n") ;
+    "**input error: GEOM. RADII entries are incorrect.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -776,8 +926,8 @@
             
             _jlog.push("\n") ;
             
-            iptr_type _num1 = +0 ;
-            iptr_type _num2 = +0 ;
+            iptr_type _nnPT = +0 ;
+            iptr_type _nnE2 = +0 ;
             
             for (auto _iter  = _geom.
             _euclidean_mesh_2d._tria._set1.head() ;
@@ -785,10 +935,10 @@
             _euclidean_mesh_2d._tria._set1.tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num1 += +1 ;
+            if (_iter->mark()>=+0) _nnPT += +1 ;
             }
             
-            __dumpINTS("|COORD.|", _num1)
+            __dumpINTS("|COORD.|", _nnPT)
             
             for (auto _iter  = _geom.
             _euclidean_mesh_2d._tria._set2.head() ;
@@ -796,10 +946,10 @@
             _euclidean_mesh_2d._tria._set2.tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num2 += +1 ;
+            if (_iter->mark()>=+0) _nnE2 += +1 ;
             }
             
-            __dumpINTS("|EDGE-2|", _num2)   
+            __dumpINTS("|EDGE-2|", _nnE2)   
         }
         else
         if (_geom._ndim == +3 &&
@@ -814,9 +964,9 @@
             
             _jlog.push("\n") ;
             
-            iptr_type _num1 = +0 ;
-            iptr_type _num2 = +0 ;
-            iptr_type _num3 = +0 ;
+            iptr_type _nnPT = +0 ;
+            iptr_type _nnE2 = +0 ;
+            iptr_type _nnT3 = +0 ;
             
             for (auto _iter  = _geom.
             _euclidean_mesh_3d._tria._set1.head() ;
@@ -824,10 +974,10 @@
             _euclidean_mesh_3d._tria._set1.tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num1 += +1 ;
+            if (_iter->mark()>=+0) _nnPT += +1 ;
             }
             
-            __dumpINTS("|COORD.|", _num1)
+            __dumpINTS("|COORD.|", _nnPT)
             
             for (auto _iter  = _geom.
             _euclidean_mesh_3d._tria._set2.head() ;
@@ -835,10 +985,10 @@
             _euclidean_mesh_3d._tria._set2.tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num2 += +1 ;
+            if (_iter->mark()>=+0) _nnE2 += +1 ;
             }
             
-            __dumpINTS("|EDGE-2|", _num2)
+            __dumpINTS("|EDGE-2|", _nnE2)
             
             for (auto _iter  = _geom.
             _euclidean_mesh_3d._tria._set3.head() ;
@@ -846,10 +996,10 @@
             _euclidean_mesh_3d._tria._set3.tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num3 += +1 ;
+            if (_iter->mark()>=+0) _nnT3 += +1 ;
             }
             
-            __dumpINTS("|TRIA-3|", _num3)           
+            __dumpINTS("|TRIA-3|", _nnT3)           
         }
         else
         if (_geom._kind ==

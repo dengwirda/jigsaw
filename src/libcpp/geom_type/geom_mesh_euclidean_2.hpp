@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 January, 2019
+     * Last updated: 19 January, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -77,10 +77,8 @@
             base_type::line_type    line_type ;
     typedef typename 
             base_type::ball_type    ball_type ;
-                
-    typedef containers::fixed_array <
-                iptr_type , 2   >   part_data ;
-
+    
+    
     class node_type: public tria_complex_node_2<I,R>
         {
     /*------------------------------------ loc. node type */
@@ -167,6 +165,43 @@
         }
         
         } ;
+        
+    class part_data
+        {
+    /*------------------------------------ loc. part type */
+        public  :
+        containers::fixed_array <
+                iptr_type,  + 3 >     _ints ;
+        
+        public  :
+    /*------------------------------------ "write" access */
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_ints[0] ;
+        }
+        __inline_call iptr_type&       indx (
+            )
+        {   return  this->_ints[1] ;
+        }
+        __inline_call iptr_type&       kind (
+            )
+        {   return  this->_ints[2] ;
+        }
+    /*------------------------------------ "const" access */
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_ints[0] ;
+        }
+        __inline_call iptr_type const& indx (
+            ) const
+        {   return  this->_ints[1] ;
+        }
+        __inline_call iptr_type const& kind (
+            ) const
+        {   return  this->_ints[2] ;
+        }
+        
+        } ;
 
     #define __hashscal \
         sizeof(iptr_type)/sizeof(uint32_t)
@@ -180,8 +215,8 @@
         {
     /*------------------------------- hash for part index */
             return hash::hashword (
-                (uint32_t*)&_pdat[+0], 
-                    +2 * __hashscal, +137) ;
+            (uint32_t*)&_pdat._ints[+0], 
+                    +3 * __hashscal, +137) ;
         }
         } ;
         
@@ -194,15 +229,19 @@
             ) const
         {
     /*------------------------------- "equal-to" for part */
-            return _idat[0] == _jdat[0] &&
-                   _idat[1] == _jdat[1] ;
+            return _idat.itag() == 
+                   _jdat.itag() &&
+                   _idat.indx() == 
+                   _jdat.indx() &&
+                   _idat.kind() == 
+                   _jdat.kind()  ;
         }
         } ;
         
     #undef __hashscal
 
     iptr_type static 
-        constexpr pool_byte_size = 96 * 1024 ;
+        constexpr pool_byte_size =  96 * 1024 ;
 
     typedef allocators::_pool_alloc <
             allocators::basic_alloc ,
@@ -220,7 +259,7 @@
             part_list::item_type    part_item ;
             
     iptr_type static constexpr 
-            part_bytes    = sizeof(part_item) ;
+            part_bytes    = sizeof (part_item);
 
     typedef containers::array   <
                 iptr_type ,
@@ -554,7 +593,7 @@
                         _next = _next->_next)
             {
                 iptr_type _ppos = 
-                    _next->_data[ 0] ;
+                    _next->_data.itag() ;
             
                 _imin = std::min(_imin, 
                                  _ppos) ;
@@ -590,7 +629,7 @@
                         _next = _next->_next)
             {
                 iptr_type _ppos  = 
-                    _next->_data[ +0];
+                    _next->_data.itag() ;
 
                 if (_mark[_ppos] == _flag)
                 {
@@ -623,49 +662,60 @@
                         _next = _next->_next)
             {
                 iptr_type _ppos = 
-                    _next->_data[ 0] ;
-                iptr_type _epos = 
-                    _next->_data[ 1] ;
+                    _next->_data.itag () ;
+                iptr_type _cell = 
+                    _next->_data.indx () ;
+                iptr_type _kind = 
+                    _next->_data.kind () ;
                     
+                if (_kind == EDGE2_tag)
+                {
+    /*----------------------------- expand aabb via EDGE2 */   
                 auto _inod =  this->
-                    _tria._set2[_epos].node(0);
+                    _tria._set2[_cell].node(0);
                 auto _jnod =  this->
-                    _tria._set2[_epos].node(1);
+                    _tria._set2[_cell].node(1);
                     
                 auto _iptr = &this->
                     _tria._set1[_inod];
                 auto _jptr = &this->
                     _tria._set1[_jnod];
-        
-                real_type _xmin = std:: min (
-                    _iptr->pval(0) ,
-                    _jptr->pval(0)) ;
-                real_type _ymin = std:: min (
-                    _iptr->pval(1) ,
-                    _jptr->pval(1)) ;
-                    
-                real_type _xmax = std:: max (
-                    _iptr->pval(0) ,
-                    _jptr->pval(0)) ;
-                real_type _ymax = std:: max (
-                    _iptr->pval(1) ,
-                    _jptr->pval(1)) ;
-        
-                auto _pmap = _mark[_ppos] ;
-
-                this->_pmin[_pmap][0] = 
-                    std::min(
-                this->_pmin[_pmap][0],_xmin) ;
-                this->_pmin[_pmap][1] = 
-                    std::min(
-                this->_pmin[_pmap][1],_ymin) ;
                 
-                this->_pmax[_pmap][0] = 
-                    std::max(
-                this->_pmax[_pmap][0],_xmax) ;
-                this->_pmax[_pmap][1] = 
-                    std::max(
-                this->_pmax[_pmap][1],_ymax) ;
+                real_type _xmin = 
+                std::min (_iptr->pval(0) ,
+                          _jptr->pval(0) 
+                         ) ;
+                real_type _ymin = 
+                std::min (_iptr->pval(1) ,
+                          _jptr->pval(1) 
+                         ) ;
+                         
+                real_type _xmax = 
+                std::max (_iptr->pval(0) ,
+                          _jptr->pval(0) 
+                         ) ;
+                real_type _ymax = 
+                std::max (_iptr->pval(1) ,
+                          _jptr->pval(1) 
+                         ) ;
+        
+                auto _pmap = _mark[_ppos];
+
+                this-> _pmin[_pmap][ 0] = 
+                    std::min(_xmin,
+                this-> _pmin[_pmap][ 0]) ;
+                this-> _pmin[_pmap][ 1] = 
+                    std::min(_ymin,
+                this-> _pmin[_pmap][ 1]) ;
+                
+                this-> _pmax[_pmap][ 0] = 
+                    std::max(_xmax,
+                this-> _pmax[_pmap][ 0]) ;
+                this-> _pmax[_pmap][ 1] = 
+                    std::max(_ymax,
+                this-> _pmax[_pmap][ 1]) ;
+                
+                }
             }
         }
         
@@ -1014,8 +1064,10 @@
         
             typename geom_type
                 ::part_list::data_type  _temp ;
-            _temp[0] = _part;
-            _temp[1] = _epos;
+            _temp.itag() = _part ;
+            _temp.indx() = _epos ;
+            _temp.kind() = 
+                mesh:: EDGE2_tag ;
             
             return  this->
                 _geom._part.find(_temp, _same);

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 December, 2018
+     * Last updated: 19 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -113,73 +113,73 @@
     
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         jigsaw_VERT2_t         *_data ;
         } jigsaw_VERT2_array_t ;
         
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         jigsaw_VERT3_t         *_data ;
         } jigsaw_VERT3_array_t ;
         
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         jigsaw_EDGE2_t         *_data ;
         } jigsaw_EDGE2_array_t ;
         
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         jigsaw_TRIA3_t         *_data ;
         } jigsaw_TRIA3_array_t ;
         
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         jigsaw_QUAD4_t         *_data ;
         } jigsaw_QUAD4_array_t ;
         
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         jigsaw_TRIA4_t         *_data ;
         } jigsaw_TRIA4_array_t ;
         
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         jigsaw_HEXA8_t         *_data ;
         } jigsaw_HEXA8_array_t ;
         
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         jigsaw_WEDG6_t         *_data ;
         } jigsaw_WEDG6_array_t ;
         
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         jigsaw_PYRA5_t         *_data ;
         } jigsaw_PYRA5_array_t ;
         
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         jigsaw_BOUND_t         *_data ;
         } jigsaw_BOUND_array_t ;
     
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         indx_t                 *_data ;
         } jigsaw_INDEX_array_t ;
         
     typedef struct
         {
-        indx_t                  _size ;
+        size_t                  _size ;
         real_t                 *_data ;
         } jigsaw_REALS_array_t ;
     

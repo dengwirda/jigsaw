@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 13 August, 2018
+ * Last updated: 19 January, 2019
  *
- * Copyright 2013-2018
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -45,6 +45,20 @@
 
 #   ifndef __MESHTYPE__
 #   define __MESHTYPE__
+ 
+    namespace mesh 
+    {
+/*-------------------------- classification of mesh cells */
+    char_type EMPTY_tag = +0 ;
+    char_type POINT_tag = 10 ;
+    char_type EDGE2_tag = 20 ;
+    char_type TRIA3_tag = 30 ;
+    char_type QUAD4_tag = 40 ;
+    char_type TRIA4_tag = 50 ;
+    char_type HEXA8_tag = 60 ;
+    char_type WEDG6_tag = 70 ;
+    char_type PYRA5_tag = 80 ;
+    }
  
 #   include "containers.hpp"
 

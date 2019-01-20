@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 September, 2018
+     * Last updated: 19 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -55,107 +55,107 @@
         jmsh_kind::enum_data  /*_kind*/
         ) { }
     __normal_call void_type push_ndims (
-        std::int32_t  /*_ndim*/
+        std:: size_t  /*_ndim*/
         ) { }
     __normal_call void_type push_radii (
         double      * /*_erad*/
         ) { }
     __normal_call void_type open_point (
-        std::int32_t  /*_nrow*/
+        std:: size_t  /*_nrow*/
         ) { }
     __normal_call void_type push_point (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         double     *  /*_pval*/,
         std::int32_t  /*_itag*/
         ) { }
     __normal_call void_type open_power (
-        std::int32_t  /*_nrow*/,
-        std::int32_t  /*_npwr*/
+        std:: size_t  /*_nrow*/,
+        std:: size_t  /*_npwr*/
         ) { }
     __normal_call void_type push_power (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         double     *  /*_xpwr*/
         ) { }
     __normal_call void_type open_edge2 (
-        std::int32_t  /*_nrow*/
+        std:: size_t  /*_nrow*/
         ) { }
     __normal_call void_type push_edge2 (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         std::int32_t* /*_node*/,
         std::int32_t  /*_itag*/
         ) { }
     __normal_call void_type open_tria3 (
-        std::int32_t  /*_nrow*/
+        std:: size_t  /*_nrow*/
         ) { }
     __normal_call void_type push_tria3 (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         std::int32_t* /*_node*/,
         std::int32_t  /*_itag*/
         ) { }
     __normal_call void_type open_quad4 (
-        std::int32_t  /*_nrow*/
+        std:: size_t  /*_nrow*/
         ) { }
     __normal_call void_type push_quad4 (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         std::int32_t* /*_node*/,
         std::int32_t  /*_itag*/
         ) { }
     __normal_call void_type open_tria4 (
-        std::int32_t  /*_nrow*/
+        std:: size_t  /*_nrow*/
         ) { }
     __normal_call void_type push_tria4 (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         std::int32_t* /*_node*/,
         std::int32_t  /*_itag*/
         ) { }
     __normal_call void_type open_hexa8 (
-        std::int32_t  /*_nrow*/
+        std:: size_t  /*_nrow*/
         ) { }
     __normal_call void_type push_hexa8 (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         std::int32_t* /*_node*/,
         std::int32_t  /*_itag*/
         ) { }
     __normal_call void_type open_wedg6 (
-        std::int32_t  /*_nrow*/
+        std:: size_t  /*_nrow*/
         ) { }
     __normal_call void_type push_wedg6 (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         std::int32_t* /*_node*/,
         std::int32_t  /*_itag*/
         ) { }
     __normal_call void_type open_pyra5 (
-        std::int32_t  /*_nrow*/
+        std:: size_t  /*_nrow*/
         ) { }
     __normal_call void_type push_pyra5 (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         std::int32_t* /*_node*/,
         std::int32_t  /*_itag*/
         ) { }
     __normal_call void_type open_value (
-        std::int32_t  /*_nrow*/,
-        std::int32_t  /*_nval*/
+        std:: size_t  /*_nrow*/,
+        std:: size_t  /*_nval*/
         ) { }
     __normal_call void_type push_value (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         double      * /*_vdat*/
         ) { }
     __normal_call void_type open_bound (
-        std::int32_t  /*_nrow*/
+        std:: size_t  /*_nrow*/
         ) { }
     __normal_call void_type push_bound (
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_irow*/,
         std::int32_t  /*_itag*/,
         std::int32_t  /*_inum*/,
         std::int32_t  /*_kind*/
         ) { }
     __normal_call void_type open_coord (
-        std::int32_t  /*_idim*/,
-        std::int32_t  /*_ndim*/
+        std:: size_t  /*_idim*/,
+        std:: size_t  /*_ndim*/
         ) { }
     __normal_call void_type push_coord (
-        std::int32_t  /*_idim*/,
-        std::int32_t  /*_irow*/,
+        std:: size_t  /*_idim*/,
+        std:: size_t  /*_irow*/,
         double        /*_ppos*/
         ) { } 
     } ;
@@ -176,7 +176,7 @@
     string_tokens           _errs ;
     
     std::int32_t            _ftag ;
-    std::int32_t            _ndim ;
+    std:: size_t            _ndim ;
         
     jmsh_kind::enum_data    _kind ;
     
@@ -352,8 +352,8 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +2)
         {
             _nrow = std::stol(_stok[1]);
@@ -377,8 +377,7 @@
                 
             find_toks (_line, ";", _tstr);
        
-            if ((std::int32_t)_tstr.count() 
-                    == this->_ndim + 1)
+            if (_tstr.count() == this->_ndim+1)
             {
                 std:: size_t static 
                     constexpr _VMAX = +16;
@@ -431,9 +430,9 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _npwr = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _npwr = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +3)
         {
             _nrow = std::stol(_stok[1]);
@@ -458,8 +457,7 @@
                 
             find_toks (_line, ";", _tstr);
        
-            if ((std::int32_t)_tstr.count () 
-                    == _npwr )
+            if (_npwr == _tstr.count ())
             {
                 std:: size_t static 
                     constexpr _VMAX = +16;
@@ -508,9 +506,9 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _idim = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _idim = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +3)
         {
             _idim = std::stol(_stok[1]);
@@ -560,9 +558,9 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = +0;
-        std::int32_t _nval = +0;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _nval = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +3)
         {
             _nrow = std::stol(_stok[1]);
@@ -587,8 +585,7 @@
                 
             find_toks (_line, ";", _tstr);
        
-            if ((std::int32_t)_tstr.count () 
-                    == _nval )
+            if (_nval == _tstr.count ())
             {
                 std:: size_t static 
                     constexpr _VMAX = +16;
@@ -637,8 +634,8 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +2)
         {
             _nrow = std::stol(_stok[1]);
@@ -709,8 +706,8 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +2)
         {
             _nrow = std::stol(_stok[1]);
@@ -783,8 +780,8 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +2)
         {
             _nrow = std::stol(_stok[1]);
@@ -859,8 +856,8 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +2)
         {
             _nrow = std::stol(_stok[1]);
@@ -935,8 +932,8 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +2)
         {
             _nrow = std::stol(_stok[1]);
@@ -1019,8 +1016,8 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +2)
         {
             _nrow = std::stol(_stok[1]);
@@ -1099,8 +1096,8 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +2)
         {
             _nrow = std::stol(_stok[1]);
@@ -1177,8 +1174,8 @@
         )
     {
     /*----------------------------------------- read head */
-        std::int32_t _nrow = -1;
-        std::int32_t _irow = +0;
+        std:: size_t _nrow = +0;
+        std:: size_t _irow = +0;
         if (_stok.count() == +2)
         {
             _nrow = std::stol(_stok[1]);
@@ -1248,7 +1245,7 @@
         )
     {
         this->_ftag = -1 ;
-        this->_ndim = -1 ;
+        this->_ndim = +0 ;
     
         std::string _line;
         while (std::getline(_ffid, _line))
