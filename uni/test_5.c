@@ -1,7 +1,7 @@
 
-//  gcc -Wall test_1.c 
+//  gcc -Wall test_5.c 
 //  -Xlinker -rpath=../lib/LNX-64 
-//  -L ../lib/LNX-64 -ljigsaw64r -o test_1
+//  -L ../lib/LNX-64 -ljigsaw64r -o test_5
 
 #   include "../inc/lib_jigsaw.h"
     
@@ -17,15 +17,17 @@
     /*-------------------------------- setup JIGSAW types */      
         jigsaw_jig_t _jjig ;
         jigsaw_msh_t _geom ;
-        jigsaw_msh_t _mesh ;
+        jigsaw_msh_t _init ;
+        jigsaw_msh_t _tria ;
   
         jigsaw_init_jig_t(&_jjig) ;
         jigsaw_init_msh_t(&_geom) ;
-        jigsaw_init_msh_t(&_mesh) ;
+        jigsaw_init_msh_t(&_init) ;
+        jigsaw_init_msh_t(&_tria) ;
  
     /* 
     --------------------------------------------------------
-     * JIGSAW's "mesh" is a piecewise linear complex:
+     * A simple square domain
     --------------------------------------------------------
      *
      *             e:2
@@ -65,36 +67,51 @@
         
         _geom._edge2._data = &_edge2[0] ;
         _geom._edge2._size = +4 ;            
+    
+    /*-------------------------------- points for r-tria. */
+
+        jigsaw_VERT2_t _point[9] = {
+            { {0., 0.}, +0 } ,
+            { {1., 0.}, +0 } ,
+            { {1., 1.}, +0 } ,
+            { {0., 1.}, +0 } ,
+            { {.5, .0}, +0 } ,
+            { {1., .5}, +0 } ,
+            { {.5, 1.}, +0 } ,
+            { {.0, .5}, +0 } ,
+            { {.3, .3}, +0 }
+            } ;
+        
+        _init._flags
+            = JIGSAW_EUCLIDEAN_MESH;
+        
+        _init._vert2._data = &_point[0] ;
+        _init._vert2._size = +9 ;
         
     /*-------------------------------- build JIGSAW tria. */
         
         _jjig._verbosity =   +1 ;
         
-        _jjig._hfun_hmax = 0.10 ;
-        _jjig._hfun_scal = 
-            JIGSAW_HFUN_RELATIVE;
-            
         _jjig._mesh_dims =   +2 ;
         
-        _retv = jigsaw (
+        _retv = tripod (
             &_jjig, // the config. opts
+            &_init, // init. data
             &_geom, // geom. data
-              NULL, // empty init. data 
-              NULL, // empty hfun. data
-            &_mesh) ;
+            &_tria) ;
  
     /*-------------------------------- print JIGSAW tria. */
 
         printf("\n VERT2: \n\n") ;
 
         for (indx_t _ipos = +0; 
-                _ipos != _mesh._vert2._size ; 
+                _ipos != _tria._vert2._size ; 
                    ++_ipos )
         {
             printf("%1.4f, %1.4f\n",
-            _mesh._vert2.
+            _tria._vert2.
                 _data[_ipos]._ppos[0],
-            _mesh._vert2.
+            _tria._vert2.
                 _data[_ipos]._ppos[1]
                 ) ;
         }
@@ -102,23 +119,23 @@
         printf("\n TRIA3: \n\n") ;
  
         for (indx_t _ipos = +0; 
-                _ipos != _mesh._tria3._size ; 
+                _ipos != _tria._tria3._size ; 
                    ++_ipos )
         {
             printf("%d, %d, %d\n",
-            _mesh._tria3.
+            _tria._tria3.
                 _data[_ipos]._node[0],
-            _mesh._tria3.
+            _tria._tria3.
                 _data[_ipos]._node[1],
-            _mesh._tria3.
+            _tria._tria3.
                 _data[_ipos]._node[2]
                 ) ;
         }
  
-        jigsaw_free_msh_t(&_mesh);
+        jigsaw_free_msh_t(&_tria);
  
         printf (
-    "JIGSAW returned code: %d \n", _retv) ;
+    "TRIPOD returned code: %d \n", _retv) ;
  
  
         return _retv ;

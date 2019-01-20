@@ -14,9 +14,9 @@
      * TRIPOD: a "restricted" delaunay tessellator.
     --------------------------------------------------------
      *
-     * Last updated: 28 December, 2018
+     * Last updated: 19 January, 2019
      *
-     * Copyright 2013 -- 2018
+     * Copyright 2013 -- 2019
      * Darren Engwirda
      * darren.engwirda@columbia.edu
      * https://github.com/dengwirda
@@ -179,7 +179,7 @@
 
             if ((_retv = copy_init (
                  _jcfg, _jlog, 
-                 _init,*_mmsh)) != __no_error)
+                 _init,*_imsh)) != __no_error)
             {
                 return  _retv ;
             }

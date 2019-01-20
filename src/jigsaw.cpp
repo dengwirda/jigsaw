@@ -34,7 +34,7 @@
     --------------------------------------------------------
      *
      * JIGSAW release 0.9.8.x
-     * Last updated: 12 January, 2019
+     * Last updated: 19 January, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -373,7 +373,7 @@
                     real_type,
                     iptr_type>   ellipsoid_mesh_3d ;
         
-        iptr_type               _ndim = +0;
+        std::size_t             _ndim = +0;
 
         jmsh_kind ::
         enum_data               _kind = 
@@ -442,7 +442,7 @@
                     iptr_type,
                     real_type>   ellipsoid_grid_3d ;
          
-        iptr_type               _ndim = +0;
+		std::size_t             _ndim = +0;
         
         jmsh_kind ::
         enum_data               _kind = 
@@ -504,7 +504,7 @@
                 real_type ,
                 iptr_type >      euclidean_rdel_3d ;
            
-        iptr_type               _ndim = +0;
+		std::size_t             _ndim = +0;
 
         jmsh_kind ::
         enum_data               _kind = 
@@ -536,7 +536,7 @@
                 real_type ,
                 iptr_type >      euclidean_mesh_3d ;
            
-        iptr_type               _ndim = +0;
+		std::size_t             _ndim = +0;
 
         jmsh_kind ::
         enum_data               _kind = 

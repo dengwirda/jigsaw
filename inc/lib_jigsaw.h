@@ -14,9 +14,9 @@
      * JIGSAW: Interface to the JIGSAW meshing library.
     --------------------------------------------------------
      *
-     * Last updated: 29 December, 2018
+     * Last updated: 19 January, 2019
      *
-     * Copyright 2013 -- 2018
+     * Copyright 2013 -- 2019
      * Darren Engwirda
      * darren.engwirda@columbia.edu
      * https://github.com/dengwirda
@@ -57,6 +57,7 @@
 #   define __LIB_JIGSAW__
 
 #   include "stdint.h"
+#   include "stddef.h"
 
     typedef int32_t         indx_t ;    // yes, 32 bit ints,
                                         // but, 64 bit ptrs!
@@ -176,62 +177,62 @@
     
     extern void  jigsaw_alloc_vert2 (
         jigsaw_VERT2_array_t *_xsrc ,
-        indx_t _size
+        size_t _size
         ) ;
         
     extern void  jigsaw_alloc_vert3 (
         jigsaw_VERT3_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void  jigsaw_alloc_edge2 (
         jigsaw_EDGE2_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void  jigsaw_alloc_tria3 (
         jigsaw_TRIA3_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void  jigsaw_alloc_quad4 (
         jigsaw_QUAD4_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void  jigsaw_alloc_tria4 (
         jigsaw_TRIA4_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void  jigsaw_alloc_hexa8 (
         jigsaw_HEXA8_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void  jigsaw_alloc_wedg6 (
         jigsaw_WEDG6_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void  jigsaw_alloc_pyra5 (
         jigsaw_PYRA5_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void  jigsaw_alloc_bound (
         jigsaw_BOUND_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void  jigsaw_alloc_index (
         jigsaw_INDEX_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void  jigsaw_alloc_reals (
         jigsaw_REALS_array_t *_xsrc ,
-        indx_t _size
+		size_t _size
         ) ;
         
     extern void   jigsaw_free_msh_t (

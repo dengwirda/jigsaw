@@ -49,10 +49,10 @@
     namespace mesh
     {        
 /*-------------------------- classification of mesh feat. */   
-    char_type null_feat = 0;
-    char_type user_feat = 1;
-    char_type soft_feat = 2;
-    char_type hard_feat = 3; 
+    char_type null_feat = 0  ;
+    char_type user_feat = 1  ;
+    char_type soft_feat = 2  ;
+    char_type hard_feat = 3  ; 
     }
  
 #   include "containers.hpp"

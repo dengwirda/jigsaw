@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 December, 2018
+     * Last updated: 19 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -135,7 +135,7 @@
         } 
     /*-------------------------------- open POINT section */
         __normal_call void_type open_point (
-            std::int32_t  _nrow
+            std:: size_t  _nrow
             ) 
         { 
             if (this->_kind == 
@@ -174,7 +174,7 @@
         }
     /*-------------------------------- read POINT section */
         __normal_call void_type push_point (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             double       *_pval ,
             std::int32_t  _itag
             )
@@ -229,7 +229,7 @@
         }       
     /*-------------------------------- read POWER section */
         __normal_call void_type push_power (
-            std::int32_t _ipos,
+            std:: size_t _ipos,
             double     * _xpwr
             ) 
         { 
@@ -265,8 +265,8 @@
         }    
     /*-------------------------------- open COORD section */
         __normal_call void_type open_coord (
-            std::int32_t _idim,
-            std::int32_t _nrow
+            std:: size_t _idim,
+            std:: size_t _nrow
             )
         {   
             if (_idim == +1)
@@ -283,8 +283,8 @@
         }
     /*-------------------------------- read COORD section */
         __normal_call void_type push_coord (
-            std::int32_t _idim,
-            std::int32_t _ipos,
+            std:: size_t _idim,
+            std:: size_t _ipos,
             double       _ppos
             )
         {
@@ -335,7 +335,7 @@
         }
     /*-------------------------------- open EDGE2 section */
         __normal_call void_type open_edge2 (
-            std::int32_t  _nrow
+            std:: size_t  _nrow
             ) 
         {
             jigsaw_alloc_edge2 (
@@ -343,7 +343,7 @@
         }
     /*-------------------------------- push EDGE2 section */
         __normal_call void_type push_edge2 (
-            std::int32_t  _ipos,
+            std:: size_t  _ipos,
             std::int32_t* _node,
             std::int32_t  _itag
             ) 
@@ -365,7 +365,7 @@
         }
     /*-------------------------------- open TRIA3 section */
         __normal_call void_type open_tria3 (
-            std::int32_t  _nrow
+            std:: size_t  _nrow
             ) 
         {
             jigsaw_alloc_tria3 (
@@ -373,7 +373,7 @@
         }
     /*-------------------------------- push TRIA3 section */
         __normal_call void_type push_tria3 (
-            std::int32_t  _ipos,
+            std:: size_t  _ipos,
             std::int32_t* _node,
             std::int32_t  _itag
             ) 
@@ -397,7 +397,7 @@
         }
     /*-------------------------------- open TRIA4 section */
         __normal_call void_type open_tria4 (
-            std::int32_t  _nrow
+            std:: size_t  _nrow
             ) 
         {
             jigsaw_alloc_tria4 (
@@ -405,7 +405,7 @@
         }
     /*-------------------------------- push TRIA4 section */
         __normal_call void_type push_tria4 (
-            std::int32_t  _ipos,
+            std:: size_t  _ipos,
             std::int32_t* _node,
             std::int32_t  _itag
             ) 
@@ -432,7 +432,7 @@
         
     /*-------------------------------- open BOUND section */
         __normal_call void_type open_bound (
-            std::int32_t  _nrow
+            std:: size_t  _nrow
             ) 
         {
             jigsaw_alloc_bound (
@@ -440,7 +440,7 @@
         }        
     /*-------------------------------- push BOUND section */
         __normal_call void_type push_bound (
-            std::int32_t  _ipos,
+            std:: size_t  _ipos,
             std::int32_t  _itag,
             std::int32_t  _inum,
             std::int32_t  _kind
@@ -464,8 +464,8 @@
         
     /*-------------------------------- open VALUE section */
         __normal_call void_type open_value (
-            std::int32_t  _nrow,
-            std::int32_t  _nval
+            std:: size_t  _nrow,
+            std:: size_t  _nval
             ) 
         { 
             this->_nval = _nval;
@@ -476,7 +476,7 @@
         }
     /*-------------------------------- push VALUE section */
         __normal_call void_type push_value (
-            std::int32_t  _ipos,
+            std:: size_t  _ipos,
             double      * _vdat
             ) 
         { 

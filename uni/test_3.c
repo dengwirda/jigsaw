@@ -122,6 +122,8 @@
             
         _jjig._hfun_hmax = 1. ;
         _jjig._hfun_hmin = 0. ;
+        
+        _jjig._mesh_dims = +2 ;
  
         _retv = jigsaw (
             &_jjig, // the config. opts

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 June, 2018
+     * Last updated: 19 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -75,7 +75,7 @@
             std::int32_t         _ftag ;
             jmsh_kind::
             enum_data            _kind ;
-            std::int32_t         _ndim ;
+            std:: size_t         _ndim ;
             
         public  :
         __normal_call hfun_reader (
@@ -94,7 +94,7 @@
         }
     /*-------------------------------- read NDIMS section */
         __normal_call void_type push_ndims (
-            std::int32_t  _ndim
+            std:: size_t  _ndim
             )
         {   
             this->_ndim = _ndim ;
@@ -103,7 +103,7 @@
         }
     /*-------------------------------- read POINT section */
         __normal_call void_type push_point (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             double       *_pval ,
             std::int32_t  _itag
             )
@@ -158,8 +158,8 @@
         }      
     /*-------------------------------- read COORD section */
         __normal_call void_type push_coord (
-            std::int32_t _idim,
-            std::int32_t _irow,
+            std:: size_t _idim,
+            std:: size_t _irow,
             double       _ppos
             )
         {
@@ -230,7 +230,7 @@
         }           
     /*-------------------------------- read VALUE section */
         __normal_call void_type push_value (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             double       *_vval
             )
         {
@@ -238,8 +238,7 @@
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
             {
-                if (_ipos  < 
-               (std::int32_t)this->_pmap.count())
+                if (_ipos < this->_pmap.count())
                 {
                 std::int32_t  _nmap ;
                 _nmap = this->_pmap [_ipos];
@@ -263,8 +262,7 @@
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
             {
-                if (_ipos < 
-               (std::int32_t)this->_pmap.count())
+                if (_ipos < this->_pmap.count())
                 {
                 std::int32_t  _nmap ;
                 _nmap = this->_pmap [_ipos];
@@ -294,7 +292,7 @@
         }
     /*-------------------------------- read TRIA3 section */
         __normal_call void_type push_tria3 (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
@@ -325,7 +323,7 @@
         }
     /*-------------------------------- read TRIA4 section */
         __normal_call void_type push_tria4 (
-            std::int32_t  _ipos ,
+            std:: size_t  _ipos ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
@@ -431,7 +429,7 @@
                 _hmsh._value._size )
             return __invalid_argument ;
     
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._vert2._size ; 
                     ++_ipos )
             {
@@ -449,7 +447,7 @@
                 _mesh.push_node(_ndat, false) ;
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._tria3._size ; 
                     ++_ipos )
             {
@@ -480,7 +478,7 @@
                 _hmsh._value._size )
             return __invalid_argument ;
     
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._vert3._size ; 
                     ++_ipos )
             {
@@ -500,7 +498,7 @@
                 _mesh.push_node(_ndat, false) ;
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._tria4._size ; 
                     ++_ipos )
             {
@@ -533,7 +531,7 @@
                 = jmsh_kind::euclidean_grid ;
             _hfun._ndim = +2;
     
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._xgrid._size ; 
                     ++_ipos )
             {
@@ -542,7 +540,7 @@
                         _xgrid._data[_ipos]);
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._ygrid._size ; 
                     ++_ipos )
             {
@@ -551,7 +549,7 @@
                         _ygrid._data[_ipos]);
             }
         
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._value._size ; 
                     ++_ipos )
             {
@@ -569,7 +567,7 @@
                 = jmsh_kind::euclidean_grid ;
             _hfun._ndim = +3;
     
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._xgrid._size ; 
                     ++_ipos )
             {
@@ -578,7 +576,7 @@
                         _xgrid._data[_ipos]);
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._ygrid._size ; 
                     ++_ipos )
             {
@@ -587,7 +585,7 @@
                         _ygrid._data[_ipos]);
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._zgrid._size ; 
                     ++_ipos )
             {
@@ -596,7 +594,7 @@
                         _zgrid._data[_ipos]);
             }
         
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._value._size ; 
                     ++_ipos )
             {
@@ -618,7 +616,7 @@
                 = jmsh_kind::ellipsoid_grid ;
             _hfun._ndim = +3;
     
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._xgrid._size ; 
                     ++_ipos )
             {
@@ -627,7 +625,7 @@
                         _xgrid._data[_ipos]);
             }
             
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._ygrid._size ; 
                     ++_ipos )
             {
@@ -636,7 +634,7 @@
                         _ygrid._data[_ipos]);
             }
         
-            for (auto _ipos = (iptr_type)+0 ;
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._value._size ; 
                     ++_ipos )
             {
