@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 January, 2019
+     * Last updated: 24 January, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -95,7 +95,7 @@
         typename 
     rdel_opts::node_kind  _kind ,
         typename 
-    mesh_type::edge_list &_pedg ,
+    mesh_type::edge_list &_epro ,   // "protected" 1-edge
         iptr_list &_nnew ,
         iptr_list &_nold ,
         iptr_list &_tnew ,
@@ -127,6 +127,9 @@
                 _hint, &_tnew, &_told))
             {
         /*------------------------- bail if DT push fails */
+                _kout = 
+                 rdel_opts ::null_kind;
+                
                 _nnew.set_count(+0) ;
                 _nold.set_count(+0) ;
                 _tnew.set_count(+0) ;
@@ -140,9 +143,6 @@
                 _bscr.set_count(+0) ;
                 _bcav.set_count(+0) ;
                 
-                _kout = 
-                 rdel_opts ::null_kind;
-            
                 break ;
             }
            
@@ -170,7 +170,6 @@
                        _told, _eold ) ;
 
         /*------------------------- form "new" rDT cavity */
-            mode_type  _dim0=null_mode;
             push_rdel( _geom, _hfun , 
                 _mesh,  true, 
                 _nnew, _tnew, 
@@ -178,27 +177,27 @@
                 _tscr, _tcav,
                 _bscr, _bcav, 
                 _sign, _pass, 
-                _dim0, _mode, _args ) ;
+                   null_mode, 
+                _mode, _args ) ;
                 
-            _mesh._tria.
-             node(_node)->fdim()=_tdim;
+            _mesh._tria.node(
+                _node)->fdim() =  _tdim ;
 
             real_type  _pnow[2] ;
             _pnow[0] = _ppos[0] ;
             _pnow[1] = _ppos[1] ;
 
             if (_cav_bnds( _geom, _mesh , 
-                    _told, _pedg, 
+                    _told, _epro, 
                     _ecav, _eold) )
             {
-        /*-------- new node modifies restricted sub-faces */
-                _mesh._tria.roll_back (
-                    _tnew, _told) ;
+        /*-------- new node modifies constraint sub-faces */
+                _mesh.
+                _tria.roll_back(_tnew, _told);
 
                 _tdim = +0 ;
 
-                _kout = 
-                   rdel_opts::null_kind ;
+                _kout = rdel_opts::null_kind ;
                 
                 _nnew.set_count(+0) ;
                 _nold.set_count(+0) ;
@@ -220,16 +219,15 @@
                     _ppos, _tdim) )
             {
         /*-------- new node modifies restricted sub-faces */
-                _mesh._tria.roll_back (
-                    _tnew, _told) ;
+                _mesh.
+                _tria.roll_back(_tnew, _told);
 
                 _cav_bnds( _geom, _mesh , 
                     _told, _ecav, 
                     _eold, _pnow, 
                     _ppos, _tdim) ;
 
-                _kout = 
-                   rdel_opts::circ_kind ;
+                _kout = rdel_opts::circ_kind ;
                 
                 _nnew.set_count(+0) ;
                 _nold.set_count(+0) ;

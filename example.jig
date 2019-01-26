@@ -49,6 +49,19 @@
     MESH_FILE = out/bunny.msh
 
 
+#    
+#   OPTIONAL fields (INIT):
+#   ----------------------
+#
+
+#   ---> INIT_FILE - 'INITNAME.MSH', a string containing the 
+#       name of the initial distribution file (is required 
+#       at input).
+#
+
+#   INIT_FILE = *.msh
+
+
 #
 #   OPTIONAL fields (GEOM):
 #   ----------------------

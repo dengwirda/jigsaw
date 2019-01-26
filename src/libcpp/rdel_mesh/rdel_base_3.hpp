@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 January, 2019
+     * Last updated: 24 January, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -138,7 +138,118 @@
             geom_type::disc_type        disc_type ;
     typedef typename 
             geom_type::ball_type        ball_type ;
+    
+    /*
+    --------------------------------------------------------
+     * CLIP-DUAL: test pt. wrt dual halfplanes.
+    --------------------------------------------------------
+     */
+
+    __static_call
+    __normal_call double half_sign (
+    __const_ptr  (double) _pp,
+    __const_ptr  (double) _pa,
+    __const_ptr  (double) _pb
+        )
+    {
+    /*-------- helper: eval. sign w.r.t. half-plane [a,b] */
+        double _pm[3];
+        _pm[0] = _pa[0] * 0.5 ;
+        _pm[1] = _pa[1] * 0.5 ;
+        _pm[2] = _pa[2] * 0.5 ;
+        _pm[0]+= _pb[0] * 0.5 ;
+        _pm[1]+= _pb[1] * 0.5 ;
+        _pm[2]+= _pb[2] * 0.5 ;
+        
+        double _ab[3];
+        _ab[0] = _pb[0] ;
+        _ab[1] = _pb[1] ;
+        _ab[2] = _pb[2] ;
+        _ab[0]-= _pa[0] ;
+        _ab[1]-= _pa[1] ;
+        _ab[2]-= _pa[2] ;
+        
+        double _mp[3];
+        _mp[0] = _pp[0] ;
+        _mp[1] = _pp[1] ;
+        _mp[2] = _pp[2] ;
+        _mp[0]-= _pm[0] ;
+        _mp[1]-= _pm[1] ;
+        _mp[2]-= _pm[2] ;
+
+        double _dp = 
+        _ab[0] * _mp[0] + 
+        _ab[1] * _mp[1] + 
+        _ab[2] * _mp[2] ;
+        
+        return ((double) _dp );
+    }
+
+    template <
+        typename  half_list
+             >
+    __static_call
+    __normal_call bool_type clip_dual (
+        mesh_type &_mesh,
+        half_list &_hset,
+        real_type *_ppos,
+        bool_type &_safe,
+        real_type  _rtol
+        )
+    {
+    /*-------- test PPOS against adjacent dual halfplanes */
+        double _PPOS[3] ;
+        _PPOS[0] =  _ppos[0] ;
+        _PPOS[1] =  _ppos[1] ;
+        _PPOS[2] =  _ppos[2] ;
+
+        _safe = true ;
+
+        for(auto _hpos = _hset.count() ;
+                 _hpos-- != +0 ; )
+        {
+            auto _anod = _hset[_hpos][0] ;
+            auto _bnod = _hset[_hpos][1] ;
+
+            double _APOS[3] ;
+            _APOS[0] = _mesh.
+            _tria.node(_anod)->pval(0) ;
+            _APOS[1] = _mesh.
+            _tria.node(_anod)->pval(1) ;
+            _APOS[2] = _mesh.
+            _tria.node(_anod)->pval(2) ;
             
+            double _BPOS[3] ;
+            _BPOS[0] = _mesh.
+            _tria.node(_bnod)->pval(0) ;
+            _BPOS[1] = _mesh.
+            _tria.node(_bnod)->pval(1) ;
+            _BPOS[2] = _mesh.
+            _tria.node(_bnod)->pval(2) ;
+
+            double _sign = +0.0;
+            if (_bnod > _anod)
+            _sign = + half_sign (
+                (double*) _PPOS,
+                (double*) _APOS,
+                (double*) _BPOS) ;
+            else
+            _sign = - half_sign (
+                (double*) _PPOS,
+                (double*) _BPOS,
+                (double*) _APOS) ;
+            
+    /*-------- "fatten" dual cavity to filter imprecision */
+            if (_sign >= -_rtol &&
+                _sign <= +_rtol)
+                _safe  =  false;
+
+            if (_sign <  -_rtol) return false ;
+        }
+
+        return true ;
+    }
+
     /*
     --------------------------------------------------------
      * EDGE-LOOP: assemble tria.'s adj. to edge.
@@ -157,6 +268,7 @@
         list_type &_loop
         )
     {
+    /*----------------- assemble edge-adj. cells in-order */
         iptr_type _tcur = _tadj ;
         iptr_type _fcur = _fadj ;
 
@@ -210,153 +322,6 @@
 
     /*
     --------------------------------------------------------
-     * CLIP-DUAL: test pt. wrt dual halfplanes.
-    --------------------------------------------------------
-     */
-
-    __static_call
-    __normal_call double half_sign (
-    __const_ptr  (double) _pp,
-    __const_ptr  (double) _pa,
-    __const_ptr  (double) _pb,
-                  double  _rt
-        )
-    {
-    /*-------- helper: eval. sign w.r.t. half-plane [a,b] */
-        double _pm[3];
-        _pm[0] = _pa[0] * 0.5 ;
-        _pm[1] = _pa[1] * 0.5 ;
-        _pm[2] = _pa[2] * 0.5 ;
-        _pm[0]+= _pb[0] * 0.5 ;
-        _pm[1]+= _pb[1] * 0.5 ;
-        _pm[2]+= _pb[2] * 0.5 ;
-        
-        double _ab[3];
-        _ab[0] = _pb[0] ;
-        _ab[1] = _pb[1] ;
-        _ab[2] = _pb[2] ;
-        _ab[0]-= _pa[0] ;
-        _ab[1]-= _pa[1] ;
-        _ab[2]-= _pa[2] ;
-        
-        double _mp[3];
-        _mp[0] = _pp[0] ;
-        _mp[1] = _pp[1] ;
-        _mp[2] = _pp[2] ;
-        _mp[0]-= _pm[0] ;
-        _mp[1]-= _pm[1] ;
-        _mp[2]-= _pm[2] ;
-
-        double _dp = 
-        _ab[0] * _mp[0] + 
-        _ab[1] * _mp[1] + 
-        _ab[2] * _mp[2] ;
-        
-        if (_dp < -2.0 * _rt ||
-            _dp > +2.0 * _rt )
-        return ((double) _dp );
-        
-    /*-------- fall-back to double-double if near to zero */
-        dd_flt _PM[3];
-        _PM[0] = _pa[0] * 0.5 ;
-        _PM[1] = _pa[1] * 0.5 ;
-        _PM[2] = _pa[2] * 0.5 ;
-        _PM[0]+= _pb[0] * 0.5 ;
-        _PM[1]+= _pb[1] * 0.5 ;
-        _PM[2]+= _pb[2] * 0.5 ;
-        
-        dd_flt _AB[3];
-        _AB[0] = _pb[0] ;
-        _AB[1] = _pb[1] ;
-        _AB[2] = _pb[2] ;
-        _AB[0]-= _pa[0] ;
-        _AB[1]-= _pa[1] ;
-        _AB[2]-= _pa[2] ;
-        
-        dd_flt _MP[3];
-        _MP[0] = _pp[0] ;
-        _MP[1] = _pp[1] ;
-        _MP[2] = _pp[2] ;
-        _MP[0]-= _pm[0] ;
-        _MP[1]-= _pm[1] ;
-        _MP[2]-= _pm[2] ;
-
-        dd_flt _DP = 
-        _AB[0] * _MP[0] + 
-        _AB[1] * _MP[1] + 
-        _AB[2] * _MP[2] ;
-        
-        return ((double) _DP );
-    }
-
-    template <
-        typename  half_list
-             >
-    __static_call
-    __normal_call bool_type clip_dual (
-        mesh_type &_mesh,
-        half_list &_hset,
-        real_type *_ppos,
-        bool_type &_safe,
-        real_type  _rtol
-        )
-    {
-    /*-------- test PPOS against adjacent dual halfplanes */
-        double _PPOS[3] ;
-        _PPOS[0] =  _ppos[0] ;
-        _PPOS[1] =  _ppos[1] ;
-        _PPOS[2] =  _ppos[2] ;
-
-        _safe = true ;
-
-        for(auto _hpos = _hset.count() ;
-                 _hpos-- != +0 ; )
-        {
-            auto _anod = _hset[_hpos][0] ;
-            auto _bnod = _hset[_hpos][1] ;
-
-            double _APOS[3] ;
-            _APOS[0] = _mesh.
-            _tria.node(_anod)->pval(0) ;
-            _APOS[1] = _mesh.
-            _tria.node(_anod)->pval(1) ;
-            _APOS[2] = _mesh.
-            _tria.node(_anod)->pval(2) ;
-            
-            double _BPOS[3] ;
-            _BPOS[0] = _mesh.
-            _tria.node(_bnod)->pval(0) ;
-            _BPOS[1] = _mesh.
-            _tria.node(_bnod)->pval(1) ;
-            _BPOS[2] = _mesh.
-            _tria.node(_bnod)->pval(2) ;
-
-            double _sign = +0.0;
-            if (_bnod > _anod)
-            _sign = + half_sign (
-                (double*) _PPOS,
-                (double*) _APOS,
-                (double*) _BPOS, 
-                (double ) _rtol) ;
-            else
-            _sign = - half_sign (
-                (double*) _PPOS,
-                (double*) _BPOS,
-                (double*) _APOS,
-                (double ) _rtol) ;
-            
-            if (_sign >= -_rtol &&
-                _sign <= +_rtol)
-                _safe  =  false;
-
-            if (_sign <  -_rtol) return false ;
-        }
-
-        return true ;
-    }
-
-    /*
-    --------------------------------------------------------
      * EDGE-BALL: calc. edge-based circumballs.
     --------------------------------------------------------
      */
@@ -375,7 +340,7 @@
         iptr_type &_part
         )
     {
-        real_type const _rEPS = 
+        real_type static const _rEPS = 
             std::pow(std::numeric_limits
                 <real_type>::epsilon(),+.67);
 
@@ -601,9 +566,9 @@
                   _pred._list.tend() ;
                 ++_iter  )
         {
-            if (clip_dual(_mesh, _hset , 
-                   &_iter->pval( 0), _safe, 
-                    _RTOL) )
+            if (clip_dual( _mesh, _hset , 
+                   &_iter->pval( 0), 
+                    _safe, _RTOL) )
             {
     /*--------------------------- dist to face circumball */
                 real_type _dsqr = 
@@ -611,7 +576,10 @@
                     _ebal , 
                    &_iter->pval( 0)) ;  
 
-                if(!_safe && _dsqr > _RTOL)
+                real_type _dtol = 
+               (real_type) 1./3. * _ebal[3] ;
+
+                if(!_safe && _dsqr > _dtol)
     /*--------------------------- prune near-degeneracies */
                     continue;
 
@@ -682,7 +650,7 @@
         iptr_type &_part
         )
     {
-        real_type const _rEPS = 
+        real_type static const _rEPS = 
             std::pow(std::numeric_limits
                 <real_type>::epsilon(),+.67);
 
@@ -858,9 +826,9 @@
                   _pred._list.tend() ;
                 ++_iter  )
         {
-            if (clip_dual(_mesh, _hset , 
-                   &_iter->pval( 0), _safe, 
-                    _RTOL) )
+            if (clip_dual( _mesh, _hset , 
+                   &_iter->pval( 0), 
+                    _safe, _RTOL) )
             {
     /*--------------------------- dist to face circumball */
                 real_type _dsqr = 
@@ -868,7 +836,10 @@
                     _fbal , 
                    &_iter->pval( 0)) ;  
 
-                if(!_safe && _dsqr > _RTOL)
+                real_type _dtol = 
+               (real_type) 1./3. * _fbal[3] ;
+
+                if(!_safe && _dsqr > _dtol)
     /*--------------------------- prune near-degeneracies */
                     continue ;
 
@@ -995,7 +966,7 @@
     
     }
     
-#   endif   //__RDEL_PRED_BASE_2__
+#   endif   //__RDEL_PRED_BASE_3__
     
     
     

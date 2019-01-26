@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 June, 2018
+     * Last updated: 22 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -366,20 +366,21 @@
  
     /*
     --------------------------------------------------------
-     * WALK-TRIA-LIST: breadth-first-search about tria.
+     * SCAN-TRIA-LIST: breadth-first-search about tria.
     --------------------------------------------------------
      */
      
-#   include "delaunay_walk_tria.inc" 
+#   include "delaunay_scan_tria.inc" 
         
         
     /*
     --------------------------------------------------------
-     * WALK-MESH-NODE: enclosing tria. via walking.
+     * WALK-TRIA-NEAR: "nearest" tria. via walking.
+     * WALK-NODE-NEAR: "nearest" vert. via walking.
     --------------------------------------------------------
      */
  
-#   include "delaunay_walk_node.inc"
+#   include "delaunay_walk_mesh.inc"
 
 
     /*
@@ -423,8 +424,8 @@
      */
     
     __normal_call void_type push_root (
-        real_type *_pmin,
-        real_type *_pmax
+      __const_ptr(real_type) _pmin,
+      __const_ptr(real_type) _pmax
         )
     {
     /*---------------------------- de-alloc. existing */
@@ -487,18 +488,34 @@
     
     /*
     --------------------------------------------------------
-     * FIND-NODE: find enclosing triangle for a point.
+     * FIND-TRIA: find "nearest" triangle for a point.
     --------------------------------------------------------
      */
      
-    __inline_call bool_type find_node (
-        real_type *_ppos,
+    __inline_call bool_type find_tria (
+      __const_ptr(real_type) _ppos,
         iptr_type &_tpos,
         iptr_type  _hint  = null_flag()
         )
     {   
-        return walk_mesh_node (
+        return walk_tria_near (
                    _ppos, _tpos, _hint) ;
+    }
+    
+    /*
+    --------------------------------------------------------
+     * FIND-NODE: find the "nearest" vert. to a point.
+    --------------------------------------------------------
+     */
+     
+    __inline_call bool_type find_node (
+      __const_ptr(real_type) _ppos,
+        iptr_type &_npos,
+        iptr_type  _hint  = null_flag()
+        )
+    {   
+        return walk_node_near (
+                   _ppos, _npos, _hint) ;
     }
 
     /*
@@ -511,7 +528,7 @@
     typename      list_type
              >
     __normal_call bool_type circ_list (
-        real_type *_ppos,
+      __const_ptr(real_type) _ppos,
         iptr_type &_elem,
         list_type &_list,
         iptr_type  _hint  = null_flag()
@@ -526,7 +543,7 @@
         template circ_pred<
              self_type >_pred( _ppos) ;
              
-        walk_tria_list (_elem, +1, 
+        scan_tria_list (_elem, +1, 
                         _pred, _work) ;
                         
     /*------------------------------ push index lists */
@@ -546,7 +563,7 @@
      */
         
     __inline_call bool_type push_node (
-        real_type *_ppos,
+      __const_ptr(real_type) _ppos,
         iptr_type &_node,
         iptr_type  _hint  = null_flag()
         )
@@ -564,7 +581,7 @@
     typename      list_type
              >
     __normal_call bool_type push_node (
-        real_type *_ppos,
+      __const_ptr(real_type) _ppos,
         iptr_type &_node,
         iptr_type  _hint  = null_flag() ,
         list_type *_tnew  = nullptr   ,
@@ -576,7 +593,7 @@
 
     /*--------------------------- _find enclosing element */
         iptr_type _elem = -1;
-        if (walk_mesh_node(_ppos, _elem, _hint))
+        if (walk_tria_near(_ppos, _elem, _hint))
         {
 
     /*--------------------------- push new node onto list */
@@ -621,7 +638,7 @@
             self_type> _pred( _ppos) ;
         
         if (_circ == nullptr)
-        walk_tria_list(_elem, +1   , 
+        scan_tria_list(_elem, +1   , 
                        _pred, _work) ;
         else
        _work.push_tail(_circ->head() , 
@@ -743,7 +760,7 @@
         {
         this->_work.clear()  ;
     /*----------------------------------- bfs about _node */
-        walk_tria_list (
+        scan_tria_list (
             node(_node)->next(), 
                  +1   , _pred, _work) ;
 
@@ -771,7 +788,7 @@
     {
         this->_work.clear()  ;  
     /*----------------------------------- bfs about _tria */
-        walk_tria_list (_tria,    +1, 
+        scan_tria_list (_tria,    +1, 
                         _pred, _work) ;
                         
     /*----------------------------------- push index list */

@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 17 March, 2018
+ * Last updated: 22 January, 2019
  *
- * Copyright 2013-2018
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -89,6 +89,58 @@
                     _jpos) ) ; 
     }
     
+    template <typename mesh_type> class near_pred
+        { 
+/*------------------------------------ walk--simplex test */
+        public  :
+        __inline_call bool_type operator() (
+            mesh_type    &_mesh,
+        __const_ptr ( real_type) _ppos,
+            real_type     _dmin,
+            iptr_type    &_nmin,
+            iptr_type     _tpos,
+            iptr_type    &_fadj
+            ) const
+        {   
+            bool_type _done = true ;
+            iptr_type _fpos ;
+            
+            for(_fpos = 4; _fpos-- != 0; )
+            {
+        /*--------------- check dist. wrt. k-th face apex */
+            iptr_type  _fnod[ 4] ;
+            mesh_type::tria_type::
+            face_node(_fnod, _fpos, 3, 2) ;
+            /*
+            _fnod[0] = _mesh.
+             tria(_tpos)->node(_fnod[0]);
+            _fnod[1] = _mesh.
+             tria(_tpos)->node(_fnod[1]);
+            _fnod[2] = _mesh.
+             tria(_tpos)->node(_fnod[2]);
+             */
+            _fnod[3] = _mesh.
+             tria(_tpos)->node(_fnod[3]);
+            
+            iptr_type _apex =  _fnod[3] ; 
+             
+            real_type _dsqr = lensqr_kd (
+                _ppos, 
+           &_mesh.node(_fnod[3])->pval(0));
+           
+            if (_dsqr < _dmin)
+            {
+                _done = false;
+                _dmin = _dsqr; 
+                _nmin = _apex;
+                _fadj = _fpos;
+            }            
+            }
+            
+            return _done ;
+        }
+        } ;
+    
     template <typename mesh_type> class walk_pred
         { 
 /*------------------------------------ walk--simplex test */
@@ -108,7 +160,7 @@
             for(_fpos = 4; _fpos-- != 0; )
             {
         /*--------------- test orientation wrt. k-th face */            
-            iptr_type  _fnod[4];
+            iptr_type  _fnod[ 4] ;
             mesh_type::tria_type::
             face_node(_fnod, _fpos, 3, 2) ;
             _fnod[0] = _mesh.
@@ -153,12 +205,12 @@
         { 
 /*------------------------------------ in-circumball test */
         public  :
-        __write_ptr ( real_type)    _ppos ;
+        __const_ptr ( real_type)    _ppos ;
 
         public  :
-        __inline_call circ_pred (
-            real_type *_psrc
-            ) : _ppos( _psrc){}
+        __inline_call circ_pred  (
+        __const_ptr ( real_type) _psrc
+            ) : _ppos( _psrc ) { ; }
             
         __inline_call bool_type operator()(
             mesh_type &_mesh,

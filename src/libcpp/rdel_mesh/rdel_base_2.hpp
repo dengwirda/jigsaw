@@ -29,6 +29,15 @@
      * way whatsoever.  This code is provided "as-is" to be 
      * used at your own risk.
      *
+     --------------------------------------------------------
+     *
+     * Last updated: 24 January, 2019
+     *
+     * Copyright 2013-2019
+     * Darren Engwirda
+     * de2363@columbia.edu
+     * https://github.com/dengwirda/
+     *
     --------------------------------------------------------
      *
      * This class defines the basic "restricted" delaunay 
@@ -128,8 +137,7 @@
     __normal_call double half_sign (
     __const_ptr  (double) _pp,
     __const_ptr  (double) _pa,
-    __const_ptr  (double) _pb,
-                  double  _rt
+    __const_ptr  (double) _pb
         )
     {
     /*-------- helper: eval. sign w.r.t. half-plane [a,b] */
@@ -155,34 +163,7 @@
         _ab[0] * _mp[0] + 
         _ab[1] * _mp[1] ;
         
-        if (_dp < -2.0 * _rt ||
-            _dp > +2.0 * _rt )
         return ((double) _dp );
-        
-    /*-------- fall-back to double-double if near to zero */
-        dd_flt _PM[2];
-        _PM[0] = _pa[0] * 0.5 ;
-        _PM[1] = _pa[1] * 0.5 ;
-        _PM[0]+= _pb[0] * 0.5 ;
-        _PM[1]+= _pb[1] * 0.5 ;
-        
-        dd_flt _AB[2];
-        _AB[0] = _pb[0] ;
-        _AB[1] = _pb[1] ;
-        _AB[0]-= _pa[0] ;
-        _AB[1]-= _pa[1] ;
-        
-        dd_flt _MP[2];
-        _MP[0] = _pp[0] ;
-        _MP[1] = _pp[1] ;
-        _MP[0]-= _pm[0] ;
-        _MP[1]-= _pm[1] ;
-        
-        dd_flt _DP = 
-        _AB[0] * _MP[0] + 
-        _AB[1] * _MP[1] ;
-        
-        return ((double) _DP );
     }
     
     template <
@@ -222,20 +203,19 @@
             _BPOS[1] = _mesh.
             _tria.node(_bnod)->pval(1) ;
             
-            double _sign = +0.0;
+            double _sign = +0.0 ;
             if (_bnod > _anod)
             _sign = + half_sign (
                 (double*) _PPOS,
                 (double*) _APOS,
-                (double*) _BPOS, 
-                (double ) _rtol) ;
+                (double*) _BPOS) ;
             else
             _sign = - half_sign (
                 (double*) _PPOS,
                 (double*) _BPOS,
-                (double*) _APOS,
-                (double ) _rtol) ;
+                (double*) _APOS) ;
             
+    /*-------- "fatten" dual cavity to filter imprecision */
             if (_sign >= -_rtol &&
                 _sign <= +_rtol)
                 _safe  =  false;
@@ -265,7 +245,7 @@
         iptr_type &_part
         )
     {
-        real_type const _rEPS = 
+        real_type static const _rEPS = 
             std::pow(std::numeric_limits
                 <real_type>::epsilon(),+.67);
 
@@ -417,9 +397,9 @@
                   _pred._list.tend() ;
                 ++_iter  )
         {
-            if (clip_dual(_mesh, _hset , 
-                   &_iter->pval( 0), _safe, 
-                    _RTOL) )
+            if (clip_dual( _mesh, _hset , 
+                   &_iter->pval( 0), 
+                    _safe, _RTOL) )
             {
     /*--------------------------- dist to face circumball */
                 real_type _dsqr = 
@@ -427,7 +407,10 @@
                     _ebal , 
                    &_iter->pval( 0)) ;  
 
-                if(!_safe && _dsqr > _RTOL)
+                real_type _dtol = 
+               (real_type) 1./3. * _ebal[2] ;
+
+                if(!_safe && _dsqr > _dtol)
     /*--------------------------- prune near-degeneracies */
                     continue ;
 

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 13 April, 2018
+     * Last updated: 25 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -54,7 +54,8 @@
     __normal_call iptr_type ftop_scan (
         mesh_type &_mesh,
         fdat_list &_fset,
-    typename mesh_type::edge_list &_hedg
+        typename 
+    mesh_type::edge_list  &_edup
         )
     {  
         containers::array <
@@ -73,7 +74,7 @@
                   _face != _fset.tend() ;
                 ++_face, ++_fnum)
         {
-            if (_seen [_fnum] == +0 )
+            if (_seen [_fnum] == +0)
             {
    
             _seen[_fnum] = +1 ;
@@ -84,60 +85,63 @@
 
             for ( ; !_fbfs.empty() ; )
             {
-                _fbfs._pop_tail(_fpos) ;
+            
+            _fbfs._pop_tail(_fpos) ;
+            
+            for(auto _epos = +3; _epos-- != +0; )
+            {
+                iptr_type _tadj = 
+                    _fset[_fpos]._tadj ;
+                iptr_type _fadj = 
+                    _fset[_fpos]._fadj ;
+            
+                iptr_type _fnod [ +4];
+                mesh_type::tria_type::tria_type::
+                face_node(_fnod, _fadj, 3, 2);
+                _fnod[0] = _mesh._tria.
+                 tria( _tadj)->node(_fnod[0]);
+                _fnod[1] = _mesh._tria.
+                 tria( _tadj)->node(_fnod[1]);
+                _fnod[2] = _mesh._tria.
+                 tria( _tadj)->node(_fnod[2]);
+            
+                iptr_type _enod [ +3] ;
+                mesh_type::tria_type::tria_type::
+                face_node(_enod, _epos, 2, 1);
+                _enod[0] = _fnod[_enod[ 0] ] ;
+                _enod[1] = _fnod[_enod[ 1] ] ;
                 
-                for(auto _epos = +3; _epos-- != +0; )
+                algorithms::isort (
+                    &_enod[0], &_enod[2], 
+                        std::less<iptr_type>()) ;
+                
+                edge_data _edat;
+                _edat._node[0] = _enod[0] ;
+                _edat._node[1] = _enod[1] ;
+                
+                _aset.set_count(+0,
+                    containers::loose_alloc);
+            
+                if(!_edup.find(_edat, _aset))
+                    continue ;
+                
+                for (auto _iter  = _aset.head() ;
+                          _iter != _aset.tend() ;
+                        ++_iter  )
                 {
-                    iptr_type _tadj = 
-                        _fset[_fpos]._tadj ;
-                    iptr_type _fadj = 
-                        _fset[_fpos]._fadj ;
-                
-                    iptr_type _fnod [ +4];
-                    mesh_type::tria_type::tria_type::
-                    face_node(_fnod, _fadj, 3, 2);
-                    _fnod[0] = _mesh._tria.
-                     tria( _tadj)->node(_fnod[0]);
-                    _fnod[1] = _mesh._tria.
-                     tria( _tadj)->node(_fnod[1]);
-                    _fnod[2] = _mesh._tria.
-                     tria( _tadj)->node(_fnod[2]);
-                
-                    iptr_type _enod [ +3] ;
-                    mesh_type::tria_type::tria_type::
-                    face_node(_enod, _epos, 2, 1);
-                    _enod[0] = _fnod[_enod[ 0] ] ;
-                    _enod[1] = _fnod[_enod[ 1] ] ;
+                    iptr_type _iadj =
+                      (*_iter)->_data._tadj;
                     
-                    algorithms::isort (
-                        &_enod[0], &_enod[2], 
-                            std::less<iptr_type>()) ;
-                    
-                    edge_data _edat;
-                    _edat._node[0] = _enod[0] ;
-                    _edat._node[1] = _enod[1] ;
-                    
-                    _aset.set_count(+0,
-                        containers::loose_alloc);
-                
-                    if(!_hedg.find(_edat, _aset))
-                        continue ;
-                    
-                    for (auto _iter  = _aset.head() ;
-                              _iter != _aset.tend() ;
-                            ++_iter  )
+                    if (_seen[_iadj] == +0)
                     {
-                        iptr_type _iadj =
-                          (*_iter)->_data._tadj;
+                        _seen[_iadj]  = +1 ;
                         
-                        if (_seen[_iadj] == +0)
-                        {
-                            _seen[_iadj]  = +1 ;
-                            _fbfs.
-                             push_tail( _iadj );
-                        }
+                        _fbfs.
+                         push_tail( _iadj );
                     }
                 }
+            }
+            
             }
             
             }
@@ -161,12 +165,12 @@
         )
     {
         typename 
-            mesh_type::edge_list _hedg (
+            mesh_type::edge_list _edup (
         typename mesh_type::edge_hash(),
         typename mesh_type::edge_pred(), 
            +.8, _mesh._eset.get_alloc()) ;
         
-        _hedg._lptr.set_count (
+        _edup._lptr.set_count (
             _tset.count() * +6 , 
         containers::loose_alloc, nullptr);
         
@@ -217,10 +221,10 @@
             if(!_mesh.
                  find_edge(_edat, _mptr))
                 continue ;
-            if( _hedg.find(_edat, _eptr))
+            if( _edup.find(_edat, _eptr))
                 continue ;
             else
-            {   _hedg.push(_edat) ;
+            {   _edup.push(_edat) ;
             }
             
            _eset.push_tail(_mptr->_data ) ;           
@@ -246,12 +250,12 @@
         )
     {
         typename 
-            mesh_type::edge_list _hedg (
+            mesh_type::edge_list _edup (
         typename mesh_type::edge_hash(),
         typename mesh_type::edge_pred(), 
            +.8, _mesh._eset.get_alloc()) ;
         typename 
-            mesh_type::face_list _hfac (
+            mesh_type::face_list _fdup (
         typename mesh_type::face_hash(),
         typename mesh_type::face_pred(), 
            +.8, _mesh._fset.get_alloc()) ;
@@ -260,10 +264,11 @@
         typename mesh_type::
             edge_list::item_type*> _aset ;
     
-        _hedg._lptr.set_count (
+        _edup._lptr.set_count (
             _tset.count() * +6 , 
         containers::loose_alloc, nullptr);
-        _hfac._lptr.set_count (
+        
+        _fdup._lptr.set_count (
             _tset.count() * +4 , 
         containers::loose_alloc, nullptr);
     
@@ -311,10 +316,10 @@
             if(!_mesh.
                  find_face(_fdat, _mptr))
                 continue ;
-            if( _hfac.find(_fdat, _fptr))
+            if( _fdup.find(_fdat, _fptr))
                 continue ;
             else
-            {   _hfac.push(_fdat) ;
+            {   _fdup.push(_fdat) ;
             }
             
            _fset.push_tail(_mptr->_data ) ;
@@ -371,15 +376,15 @@
             typename mesh_type::
                      edge_list::
                  item_type*_eptr=nullptr;
-            if(!_hedg.find(_edat, _eptr))
+            if(!_edup.find(_edat, _eptr))
             {   
-                _hedg.push(_edat) ;
+                _edup.push(_edat) ;
                 _eset.
                  push_tail(_edat) ;
             }
             else
             {   
-                _hedg.push(_edat) ;
+                _edup.push(_edat) ;
             }
         }
         }
@@ -388,10 +393,10 @@
                   _edge != _eset.tend() ; 
                 ++_edge  )
         {
-            _aset.set_count(+0,
+            _aset.set_count ( +0,
                 containers::loose_alloc);
         
-            if(_hedg.find(*_edge, _aset))
+            if(_edup.find(*_edge, _aset))
             {
         /*------------------- "internal" topo. degree */
             uint_type _topo = +2;
@@ -413,7 +418,7 @@
         }
     
     /*--------------------- count no. connected comp. */
-        return ftop_scan(_mesh, _fset, _hedg) == 1;
+        return ftop_scan(_mesh, _fset, _edup) == 1;
     }
 
     /*
@@ -527,16 +532,15 @@
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
-    mesh_type::edge_list &_pedg ,
+    mesh_type::edge_list &_epro ,
         typename 
-    mesh_type::face_list &_pfac ,
+    mesh_type::face_list &_fpro ,
         iptr_list &_nnew ,
         iptr_list &_nold ,
         iptr_list &_tnew ,
         iptr_list &_told ,
         node_heap &_etpq ,
-        typename 
-    mesh_type::node_list &_etin ,
+        iptr_list &_emrk ,
         edat_list &_etmp ,
         edat_list &_ecav ,
         escr_list &_escr ,
@@ -553,59 +557,69 @@
         )
     {
         class node_pred
-            {
-        /*----------------- find adj. set of tria-to-node */
-            public  :
-                typedef typename 
-                    mesh_type::
-                tria_type tria_type ;
-  
-            public  :          
-                iptr_type _npos;
+        {
+    /*--------------------- find adj. set of tria-to-node */
+        public  :
+             
+        typedef typename
+            mesh_type::tria_type tria_type ;
 
-            public  :
-            __inline_call node_pred (
-                iptr_type _nsrc
-                ) : _npos(_nsrc) {}
-        /*----------------- find adj. set of tria-to-node */
-            __inline_call 
-                bool_type operator()(
-                tria_type&_tria,
-                iptr_type _tpos,
-                iptr_type 
-                ) 
-            {   return ( 
-            _tria.tria(_tpos)->node(+0) 
-                == this->_npos ||
-            _tria.tria(_tpos)->node(+1) 
-                == this->_npos ||
-            _tria.tria(_tpos)->node(+2) 
-                == this->_npos ||
-            _tria.tria(_tpos)->node(+3) 
-                == this->_npos );
-            }
-            } ;
+        public  :          
+            iptr_type _npos;
+
+        public  :
+        __inline_call node_pred (
+            iptr_type _nsrc
+            ) : _npos(_nsrc) {}
+    /*--------------------- find adj. set of tria-to-node */
+        __inline_call bool_type operator() (
+            tria_type&_tria,
+            iptr_type _tpos,
+            iptr_type _fpos 
+            ) 
+        {   
+            iptr_type _tnod[4] = {
+            _tria.tria(_tpos)->node(0) ,
+            _tria.tria(_tpos)->node(1) ,
+            _tria.tria(_tpos)->node(2) ,
+            _tria.tria(_tpos)->node(3)
+                } ;
+
+            __unreferenced(_fpos) ;
+
+            if (_tnod[0] == this->_npos)
+            return  true ;
+            if (_tnod[1] == this->_npos)
+            return  true ;
+            if (_tnod[2] == this->_npos)
+            return  true ;
+            if (_tnod[3] == this->_npos)
+            return  true ;
+        
+            return false ;
+        }
+        } ;
 
         typename rdel_opts::node_kind 
         _kind =  rdel_opts::null_kind ;
 
     /*--------------------- pop() leading element from PQ */
-        _nnew.set_count(   +0) ;
-        _nold.set_count(   +0) ;
-        _tnew.set_count(   +0) ;
-        _told.set_count(   +0) ;
+        _nnew.set_count(  + 0) ;
+        _nold.set_count(  + 0) ;
+        _tnew.set_count(  + 0) ;
+        _told.set_count(  + 0) ;
 
-        _etmp.set_count(   +0) ;
-        _escr.set_count(   +0) ;
-        _ecav.set_count(   +0) ;
-        _ftmp.set_count(   +0) ;
-        _fscr.set_count(   +0) ;
-        _fcav.set_count(   +0) ;
-        _tscr.set_count(   +0) ;
-        _tcav.set_count(   +0) ;
+        _etmp.set_count(  + 0) ;
+        _escr.set_count(  + 0) ;
+        _ecav.set_count(  + 0) ;
+        _ftmp.set_count(  + 0) ;
+        _fscr.set_count(  + 0) ;
+        _fcav.set_count(  + 0) ;
+        _tscr.set_count(  + 0) ;
+        _tcav.set_count(  + 0) ;
 
-        _bscr.set_count(   +0) ;
-        _bcav.set_count(   +0) ;
+        _bscr.set_count(  + 0) ;
+        _bcav.set_count(  + 0) ;
 
         containers::
             array<iptr_type> _tset ;
@@ -620,29 +634,29 @@
     /*--------------------- cycles until a bad disk found */
         bool_type _find = false;
         iptr_type _npos = -1 ;
-        for ( ; !_etpq.empty() ;  )
+        for ( ; !_etpq.empty() ; )
         {
-            node_data _ndat, _same ;
-            _etpq._pop_root( _ndat);
-            _etin._pop(_ndat,_same);
+            node_data _ndat;
+            _etpq._pop_root(_ndat) ;
+            
+            _npos = _ndat._node[0] ;
 
-            _npos = 
-                _ndat._node[ +0] ;
+            _emrk[_npos] =   -1;
 
             _tset.set_count( +0) ;
             _eset.set_count( +0) ;
 
             _mesh._tria.walk_node( 
-                    _npos , 
-                node_pred(_npos),_tset) ;
+                _npos , 
+             node_pred(_npos),_tset) ;
 
-            if(!etop_disk(_mesh, _npos,
-                          _tset, _eset) )
+            if (!etop_disk(_mesh, 
+                _npos, _tset, _eset) )
             {
                 _find = true; break ;
             }
         }
-        if (!_find) return ( _kind );
+        if (!_find) return _kind ;
     
     /*------------------------- calc. best node in cavity */
         real_type _pmax [ +4] ;
@@ -657,7 +671,7 @@
         _kind = push_node( _geom, 
             _hfun , _mesh, _mode,
             _tmax , _pmax, _kind,
-            _pedg , _pfac,
+            _epro , _fpro,
             _nnew , _nold,
             _tnew , _told, 
             _etmp , _ecav, _escr, 
@@ -683,16 +697,15 @@
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
-    mesh_type::edge_list &_pedg ,
+    mesh_type::edge_list &_epro ,
         typename 
-    mesh_type::face_list &_pfac ,
+    mesh_type::face_list &_fpro ,
         iptr_list &_nnew ,
         iptr_list &_nold ,
         iptr_list &_tnew ,
         iptr_list &_told ,
         node_heap &_ftpq ,
-        typename 
-    mesh_type::node_list &_ftin ,
+        iptr_list &_fmrk ,
         edat_list &_etmp ,
         edat_list &_ecav ,
         escr_list &_escr ,
@@ -709,57 +722,67 @@
         )
     {
         class node_pred
-            {
-        /*----------------- find adj. set of tria-to-node */
-            public  :
-                typedef typename 
-                    mesh_type::
-                tria_type tria_type ;
-  
-            public  :          
-                iptr_type _npos;
+        {
+    /*--------------------- find adj. set of tria-to-node */
+        public  :
+             
+        typedef typename
+            mesh_type::tria_type tria_type ;
 
-            public  :
-            __inline_call node_pred (
-                iptr_type _nsrc
-                ) : _npos(_nsrc) {}
-        /*----------------- find adj. set of tria-to-node */
-            __inline_call 
-                bool_type operator()(
-                tria_type&_tria,
-                iptr_type _tpos,
-                iptr_type 
-                ) 
-            {   return ( 
-            _tria.tria(_tpos)->node(+0) 
-                == this->_npos ||
-            _tria.tria(_tpos)->node(+1) 
-                == this->_npos ||
-            _tria.tria(_tpos)->node(+2) 
-                == this->_npos ||
-            _tria.tria(_tpos)->node(+3) 
-                == this->_npos );
-            }
-            } ;
+        public  :          
+            iptr_type _npos;
+
+        public  :
+        __inline_call node_pred (
+            iptr_type _nsrc
+            ) : _npos(_nsrc) {}
+    /*--------------------- find adj. set of tria-to-node */
+        __inline_call bool_type operator() (
+            tria_type&_tria,
+            iptr_type _tpos,
+            iptr_type _fpos 
+            ) 
+        {   
+            iptr_type _tnod[4] = {
+            _tria.tria(_tpos)->node(0) ,
+            _tria.tria(_tpos)->node(1) ,
+            _tria.tria(_tpos)->node(2) ,
+            _tria.tria(_tpos)->node(3)
+                } ;
+
+            __unreferenced(_fpos) ;
+
+            if (_tnod[0] == this->_npos)
+            return  true ;
+            if (_tnod[1] == this->_npos)
+            return  true ;
+            if (_tnod[2] == this->_npos)
+            return  true ;
+            if (_tnod[3] == this->_npos)
+            return  true ;
+        
+            return false ;
+        }
+        } ;
 
         typename rdel_opts::node_kind 
         _kind =  rdel_opts::null_kind ;
 
     /*--------------------- pop() leading element from PQ */
-        _tnew.set_count(   +0) ;
-        _told.set_count(   +0) ;
+        _tnew.set_count(  + 0) ;
+        _told.set_count(  + 0) ;
 
-        _etmp.set_count(   +0) ;
-        _escr.set_count(   +0) ;
-        _ecav.set_count(   +0) ;
-        _ftmp.set_count(   +0) ;
-        _fscr.set_count(   +0) ;
-        _fcav.set_count(   +0) ;
-        _tscr.set_count(   +0) ;
-        _tcav.set_count(   +0) ;
+        _etmp.set_count(  + 0) ;
+        _escr.set_count(  + 0) ;
+        _ecav.set_count(  + 0) ;
+        _ftmp.set_count(  + 0) ;
+        _fscr.set_count(  + 0) ;
+        _fcav.set_count(  + 0) ;
+        _tscr.set_count(  + 0) ;
+        _tcav.set_count(  + 0) ;
         
-        _bscr.set_count(   +0) ;
-        _bcav.set_count(   +0) ;
+        _bscr.set_count(  + 0) ;
+        _bcav.set_count(  + 0) ;
 
         containers::                        //!! do we need these??
             array<iptr_type> _tset ;
@@ -775,32 +798,32 @@
     /*--------------------- cycles until a bad disk found */
         bool_type _find = false;
         iptr_type _npos = -1 ;
-        for ( ; !_ftpq.empty() ;  )
+        for ( ; !_ftpq.empty() ; )
         {
-            node_data _ndat, _same ;
-            _ftpq._pop_root( _ndat);
-            _ftin._pop(_ndat,_same);
+            node_data _ndat;
+            _ftpq._pop_root(_ndat) ;
+            
+            _npos = _ndat._node[0] ;
 
-            _npos = 
-                _ndat._node[ +0] ;
+            _fmrk[_npos] =   -1;
 
             _tset.set_count( +0) ;
             _eset.set_count( +0) ;
             _fset.set_count( +0) ;
 
             _mesh._tria.walk_node( 
-                    _npos , 
-                node_pred(_npos),_tset) ;
+                _npos , 
+            node_pred(_npos), _tset) ;
 
-            if(!ftop_disk(_mesh, _npos,
-                          _tset, 
-                          _eset, _fset) )
+            if (!ftop_disk(_mesh, 
+                    _npos, 
+                _tset, _eset, _fset) )
             {
                 _find = true; break ;
             }
         }
-        if (!_find) return ( _kind );
-    
+        if (!_find) return _kind ;
+        
     /*------------------------- calc. best node in cavity */
         real_type _pmax [ +4] ;
         char_type _tmax = -1;
@@ -816,7 +839,7 @@
         _kind = push_node( _geom, 
             _hfun , _mesh, _mode,
             _tmax , _pmax, _kind,
-            _pedg , _pfac,
+            _epro , _fpro,
             _nnew , _nold,
             _tnew , _told, 
             _etmp , _ecav, _escr, 

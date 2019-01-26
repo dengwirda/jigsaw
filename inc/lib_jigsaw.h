@@ -14,7 +14,7 @@
      * JIGSAW: Interface to the JIGSAW meshing library.
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 22 January, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -91,8 +91,8 @@
      */
         jigsaw_msh_t   *_init,
         
-    /* HFUN (OPTIONAL): mesh-spacing function H(x). 
-     * => NULL for empty H(x). 
+    /* HFUN (OPTIONAL): mesh-spacing function h(x). 
+     * => NULL for empty h(x). 
      */
         jigsaw_msh_t   *_hfun,
         
@@ -103,7 +103,7 @@
         
     /* 
     --------------------------------------------------------
-     * generate rDEL via JIGSAW.
+     * compute rDT's via TRIPOD.
     --------------------------------------------------------
      */
         
@@ -125,6 +125,23 @@
     /* MESH (REQUIRED): output mesh data-structure.
      */
         jigsaw_msh_t   *_mesh
+        ) ;
+        
+    /* 
+    --------------------------------------------------------
+     * limit |df/dx| via MARCHE.
+    --------------------------------------------------------
+     */
+       
+    extern indx_t marche (    
+    
+    /* JCFG (REQUIRED): settings obj. definition.
+     */
+        jigsaw_jig_t   *_jcfg,
+    
+    /* HFUN (REQUIRED): apply limiter to |df/dx|.
+     */
+        jigsaw_msh_t   *_ffun
         ) ;
 
     /* 

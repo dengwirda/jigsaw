@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 August, 2018
+     * Last updated: 22 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -133,7 +133,7 @@
         _pert  +=   + 1 ;
         _pert  *= _seps ;
         
-        for(iptr_type _iter = +0; _iter++ != +8 ; )
+        for(iptr_type _iter = +0; _iter++ != +4 ; )
         {
             _nsiz[ 2] = _hfun.eval (_ppos, _hint) ;
 
@@ -160,20 +160,29 @@
             
             _dist -= _pert * _dist ;
             
+            iptr_type _dual = -1 ;
             cosine_intersect _pred(_ipos,_dvec);
             _ball._rrad  = _dist ;
             if (!_geom.intersect (
                  _ball, _pred) )
-                return  rdel_opts::null_kind;
+                return  rdel_opts::null_kind ;
             if (!_pred. _find  )
                 return  rdel_opts::null_kind ;
-            
+
             real_type _move = 
                 geometry::length_2d(
                     _ppos,&_pred._proj.pval(0));
 
             _ppos[ 0] = _pred._proj.pval(0);
             _ppos[ 1] = _pred._proj.pval(1);
+
+            _mesh._tria.find_node ( // test voro. limiter
+                &_ppos[0], _dual, _enod[ 0]) ;
+            
+            if (_dual != _enod[0] )
+            {
+                return  rdel_opts::null_kind ;
+            }
 
             if (_move < _rtol * _hval) break ;
         }
@@ -248,7 +257,7 @@
         _pert  +=   + 1 ;
         _pert  *= _seps ;
         
-        for(iptr_type _iter = +0; _iter++ != +8 ; )
+        for(iptr_type _iter = +0; _iter++ != +4 ; )
         {
             _kind    = rdel_opts::offh_kind ;
 

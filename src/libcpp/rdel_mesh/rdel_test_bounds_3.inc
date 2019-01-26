@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 September, 2017
+     * Last updated: 24 January, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -44,30 +44,7 @@
     // from rdel_mesh_3.hpp
      
   
-    /*
-    --------------------------------------------------------
-     * geom-BNDS: full geometrical encroachment tests. 
-    --------------------------------------------------------
-     */
- 
-    // Generally, it seems that topology-only type encroa-
-    // chment is better ==> meshes are sparser, etc...
- 
-    // define __geomBNDS
-    
-    
-    /*
-    --------------------------------------------------------
-     * prev-FACE: test against 2-face in prev. cavity. 
-    --------------------------------------------------------
-     */
- 
-    // This doesn't seem to be a great idea ==> not a good
-    // way to split the high-quality surf.-tria. generated
-    // using DELFRONT... 
- 
-    // define __prevFACE
-
+    #   define __GEOMBNDS
 
     /*
     --------------------------------------------------------
@@ -111,8 +88,7 @@
                  ++_tpos  )
         {
     /*------------------------- extract restricted 1-face */   
-        iptr_type  _epos ;
-        for (_epos = +6; _epos-- != +0; )
+        for ( auto _epos = 6; _epos-- != 0; )
         {
             iptr_type _tnod[ +4] ;
             mesh_type::tria_type::tria_type::
@@ -148,8 +124,7 @@
             _eset.push( _fdat) ;
         }
     /*------------------------- extract restricted 2-face */
-        iptr_type  _fpos ;
-        for (_fpos = +4; _fpos-- != +0; )
+        for ( auto _fpos = 4; _fpos-- != 0; )
         {
             iptr_type _tnod[ +4] ;
             mesh_type::tria_type::tria_type::
@@ -262,17 +237,17 @@
             {
                 _pmax[3] = _sbal[3];
 
+                _mode    =  + 1 ;
+                
+                _bnds    = true ;
+
                 _pmax[0] = _sbal[0];
                 _pmax[1] = _sbal[1];
                 _pmax[2] = _sbal[2];
-                
-                _mode    = +1;
-                
-                _bnds    = true ;
             }
             }
             
-        #   ifdef __geomBNDS
+        #   ifdef  __GEOMBNDS
             if (_blen    < _sbal[3])
             {
         /*----------------- keep worst GEOM. encroachment */
@@ -280,16 +255,16 @@
             {
                 _pmax[3] = _sbal[3];
 
+                _mode    =  + 1 ;
+                
+                _bnds    = true ;
+
                 _pmax[0] = _sbal[0];
                 _pmax[1] = _sbal[1];
                 _pmax[2] = _sbal[2];
-                
-                _mode    = +1;
-                
-                _bnds    = true ;
             }
             }
-        #   endif
+        #   endif//__GEOMBNDS
         }
         }
         
@@ -331,17 +306,17 @@
             {
                 _pmax[3] = _sbal[3];
 
+                _mode    =  + 2 ;
+                
+                _bnds    = true ;
+
                 _pmax[0] = _sbal[0];
                 _pmax[1] = _sbal[1];
                 _pmax[2] = _sbal[2];
-                
-                _mode    = +2;
-                
-                _bnds    = true ;
             }
             }
             
-        #   ifdef __geomBNDS
+        #   ifdef  __GEOMBNDS
             if (_blen    < _sbal[3])
             {
         /*----------------- keep worst GEOM. encroachment */
@@ -349,16 +324,16 @@
             {
                 _pmax[3] = _sbal[3];
 
+                _mode    =  + 2 ;
+                
+                _bnds    = true ;
+
                 _pmax[0] = _sbal[0];
                 _pmax[1] = _sbal[1];
                 _pmax[2] = _sbal[2];
-                
-                _mode    = +2;
-                
-                _bnds    = true ;
             }
             }
-        #   endif
+        #   endif//__GEOMBNDS
         }
         }
         
@@ -459,17 +434,17 @@
             {
                 _pmax[3] = _sbal[3];
 
+                _mode    =  + 1 ;
+                
+                _bnds    = true ;
+
                 _pmax[0] = _sbal[0];
                 _pmax[1] = _sbal[1];
                 _pmax[2] = _sbal[2];
-                
-                _mode    = +1;
-                
-                _bnds    = true ;
             }           
             }
             
-        #   ifdef __geomBNDS
+        #   ifdef  __GEOMBNDS
             if (_blen    < _sbal[3])
             {
         /*----------------- keep worst GEOM. encroachment */
@@ -477,24 +452,22 @@
             {
                 _pmax[3] = _sbal[3];
 
+                _mode    =  + 1 ;
+                
+                _bnds    = true ;
+
                 _pmax[0] = _sbal[0];
                 _pmax[1] = _sbal[1];
                 _pmax[2] = _sbal[2];
-                
-                _mode    = +1;
-                
-                _bnds    = true ;
             }
             }
-        #   endif
+        #   endif//__GEOMBNDS
         }
         }
         
         if  (_mode > +1)
         {
     /*---------------------------------------- test faces */
-        __unreferenced( _fold) ;
-    #   ifdef __prevFACE
         for ( auto _fpos  = _fnew.head();
                    _fpos != _fnew.tend();
                  ++_fpos  )
@@ -535,17 +508,17 @@
             {
                 _pmax[3] = _sbal[3];
 
+                _mode    =  + 2 ;
+                
+                _bnds    = true ;
+
                 _pmax[0] = _sbal[0];
                 _pmax[1] = _sbal[1];
                 _pmax[2] = _sbal[2];
-                
-                _mode    = +2 ;
-                
-                _bnds    = true ;
             }
             }
             
-        #   ifdef __geomBNDS
+        #   ifdef  __GEOMBNDS
             if (_blen    < _sbal[3])
             {
         /*----------------- keep worst GEOM. encroachment */
@@ -553,18 +526,17 @@
             {
                 _pmax[3] = _sbal[3];
 
+                _mode    =  + 2 ;
+                
+                _bnds    = true ;
+
                 _pmax[0] = _sbal[0];
                 _pmax[1] = _sbal[1];
                 _pmax[2] = _sbal[2];
-                
-                _mode    = +2 ;
-                
-                _bnds    = true ;
             }
             }
-        #   endif
+        #   endif//__GEOMBNDS
         }
-    #   endif
         }
         
         return  _bnds  ;
@@ -582,9 +554,9 @@
         mesh_type &_mesh ,
         iptr_list &_told ,
         typename 
-    mesh_type::edge_list &_pedg ,
+    mesh_type::edge_list &_epro ,   // "protected" edges
         typename 
-    mesh_type::face_list &_pfac ,
+    mesh_type::face_list &_fpro ,   // "protected" faces
         edat_list &_enew ,
         fdat_list &_fnew ,
         edat_list &_eold ,
@@ -636,7 +608,7 @@
                  item_type *_mptr=nullptr;
             if(!_eset.find(*_epos, _mptr))
             {
-            if( _pedg.find(*_epos, _mptr))
+            if( _epro.find(*_epos, _mptr))
             {
         /*----------------- bail on constraint violation! */
                 return true ;
@@ -653,7 +625,7 @@
                  item_type *_mptr=nullptr;
             if(!_fset.find(*_fpos, _mptr))
             {
-            if( _pfac.find(*_fpos, _mptr))
+            if( _fpro.find(*_fpos, _mptr))
             {
         /*----------------- bail on constraint violation! */
                 return true ;
@@ -665,9 +637,7 @@
     }
 
 
-    #undef __prevFACE
-    
-    #undef __geomBNDS
+    #undef __GEOMBNDS
 
 
 
