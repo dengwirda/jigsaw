@@ -60,8 +60,6 @@
 #   pragma warning(disable:4503) // decorated name length 
 #   pragma warning(disable:4458) // shadowing
 
-//!! also the damn MSVC non-standard "extensions" somehow
-
 #   elif defined(__LLVM__)
 
 #   elif defined(__GNUC__)

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 September, 2017
+     * Last updated: 24 January, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -43,19 +43,9 @@
      
     // from rdel_mesh_2.hpp
      
-  
-    /*
-    --------------------------------------------------------
-     * GEOM-BNDS: full geometrical encroachment tests. 
-    --------------------------------------------------------
-     */
  
-    // Generally, it seems that topology-only type encroa-
-    // chment is better ==> meshes are sparser, etc...
- 
-    // define __geomBNDS
-    
-      
+    #   define __GEOMBNDS
+         
     /*
     --------------------------------------------------------
      * FIND-RDEL: assemble restricted faces in cavity. 
@@ -89,8 +79,7 @@
                  ++_tpos  )
         {
     /*------------------------- extract restricted 1-face */   
-        iptr_type  _epos ;
-        for (_epos = +3; _epos-- != +0; )
+        for ( auto _epos = 3; _epos-- != 0; )
         {
             iptr_type _tnod[ +3] ;
             mesh_type::tria_type::tria_type::
@@ -120,7 +109,7 @@
             if (_eset.find(_fdat,_mptr)) 
                 continue ;
             if (_mesh.
-                 find_edge(_fdat,_mptr)) 
+                 find_edge(_fdat,_mptr))
             _ecav.push_tail(_mptr->_data);
             
             _eset.push( _fdat) ;
@@ -193,16 +182,16 @@
             {
                 _pmax[2] = _sbal[2];
 
-                _pmax[0] = _sbal[0];
-                _pmax[1] = _sbal[1];
-                
-                _mode    = +1 ;
+                _mode    =  + 1 ;
                 
                 _bnds    = true ;
+
+                _pmax[0] = _sbal[0];
+                _pmax[1] = _sbal[1];
             }
             }
             
-        #   ifdef __geomBNDS
+        #   ifdef  __GEOMBNDS
             if (_blen    < _sbal[2])
             {
         /*----------------- keep worst GEOM. encroachment */
@@ -210,15 +199,15 @@
             {
                 _pmax[2] = _sbal[2];
 
-                _pmax[0] = _sbal[0];
-                _pmax[1] = _sbal[1];
-                
-                _mode    = +1 ;
+                _mode    =  + 1 ;
                 
                 _bnds    = true ;
+
+                _pmax[0] = _sbal[0];
+                _pmax[1] = _sbal[1];
             }
             }
-        #   endif
+        #   endif//__GEOMBNDS
         }
         }
         
@@ -306,16 +295,16 @@
             {
                 _pmax[2] = _sbal[2];
 
-                _pmax[0] = _sbal[0];
-                _pmax[1] = _sbal[1];
-                
-                _mode    = +1 ;
+                _mode    =  + 1 ;
                 
                 _bnds    = true ;
+
+                _pmax[0] = _sbal[0];
+                _pmax[1] = _sbal[1];
             }           
             }
             
-        #   ifdef __geomBNDS
+        #   ifdef  __GEOMBNDS
             if (_blen    < _sbal[2])
             {
         /*----------------- keep worst GEOM. encroachment */
@@ -323,15 +312,15 @@
             {
                 _pmax[2] = _sbal[2];
 
-                _pmax[0] = _sbal[0];
-                _pmax[1] = _sbal[1];
-                
-                _mode    = +1 ;
+                _mode    =  + 1 ;
                 
                 _bnds    = true ;
+
+                _pmax[0] = _sbal[0];
+                _pmax[1] = _sbal[1];
             }
             }
-        #   endif
+        #   endif//__GEOMBNDS
         }
         }
         
@@ -350,7 +339,7 @@
         mesh_type &_mesh ,
         iptr_list &_told ,
         typename 
-    mesh_type::edge_list &_pedg ,
+    mesh_type::edge_list &_epro ,   // "protected" edges
         edat_list &_enew ,
         edat_list &_eold
         )
@@ -386,7 +375,7 @@
                  item_type *_mptr=nullptr;
             if(!_eset.find(*_epos, _mptr))
             {
-            if( _pedg.find(*_epos, _mptr))
+            if( _epro.find(*_epos, _mptr))
             {
         /*----------------- bail on constraint violation! */
                 return true ;
@@ -398,7 +387,7 @@
     }
 
 
-    #undef  __geomBNDS
+    #undef __GEOMBNDS
     
     
     

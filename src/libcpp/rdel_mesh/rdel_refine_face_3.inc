@@ -58,9 +58,9 @@
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
-    mesh_type::edge_list &_pedg ,
+    mesh_type::edge_list &_epro ,
         typename 
-    mesh_type::face_list &_pfac ,
+    mesh_type::face_list &_fpro ,
         iptr_list &_nnew ,
         iptr_list &_nold ,
         iptr_list &_tnew ,
@@ -117,7 +117,7 @@
             typename mesh_type::
                      edge_list::
                  item_type *_eptr = nullptr ;    
-            if (_mesh.find_edge(_edat, _eptr))
+            if (_mesh.find_edge(_edat,_eptr))
             {
                 if(_eptr->_data._pass ==
                    _qdat. _pass )
@@ -161,7 +161,7 @@
         _kind = push_node( _geom , 
             _hfun , _mesh, _mode , 
             +1    , _ppos, _kind ,
-            _pedg , _pfac,
+            _epro , _fpro,
             _nnew , _nold,
             _tnew , _told, 
             _eold , _ecav, _escr , 
@@ -196,9 +196,9 @@
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
-    mesh_type::edge_list &_pedg ,
+    mesh_type::edge_list &_epro ,
         typename 
-    mesh_type::face_list &_pfac ,
+    mesh_type::face_list &_fpro ,
         iptr_list &_nnew ,
         iptr_list &_nold ,
         iptr_list &_tnew ,
@@ -256,7 +256,7 @@
             typename mesh_type::
                      face_list::
                  item_type *_fptr = nullptr ;    
-            if (_mesh.find_face(_fdat, _fptr))
+            if (_mesh.find_face(_fdat,_fptr))
             {
                 if(_fptr->_data._pass ==
                    _qdat. _pass )
@@ -299,7 +299,7 @@
         _kind = push_node( _geom , 
             _hfun , _mesh, _mode , 
             +2    , _ppos, _kind ,
-            _pedg , _pfac,
+            _epro , _fpro,
             _nnew , _nold,
             _tnew , _told, 
             _eold , _ecav, _escr , 
@@ -334,9 +334,9 @@
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
-    mesh_type::edge_list &_pedg ,
+    mesh_type::edge_list &_epro ,
         typename 
-    mesh_type::face_list &_pfac ,
+    mesh_type::face_list &_fpro ,
         iptr_list &_nnew ,
         iptr_list &_nold ,
         iptr_list &_tnew ,
@@ -395,7 +395,7 @@
             typename mesh_type::
                      tria_list::
                  item_type *_tptr = nullptr ;
-            if (_mesh.find_tria(_tdat, _tptr))
+            if (_mesh.find_tria(_tdat,_tptr))
             {
                 if(_tptr->_data._pass ==
                    _qdat. _pass )
@@ -437,7 +437,7 @@
         _kind = push_node( _geom , 
             _hfun , _mesh, _mode , 
             +3    , _ppos, _kind ,
-            _pedg , _pfac,
+            _epro , _fpro,
             _nnew , _nold,
             _tnew , _told, 
             _eold , _ecav, _escr , 

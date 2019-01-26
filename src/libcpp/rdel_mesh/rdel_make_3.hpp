@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 January, 2019
+     * Last updated: 24 January, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -109,8 +109,6 @@
     typedef typename 
             mesh_type::node_data            node_data ;
     typedef typename 
-            mesh_type::ball_data            ball_data ;
-    typedef typename 
             mesh_type::edge_data            edge_data ;
     typedef typename 
             mesh_type::face_data            face_data ;
@@ -131,52 +129,7 @@
     typedef mesh::rdel_timers       <
                 real_type ,
                 iptr_type           >       rdel_stat ;
-                
-                
-    /*
-    --------------------------------------------------------
-     * INIT-BALL: add new ball to restricted-tria.
-    --------------------------------------------------------
-     */
-    
-    __static_call
-    __normal_call void_type init_ball (
-        mesh_type &_mesh,
-        geom_type &_geom,
-        iptr_type  _npos,
-        char_type  _kind,
-        iptr_type &_nbal,
-        rdel_opts &_opts
-        )
-    {
-        __unreferenced ( _geom ) ;
-        __unreferenced ( _opts ) ;
-    
-        if (_mesh._tria.
-             node(_npos)->feat()==hard_feat)
-        {
-    /*---------- push protecting ball for "hard" features */
-            ball_data _ball ;
-            _ball._node[0] = _npos;
-            
-            _ball._pass    =   +0 ;
-            _ball._kind    = _kind;
-            
-            _ball._ball[0] = _mesh.
-                _tria.node(_npos)->pval(0) ;
-            _ball._ball[1] = _mesh.
-                _tria.node(_npos)->pval(1) ;
-            _ball._ball[2] = _mesh.
-                _tria.node(_npos)->pval(2) ;
-            
-            _ball._ball[3] = (real_type)0. ;
-    
-            _nbal +=   +1;
-    
-            _mesh.push_ball (_ball) ;        
-        }
-    }
-    
+                                
     /*
     --------------------------------------------------------
      * PUSH-EDGE: add new edge to restricted-tria.
@@ -842,7 +795,6 @@
             _tcpu.time_span(_ttic,_ttoc) ;
     #   endif//__use_timers
     
-        iptr_type _nbal  = +0 ;
         iptr_type _nedg  = +0 ;
         iptr_type _nfac  = +0 ;
         iptr_type _ntri  = +0 ;
@@ -868,15 +820,12 @@
         typename mesh_type::tria_pred(), 
            +.8, _mesh._tset.get_alloc()) ;
 
-        iptr_list _tnew, _nnew ;
+    /*------------------------- DT cells to check for rDT */
+        iptr_list _tnew ;
         _tnew.set_alloc (
             _mesh._tria._tset.count()) ;
-        _nnew.set_alloc (
-            _mesh._tria._nset.count()) ;
-    
-    /*------------------------- face in DT for rDT checks */    
+        
         iptr_type _tpos  = +0 ;
-        iptr_type _npos  = +0 ;
         
         for (auto _iter  = 
             _mesh._tria._tset.head() ; 
@@ -890,18 +839,6 @@
             }
         }
         
-        for (auto _iter  = 
-            _mesh._tria._nset.head() ; 
-                  _iter != 
-            _mesh._tria._nset.tend() ; 
-                ++_iter, ++_npos)
-        {
-            if (_iter->mark() >= +0)
-            {
-                _nnew. push_tail( _npos) ;
-            }
-        }
-
         if (_geom.have_feat(1) ||
             _geom.have_feat(2) )
         {        
@@ -912,34 +849,6 @@
         {
             tria_circ(_mesh,*_iter) ;
         }
-        }
-       
-    /*------------------------- test for restricted balls */
-        if (_args.dims() >= 0  )
-        {
-
-    #   ifdef  __use_timers
-        _ttic = _time.now() ;
-    #   endif//__use_timers
-
-        for( auto _iter  = _nnew.head(); 
-                  _iter != _nnew.tend(); 
-                ++_iter  )
-        {     
-            char_type _kind = feat_ball;
-        
-            init_ball(_mesh, _geom,
-                     *_iter, 
-                      _kind, _nbal, 
-                      _args) ;
-        }
-
-    #   ifdef  __use_timers
-        _ttoc = _time.now() ;       
-        _tcpu._node_init += 
-            _tcpu.time_span(_ttic,_ttoc) ;
-    #   endif//__use_timers
-
         }
     
     /*------------------------- test for restricted edges */
@@ -1069,10 +978,6 @@
         std::to_string (_tcpu._mesh_seed)) ;
         _dump.push("\n")  ;
 
-        _dump.push("  NODE-INIT = ") ;
-        _dump.push(
-        std::to_string (_tcpu._node_init)) ;
-        _dump.push("\n")  ;
         _dump.push("  EDGE-INIT = ") ;
         _dump.push(
         std::to_string (_tcpu._edge_init)) ;
@@ -1087,10 +992,6 @@
         _dump.push("\n")  ;
         _dump.push("\n")  ;
 
-        _dump.push("  |rDEL-0| (node) = ") ;
-        _dump.push(std::to_string (_nbal)) ;
-        _dump.push("\n")  ;
-        
         _dump.push("  |rDEL-1| (edge) = ") ;
         _dump.push(std::to_string (_nedg)) ;
         _dump.push("\n")  ;

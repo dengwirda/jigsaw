@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * WALK-MESH-NODE: find enclosing tria. via traversal.
+     * DELAUNAY-WALK-MESH: find node/cell via traversal.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 May, 2017
+     * Last updated: 22 January, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -46,17 +46,17 @@
 
     /*
     --------------------------------------------------------
-     * WALK-MESH-NODE: find enclosing tria. via traversal.
+     * WALK-TRIA-NEAR: find "nearest" tria. via traversal.
     --------------------------------------------------------
      */
  
-    __normal_call bool_type walk_mesh_node (
-        real_type *_ppos,
+    __normal_call bool_type walk_tria_near (
+      __const_ptr(real_type) _ppos,
         iptr_type &_elem,
         iptr_type  _hint =  null_flag ()
         )
     {
-    /*------------- walk mesh until we find enclosing tri */
+    /*------------- walk mesh until we find nearest tria. */
         bool_type _done = false;
         bool_type _scan = false;
         iptr_type _ntri = 
@@ -133,7 +133,6 @@
         }
 
     /*------------- walk elements toward _ppos from _elem */
-    
         iptr_type _next = +0 ;
         iptr_type _face = +0 ;
         
@@ -165,5 +164,135 @@
         return ( _done )  ;
     }
     
+    /*
+    --------------------------------------------------------
+     * WALK-NODE-NEAR: find "nearest" vert. via traversal.
+    --------------------------------------------------------
+     */
+ 
+    __normal_call bool_type walk_node_near (
+      __const_ptr(real_type) _ppos,
+        iptr_type &_node,
+        iptr_type  _hint =  null_flag ()
+        )
+    {
+    /*------------- walk mesh until we find nearest vert. */
+        bool_type _done = false;
+        bool_type _scan = false;
+        
+        iptr_type _nnod = 
+       (iptr_type)this->_nset.count () ;
+        iptr_type _ntri = 
+       (iptr_type)this->_tset.count () ;
+
+        if (this->_nset.count() == +0 ||
+            this->_tset.count() == +0 )
+        {
+    /*----------------------------- return when empty */
+            return  _done ;
+        }
+        if (_hint < +0 || _hint>=_nnod)
+        {
+    /*----------------------------- not a valid index */
+            _node = +0 ;
+            _scan =  true ;
+        }
+        else
+        if (node(_hint)->mark() <= -1 )
+        {
+    /*----------------------------- not a valid _node */
+            _node = +0 ;
+            _scan =  true ;
+        }
+        else
+        {
+            _node = _hint ;
+        }
+        
+    /*------------- randomised scan: locate initial _node */
+        if (_scan)
+        {
+        
+        real_type _best = 
+            +std::numeric_limits
+                <real_type>::infinity () ;
+    
+    /*--------------------- scale no. iter with dims. */
+        iptr_type _imax = (iptr_type)
+            std::pow ((double) _nnod, 
+        +1.0 / tria_pred::_dims) / 4 + 1 ;
+
+        for (auto _iter = _imax; _iter-- != +0; )
+        {
+        /*----------------------- randomise selection */
+            iptr_type _next =
+                (iptr_type)std::rand() 
+                    % this->_nset.count();
+
+        /*----------------------- reject "null" nodes */
+            if (node(_next)->mark() < +0)
+                continue ;
+                
+        /*----------------------- calc. dist. to node */
+            real_type _dist = 
+                tria_pred::lensqr_kd(_ppos, 
+                    &node(_next)->pval(0));
+
+            if (_best > _dist)
+            {
+        /*----------------------- keep closest so far */
+                _best = _dist;
+                _node = _next;
+            }
+        }
+        
+        }
+        
+    /*------------- ensure that we have a non--null _node */
+        for ( ; _node != _nnod; ++_node)
+        {
+            if (node(_node)->mark()>=+0) break  ;
+        }
+        
+    /*------------- walk elements toward _ppos from _node */
+        iptr_type _elem = 
+             node(_node)->next () ;
+        
+        real_type _dmin = 
+        tria_pred::lensqr_kd(_ppos, 
+            &node(_node)->pval(0));
+    
+        iptr_type _next = +0 ;
+        iptr_type _face = +0 ;
+        
+        for (auto _iter = _ntri; 
+                  _iter-- != +0; _elem = _next)
+        {
+        /*--------------- test nearest-node condition */
+            _done = typename tria_pred::
+                template near_pred<self_type>() (
+                    *this, _ppos,
+                    _dmin, _node,
+                    _elem, _face) ;
+        
+            if(!_done )
+            {
+        /*--------------- push next element onto walk */
+                _next = __unflip (
+                    tria(_elem)->next(_face));
+
+                if(_next == this->null_flag())
+                {
+        /*--------------- stop at external boundaries */
+                    break ;
+                }
+            }
+        /*--------------- stop if dist. nondecreasing */
+            else break ;
+        }
+
+        return ( _done )  ;    
+    }
+     
     
     

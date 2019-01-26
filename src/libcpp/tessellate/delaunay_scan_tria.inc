@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * WALK-TRIA-LIST: breadth-first-search about tria.
+     * SCAN-TRIA-LIST: breadth-first-search about tria.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -46,14 +46,14 @@
 
     /*
     --------------------------------------------------------
-     * WALK-TRIA-LIST: breadth-first-search about tria.
+     * SCAN-TRIA-LIST: breadth-first-search about tria.
     --------------------------------------------------------
      */
      
     template <
     typename      func_type
              >
-    __normal_call void_type walk_tria_list (
+    __normal_call void_type scan_tria_list (
         iptr_type  _elem,
         fptr_type  _flag,
         func_type &_pred,

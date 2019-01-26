@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 January, 2019
+     * Last updated: 24 January, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -270,6 +270,7 @@
      */
      
     #include "rdel_update_face_2.inc"
+    #include "rdel_update_topo_2.inc"
     
     
     /*
@@ -835,11 +836,13 @@
         iptr_list _nnew, _nold ;
         iptr_list _tnew, _told ;
         
+        iptr_list _emrk  ;
+        
         escr_list _escr  ;
         tscr_list _tscr  ;
         ball_list _bscr  ;
         
-        edat_list _edat, _etmp ;
+        edat_list _edat, _eprv ;
         tdat_list _tdat  ;
         ball_list _bdat  ;
 
@@ -853,19 +856,14 @@
         _mesh._eset._lptr. set_count (
         _mesh._tria._tset.count()*+3 , 
         containers::loose_alloc, nullptr);
+        
         _mesh._tset._lptr. set_count (
         _mesh._tria._tset.count()*+1 , 
         containers::loose_alloc, nullptr);
 
     /*------------------------------ init. topo hash obj. */
         typename 
-            mesh_type::node_list _etin (
-        typename mesh_type::node_hash(),
-        typename mesh_type::node_pred(), 
-            +.8,_mesh._nset.get_alloc()) ;
-
-        typename 
-            mesh_type::edge_list _pedg (
+            mesh_type::edge_list _epro (
         typename mesh_type::edge_hash(),
         typename mesh_type::edge_pred(), 
             +.8,_mesh._eset.get_alloc()) ;
@@ -895,11 +893,11 @@
             _tcpu.time_span(_ttic,_ttoc) ;
     #   endif//__use_timers
         
-    /*-------------------- calc. size-func for seed nodes */        
+    /*------------------------------ calc. hfun. at seeds */
         for (auto _node  = 
-            _mesh._tria._nset.head(); 
+            _mesh._tria._nset.head() ; 
                   _node != 
-            _mesh._tria._nset.tend();
+            _mesh._tria._nset.tend() ;
                 ++_node  )
         {
             if (_node->mark() >= +0)
@@ -910,7 +908,7 @@
         }
 
     /*-------------------- main: refine edges/faces/trias */
-        iptr_type _pass = +0   ;
+        iptr_type _pass  =   +0  ;
     
         for(bool_type _done=false; !_done ; )
         {
@@ -924,21 +922,24 @@
             if(++_pass>_args.iter()) break;
         
         /*------------------------- init. array workspace */
-            _nnew.set_count(  +0 ) ;
+            
+            _nnew.set_count(  +0 ) ; // del-tri idx lists
             _nold.set_count(  +0 ) ;
             _tnew.set_count(  +0 ) ;
             _told.set_count(  +0 ) ;
             
-            _escr.set_count(  +0 ) ;
+            _escr.set_count(  +0 ) ; // face "cost" lists
             _tscr.set_count(  +0 ) ;
             _bscr.set_count(  +0 ) ;
             
-            _etmp.set_count(  +0 ) ;
-            _edat.set_count(  +0 ) ;
-            _tdat.set_count(  +0 ) ;
-            _bdat.set_count(  +0 ) ;
+            _eprv.set_count(  +0 ) ; // "old" edge in cav
+            _edat.set_count(  +0 ) ; // "new" edge in cav
+            _tdat.set_count(  +0 ) ; // "new" cell in cav
+            _bdat.set_count(  +0 ) ; // "new" ball in cav
             
         /*--------- calc. "restricted-ness" incrementally */
+
+            bool_type _irDT = false ;
 
             if (_mode == null_mode )
             {
@@ -948,6 +949,8 @@
     #           endif//__use_timers
                 
                 _mode  = node_mode;
+             
+                _irDT  = true;   // init. new face in rDT
              
                 init_rdel( _geom, _hfun, 
                     _mesh, false, 
@@ -976,6 +979,12 @@
 
                 _mode  = edge_mode;
                
+                _irDT  = true;   // init. new face in rDT
+               
+                init_ball( _geom, _hfun,
+                    _mesh, _epro, _pass, 
+                    _mode, _args) ; 
+               
                 init_rdel( _geom, _hfun, 
                     _mesh,  true,// init. circum. for rDT
                     _nnew, _tnew, 
@@ -996,6 +1005,7 @@
                     _edat. empty() )
             {
         /*------------------------- init. restricted topo */
+                
                 _mode  = etop_mode ;
             }
                   
@@ -1010,6 +1020,8 @@
     #           endif//__use_timers
                 
                 _mode  = tria_mode;
+        
+                _irDT  = true;   // init. new face in rDT
         
                 init_rdel( _geom, _hfun, 
                     _mesh, false, 
@@ -1028,12 +1040,7 @@
 
         /*------------- refine "bad" sub-faces until done */
 
-            if ( _bscr.empty() &&
-                 _bdat.empty() &&
-                 _escr.empty() &&
-                 _edat.empty() &&
-                 _tscr.empty() &&
-                 _tdat.empty() )
+            if (_irDT == false )
             {
 
             char_type _tdim = -1;
@@ -1049,9 +1056,9 @@
 
                 _kind =_bad_ball( _geom,
                     _hfun, _mesh, _mode,
-                    _pedg, _nnew, _nold,
+                    _nnew, _nold,
                     _tnew, _told, _nbpq,
-                    _etmp, _edat, _escr,
+                    _eprv, _edat, _escr,
                     _tdat, _tscr, 
                     _bdat, _bscr, _tdim, 
                     _pass, _args) ;
@@ -1072,9 +1079,9 @@
 
                 _kind =_bad_edge( _geom, 
                     _hfun, _mesh, _mode,
-                    _pedg, _nnew, _nold, 
+                    _epro, _nnew, _nold, 
                     _tnew, _told, _eepq,
-                    _etmp, _edat, _escr, 
+                    _eprv, _edat, _escr, 
                     _tdat, _tscr, 
                     _bdat, _bscr, _tdim, 
                     _pass, _args) ;
@@ -1095,10 +1102,10 @@
 
                 _kind =_bad_etop( _geom, 
                     _hfun, _mesh, _mode, 
-                    _pedg, _nnew, _nold, 
+                    _epro, _nnew, _nold, 
                     _tnew, _told,
-                    _etpq, _etin, 
-                    _etmp, _edat, _escr, 
+                    _etpq, _emrk, 
+                    _eprv, _edat, _escr, 
                     _tdat, _tscr, 
                     _bdat, _bscr, _tdim, 
                     _pass, _args) ;
@@ -1119,9 +1126,9 @@
 
                 _kind =_bad_tria( _geom, 
                     _hfun, _mesh, _mode, 
-                    _pedg, _nnew, _nold,
+                    _epro, _nnew, _nold,
                     _tnew, _told, _ttpq, 
-                    _etmp, _edat, _escr,
+                    _eprv, _edat, _escr,
                     _tdat, _tscr, 
                     _bdat, _bscr, _tdim, 
                     _pass, _args) ;
@@ -1135,27 +1142,31 @@
         /*----------------------------- meshing converged */
             else { _done = true ;  }
     
-            if (_pass%_jlog_freq==+0 || _done )
+            if (_pass%_jlog_freq==+0 || _done)
             {
         /*----------------------------- output to logfile */
                 std::stringstream _sstr;
-                _sstr << std::setw(11) <<
-                _pass << std::setw(13) << 
-                    _mesh._eset.count()
-                      << std::setw(13) << 
-                    _mesh._tset.count()
-                      <<   "\n" ;
+                _sstr << std::setw(+11) <<
+                _pass << std::setw(+13) << 
+                _mesh._eset.count ()
+                      << std::setw(+13) << 
+                _mesh._tset.count ()
+                      <<     "\n"  ;
                 _dump.push(_sstr.str());
             }
 
-            if (_kind != rdel_opts::null_kind )
+            if (_kind != rdel_opts::null_kind)
             {
-        /*--------------- update point-placement counters */
+        /*----------------------------- inc. steiner info */
                 if (_tdim == +1)
+                {
                     _enod[_kind] += +1 ;
+                }
                 else
                 if (_tdim == +2)
+                {
                     _tnod[_kind] += +1 ;
+                }
             }
 
             }
@@ -1163,64 +1174,34 @@
             if (_pass%_trim_freq == +0 )
             {
         /*--------------- trim null PQ items "on-the-fly" */
-              //trim_nbpq(_mesh, _nbpq);
-                trim_eepq(_mesh, _eepq);
-                trim_ttpq(_mesh, _ttpq);
-              //trim_etpq(_mesh, _etpq);
+              //trim_nbpq( _mesh , 
+              //           _nbpq ) ;
+                trim_eepq( _mesh , 
+                           _eepq ) ;
+                trim_ttpq( _mesh , 
+                           _ttpq ) ;
+              //trim_etpq( _mesh , 
+              //           _etpq ) ;
               
-                trim_list(_nnew) ;
-                trim_list(_nold) ;
-                trim_list(_tnew) ;
-                trim_list(_told) ;
+                trim_list( _nnew ) ;
+                trim_list( _nold ) ;
+                trim_list( _tnew ) ;
+                trim_list( _told ) ;
                 
-                trim_list(_etmp) ;
-                trim_list(_edat) ;
-                trim_list(_escr) ;
-                trim_list(_tdat) ;
-                trim_list(_tscr) ;
-                trim_list(_bscr) ;
-                trim_list(_bdat) ;
+                trim_list( _eprv ) ;
+                trim_list( _edat ) ;
+                trim_list( _escr ) ;
+                trim_list( _tdat ) ;
+                trim_list( _tscr ) ;
+                trim_list( _bscr ) ;
+                trim_list( _bdat ) ;
             }
-
-        /*----------------------------- enqueue edge topo */ 
+            
+        /*--------------- enqueue nodes for topol. checks */ 
         
-            for (auto _edge  = _edat.head();
-                      _edge != _edat.tend();
-                    ++_edge  )
-            {
-            /*------------------------- bypass "old" edge */
-                typename mesh_type::
-                         edge_list::
-                     item_type *_eptr=nullptr;
-                if (_mesh.
-                     find_edge(*_edge, _eptr))
-                    continue ;
-                
-            /*------------------------- enqueue edge node */                
-                iptr_type _npos;
-                for (_npos = +2; _npos-- != +0; )
-                {        
-                    iptr_type _node = 
-                        _edge->_node[_npos] ;
-                
-                    node_data _ndat;
-                    _ndat._pass    = _pass;
-                    _ndat._node[0] = _node;
-                    
-                    typename mesh_type::
-                             node_list::
-                         item_type*_nptr=nullptr;
-                    if(!_etin.find(_ndat, _nptr))
-                    {
-                        if (_args.top1())
-                        {          
-                /*--------------------- enqueue edge node */
-                        _etin.push(_ndat) ;
-                        _etpq.push(_ndat) ;
-                        }
-                    }
-                }
-            }
+            fill_topo( _mesh, _pass, 
+                _etpq, _emrk, 
+                _edat, _eprv, _args)   ;
             
         /*--------------- update restricted triangulation */
             

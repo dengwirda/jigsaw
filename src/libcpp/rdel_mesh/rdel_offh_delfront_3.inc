@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 January, 2019
+     * Last updated: 22 January, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -141,7 +141,7 @@
         _pert  +=   + 1 ;
         _pert  *= _seps ;
         
-        for(iptr_type _iter = +0; _iter++ != +8 ; )
+        for(iptr_type _iter = +0; _iter++ != +4 ; )
         {
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
 
@@ -169,13 +169,14 @@
 
             _dist -= _pert * _dist ;
 
+            iptr_type _dual = -1 ;
             cosine_intersect _pred(_ipos,_dvec);
             _ball._rrad  = _dist ;
             if (!_geom.intersect (
                  _ball, _pred) )
-                return  rdel_opts::null_kind;
+                return  rdel_opts::null_kind ;
             if (!_pred. _find  )
-                return  rdel_opts::null_kind;
+                return  rdel_opts::null_kind ;
             
             real_type _move = 
                 geometry::length_3d(
@@ -184,8 +185,16 @@
             _ppos[ 0] = _pred._proj.pval(0);
             _ppos[ 1] = _pred._proj.pval(1);
             _ppos[ 2] = _pred._proj.pval(2);
+            
+            _mesh._tria.find_node ( // test voro. limiter
+                &_ppos[0], _dual, _enod[ 0]) ;
+            
+            if (_dual != _enod[0] )
+            {
+                return  rdel_opts::null_kind ;
+            }
 
-            if (_move < _rtol * _hval) break;
+            if (_move < _rtol * _hval) break ;
         }
 
         return (_kind ) ;
@@ -277,7 +286,7 @@
         _pert  +=   + 1 ;
         _pert  *= _seps ;
         
-        for(iptr_type _iter = +0; _iter++ != +8 ; )
+        for(iptr_type _iter = +0; _iter++ != +4 ; )
         {
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
 
@@ -338,14 +347,15 @@
             
             _dist -= _pert * _dist ;
             
+            iptr_type _dual = -1 ;
             cosine_intersect _pred(_pmid,_dvec);
             _disc._rrad =  _dist ;
             if (!_geom.intersect (
                  _disc, 
                  _sbal, _pred) )
-                return  rdel_opts::null_kind;
+                return  rdel_opts::null_kind ;
             if (!_pred. _find  )
-                return  rdel_opts::null_kind;
+                return  rdel_opts::null_kind ;
             
             real_type _move = 
                 geometry::length_3d(
@@ -354,8 +364,17 @@
             _ppos[ 0] = _pred._proj.pval(0);
             _ppos[ 1] = _pred._proj.pval(1);
             _ppos[ 2] = _pred._proj.pval(2);
+            
+            _mesh._tria.find_node ( // test voro. limiter
+                &_ppos[0], _dual, _enod[ 0]) ;
+            
+            if (_dual != _enod[0] &&
+                _dual != _enod[1] )
+            {
+                return  rdel_opts::null_kind ;
+            }
 
-            if (_move < _rtol * _hmin) break;
+            if (_move < _rtol * _hmin) break ;
         }
 
         return (_kind ) ;
@@ -436,7 +455,7 @@
         _pert  +=   + 1 ;
         _pert  *= _seps ;
       
-        for(iptr_type _iter = +0; _iter++ != +8 ; )
+        for(iptr_type _iter = +0; _iter++ != +4 ; )
         {
             _nsiz[3] = _hfun.eval(_ppos, _hint) ;
 

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 April, 2018
+     * Last updated: 25 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -59,12 +59,12 @@
         )
     {
         typename 
-            mesh_type::edge_list _hedg (
+            mesh_type::edge_list _edup (
         typename mesh_type::edge_hash(),
         typename mesh_type::edge_pred(), 
             .8, _mesh._eset.get_alloc()) ;
         
-        _hedg._lptr.set_count (
+        _edup._lptr.set_count (
             _tset.count() * +3 , 
         containers::loose_alloc, nullptr);
         
@@ -115,10 +115,10 @@
             if(!_mesh.
                  find_edge(_edat, _mptr))
                 continue ;
-            if( _hedg.find(_edat, _eptr))
+            if( _edup.find(_edat, _eptr))
                 continue ;
             else
-            {   _hedg.push(_edat) ;
+            {   _edup.push(_edat) ;
             }
             
            _eset.push_tail(_mptr->_data ) ;           
@@ -183,6 +183,7 @@
                 _pmax[1] = _sbal[1];
             }
         }
+        
    /*--------------------- return steiner point kind */
         return ( _kind ) ; 
     }
@@ -201,14 +202,13 @@
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
-    mesh_type::edge_list &_pedg ,
+    mesh_type::edge_list &_epro ,
         iptr_list &_nnew ,
         iptr_list &_nold ,
         iptr_list &_tnew ,
         iptr_list &_told ,
         node_heap &_etpq ,
-        typename 
-    mesh_type::node_list &_etin ,
+        iptr_list &_emrk ,
         edat_list &_etmp ,
         edat_list &_ecav ,
         escr_list &_escr ,
@@ -222,81 +222,95 @@
         )
     {
         class node_pred
-            {
-        /*----------------- find adj. set of tria-to-node */
-            public  :
-                typedef typename 
-                    mesh_type::
-                tria_type tria_type ;
-  
-            public  :          
-                iptr_type _npos;
+        {
+    /*--------------------- find adj. set of tria-to-node */
+        public  :
+             
+        typedef typename
+            mesh_type::tria_type tria_type ;
 
-            public  :
-            __inline_call node_pred (
-                iptr_type _nsrc
-                ) : _npos(_nsrc) {}
-        /*----------------- find adj. set of tria-to-node */
-            __inline_call 
-                bool_type operator()(
-                tria_type&_tria,
-                iptr_type _tpos,
-                iptr_type 
-                ) 
-            {   return ( 
-            _tria.tria(_tpos)->node(+0) 
-                == this->_npos ||
-            _tria.tria(_tpos)->node(+1) 
-                == this->_npos ||
-            _tria.tria(_tpos)->node(+2) 
-                == this->_npos );
-            }
-            } ;
+        public  :          
+            iptr_type _npos;
+
+        public  :
+        __inline_call node_pred (
+            iptr_type _nsrc
+            ) : _npos(_nsrc) {}
+    /*--------------------- find adj. set of tria-to-node */
+        __inline_call bool_type operator() (
+            tria_type&_tria,
+            iptr_type _tpos,
+            iptr_type _fpos 
+            ) 
+        {   
+            iptr_type _tnod[3] = {
+            _tria.tria(_tpos)->node(0) ,
+            _tria.tria(_tpos)->node(1) ,
+            _tria.tria(_tpos)->node(2)
+                } ;
+
+            __unreferenced(_fpos) ;
+
+            if (_tnod[0] == this->_npos)
+            return  true ;
+            if (_tnod[1] == this->_npos)
+            return  true ;
+            if (_tnod[2] == this->_npos)
+            return  true ;
+        
+            return false ;
+        }
+        } ;
 
         typename rdel_opts::node_kind 
         _kind =  rdel_opts::null_kind ;
 
     /*--------------------- pop() leading element from PQ */
-        _nnew.set_count( +0) ;
-        _nold.set_count( +0) ;
-        _tnew.set_count( +0) ;
-        _told.set_count( +0) ;
+        _nnew.set_count(  + 0) ;
+        _nold.set_count(  + 0) ;
+        _tnew.set_count(  + 0) ;
+        _told.set_count(  + 0) ;
 
-        _etmp.set_count( +0) ;
-        _escr.set_count( +0) ;
-        _ecav.set_count( +0) ;
-        _tscr.set_count( +0) ;
-        _tcav.set_count( +0) ;
-        _bscr.set_count( +0) ;
-        _bcav.set_count( +0) ;
-        
-        iptr_list _tset;
-        _tset.set_alloc(+16) ;
-        edat_list _eset;
-        _eset.set_alloc(+16) ;
+        _etmp.set_count(  + 0) ;
+        _escr.set_count(  + 0) ;
+        _ecav.set_count(  + 0) ;
+        _tscr.set_count(  + 0) ;
+        _tcav.set_count(  + 0) ;
+
+        _bscr.set_count(  + 0) ;
+        _bcav.set_count(  + 0) ;
+
+        containers::
+            array<iptr_type> _tset ;
+        containers::
+            array<edge_data> _eset ;
+            
+        _tset.set_alloc(  +32) ;
+        _eset.set_alloc(  +32) ;
 
     /*--------------------- cycles until a bad disk found */
         bool_type _find = false;
         iptr_type _npos = -1 ;
-        for ( ; !_etpq.empty() ;  )
+        for ( ; !_etpq.empty() ; )
         {
-            node_data _ndat, _same ;
-            _etpq._pop_root( _ndat);
-            _etin._pop(_ndat,_same);
+            node_data _ndat;
+            _etpq._pop_root(_ndat) ;
+            
+            _npos = _ndat._node[0] ;
 
-            _npos = _ndat._node[ +0] ;
+            _emrk[_npos] =   -1;
 
             _tset.set_count( +0) ;
             _eset.set_count( +0) ;
 
             _mesh._tria.walk_node( 
-                    _npos , 
-                node_pred(_npos),_tset) ;
+                _npos , 
+             node_pred(_npos),_tset) ;
 
-            if(!etop_disk(_mesh, _npos,
-                          _tset, _eset) )
+            if (!etop_disk(_mesh, 
+                _npos, _tset, _eset) )
             {
-                _find = true ; break ;
+                _find = true; break ;
             }
         }
         if (!_find) return _kind ;
@@ -314,7 +328,7 @@
         _kind = push_node( _geom, 
             _hfun , _mesh, _mode,
             _tmax , _pmax, _kind,
-            _pedg , _nnew, _nold,
+            _epro , _nnew, _nold,
             _tnew , _told, _etmp, 
             _ecav , _escr, 
             _tcav , _tscr,

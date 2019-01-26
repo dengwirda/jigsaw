@@ -34,7 +34,7 @@
     --------------------------------------------------------
      *
      * JIGSAW release 0.9.8.x
-     * Last updated: 19 January, 2019
+     * Last updated: 22 January, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -148,7 +148,7 @@
      * gradient-based optimisation:
      *
      * L. Chen, J.C. Xu, (2004): "Optimal Delaunay 
-     * triangulations, J. Comp. Math., 22, pp. 299–308,
+     * triangulations, J. Comp. Math., 22, pp. 299-308,
      * https://www.jstor.org/stable/43693155
      *
      * L.A. Freitag, C. Ollivier-Gooch, (1997): "Tetrahedral 
@@ -756,7 +756,7 @@
     #   include "jigsaw.hpp"
     #   include "tripod.hpp"
     
-//  #   include "marche.hpp"
+    #   include "marche.hpp"
 
 //  #   include "stitch.hpp"
     

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 January, 2019
+     * Last updated: 25 January, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -57,8 +57,6 @@
         hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
-        typename 
-    mesh_type::edge_list &_pedg ,
         iptr_list &_nnew ,
         iptr_list &_nold ,
         iptr_list &_tnew ,
@@ -77,43 +75,51 @@
         )
     {
         class node_pred
-            {
-        /*----------------- find adj. set of tria-to-node */
-            public  :
-                typedef typename 
-                    mesh_type::
-                tria_type tria_type ;
-  
-            public  :          
-                iptr_type _npos;
+        {
+    /*--------------------- find adj. set of tria-to-node */
+        public  :
+             
+        typedef typename
+            mesh_type::tria_type tria_type ;
 
-            public  :
-            __inline_call node_pred (
-                iptr_type _nsrc
-                ) : _npos(_nsrc) {}
-        /*----------------- find adj. set of tria-to-node */
-            __inline_call 
-                bool_type operator()(
-                tria_type&_tria,
-                iptr_type _tpos,
-                iptr_type 
-                ) 
-            {   return ( 
-            _tria.tria(_tpos)->node(+0) 
-                == this->_npos ||
-            _tria.tria(_tpos)->node(+1) 
-                == this->_npos ||
-            _tria.tria(_tpos)->node(+2) 
-                == this->_npos );
-            }
-            } ;
+        public  :          
+            iptr_type _npos;
+
+        public  :
+        __inline_call node_pred (
+            iptr_type _nsrc
+            ) : _npos(_nsrc) {}
+    /*--------------------- find adj. set of tria-to-node */
+        __inline_call bool_type operator() (
+            tria_type&_tria,
+            iptr_type _tpos,
+            iptr_type _fpos 
+            ) 
+        {   
+            iptr_type _tnod[3] = {
+            _tria.tria(_tpos)->node(0) ,
+            _tria.tria(_tpos)->node(1) ,
+            _tria.tria(_tpos)->node(2)
+                } ;
+
+            __unreferenced(_fpos) ;
+
+            if (_tnod[0] == this->_npos)
+            return  true ;
+            if (_tnod[1] == this->_npos)
+            return  true ;
+            if (_tnod[2] == this->_npos)
+            return  true ;
+            
+            return false ;
+        }
+        } ;
       
         typename rdel_opts::node_kind 
         _kind =  rdel_opts::null_kind ;
      
         __unreferenced( _hfun) ;
-        __unreferenced( _mode) ;
-        __unreferenced( _eold) ; 
+        __unreferenced( _mode) ; 
         __unreferenced( _tdim) ;
         __unreferenced( _pass) ;
         __unreferenced( _args) ;
@@ -128,20 +134,22 @@
         _ecav.set_count(  +0 ) ;
         _tscr.set_count(  +0 ) ;
         _tcav.set_count(  +0 ) ;
+        
         _bcav.set_count(  +0 ) ;
         _bscr.set_count(  +0 ) ;
         
     /*--------------------- pop() leading element from PQ */
-        bool_type _find = false;
+        typename mesh_type::
+                 ball_list::
+        item_type*_bptr = nullptr;
         ball_data _ball ;
+        
+        bool_type _find = false;
         for ( ; !_nbpq.empty() ; )
         {
     /*--------------------- cycles until valid ball found */
             _nbpq._pop_root(_ball) ;
 
-            typename mesh_type::
-                     ball_list::
-                 item_type *_bptr = nullptr ;    
             if (_mesh.find_ball(_ball,_bptr))
             {
             if (_bptr->_data._pass ==
@@ -149,16 +157,16 @@
             {
                 _find = true; break;
             }
-            } 
+            }
         }
-        if (!_find) return (_kind) ;
-        
+        if ( !_find ) return _kind ;
+ 
     /*--------------------- check dist. to existing nodes */ 
         real_type static const _HTOL = 
-            (real_type) +.33 * .33 ;
+            (real_type) +.333 * .333 ;
        
         real_type static const _STOL = 
-            (real_type) +.50 * .50 ;
+            (real_type) +.500 * .500 ;
         
         iptr_list _tset;
         _tset.set_alloc( +32) ;
@@ -217,12 +225,9 @@
         _ball._ball[2] = std::sqrt (
             _ball._ball [ 2]) ;
           
-        iptr_type _hpos = 
-            _mesh._tria.
-                node(_nadj)->idxh() ;
         iptr_type _ndeg = 
             _mesh._tria.
-                node(_nadj)->topo() ;
+             node(_nadj)->topo() ;
              
     /*--------------------- find intersections with GEOM. */     
         typename
@@ -252,6 +257,10 @@
            
             _hdat._rrad =  
            (real_type)+1.5 * _ball._ball[2] ;
+           
+            _bptr->_data._ball[2] = // save to mesh "proper"
+           (real_type)+1.0 * _ball._ball[2] 
+                           * _ball._ball[2] ;
              
             _okay = _okay & _geom.intersect (
                     _pdat, _pred) ; // actual!
@@ -286,41 +295,105 @@
                     (real_type) +.67 ;
                 continue ;
             }
-            else { break ; }
-        }  
-        
-    /*--------------------- push finalised "collar" nodes */
-        for (auto _iter  = _pred._list.head() ;
-                  _iter != _pred._list.tend() ;
-                ++_iter  )
-        {
-            iptr_type _hint = 
-                _mesh._tria.
-                    node(_nadj)->next(); 
-                   
-            iptr_type _node = -1;
-            if (_mesh._tria.push_node(
-               &_iter->pval(0), _node,
-                _hint )  )
-            {
-                _mesh._tria.node(
-                _node)->idxh() = _hpos ;
-                _mesh._tria.node(
-                    _node)->fdim() = 1 ;
-                _mesh._tria.node(
-                    _node)->feat() = 0 ;
-                _mesh._tria.node(
-                    _node)->topo() = 2 ;
-            
-                edge_data  _edat;
-                _edat._node[0] = _nadj ;
-                _edat._node[1] = _node ;
-
-                _pedg.push(_edat)  ;
-            }        
+            else break ;
         }  
  
         return ( _kind ) ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * INIT-BALL: setup ball "collar".
+    --------------------------------------------------------
+     */
+    
+    __static_call 
+    __normal_call void_type init_ball (
+        geom_type &_geom ,
+        hfun_type &_hfun ,
+        mesh_type &_mesh ,
+        typename 
+    mesh_type::edge_list &_epro ,
+        iptr_type  _mode ,
+        iptr_type  _pass ,
+        rdel_opts &_args
+        )
+    {
+    /*--------------------- push finalised "collar" nodes */
+        __unreferenced(_hfun) ;
+        __unreferenced(_mode) ;
+        __unreferenced(_pass) ;
+        __unreferenced(_args) ;
+    
+        for (auto _bpos  = 
+            _mesh._bset._lptr.head () ;
+                  _bpos != 
+            _mesh._bset._lptr.tend () ;
+                ++_bpos  )
+        {
+            if ( *_bpos == nullptr) continue ;
+                    
+            for (auto _ball  = *_bpos ;
+                _ball != nullptr;
+                _ball  = _ball->_next )
+            {
+            
+            typename
+            geom_type::ball_type _hdat ;
+            _hdat._pmid[0] = 
+                _ball->_data._ball[0] ;
+            _hdat._pmid[1] = 
+                _ball->_data._ball[1] ;
+            
+            _hdat._rrad =  
+            std::sqrt(_ball->_data._ball[2]) ;
+            
+            iptr_type _nadj =
+                _ball->_data._node[0] ;
+            
+            mesh::keep_all_2d <
+                real_type ,
+                iptr_type >  _halo  ;
+            
+            _geom.
+            intersect(_hdat, _halo) ;
+                
+            for (auto _iter  = _halo._list.head() ;
+                      _iter != _halo._list.tend() ;
+                    ++_iter  )
+            {
+                iptr_type _hint = 
+                    _mesh._tria.
+                     node(_nadj)->next() ; 
+                       
+                iptr_type _node = -1;
+                if (_mesh._tria.push_node(
+                   &_iter->pval(0), _node,
+                    _hint )  )
+                {
+                    _mesh._tria.node(
+                        _node)->idxh() = 
+                     hfun_type::null_hint();
+                    
+                    _mesh._tria.node(
+                        _node)->fdim() = 1 ;
+                    
+                    _mesh._tria.node(
+                        _node)->feat() = 0 ;
+                    
+                    _mesh._tria.node(
+                        _node)->topo() = 2 ;
+                
+                    edge_data  _edat;
+                    _edat._node[0] = _nadj ;
+                    _edat._node[1] = _node ;
+
+                    _epro.push(_edat)  ;
+                }        
+            }
+            
+            }        
+        }
     }
 
 
