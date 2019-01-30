@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 August, 2018
+     * Last updated: 29 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -229,8 +229,9 @@
         else
             _scrB = (data_type)+0. ;
 
-        return (data_type).67* _scrA +
-               (data_type).33* _scrB ;
+        return 
+      ((data_type)+1.0-.33)*_scrA +
+      ((data_type)+0.0+.33)*_scrB ;
     }
 
     template <
@@ -289,8 +290,9 @@
         else
             _scrB = (data_type)+0. ;
 
-        return (data_type).67* _scrA +
-               (data_type).33* _scrB ;
+        return 
+      ((data_type)+1.0-.33)*_scrA +
+      ((data_type)+0.0+.33)*_scrB ;
     }
 
     template <
@@ -427,8 +429,8 @@
          */
         
         data_type _qq = 
-            (data_type)+.75 * _qb + 
-                (data_type)+.25 * _qe ;
+      ((data_type)+1.-.33) * _qb + 
+      ((data_type)+0.+.33) * _qe ;
 
         return    _qq ;
     }
@@ -527,8 +529,8 @@
          */
          
         data_type _qq = 
-            (data_type)+.75 * _qb + 
-                (data_type)+.25 * _qe ;
+      ((data_type)+1.-.33) * _qb + 
+      ((data_type)+0.+.33) * _qe ;
 
         return    _qq ;
     }
