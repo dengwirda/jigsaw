@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 January, 2019
+     * Last updated: 02 February, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -180,6 +180,8 @@
         rdel_opts &_opts
         )
     {
+        if(!_geom.have_feat(1))return ;
+    
     /*-------------------------------- correct node dims? */       
         iptr_type _fdim =+0;
         for (auto _node =+3; _node-- != +0; )
@@ -310,6 +312,8 @@
     {
     /*-------------------------------- check "restricted" */
         {
+            if(!_geom.have_feat(1)) return;
+        
             iptr_type  _tnod[ +3] ;
             _tnod[0] = _mesh.
             _tria.tria(_tpos)->node(0);

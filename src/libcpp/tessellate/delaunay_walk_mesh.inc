@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 January, 2019
+     * Last updated: 18 February, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -136,8 +136,9 @@
         iptr_type _next = +0 ;
         iptr_type _face = +0 ;
         
-        for (auto _iter = _ntri; 
-                  _iter-- != +0; _elem = _next)
+        for (auto _iter =  this->_tset.count () ; 
+                  _iter-- != +0; 
+                  _elem =  _next)
         {
         /*--------------- test node-in-tria condition */
             _done = typename tria_pred::
@@ -178,12 +179,9 @@
     {
     /*------------- walk mesh until we find nearest vert. */
         bool_type _done = false;
-        bool_type _scan = false;
-        
+        iptr_type _elem ;
         iptr_type _nnod = 
        (iptr_type)this->_nset.count () ;
-        iptr_type _ntri = 
-       (iptr_type)this->_tset.count () ;
 
         if (this->_nset.count() == +0 ||
             this->_tset.count() == +0 )
@@ -194,83 +192,54 @@
         if (_hint < +0 || _hint>=_nnod)
         {
     /*----------------------------- not a valid index */
-            _node = +0 ;
-            _scan =  true ;
+            _elem = +0 ;
         }
         else
         if (node(_hint)->mark() <= -1 )
         {
     /*----------------------------- not a valid _node */
-            _node = +0 ;
-            _scan =  true ;
+            _elem = +0 ;
         }
         else
         {
-            _node = _hint ;
+            _elem = node(_hint)->next();
         }
-        
-    /*------------- randomised scan: locate initial _node */
-        if (_scan)
-        {
-        
-        real_type _best = 
-            +std::numeric_limits
-                <real_type>::infinity () ;
-    
-    /*--------------------- scale no. iter with dims. */
-        iptr_type _imax = (iptr_type)
-            std::pow ((double) _nnod, 
-        +1.0 / tria_pred::_dims) / 4 + 1 ;
 
-        for (auto _iter = _imax; _iter-- != +0; )
-        {
-        /*----------------------- randomise selection */
-            iptr_type _next =
-                (iptr_type)std::rand() 
-                    % this->_nset.count();
+        walk_tria_near (
+            _ppos, _elem, _elem);
 
-        /*----------------------- reject "null" nodes */
-            if (node(_next)->mark() < +0)
-                continue ;
+    /*----------------------------- nearest from cell */
+        real_type _dmin = +std ::
+        numeric_limits<real_type>::infinity () ;
                 
-        /*----------------------- calc. dist. to node */
-            real_type _dist = 
-                tria_pred::lensqr_kd(_ppos, 
-                    &node(_next)->pval(0));
+        for (auto _inod = tria_pred::_dims + 1 ; 
+                  _inod-- != +0 ;  )
+        {
+            auto _next = tria(_elem)
+                       ->node(_inod) ;
 
-            if (_best > _dist)
+            auto _dsqr = 
+            tria_pred::lensqr_kd(
+                _ppos , &node(_next)->pval(0)) ;
+
+            if (_dsqr < _dmin)
             {
-        /*----------------------- keep closest so far */
-                _best = _dist;
+                _dmin = _dsqr;
                 _node = _next;
             }
         }
         
-        }
-        
-    /*------------- ensure that we have a non--null _node */
-        for ( ; _node != _nnod; ++_node)
-        {
-            if (node(_node)->mark()>=+0) break  ;
-        }
-        
-    /*------------- walk elements toward _ppos from _node */
-        iptr_type _elem = 
-             node(_node)->next () ;
-        
-        real_type _dmin = 
-        tria_pred::lensqr_kd(_ppos, 
-            &node(_node)->pval(0));
-    
+    /*------------- walk elements toward _ppos from _elem */
         iptr_type _next = +0 ;
         iptr_type _face = +0 ;
         
-        for (auto _iter = _ntri; 
-                  _iter-- != +0; _elem = _next)
+        for (auto _iter =  this->_tset.count (); 
+                  _iter-- != +0 ; 
+                  _elem =  _next)
         {
         /*--------------- test nearest-node condition */
             _done = typename tria_pred::
-                template near_pred<self_type>() (
+                template near_pred<self_type>()(
                     *this, _ppos,
                     _dmin, _node,
                     _elem, _face) ;

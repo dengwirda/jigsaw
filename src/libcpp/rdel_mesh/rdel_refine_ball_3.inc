@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 January, 2019
+     * Last updated: 15 February, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -411,6 +411,159 @@
             }        
         }
     }
+    
+    /*
+    --------------------------------------------------------
+     * INIT-DISC: setup disc "collar".
+    --------------------------------------------------------
+     */
+    
+    __static_call 
+    __normal_call void_type init_disc (
+        geom_type &_geom ,
+        hfun_type &_hfun ,
+        mesh_type &_mesh ,
+        typename 
+    mesh_type::edge_list &_epro ,
+        typename 
+    mesh_type::face_list &_fpro ,
+        iptr_type  _mode ,
+        iptr_type  _pass ,
+        rdel_opts &_args
+        )
+    {
+        real_type static constexpr 
+            _DTOL = (real_type) 7./4. ;
+    
+    /*--------------------- push finalised "collar" nodes */
+        __unreferenced(_hfun) ;
+        __unreferenced(_mode) ;
+        __unreferenced(_pass) ;
+        __unreferenced(_args) ;
+        __unreferenced(_epro) ;
+    
+        return;
+
+        for (auto _epos  = 
+            _mesh._eset._lptr.head () ;
+                  _epos != 
+            _mesh._eset._lptr.tend () ;
+                ++_epos  )
+        {
+            if ( *_epos == nullptr) continue ;
+                    
+            for (auto _edge  = *_epos ;
+                _edge != nullptr;
+                _edge  = _edge->_next )
+            {
+            if (_edge->_data.
+                   _feat == hard_feat )
+            {
+            
+            real_type _ebal[ 4];
+            geometry
+                ::circ_ball_3d (_ebal ,
+           &_mesh._tria.node(
+                _edge->_data.
+                    _node[0])->pval(0),
+           &_mesh._tria.node(
+                _edge->_data.
+                    _node[1])->pval(0)
+                ) ;
+    
+            real_type _evec[ 3];
+            geometry::vector_3d(
+           &_mesh._tria.node(
+                _edge->_data.
+                    _node[0])->pval(0),
+           &_mesh._tria.node(
+                _edge->_data.
+                    _node[1])->pval(0),
+                _evec ) ;
+                    
+            typename
+            geom_type::disc_type _hdat ;
+            _hdat._pmid[0] = _ebal[0] ;
+            _hdat._pmid[1] = _ebal[1] ;
+            _hdat._pmid[2] = _ebal[2] ;
+            
+            _hdat._nvec[0] = _evec[0] ;
+            _hdat._nvec[1] = _evec[1] ;
+            _hdat._nvec[2] = _evec[2] ;
+            
+            _hdat._rrad = 
+            _DTOL* std::sqrt(_ebal[3]) ;
+                
+            mesh::keep_all_3d <
+                real_type ,
+                iptr_type >  _halo  ;
+            
+            
+            //!! 
+            real_type _junk[3] = {+0.} ;
+            
+            _geom.
+            intersect(_hdat, _junk, _halo) ;
+            
+            
+            for (auto _iter  = 
+                      _halo._list.head() ;
+                      _iter != 
+                      _halo._list.tend() ;
+                    ++_iter  )
+            {
+                iptr_type _hint = 
+                    _mesh._tria.node(_edge->
+                    _data._node[0])->next(); 
+                      
+                /*
+                iptr_type _near = -1;
+                    _mesh._tria.find_node(
+                   &_iter->pval(0), _near,
+                    _edge->
+                    _data._node[0]) ;
+
+                if (_near != 
+                    _edge->_data._node[0] &&
+                    _near != 
+                    _edge->_data._node[1] )
+                    continue ; 
+                */ 
+
+                iptr_type _node = -1;
+                if (_mesh._tria.push_node(
+                   &_iter->pval(0), _node,
+                    _hint )  )
+                {
+                    _mesh._tria.node(
+                        _node)->idxh() = 
+                     hfun_type::null_hint();
+                    
+                    _mesh._tria.node(
+                        _node)->fdim() = 2 ;
+                    
+                    _mesh._tria.node(
+                        _node)->feat() = 0 ;
+                    
+                    _mesh._tria.node(
+                        _node)->topo() = 2 ;
+                
+                    face_data  _fdat;
+                    _fdat._node[0] = 
+                    _edge ->_data._node [0];
+                    _fdat._node[1] = 
+                    _edge ->_data._node [1];
+                    _fdat._node[2] = _node ;
+
+                    _fpro.push(_fdat)  ;
+                }        
+            }
+                
+            }          
+    
+            }
+        }   
+    }     
     
     
     

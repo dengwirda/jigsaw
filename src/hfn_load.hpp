@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 02 February, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -372,6 +372,9 @@
             }
             else
             {           
+                _jlog.push(
+            "**parse error: file not found!\n" ) ;
+            
                 _errv = __file_not_located ;
             }
             _file.close ();
@@ -670,26 +673,8 @@
         hfun_data &_hfun
         )
     {
-        iptr_type _errv  = __no_error ;
-
-        std::string _path ;
-        std::string _name ;
-        std::string _fext ;
-        file_part (
-            _jcfg._hfun_file , 
-                _path, _name, _fext ) ;
-
-        if (_fext.find("msh") == +0 )
-        {
         return hfun_from_jmsh (
                 _jcfg, _jlog, _hfun ) ;
-        }
-        else
-        {   
-            _errv =__file_not_located ;
-        }
-        
-        return ( _errv ) ;
     }
     
     /*

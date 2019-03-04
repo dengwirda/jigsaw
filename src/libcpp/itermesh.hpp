@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 13 August, 2018
+ * Last updated: 02 March, 2019
  *
- * Copyright 2013-2018
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -56,6 +56,7 @@
 #   include "meshtype.hpp"
 
 #   include "iter_mesh/iter_params.hpp"
+#   include "iter_mesh/iter_timers.hpp"
 
 #   include "iter_mesh/iter_mesh_euclidean_2.hpp"
 #   include "iter_mesh/iter_pred_euclidean_2.hpp"

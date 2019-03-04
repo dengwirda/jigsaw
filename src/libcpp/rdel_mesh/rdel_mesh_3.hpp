@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 January, 2019
+     * Last updated: 15 February, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -243,7 +243,8 @@
             node_data const& _idat,
             node_data const& _jdat
             ) const
-        {   return _idat._pass < _jdat._pass ; 
+        {   return _idat._node[0] < 
+                   _jdat._node[0] ; 
         }
         } ;
     class ball_pred
@@ -1168,9 +1169,16 @@
                 _mode  = face_mode;
                  
                 _irDT  = true;   // init. new face in rDT
+               
+                /*
+                init_disc( _geom, _hfun,
+                    _mesh,
+                    _epro, _fpro, _pass, 
+                    _mode, _args) ; 
+                */
                  
                 init_rdel( _geom, _hfun, 
-                    _mesh, false,
+                    _mesh,  true,
                     _nnew, _tnew, 
                     _edat, _escr, 
                     _fdat, _fscr, 
@@ -1606,57 +1614,57 @@
         _dump.push("\n")  ;
         _dump.push("\n")  ;
 
-        _dump.push("  |TYPE-1| (edge) = ");
+        _dump.push("  EDGE-CIRC = ") ;
         _dump.push(std::to_string(
              _enod[rdel_opts::circ_kind]));
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-2| (edge) = ");
+        _dump.push("  EDGE-OFFH = ") ;
         _dump.push(std::to_string(
-             _enod[rdel_opts::offh_kind]));
+             _enod[rdel_opts::offH_kind]));
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-D| (edge) = ");
+        _dump.push("  EDGE-OFFT = ") ;
         _dump.push(std::to_string(
-             _enod[rdel_opts::disk_kind]));
+             _enod[rdel_opts::offT_kind]));
         _dump.push("\n")  ;
         _dump.push("\n")  ;
 
-        _dump.push("  |TYPE-1| (face) = ");
+        _dump.push("  FACE-CIRC = ") ;
         _dump.push(std::to_string(
              _fnod[rdel_opts::circ_kind]));
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-2| (face) = ");
-        _dump.push(std::to_string(
-             _fnod[rdel_opts::offh_kind]));
-        _dump.push("\n")  ;
-        _dump.push("  |TYPE-3| (face) = ");
-        _dump.push(std::to_string(
-             _fnod[rdel_opts::offc_kind]));
-        _dump.push("\n")  ;
-        _dump.push("  |TYPE-4| (face) = ");
+        _dump.push("  FACE-SINK = ") ;
         _dump.push(std::to_string(
              _fnod[rdel_opts::sink_kind]));
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-D| (face) = ");
+        _dump.push("  FACE-OFFH = ") ;
         _dump.push(std::to_string(
-             _fnod[rdel_opts::disk_kind]));
+             _fnod[rdel_opts::offH_kind]));
+        _dump.push("\n")  ;
+        _dump.push("  FACE-OFFC = ") ;
+        _dump.push(std::to_string(
+             _fnod[rdel_opts::offC_kind]));
+        _dump.push("\n")  ;
+        _dump.push("  FACE-OFFT = ") ;
+        _dump.push(std::to_string(
+             _fnod[rdel_opts::offT_kind]));
         _dump.push("\n")  ;
         _dump.push("\n")  ;
 
-        _dump.push("  |TYPE-1| (tria) = ");
+        _dump.push("  TRIA-CIRC = ") ;
         _dump.push(std::to_string(
              _tnod[rdel_opts::circ_kind]));
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-2| (tria) = ");
-        _dump.push(std::to_string(
-             _tnod[rdel_opts::offh_kind]));
-        _dump.push("\n")  ;
-        _dump.push("  |TYPE-3| (tria) = ");
-        _dump.push(std::to_string(
-             _tnod[rdel_opts::offc_kind]));
-        _dump.push("\n")  ;
-        _dump.push("  |TYPE-4| (tria) = ");
+        _dump.push("  TRIA-SINK = ") ;
         _dump.push(std::to_string(
              _tnod[rdel_opts::sink_kind]));
+        _dump.push("\n")  ;
+        _dump.push("  TRIA-OFFH = ") ;
+        _dump.push(std::to_string(
+             _tnod[rdel_opts::offH_kind]));
+        _dump.push("\n")  ;
+        _dump.push("  TRIA-OFFC = ") ;
+        _dump.push(std::to_string(
+             _tnod[rdel_opts::offC_kind]));
         _dump.push("\n")  ;
         
         }

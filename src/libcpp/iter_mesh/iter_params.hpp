@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 02 March, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -174,57 +174,6 @@
         
         } ;
     
-    
-    /*
-    --------------------------------------------------------
-     * ITER-TIMERS: cpu timers for ITER-MESH-K
-    --------------------------------------------------------
-     */
-    
-    template <
-    typename R , 
-    typename I
-             >
-    class iter_timers
-        {
-        public  :
-        
-        typedef R                       real_type ;
-        typedef I                       iptr_type ;
-        
-        typedef iter_timers<R, I>       self_type ;
-        
-        real_type   _iter_full = (real_type)  +0. ;
-        
-        real_type   _move_full = (real_type)  +0. ;
-        real_type   _topo_full = (real_type)  +0. ;
-        real_type   _zips_full = (real_type)  +0. ;
-        
-        public  :
-  
-    /*-------------------------------------- elapsed time */
-   
-    #   ifdef  __use_timers
-    
-        __inline_call double time_span (
-            typename std::
-                chrono::high_resolution_clock
-                    ::time_point const& _ttic,
-            typename std::
-                chrono::high_resolution_clock
-                    ::time_point const& _ttoc
-            )
-        {
-            return (double)(
-                std::chrono::duration_cast<
-                std::chrono::microseconds >
-                (_ttoc-_ttic).count()) / +1.0E+06 ;
-        }
-
-    #   endif//__use_timers
-        
-        } ;
-
     }
 
 

@@ -423,6 +423,8 @@
             _ladj +=  _lsqr ;
         }
 
+        _ladj = std::sqrt (_ladj/_tnum) ;
+
     /*------------------ adj. gradients w.r.t. W: dQ / dw */
         real_type _qbar , _qlow ;
         _qbar = (real_type) +1. ;
@@ -432,7 +434,7 @@
         iptr_type _hnum   = +1  ;
         
         real_type _qlim = _qmin + 
-            (real_type) +1.0E-004 ;
+            (real_type) +1.0E-003 ;
 
         _tnum = (iptr_type) +0  ;
         for (auto _tria  = _tset.head() ,
@@ -545,7 +547,7 @@
             }
         }
  
-        if (_tnum > +0)  
+        if (_lnum > +0)  
         {
             for (auto _idim = _dims; _idim-- != +0; )
             {
@@ -553,8 +555,6 @@
             }
             
             _qlow /=  _lnum ;
-            _ladj /=  _tnum ;
-            _ladj  =  std::sqrt (_ladj) ;
         }
 
         if (_hnum > +0)

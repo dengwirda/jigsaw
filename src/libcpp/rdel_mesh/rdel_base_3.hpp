@@ -547,7 +547,7 @@
         }
 
     /*--------------------------- test loc. intersections */
-        auto _imin = _pred._list.tend() ;
+        auto _iful = _pred._list.tend() ;
         auto _imax = _pred._list.tend() ;
         
         real_type _RTOL = _rEPS*_ebal[3];
@@ -555,11 +555,11 @@
         real_type _dmax  =
             -std::numeric_limits
                 <real_type>::infinity() ;
-        real_type _dmin  =
-            +std::numeric_limits
+        real_type _dful  =
+            -std::numeric_limits
                 <real_type>::infinity() ;
         
-        bool_type _safe, _have  = false ;
+        bool_type _safe  ;
         for (auto _iter  = 
                   _pred._list.head() ;
                   _iter != 
@@ -586,20 +586,50 @@
     /*--------------------------- keep furthest from ball */
                 if (_dsqr > _dmax )
                 {
-                    _have =  true ;
                     _dmax = _dsqr ;
                     _imax = _iter ;
                 }
-                if (_dsqr < _dmin )
+                if (_dsqr > _dful &&
+                    _safe )
                 {
-                    _have =  true ;
-                    _dmin = _dsqr ;
-                    _imin = _iter ;
+                    _dful = _dsqr ;
+                    _iful = _iter ;
                 }
             }
         }
 
-        if ( _have )
+        if (_iful != 
+                _pred._list.tend() )
+        {
+    /*--------------------------- keep best intersections */
+        _sbal[ 0] = _iful->pval(0);
+        _sbal[ 1] = _iful->pval(1);
+        _sbal[ 2] = _iful->pval(2);
+            
+        _part     = _iful->itag ();
+        
+        _hits     = _iful->hits ();
+        _feat     = _iful->feat ();
+        _topo     = _iful->topo ();
+        
+    /*--------------------------- eval. surf. ball radius */
+        _sbal[ 3]+= 
+        geometry::lensqr_3d(_sbal , 
+       &_mesh._tria.
+            node(_enod[0])->pval(0)) ;
+        _sbal[ 3]+= 
+        geometry::lensqr_3d(_sbal , 
+       &_mesh._tria.
+            node(_enod[1])->pval(0)) ;
+             
+        _sbal[ 3]/= (real_type) +2.;   
+    
+    /*--------------------------- return restricted state */
+        return (  true ) ;
+        }
+        else
+        if (_imax != 
+                _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _imax->pval(0);
@@ -807,7 +837,7 @@
         _hset[5][1] = _fnod[2] ;
         
     /*--------------------------- test loc. intersections */
-        auto _imin = _pred._list.tend() ;
+        auto _iful = _pred._list.tend() ;
         auto _imax = _pred._list.tend() ;
         
         real_type _RTOL = _rEPS*_fbal[3];
@@ -815,11 +845,11 @@
         real_type _dmax  =
             -std::numeric_limits
                 <real_type>::infinity() ;
-        real_type _dmin  =
-            +std::numeric_limits
+        real_type _dful  =
+            -std::numeric_limits
                 <real_type>::infinity() ;
         
-        bool_type _safe, _have  = false ;
+        bool_type _safe  ;
         for (auto _iter  = 
                   _pred._list.head() ;
                   _iter != 
@@ -846,20 +876,52 @@
     /*--------------------------- keep furthest from ball */
                 if (_dsqr > _dmax )
                 {
-                    _have =  true ;
                     _dmax = _dsqr ;
                     _imax = _iter ;
                 }
-                if (_dsqr < _dmin )
+                if (_dsqr < _dful &&
+                    _safe )
                 {
-                    _have =  true ;
-                    _dmin = _dsqr ;
-                    _imin = _iter ;
+                    _dful = _dsqr ;
+                    _iful = _iter ;
                 }
             }
         }
 
-        if ( _have )
+        if (_iful !=
+                _pred._list.tend() )
+        {
+    /*--------------------------- keep best intersections */
+        _sbal[ 0] = _iful->pval(0);
+        _sbal[ 1] = _iful->pval(1);
+        _sbal[ 2] = _iful->pval(2);
+            
+        _part     = _iful->itag ();
+        _feat     = _iful->feat ();
+        _topo     = _iful->topo ();
+        
+    /*--------------------------- eval. surf. ball radius */
+        _sbal[ 3]+= 
+        geometry::lensqr_3d(_sbal , 
+       &_mesh._tria.
+            node(_fnod[0])->pval(0)) ;
+        _sbal[ 3]+= 
+        geometry::lensqr_3d(_sbal , 
+       &_mesh._tria.
+            node(_fnod[1])->pval(0)) ;
+        _sbal[ 3]+= 
+        geometry::lensqr_3d(_sbal , 
+       &_mesh._tria.
+            node(_fnod[2])->pval(0)) ;
+             
+        _sbal[ 3]/= (real_type) +3.;   
+    
+    /*--------------------------- return restricted state */
+        return (  true ) ;
+        }
+        else
+        if (_imax !=
+                _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _imax->pval(0);

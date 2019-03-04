@@ -208,7 +208,7 @@
         }
     
     /*------------------------- calc. refinement priority */
-        _tdat._mark  = +3 ;
+        _tdat._mark  = +0 ;
 
     #   ifdef __bias_BNDS     
         for(_enum = +3; _enum-- != +0; )

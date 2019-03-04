@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 December, 2018
+     * Last updated: 02 March, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -75,7 +75,14 @@
     
     iptr_type static 
         constexpr _dims = pred_type::_dims ;
-    
+   
+    char_type static 
+        constexpr _odt_kind = +1 ;   // optimal delaunay
+    char_type static 
+        constexpr _cvt_kind = +2 ;   // centroidal voro.
+    char_type static 
+        constexpr _sdQ_kind = +3 ;   // local cost grad.
+ 
     typedef mesh::iter_params  <
             real_type ,
             iptr_type          >        iter_opts ;
@@ -448,7 +455,7 @@
         real_list &_hval ,
         iter_opts &_opts ,
         node_iter  _node ,
-        iptr_type  _kind ,
+        char_type  _kind ,
         bool_type &_okay ,
         iptr_list &_tset ,
         real_list &_told ,
@@ -484,7 +491,7 @@
         real_list &_hval ,
         iter_opts &_opts ,
         node_iter  _node ,
-        iptr_type  _kind ,
+        char_type  _kind ,
         iptr_type &_move ,
         iptr_list &_tset ,
         real_list &_told ,
@@ -514,7 +521,7 @@
         real_type _ladj = (real_type) + 0.0 ;
         
     /*---------------- calc. line search direction vector */
-        if (_kind == +1 )
+        if (_kind == _odt_kind)
         {
             _odt_move_2 ( 
                 _mesh, _hfun, _pred, 
@@ -522,25 +529,28 @@
                 _line, _ladj) ;
         }
         else
-        if (_TMIN<=_TLIM)
-        { 
+        if (_kind == _sdQ_kind)
+        {
+            if (_TMIN<=_TLIM)
+            { 
             grad_move_2 ( 
                 _mesh, _hfun, _pred, 
                 _tset, _node, _told, 
                 _line, _ladj) ;
+            }
+            else { return ; }
         }
-        else { return ; }
-      
+
     /*---------------- scale line search direction vector */
         real_type _llen = std::
         sqrt(_pred.length_sq(_line)) ;
-        
+
         real_type _xtol = 
        (real_type)+.1 * _opts.qtol() ;
-       
+
         if (_llen<= 
             _ladj * _xtol) return;
-        
+
         real_type _scal =           // overrelaxation
             _llen * (real_type)5./3. ;
         
@@ -783,13 +793,13 @@
                 cost_pair const&_idat ,
                 cost_pair const&_jdat
                 ) const 
-            {   return    _idat._cost < 
-                          _jdat._cost ;
+            {    return    
+            _idat._cost < _jdat._cost ;
             }
             } ;
      
         typedef containers::
-           array<cost_pair> cost_list ;
+            array<cost_pair>cost_list ;
         
         iptr_list _eset ;
         cost_list _sset ;
@@ -936,14 +946,15 @@
                 ++_iter  )
         {
             auto _sift = std::min (
-                (size_t) +8 , 
+                (size_t) + 8, 
            (size_t) (_aset.tend()-_iter) ) ;
         
             auto _next = _iter + 
                 std::rand() % _sift ;
             
             std::swap(*_iter,*_next);          
-        }                   
+        }
+                          
         }
       
     }
@@ -1024,7 +1035,7 @@
         /*---------------- attempt a GRAD-based smoothing */
                 move_dual( _geom, _mesh ,
                     _hfun, _pred, _hval , 
-                    _opts, _node, 
+                    _opts, _node,
                     _okay, _tset, 
                     _dold, _dnew, 
                     _DMIN, _DLIM ) ;
@@ -1090,7 +1101,8 @@
         /*---------------- attempt a CCVT-style smoothing */
                 move_node( _geom, _mesh ,
                     _hfun, _pred, _hval , 
-                    _opts, _node, +1    , 
+                    _opts, _node, 
+                       _odt_kind, 
                     _okay, _tset, 
                     _told, _tnew,
                     _dold, _dnew, 
@@ -1102,7 +1114,8 @@
         /*---------------- attempt a GRAD-based smoothing */
                 move_node( _geom, _mesh ,
                     _hfun, _pred, _hval , 
-                    _opts, _node, +2    , 
+                    _opts, _node, 
+                       _sdQ_kind, 
                     _okay, _tset, 
                     _told, _tnew,
                     _dold, _dnew, 
@@ -1348,48 +1361,38 @@
         iptr_type static
             constexpr _DEG_MAX = (iptr_type) +8 ;
             
-    #   define __markedge                   \
+    #   define __marknode                   \
             init_mark( _mesh, _nmrk, _emrk, \
                 _tmrk, std::max(_imrk - 0, +0) ) ;  \
             if (std::abs(               \
-                _nmrk[_enod[0]])!= _imrk)   \
+                _nmrk[_nnew])!= _imrk)  \
             {                           \
-            if (_nmrk[_enod[0]] >= +0)  \
+            if (_nmrk[_nnew] >= +0)     \
             {                           \
-                _nmrk[_enod[0]] = +_imrk;   \
+                _nmrk[_nnew] = +_imrk;  \
             }                           \
             else                        \
             {                           \
-                _nmrk[_enod[0]] = -_imrk;   \
+                _nmrk[_nnew] = -_imrk;  \
             }                           \
-                _nset.push_tail(_enod[0]) ; \
+                _nset.push_tail(_nnew) ;    \
             }                           \
-            if (std::abs(               \
-                _nmrk[_enod[1]])!= _imrk)   \
-            {                           \
-            if (_nmrk[_enod[1]] >= +0)  \
-            {                           \
-                _nmrk[_enod[1]] = +_imrk;   \
-            }                           \
-            else                        \
-            {                           \
-                _nmrk[_enod[1]] = -_imrk;   \
-            }                           \
-                _nset.push_tail(_enod[1]) ; \
-            }                           \
+            
+            
+        _nzip = +0 ; _ndiv = +0 ;
     
-        _nzip = +0; _ndiv = +0 ;
-    
-        iptr_list _iset, _jset , _eset ;
-        iptr_list _aset, _bset , _cset ;
-        real_list _told, _tnew , _ttmp ;
-        real_list _dold, _dnew ;
+        iptr_list _aset, _bset, _cset ;
+        iptr_list _eset, _done;
+        iptr_list _iset, _jset;
+        real_list _told, _tnew, _ttmp ;
+        real_list _dold, _dnew;
        
         for (auto _node = 
             _mesh._set1.count() ; _node-- != +0; )
         {
     /*--------------------- scan nodes and zip//div edges */
-            if (_mesh._set1[_node].mark() >= +0 && 
+            if (  _mesh.
+                _set1[_node].mark () >= +0 && 
                    std::abs (
                 _nmrk[_node]) >= _imrk - 2 )
             {
@@ -1423,7 +1426,7 @@
                           _eadj != _tend ;
                           _eadj += _einc )
                 {      
-                     auto _eptr = 
+                     auto _eptr  = 
                     _mesh._set2.head() + *_eadj;
    
                     iptr_type _enod[2] ;
@@ -1441,12 +1444,15 @@
                             (real_type) -0.500 ;
                         real_type _ltol = 
                             (real_type) +0.500 ;
+                    
+                        iptr_type  _nnew = -1;
                                 
                         if (_opts.div_())
                         _div_edge( _geom, _mesh, 
                             _hfun, _pred, 
                             _hval, _opts,*_eadj, 
-                            _move, _iset, _jset,
+                            _move, _nnew, 
+                            _iset, _jset,
                             _told, _tnew, _ttmp,
                             _dold, _dnew,
                             _TLIM, _DLIM, 
@@ -1454,23 +1460,26 @@
                         
                         if (_move)
                         {
-                        __markedge; _ndiv += +1; break ;
+                        __marknode; _ndiv += +1; break ;
                         }
                     }
                     else
                     {
+                        iptr_type  _nnew = -1;
+                    
                         if (_opts.div_())
                         _div_edge( _geom, _mesh, 
                             _hfun, _pred, 
                             _hval, _opts,*_eadj, 
-                            _move, _iset, _jset,
+                            _move, _nnew, 
+                            _iset, _jset,
                             _told, _tnew, _ttmp,
                             _dold, _dnew,
                             _TLIM, _DLIM) ;
                             
                         if (_move)
                         {
-                        __markedge; _ndiv += +1; break ;
+                        __marknode; _ndiv += +1; break ;
                         }
                     }
                     }
@@ -1486,11 +1495,14 @@
                         real_type _ltol = 
                             (real_type) +2.000 ;
                         
+                        iptr_type  _nnew = -1;
+                        
                         if (_opts.zip_())
                         _zip_edge( _geom, _mesh, 
                             _hfun, _pred, 
                             _hval, _opts,*_eadj,
-                            _move, _iset, _jset,
+                            _move, _nnew, 
+                            _iset, _jset,
                             _aset, _bset, _cset,
                             _told, _tnew, _ttmp,
                             _dold, _dnew,
@@ -1499,16 +1511,19 @@
                             
                         if (_move)
                         {                       
-                        __markedge; _nzip += +1; break ;
+                        __marknode; _nzip += +1; break ;
                         }                  
                     }
                     else
                     {  
+                        iptr_type  _nnew = -1;
+                        
                         if (_opts.zip_())
                         _zip_edge( _geom, _mesh, 
                             _hfun, _pred, 
                             _hval, _opts,*_eadj,
-                            _move, _iset, _jset,
+                            _move, _nnew, 
+                            _iset, _jset,
                             _aset, _bset, _cset,
                             _told, _tnew, _ttmp,
                             _dold, _dnew,
@@ -1516,7 +1531,7 @@
                             
                         if (_move)
                         {   
-                        __markedge; _nzip += +1; break ;
+                        __marknode; _nzip += +1; break ;
                         }
                     } 
                     }
@@ -1526,7 +1541,7 @@
             }
         }
     
-    #   undef  __markedge
+    #   undef  __marknode
     
     }
     
@@ -1595,9 +1610,11 @@
        
     #   ifdef  __use_timers
         typename std ::chrono::
-        high_resolution_clock::time_point _ttic ;
+        high_resolution_clock::
+            time_point _ttic ;
         typename std ::chrono::
-        high_resolution_clock::time_point _ttoc ;
+        high_resolution_clock::
+            time_point _ttoc ;
         typename std ::chrono::
         high_resolution_clock _time;
 

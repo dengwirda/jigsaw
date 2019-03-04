@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 September, 2017
+     * Last updated: 20 February, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -67,11 +67,16 @@
         
         typedef mesh::rdel_params<R, I> self_type ;
         
-        enum node_kind{ null_kind , 
-             fail_kind, circ_kind , 
-             offh_kind, offc_kind , 
-             sink_kind, disk_kind , 
-             last_kind} ;
+        enum node_kind { 
+        null_kind = +0 , 
+        fail_kind ,
+        circ_kind ,                 // "circ"-type refinement
+        sink_kind ,                 // "sink"-type off-centre
+        offH_kind ,                 // "size"-type off-centre 
+        offC_kind ,                 // "circ"-type off-centre
+        offE_kind ,                 // "err."-type off-centre
+        offT_kind ,                 // "topo"-type off-centre
+        last_kind    } ;
 
         iptr_type           _verb ; // logfile output verbosity
 
@@ -86,6 +91,10 @@
         bool_type           _feat ; // true for feature calc.
 
         iptr_type           _dims ; // topo. dimensions to mesh
+        
+        iptr_type           _iter ; // max. num. refine iter.
+        
+        iptr_type           _rule ; // rule for cell refinement
         
         real_type           _siz1 ; // 1-dim. element size mul.
         real_type           _siz2 ; // 2-dim. element size mul.
@@ -105,11 +114,9 @@
 
         real_type           _vol3 ; // volume-length ratio
 
-        bool_type           _top1 ; // impose "1-manifold-ness"
-        bool_type           _top2 ; // impose "2-manifold-ness"
+        bool_type           _top1 ; // impose 1-"manifold-ness"
+        bool_type           _top2 ; // impose 2-"manifold-ness"
 
-        iptr_type           _iter ; // max. no. refinement iter.
- 
         public  :
             
         __static_call
@@ -121,20 +128,34 @@
         __inline_call real_type init_siz2 (
             )
         {   return .5 *(4./3. + 
-                2./(1.+std::sqrt(1./3.))) ;
+            2. / (1.+std::sqrt(1./3.))) ;
         }
         __static_call
         __inline_call real_type init_siz3 (
             )
         {   return .5 *(4./3. + 
-                2./(1.+std::sqrt(3./8.))) ;
+            2. / (1.+std::sqrt(3./8.))) ;
+        }
+         
+        __static_call
+        __inline_call iptr_type init_rule (
+            )
+        {
+            iptr_type _rule = +0 ;
+            __setbit( _rule, offH_kind) ;
+            __setbit( _rule, offC_kind) ;
+          //__setbit( _rule, offT_kind) ;
+            __setbit( _rule, sink_kind) ;
+            
+            return _rule ;
         }
          
         __static_call
         __inline_call iptr_type init_iter (
             )
         {   return iptr_type (
-        std::numeric_limits<iptr_type>::max()) ;
+                std::numeric_limits
+                    <iptr_type>::max()) ;
         }
             
         public  : 
@@ -156,6 +177,10 @@
             
             _dims(iptr_type(+   3)) ,
             
+            _iter(init_iter())  ,
+            
+            _rule(init_rule())  ,
+            
             _siz1(init_siz1())  ,
             _siz2(init_siz2())  ,
             _siz3(init_siz3())  ,
@@ -175,9 +200,7 @@
             _vol3(real_type(+.000)) ,
             
             _top1(bool_type(false)) ,
-            _top2(bool_type(false)) ,
-     
-            _iter(init_iter())              
+            _top2(bool_type(false))
         {   // load default values
         }
     
@@ -185,6 +208,11 @@
         __inline_call iptr_type      & verb (
             )
         {   return  this->_verb ;
+        }
+        
+        __inline_call iptr_type      & rule (
+            )
+        {   return  this->_rule ;
         }
         
         __inline_call iptr_type      & iter (
@@ -294,6 +322,11 @@
         {   return  this->_verb ;
         }
         
+        __inline_call iptr_type const& rule (
+            ) const
+        {   return  this->_rule ;
+        }
+        
         __inline_call iptr_type const& iter (
             ) const
         {   return  this->_iter ;
@@ -394,60 +427,6 @@
             ) const
         {   return  this->_top2 ;
         }
-        
-        } ;
-
-    /*
-    --------------------------------------------------------
-     * RDEL-TIMERS: cpu timers for RDEL-MESH-K
-    --------------------------------------------------------
-     */
-    
-    template <
-    typename R , 
-    typename I
-             >
-    class rdel_timers
-        {
-        public  :
-        
-        typedef R                       real_type ;
-        typedef I                       iptr_type ;
-        
-        typedef rdel_timers<R, I>       self_type ;
-        
-        real_type   _mesh_seed = (real_type)  +0. ;
-        real_type   _node_init = (real_type)  +0. ;
-        real_type   _node_rule = (real_type)  +0. ;
-        real_type   _edge_init = (real_type)  +0. ;
-        real_type   _edge_rule = (real_type)  +0. ;
-        real_type   _face_init = (real_type)  +0. ;
-        real_type   _face_rule = (real_type)  +0. ;
-        real_type   _tria_init = (real_type)  +0. ;
-        real_type   _tria_rule = (real_type)  +0. ;
-        
-        public  :
-  
-    /*-------------------------------------- elapsed time */
-   
-    #   ifdef  __use_timers
-    
-        __inline_call double time_span (
-            typename std::
-                chrono::high_resolution_clock
-                    ::time_point const& _ttic,
-            typename std::
-                chrono::high_resolution_clock
-                    ::time_point const& _ttoc
-            )
-        {
-            return (double)(
-                std::chrono::duration_cast<
-                std::chrono::microseconds >
-                (_ttoc-_ttic).count()) / +1.0E+06 ;
-        }
-
-    #   endif//__use_timers
         
         } ;
 

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 January, 2019
+     * Last updated: 18 February, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -117,11 +117,11 @@
                 continue ;
             if( _edup.find(_edat, _eptr))
                 continue ;
-            else
-            {   _edup.push(_edat) ;
-            }
+           
+           _edup.push (_edat ) ;
             
-           _eset.push_tail(_mptr->_data ) ;           
+           _eset.push_tail(
+                _mptr->_data ) ;           
         }
         }   
     
@@ -140,21 +140,44 @@
         geom_type &_geom,
         mesh_type &_mesh,
         edat_list &_eset,
+        iptr_type  _npos,
+        real_type *_ppos,
         real_type *_pmax,
         char_type &_tdim,
-        iptr_type &_tadj
+        iptr_type &_tadj,
+        rdel_opts &_opts
         )
     {
         typename rdel_opts::node_kind 
         _kind =  rdel_opts::null_kind ;
     
-        _pmax[2] = (real_type)+0.;
+        real_type _rEPS = std::pow (
+            std::numeric_limits
+       <real_type>::epsilon (), +.75) ;
+
+        real_type _vnrm[3] ;
+        _vnrm[0] = (real_type) +0. ;
+        _vnrm[1] = (real_type) +0. ;
+        _vnrm[2] = (real_type) +0. ;
+
+        _pmax[2] = (real_type) +0. ;
     
     /*--------------------- find max. SDB in edge-set */
         for (auto _edge  = _eset.head() ;
                   _edge != _eset.tend() ;
                 ++_edge  )
         {   
+            iptr_type _enod[ +3] ;
+            mesh_type::tria_type::
+            tria_type::face_node(
+                _enod, _edge->_eadj, 2, 1) ;
+            _enod[0] =_mesh._tria.
+                tria(_edge->_tadj)
+                    ->node( _enod[ 0]) ;
+            _enod[1] =_mesh._tria.
+                tria(_edge->_tadj)
+                    ->node( _enod[ 1]) ;
+
             char_type _feat, _topo ;
             iptr_type _part;
             real_type _fbal[ +3] ;
@@ -167,7 +190,34 @@
                 _feat, _topo , _part ) )
             __assert( false && 
                 "TOPO-NODE: edge-ball" ) ;
-                      
+
+            real_type _enrm[ +3] ;
+            geometry::line_norm_2d (
+               &_mesh._tria.
+                 node(_enod[0])->pval(0) ,
+               &_mesh._tria.
+                 node(_enod[1])->pval(0) ,
+                _enrm) ;
+
+            _enrm[2] = 
+                geometry::length_2d(_enrm) ;
+            _enrm[0]/= _enrm[2] ;
+            _enrm[1]/= _enrm[2] ;
+            
+            real_type _sign = 
+            geometry::dot_2d(_enrm, _vnrm) ;
+
+            if (_sign >= (real_type) +0. )
+            {
+                _vnrm[0]+= _enrm[0];
+                _vnrm[1]+= _enrm[1];
+            }
+            else
+            {
+                _vnrm[0]-= _enrm[0];
+                _vnrm[1]-= _enrm[1];
+            }
+
             if (_pmax[2] < _sbal[2])
             {
                 _pmax[2] = _sbal[2];
@@ -183,9 +233,104 @@
                 _pmax[1] = _sbal[1];
             }
         }
+    
+        if(__chkbit(_opts.rule(), 
+                rdel_opts
+              ::offT_kind) )
+        {
+    /*--------------------- calc. "skinny" off-centre */    
+        _vnrm[2] = 
+            geometry::length_2d(_vnrm) ;
+        _vnrm[0]/= _vnrm[2] ;
+        _vnrm[1]/= _vnrm[2] ;
+
+        real_type _rrad = 
+            std::sqrt(_pmax[ 2]);
+
+        if (_vnrm[2] >= _rEPS * _rrad)
+        {
+    /*--------------------- project on local "normal" */
+        _vnrm[0]*= _rrad * 
+            (real_type) +2. ;
+        _vnrm[1]*= _rrad * 
+            (real_type) +2. ;
+
+        typename
+        geom_type::line_type _ldat ;
+        _ldat._ipos[0] = _ppos[0]
+                       - _vnrm[0];
+        _ldat._ipos[1] = _ppos[1]
+                       - _vnrm[1];
         
-   /*--------------------- return steiner point kind */
-        return ( _kind ) ; 
+        _ldat._jpos[0] = _ppos[0]
+                       + _vnrm[0];
+        _ldat._jpos[1] = _ppos[1]
+                       + _vnrm[1];
+
+        mesh::keep_all_2d <
+            real_type ,
+            iptr_type >  _halo   ;
+
+        _geom.intersect( _ldat , 
+                         _halo ) ;
+
+        auto _ioff = _halo._list.tend();
+
+        real_type _dmin  = 
+            _rEPS * std::pow(_rrad, +2);
+
+        real_type static constexpr
+            _NEAR = (real_type) +.75 ;
+
+        real_type _best  =
+            +std::numeric_limits
+                <real_type>::infinity();
+
+        for (auto _iter  = 
+                _halo._list.head() ;
+                  _iter != 
+                _halo._list.tend() ;
+                ++_iter  )
+        {
+            iptr_type _near = -1;
+            _mesh._tria.find_node (
+           &_iter->pval(0), _near , _npos) ;
+
+            auto _nptr = &_mesh.
+                _tria.node(_near)->pval(0) ;
+
+            real_type _nsqr = 
+                geometry::lensqr_2d (
+                   &_iter->pval(0), _nptr) ;
+
+            real_type _dsqr = 
+                geometry::lensqr_2d (
+                   &_iter->pval(0), _ppos) ;
+
+            if (_nsqr > _dsqr * 
+                        _NEAR )
+            if (_dsqr < _best &&
+                _dsqr > _dmin )
+            {
+                _kind = 
+                 rdel_opts::offT_kind  ;
+            
+                _best = _dsqr ;
+
+                _ioff = _iter ;
+            }
+        }
+   
+        if (_ioff != _halo._list.tend())
+        {
+            _pmax[0] = _ioff->pval (0) ;
+            _pmax[1] = _ioff->pval (1) ;
+        }
+
+        } 
+        }
+
+        return  _kind ; 
     }
 
     /*
@@ -320,9 +465,14 @@
         char_type _tmax = -1;
         iptr_type _hint = -1;
       
+        auto _ppos = 
+            &_mesh .
+        _tria.node (_npos)->pval(0) ;
+      
         _kind = topo_node( _geom,
             _mesh , _eset, 
-            _pmax , _tmax, _hint) ;
+            _npos , _ppos, _pmax, 
+            _tmax , _hint, _args) ;
       
     /*------------------------- push node via constraints */
         _kind = push_node( _geom, 

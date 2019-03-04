@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 22 January, 2019
+ * Last updated: 18 February, 2019
  *
  * Copyright 2013-2019
  * Darren Engwirda
@@ -96,21 +96,33 @@
         __inline_call bool_type operator() (
             mesh_type    &_mesh,
         __const_ptr ( real_type) _ppos,
-            real_type     _dmin,
+            real_type    &_dmin,
             iptr_type    &_nmin,
             iptr_type     _tpos,
-            iptr_type    &_fadj
+            iptr_type    &_fmin
             ) const
         {   
             bool_type _done = true ;
             iptr_type _fpos ;
+            iptr_type _tadj ;
+            iptr_type _fadj ;
             
             for(_fpos = 4; _fpos-- != 0; )
             {
         /*--------------- check dist. wrt. k-th face apex */
+            _tadj = _mesh.
+                tria(_tpos)->next(_fpos) ;
+            _fadj = _mesh.
+                tria(_tpos)->fpos(_fpos) ;
+
+            _tadj = __unflip(_tadj) ;
+
+            if(_tadj == _mesh.null_flag())
+                continue ;
+        
             iptr_type  _fnod[ 4] ;
             mesh_type::tria_type::
-            face_node(_fnod, _fpos, 3, 2) ;
+            face_node(_fnod, _fadj, 3, 2) ;
             /*
             _fnod[0] = _mesh.
              tria(_tpos)->node(_fnod[0]);
@@ -120,7 +132,7 @@
              tria(_tpos)->node(_fnod[2]);
              */
             _fnod[3] = _mesh.
-             tria(_tpos)->node(_fnod[3]);
+             tria(_tadj)->node(_fnod[3]);
             
             iptr_type _apex =  _fnod[3] ; 
              
@@ -133,7 +145,7 @@
                 _done = false;
                 _dmin = _dsqr; 
                 _nmin = _apex;
-                _fadj = _fpos;
+                _fmin = _fpos;
             }            
             }
             

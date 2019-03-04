@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 31 December, 2018
+ * Last updated: 02 March, 2019
  *
- * Copyright 2013-2018
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -47,230 +47,721 @@
 #   define __AABB_PRED_K__
 
     namespace geom_tree {
+ 
     
-
     template <
     typename R ,
-    typename I ,
-    size_t   K
+    typename I 
              >
-    class aabb_pred_node_k
+    class aabb_pred_node_2
     {
 /*---------------------- node-tree intersection predicate */
     public  :
     
-    typedef R                       real_type ;
-    typedef I                       iptr_type ;
+    typedef R                   real_type ;
+    typedef I                   iptr_type ;
     
-    iptr_type static constexpr     _dims = K;
+    iptr_type static constexpr _dims = 2;
 
     private :
     
-    real_type                      _ppos [ K] ;
+    real_type                  _ppos [ 2] ;
 
     public  :
 /*---------------------------------- construct from _src. */
-    __normal_call aabb_pred_node_k (
-    __write_ptr  (real_type) _psrc
+    __normal_call aabb_pred_node_2 (
+    __const_ptr  (real_type) _psrc
         ) 
     {   
-    /*----------------------------------- make local copy */
-        for (auto _idim = _dims; _idim-- != +0; )
-        {
-            this->_ppos[_idim] = _psrc[_idim] ;
-        }
+        this->_ppos[0] = _psrc[0];
+        this->_ppos[1] = _psrc[1];
     }
-    
-/*----------------------- TRUE for node-aabb intersection */
-    __normal_call bool_type operator() (
-    __const_ptr  (real_type) _bmin,
+
+/*---------------------------------- TRUE if intersection */
+    __inline_call bool_type operator() (
+    __const_ptr  (real_type) _bmin ,
     __const_ptr  (real_type) _bmax
         ) const
-    {
-    /*----------------------- test bounds along each axis */
-        for (auto _idim = _dims; _idim-- != +0; )
+    {  
+    /*------------------------------ test if bbox overlap */
+        if(!geometry::node_rect_2d (
+             this->_ppos ,
+            _bmin, _bmax))
         {
-        if (_bmin[_idim] > this->_ppos[_idim] ||
-            _bmax[_idim] < this->_ppos[_idim] )
-        return ( false ) ;
+    /*------------------------------ bbox can't intersect */
+            return false ;
         }
-        
-    /*----------------------- intersecting if we got here */
-        return (  true ) ;
+        else
+        {
+            return  true ;
+        }
     }
     
     } ;
-
     
     template <
     typename R ,
-    typename I ,
-    size_t   K
+    typename I 
              >
-    class aabb_pred_rect_k
+    class aabb_pred_node_3
+    {
+/*---------------------- node-tree intersection predicate */
+    public  :
+    
+    typedef R                   real_type ;
+    typedef I                   iptr_type ;
+    
+    iptr_type static constexpr _dims = 3;
+
+    private :
+    
+    real_type                  _ppos [ 3] ;
+
+    public  :
+/*---------------------------------- construct from _src. */
+    __normal_call aabb_pred_node_3 (
+    __const_ptr  (real_type) _psrc
+        ) 
+    {   
+        this->_ppos[0] = _psrc[0];
+        this->_ppos[1] = _psrc[1];
+        this->_ppos[2] = _psrc[2];
+    }
+
+/*---------------------------------- TRUE if intersection */
+    __inline_call bool_type operator() (
+    __const_ptr  (real_type) _bmin ,
+    __const_ptr  (real_type) _bmax
+        ) const
+    {  
+    /*------------------------------ test if bbox overlap */
+        if(!geometry::node_rect_3d (
+             this->_ppos ,
+            _bmin, _bmax))
+        {
+    /*------------------------------ bbox can't intersect */
+            return false ;
+        }
+        else
+        {
+            return  true ;
+        }
+    }
+    
+    } ;
+    
+    template <
+    typename R ,
+    typename I 
+             >
+    class aabb_pred_rect_2
     {
 /*---------------------- rect-tree intersection predicate */
     public  :
     
-    typedef R                       real_type ;
-    typedef I                       iptr_type ;
+    typedef R                   real_type ;
+    typedef I                   iptr_type ;
     
-    iptr_type static constexpr     _dims = K;
+    iptr_type static constexpr _dims = 2;
 
     private :
     
-    real_type                      _rmin [ K] ;
-    real_type                      _rmax [ K] ;
+    real_type                  _rmin [ 2] ;
+    real_type                  _rmax [ 2] ;
 
     public  :
 /*---------------------------------- construct from _src. */
-    __normal_call aabb_pred_rect_k (
-    __write_ptr  (real_type) _lsrc ,
-    __write_ptr  (real_type) _rsrc
+    __normal_call aabb_pred_rect_2 (
+    __const_ptr  (real_type) _asrc ,
+    __const_ptr  (real_type) _bsrc
         ) 
     {   
-    /*----------------------------------- make local copy */
-        for (auto _idim = _dims; _idim-- != +0; )
-        {
-            this->_rmin[_idim] = _lsrc[_idim] ;
-            this->_rmax[_idim] = _rsrc[_idim] ;
-        }
+        this->_rmin[0] = _asrc[0];
+        this->_rmin[1] = _asrc[1];
+        
+        this->_rmax[0] = _bsrc[0];
+        this->_rmax[1] = _bsrc[1];
     }
-    
-/*----------------------- TRUE for rect-aabb intersection */
-    __normal_call bool_type operator() (
-    __const_ptr  (real_type) _bmin,
+
+/*---------------------------------- TRUE if intersection */
+    __inline_call bool_type operator() (
+    __const_ptr  (real_type) _bmin ,
     __const_ptr  (real_type) _bmax
         ) const
-    {
-    /*----------------------- test bounds along each axis */
-        for (auto _idim = _dims; _idim-- != +0; )
+    {  
+    /*------------------------------ test if bbox overlap */
+        if(!geometry::rect_rect_2d (
+             this->_rmin ,
+             this->_rmax ,
+            _bmin, _bmax))
         {
-        if (_bmin[_idim] > this->_rmax[_idim] ||
-            _bmax[_idim] < this->_rmin[_idim] )
-        return ( false ) ;
+    /*------------------------------ bbox can't intersect */
+            return false ;
         }
-        
-    /*----------------------- intersecting if we got here */
-        return (  true ) ;
+        else
+        {
+            return  true ;
+        }
     }
     
     } ;
     
+    template <
+    typename R ,
+    typename I 
+             >
+    class aabb_pred_rect_3
+    {
+/*---------------------- rect-tree intersection predicate */
+    public  :
+    
+    typedef R                   real_type ;
+    typedef I                   iptr_type ;
+    
+    iptr_type static constexpr _dims = 3;
+
+    private :
+    
+    real_type                  _rmin [ 3] ;
+    real_type                  _rmax [ 3] ;
+
+    public  :
+/*---------------------------------- construct from _src. */
+    __normal_call aabb_pred_rect_3 (
+    __const_ptr  (real_type) _asrc ,
+    __const_ptr  (real_type) _bsrc
+        ) 
+    {   
+        this->_rmin[0] = _asrc[0];
+        this->_rmin[1] = _asrc[1];
+        this->_rmin[2] = _asrc[2];
+        
+        this->_rmax[0] = _bsrc[0];
+        this->_rmax[1] = _bsrc[1];
+        this->_rmax[2] = _bsrc[2];
+    }
+
+/*---------------------------------- TRUE if intersection */
+    __inline_call bool_type operator() (
+    __const_ptr  (real_type) _bmin ,
+    __const_ptr  (real_type) _bmax
+        ) const
+    {  
+    /*------------------------------ test if bbox overlap */
+        if(!geometry::rect_rect_3d (
+             this->_rmin ,
+             this->_rmax ,
+            _bmin, _bmax))
+        {
+    /*------------------------------ bbox can't intersect */
+            return false ;
+        }
+        else
+        {
+            return  true ;
+        }
+    }
+    
+    } ;
     
     template <
     typename R ,
-    typename I ,
-    size_t   K
+    typename I 
              >
-    class aabb_pred_line_k
+    class aabb_pred_line_2
     {
 /*---------------------- line-tree intersection predicate */
     public  :
     
-    typedef R                       real_type ;
-    typedef I                       iptr_type ;
+    typedef R                   real_type ;
+    typedef I                   iptr_type ;
     
-    iptr_type static constexpr     _dims = K;
+    iptr_type static constexpr _dims = 2;
 
     private :
     
-    real_type                      _ipos [ K] ;
-    real_type                      _jpos [ K] ;
+    real_type                  _ipos [ 2] ;
+    real_type                  _jpos [ 2] ;
 
-    real_type                      _xden [ K] ;
-
-    real_type                      _rmin [ K] ;
-    real_type                      _rmax [ K] ;
+    real_type                  _xden [ 2] ;
+    
+    real_type                  _rmin [ 2] ;
+    real_type                  _rmax [ 2] ;
 
     public  :
 /*---------------------------------- construct from _src. */
-    __normal_call aabb_pred_line_k (
-    __write_ptr  (real_type) _isrc ,
-    __write_ptr  (real_type) _jsrc
+    __normal_call aabb_pred_line_2 (
+    __const_ptr  (real_type) _isrc ,
+    __const_ptr  (real_type) _jsrc
         ) 
     {   
-    /*------------------------------ init bbox at -+ inf. */
-        for (auto _idim = _dims; _idim-- != +0; )
-        {
-            _rmin[_idim] = 
-               +std::numeric_limits
-                    <real_type>::infinity() ;
-                    
-            _rmax[_idim] = 
-                -std::numeric_limits
-                    <real_type>::infinity() ;
-        }
-
-    /*------------------------------ copy and calc. bbox. */
-        for (auto _idim = _dims; _idim-- != +0; )
-        {
-            this->_ipos[_idim] = _isrc[_idim] ;
-            this->_jpos[_idim] = _jsrc[_idim] ;
-
-            this->_xden[_idim] = _jsrc[_idim] - 
-                                 _isrc[_idim] ;
-
-            real_type _xmin = std::min (
-                _isrc[_idim],
-                _jsrc[_idim]) ;
-                
-            real_type _xmax = std::max (
-                _isrc[_idim],
-                _jsrc[_idim]) ;
-
-            if (this->_rmin[_idim] > _xmin)
-                this->_rmin[_idim] = _xmin;
-
-            if (this->_rmax[_idim] < _xmax)
-                this->_rmax[_idim] = _xmax;
-        }
+        this->_ipos[0] = _isrc[0];
+        this->_ipos[1] = _isrc[1];
+        
+        this->_jpos[0] = _jsrc[0];
+        this->_jpos[1] = _jsrc[1];
+        
+        this->_rmin[0] = std::min(
+              _isrc[0] , _jsrc[0]) ;
+        this->_rmin[1] = std::min(
+              _isrc[1] , _jsrc[1]) ;
+              
+        this->_rmax[0] = std::max(
+              _isrc[0] , _jsrc[0]) ;
+        this->_rmax[1] = std::max(
+              _isrc[1] , _jsrc[1]) ;
+              
+        this->_xden[0] = _jsrc[0]- 
+                         _isrc[0];
+        this->_xden[1] = _jsrc[1]- 
+                         _isrc[1];
     }
 
-/*----------------------- TRUE for line-aabb intersection */
-    __normal_call bool_type operator() (
-    __const_ptr  (real_type) _bmin,
+/*---------------------------------- TRUE if intersection */
+    __inline_call bool_type operator() (
+    __const_ptr  (real_type) _bmin ,
     __const_ptr  (real_type) _bmax
         ) const
     {  
-    /*--------------------------------- test bbox overlap */
-        for (auto _idim = _dims; _idim-- != +0; )
-        {
-        if (_bmin[_idim] > this->_rmax[_idim] ||
-            _bmax[_idim] < this->_rmin[_idim] )
-    /*----------------------------------- can't intersect */
-            return ( false )  ;
-        }
-
-    /*--------------------------------- line-face overlap */
-        real_type _tmin = 
-            -std::numeric_limits
-                <real_type>::infinity() ;
+    /*------------------------------ test if bbox overlap */
+        if(!geometry::rect_rect_2d (
+             this->_rmin ,
+             this->_rmax ,
+            _bmin, _bmax))
+    /*------------------------------ bbox can't intersect */
+            return false ;
+                       
+    /*------------------------------ test if line overlap */        
+        real_type _aval, _bval ;
+        _aval = (_bmin[0]-_ipos[0])
+                /_xden[0];
+        _bval = (_bmax[0]-_ipos[0])
+                /_xden[0];
                 
-        real_type _tmax = 
-            +std::numeric_limits
-                <real_type>::infinity() ;
+        real_type _tmin, _tmax ;
+        _tmin = 
+        std::min( _aval, _bval )  ;
+        _tmax = 
+        std::max( _aval, _bval )  ;
+        
+        if (_tmax<_tmin) return false ; 
+        
+        _aval = (_bmin[1]-_ipos[1])
+                /_xden[1];
+        _bval = (_bmax[1]-_ipos[1])
+                /_xden[1];
+        
+        _tmin = std::max(_tmin, 
+        std::min( _aval, _bval )) ;
+        _tmax = std::min(_tmax, 
+        std::max( _aval, _bval )) ;
+        
+        if (_tmax<_tmin) return false ;
+        
+        return true ;
+    }
+    
+    } ;
+    
+    template <
+    typename R ,
+    typename I 
+             >
+    class aabb_pred_line_3
+    {
+/*---------------------- line-tree intersection predicate */
+    public  :
+    
+    typedef R                   real_type ;
+    typedef I                   iptr_type ;
+    
+    iptr_type static constexpr _dims = 3;
 
-        for (auto _idim = _dims; _idim-- != +0; )
+    private :
+    
+    real_type                  _ipos [ 3] ;
+    real_type                  _jpos [ 3] ;
+
+    real_type                  _xden [ 3] ;
+    
+    real_type                  _rmin [ 3] ;
+    real_type                  _rmax [ 3] ;
+
+    public  :
+/*---------------------------------- construct from _src. */
+    __normal_call aabb_pred_line_3 (
+    __const_ptr  (real_type) _isrc ,
+    __const_ptr  (real_type) _jsrc
+        ) 
+    {   
+        this->_ipos[0] = _isrc[0];
+        this->_ipos[1] = _isrc[1];
+        this->_ipos[2] = _isrc[2];
+        
+        this->_jpos[0] = _jsrc[0];
+        this->_jpos[1] = _jsrc[1];
+        this->_jpos[2] = _jsrc[2];
+        
+        this->_rmin[0] = std::min(
+              _isrc[0] , _jsrc[0]) ;
+        this->_rmin[1] = std::min(
+              _isrc[1] , _jsrc[1]) ;
+        this->_rmin[2] = std::min(
+              _isrc[2] , _jsrc[2]) ;
+              
+        this->_rmax[0] = std::max(
+              _isrc[0] , _jsrc[0]) ;
+        this->_rmax[1] = std::max(
+              _isrc[1] , _jsrc[1]) ;
+        this->_rmax[2] = std::max(
+              _isrc[2] , _jsrc[2]) ;
+              
+        this->_xden[0] = _jsrc[0]- 
+                         _isrc[0];
+        this->_xden[1] = _jsrc[1]- 
+                         _isrc[1];
+        this->_xden[2] = _jsrc[2]- 
+                         _isrc[2];
+    }
+
+/*---------------------------------- TRUE if intersection */
+    __inline_call bool_type operator() (
+    __const_ptr  (real_type) _bmin ,
+    __const_ptr  (real_type) _bmax
+        ) const
+    {  
+    /*------------------------------ test if bbox overlap */
+        if(!geometry::rect_rect_3d (
+             this->_rmin ,
+             this->_rmax ,
+            _bmin, _bmax))
+    /*------------------------------ bbox can't intersect */
+            return false ;
+                       
+    /*------------------------------ test if line overlap */        
+        real_type _aval, _bval ;
+        _aval = (_bmin[0]-_ipos[0])
+                /_xden[0];
+        _bval = (_bmax[0]-_ipos[0])
+                /_xden[0];
+                
+        real_type _tmin, _tmax ;
+        _tmin = 
+        std::min( _aval, _bval )  ;
+        _tmax = 
+        std::max( _aval, _bval )  ;
+        
+        if (_tmax<_tmin) return false ; 
+        
+        _aval = (_bmin[1]-_ipos[1])
+                /_xden[1];
+        _bval = (_bmax[1]-_ipos[1])
+                /_xden[1];
+        
+        _tmin = std::max(_tmin, 
+        std::min( _aval, _bval )) ;
+        _tmax = std::min(_tmax, 
+        std::max( _aval, _bval )) ;
+        
+        if (_tmax<_tmin) return false ;
+        
+        _aval = (_bmin[2]-_ipos[2])
+                /_xden[2];
+        _bval = (_bmax[2]-_ipos[2])
+                /_xden[2];
+        
+        _tmin = std::max(_tmin, 
+        std::min( _aval, _bval )) ;
+        _tmax = std::min(_tmax, 
+        std::max( _aval, _bval )) ;
+        
+        if (_tmax<_tmin) return false ;
+        
+        return true ;
+    }
+    
+    } ;
+    
+    template <
+    typename R ,
+    typename I 
+             >
+    class aabb_pred_flat_3
+    {
+/*---------------------- flat-tree intersection predicate */
+    public  :
+    
+    typedef R                   real_type ;
+    typedef I                   iptr_type ;
+    
+    iptr_type static constexpr _dims = 3;
+
+    private :
+    
+    real_type                  _ppos [ 3] ;
+    real_type                  _vnrm [ 3] ;
+    real_type                  _vabs [ 3] ;
+    real_type                  _dval ;
+
+    real_type                  _rmin [ 3] ;
+    real_type                  _rmax [ 3] ;
+
+    public  :
+/*---------------------------------- construct from _src. */
+    __normal_call aabb_pred_flat_3 (
+    __const_ptr  (real_type) _psrc ,
+    __const_ptr  (real_type) _vsrc ,
+    __const_ptr  (real_type) _asrc ,
+    __const_ptr  (real_type) _bsrc
+        ) 
+    {   
+        this->_dval = 
+        geometry::dot_3d(_vsrc, _psrc) ;
+        
+        this->_ppos[0] = _psrc[0];
+        this->_ppos[1] = _psrc[1];
+        this->_ppos[2] = _psrc[2];
+        
+        this->_vnrm[0] = _vsrc[0];
+        this->_vnrm[1] = _vsrc[1];
+        this->_vnrm[2] = _vsrc[2];
+        
+        this->_vabs[0] = 
+               std::abs (_vsrc[0]) ;
+        this->_vabs[1] = 
+               std::abs (_vsrc[1]) ;
+        this->_vabs[2] = 
+               std::abs (_vsrc[2]) ;
+        
+        this->_rmin[0] = _asrc[0];
+        this->_rmin[1] = _asrc[1];
+        this->_rmin[2] = _asrc[2];
+        
+        this->_rmax[0] = _bsrc[0];
+        this->_rmax[1] = _bsrc[1];
+        this->_rmax[2] = _bsrc[2];
+    }
+
+/*---------------------------------- TRUE if intersection */
+    __normal_call bool_type operator() (
+    __const_ptr  (real_type) _bmin ,
+    __const_ptr  (real_type) _bmax
+        ) const
+    {  
+    /*------------------------------ test if bbox overlap */
+        if(!geometry::rect_rect_3d (
+             this->_rmin , 
+             this->_rmax ,
+            _bmin, _bmax))
+    /*------------------------------ bbox can't intersect */
+            return false ;
+
+    /*------------------------------ check flat intersect */        
+        real_type _bmid[3] = {
+       (real_type) +.5 * _bmin [0] +
+       (real_type) +.5 * _bmax [0] , 
+       (real_type) +.5 * _bmin [1] +
+       (real_type) +.5 * _bmax [1] ,
+       (real_type) +.5 * _bmin [2] +
+       (real_type) +.5 * _bmax [2] ,
+            } ;
+        real_type _blen[3] = {
+       (real_type) +1. * _bmax [0] -
+       (real_type) +1. * _bmid [0] , 
+       (real_type) +1. * _bmax [1] -
+       (real_type) +1. * _bmid [1] ,
+       (real_type) +1. * _bmax [2] -
+       (real_type) +1. * _bmid [2] ,
+            } ;
+        
+        real_type _rval = 
+        _blen[0] * this->_vabs [0] +
+        _blen[1] * this->_vabs [1] +
+        _blen[2] * this->_vabs [2] ;
+        
+        real_type _sval = 
+        geometry::dot_3d(_vnrm, _bmid) ; 
+        
+        _sval -=   this->_dval;
+  
+        return std::abs(_sval)<=_rval;
+    }
+    
+    } ;
+    
+    template <
+    typename R ,
+    typename I 
+             >
+    class aabb_pred_ball_2
+    {
+/*---------------------- ball-tree intersection predicate */
+    public  :
+    
+    typedef R                   real_type ;
+    typedef I                   iptr_type ;
+    
+    iptr_type static constexpr _dims = 2;
+
+    private :
+    
+    real_type                  _ppos [ 2] ;
+    real_type                  _rsqr ;
+
+    public  :
+/*---------------------------------- construct from _src. */
+    __normal_call aabb_pred_ball_2 (
+    __const_ptr  (real_type) _psrc ,
+                  real_type  _rsrc
+        ) 
+    {   
+        this->_ppos[0] = _psrc[0];
+        this->_ppos[1] = _psrc[1];
+        
+        this->_rsqr    = _rsrc * 
+                         _rsrc ;
+    }
+
+/*---------------------------------- TRUE if intersection */
+    __normal_call bool_type operator() (
+    __const_ptr  (real_type) _bmin ,
+    __const_ptr  (real_type) _bmax
+        ) const
+    {  
+        real_type _dsqr = (real_type)+0. ;
+        real_type _diff = (real_type)+0. ;
+    
+    /*------------------------------ check ball intersect */     
+        if (this->_ppos[0] < _bmin[0])
         {
-            real_type _ival=(_bmin[_idim] - 
-                       this->_ipos[_idim])/
-                       this->_xden[_idim] ; 
-                         
-            real_type _jval=(_bmax[_idim] - 
-                       this->_ipos[_idim])/
-                       this->_xden[_idim] ;
-
-            _tmin = std::max(_tmin, 
-                    std::min(_ival, _jval)) ;
-                    
-            _tmax = std::min(_tmax, 
-                    std::max(_ival, _jval)) ;
-                    
-            if (_tmax < _tmin) return false ; 
+            _diff  = _bmin[0] - 
+               this->_ppos[0] ;
+               
+            _dsqr += _diff * _diff ;
+        }
+        else
+        if (this->_ppos[0] > _bmax[0])
+        {
+            _diff  = _bmax[0] - 
+               this->_ppos[0] ;
+               
+            _dsqr += _diff * _diff ;
         }
         
-        return ( true ) ;
+        if (this->_ppos[1] < _bmin[1])
+        {
+            _diff  = _bmin[1] - 
+               this->_ppos[1] ;
+               
+            _dsqr += _diff * _diff ;
+        }
+        else
+        if (this->_ppos[1] > _bmax[1])
+        {
+            _diff  = _bmax[1] - 
+               this->_ppos[1] ;
+               
+            _dsqr += _diff * _diff ;
+        }
+        
+        return _dsqr<= this->_rsqr ;
+    }
+    
+    } ;
+    
+    template <
+    typename R ,
+    typename I 
+             >
+    class aabb_pred_ball_3
+    {
+/*---------------------- ball-tree intersection predicate */
+    public  :
+    
+    typedef R                   real_type ;
+    typedef I                   iptr_type ;
+    
+    iptr_type static constexpr _dims = 3;
+
+    private :
+    
+    real_type                  _ppos [ 3] ;
+    real_type                  _rsqr ;
+
+    public  :
+/*---------------------------------- construct from _src. */
+    __normal_call aabb_pred_ball_3 (
+    __const_ptr  (real_type) _psrc ,
+                  real_type  _rsrc
+        ) 
+    {   
+        this->_ppos[0] = _psrc[0];
+        this->_ppos[1] = _psrc[1];
+        this->_ppos[2] = _psrc[2];
+        
+        this->_rsqr    = _rsrc * 
+                         _rsrc ;
+    }
+
+/*---------------------------------- TRUE if intersection */
+    __normal_call bool_type operator() (
+    __const_ptr  (real_type) _bmin ,
+    __const_ptr  (real_type) _bmax
+        ) const
+    {  
+        real_type _dsqr = (real_type)+0. ;
+        real_type _diff = (real_type)+0. ;
+        
+    /*------------------------------ check ball intersect */ 
+        if (this->_ppos[0] < _bmin[0])
+        {
+            _diff  = _bmin[0] - 
+               this->_ppos[0] ;
+               
+            _dsqr += _diff * _diff ;
+        }
+        else
+        if (this->_ppos[0] > _bmax[0])
+        {
+            _diff  = _bmax[0] - 
+               this->_ppos[0] ;
+               
+            _dsqr += _diff * _diff ;
+        }
+        
+        if (this->_ppos[1] < _bmin[1])
+        {
+            _diff  = _bmin[1] - 
+               this->_ppos[1] ;
+               
+            _dsqr += _diff * _diff ;
+        }
+        else
+        if (this->_ppos[1] > _bmax[1])
+        {
+            _diff  = _bmax[1] - 
+               this->_ppos[1] ;
+               
+            _dsqr += _diff * _diff ;
+        }
+        
+        if (this->_ppos[2] < _bmin[2])
+        {
+            _diff  = _bmin[2] - 
+               this->_ppos[2] ;
+               
+            _dsqr += _diff * _diff ;
+        }
+        else
+        if (this->_ppos[2] > _bmax[2])
+        {
+            _diff  = _bmax[2] - 
+               this->_ppos[2] ;
+               
+            _dsqr += _diff * _diff ;
+        }
+        
+        return _dsqr<= this->_rsqr ;
     }
     
     } ;

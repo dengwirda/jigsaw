@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 December, 2018
+     * Last updated: 02 March, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -60,6 +60,7 @@
         iter_opts &_opts ,
         iptr_type  _enum ,
         bool_type &_okay ,
+        iptr_type &_inew ,
         iptr_list &_tset ,
         iptr_list &_tnew ,
         real_list &_tsrc ,
@@ -72,7 +73,7 @@
         real_type  _lmin
             = (real_type) +1.00E+00 ,
         real_type  _qinc 
-            = (real_type) +1.00E-04
+            = (real_type) +1.00E-02
         )
     {    
         __unreferenced(_pred) ;         // for MSVC...
@@ -161,7 +162,9 @@
             _tsrc[0] , _tsrc[1]) ;
         
     /*--------------------------------- exit if too good! */
-        if (_TMIN>=_TLIM) return ;
+        real_type _TSQR = std::sqrt(_TLIM) ;
+
+        if (_TMIN>_TSQR ) return ;
         
     /*--------------------------------- get adjacent ball */
         real_type _ibal[_dims+1] ;
@@ -267,6 +270,8 @@
         iptr_type _nnew = 
             _mesh.push_node(_ndat) ;
             
+        _inew =   _nnew ;
+            
          auto _nptr  = 
         _mesh._set1.head() + _nnew ;
             
@@ -337,27 +342,15 @@
             
             move_node( _geom, _mesh ,
                 _hfun, _pred, _hval , 
-                _opts, _nptr, +1    , 
+                _opts, _nptr, 
+                   _odt_kind, 
                 _move, _tnew, 
                 _ttmp, _tdst,
                 _dtmp, _ddst, 
                 _minC, _TLIM,
                 _minD, _DLIM ) ;
                
-            if (_move > 0) continue ;
-            
-            move_node( _geom, _mesh ,
-                _hfun, _pred, _hval , 
-                _opts, _nptr, +2    , 
-                _move, _tnew, 
-                _ttmp, _tdst,
-                _dtmp, _ddst, 
-                _minC, _TLIM,
-                _minD, _DLIM ) ;
-               
-            if (_move > 0) continue ;
-             
-            break ;
+            if (_move <= +0) break  ;
         }
         
     /*--------------------------------- compare cost scr. */
@@ -366,11 +359,8 @@
         loop_tscr(_mesh, _pred, _tnew, 
                   _tdst) ;
     
-        real_type constexpr 
-            _GOOD = (real_type) +1.00;
-    
         move_okay(_tdst, _tsrc, _okay, 
-        std::sqrt(_GOOD) ,
+                  _TSQR,
                   _qinc) ;
               
         if (_okay)

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 02 March, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -415,12 +415,14 @@
                   _iter != _lsrc.tend() ;
                 ++_iter  )
         {
-        if  (this->_tria .
-            _set2[*_iter].
-                feat() != null_feat)
-        {
-            _ldst.push_tail (*_iter)  ;
-        }
+             auto _feat  = 
+                this->
+            _tria._set2[ *_iter].feat() ;
+        
+            if (_feat != null_feat)
+            {
+                _ldst.push_tail(*_iter) ;
+            }
         }
     }
      
@@ -428,19 +430,20 @@
         typename  list_type ,
         typename  geom_opts
              >
-    __normal_call char_type node_feat (
+    __normal_call void_type node_feat (
         iptr_type *_node ,
         list_type &_aset ,
+        char_type &_feat ,
+        char_type &_topo ,
         geom_opts &_opts
         )
     {
-        char_type _feat = 
-           (_aset.count() == +0) ||
-           (_aset.count() == +2)
-                ? null_feat : soft_feat ;
-    
         real_type _DtoR = 
        (real_type) +3.1415926536 / 180.0;
+
+        real_type _ZERO = -1. + 
+            std::numeric_limits
+                <real_type>::epsilon();
     
         real_type _phi1 = 
        (real_type)+180. - _opts.phi1();
@@ -454,9 +457,14 @@
   
         __unreferenced(_node) ;
   
+        _feat =  null_feat ;
+        _topo = (char_type)_aset.count();
+
         for (auto _ipos  = _aset.head() ;
                   _ipos != _aset.tend() ;
                 ++_ipos  )
+        {
+        char_type _tbad  = +1 ;
         for (auto _jpos  = _ipos+1 ;
                   _jpos != _aset.tend() ;
                 ++_jpos  )
@@ -502,6 +510,8 @@
             else
                 _acos *= (real_type)-1.;
                 
+            if (_acos >= _ZERO)
+            {
             if (_acos <= _hard)
             {
                 _feat  = 
@@ -512,10 +522,23 @@
             {          
                 _feat  = 
             std::max(_feat, soft_feat) ;
+            }
+            }
+            else
+            {
+            if (_tbad >= +  1 )
+            {
+                _topo -= _tbad--;
+            }
             } 
-        }    
-        
-        return  _feat  ;   
+        }
+        }
+        {
+            if (_topo != +  0 )
+            if (_topo != +  2 )
+                _feat = 
+            std::max(_feat, soft_feat) ;
+        }
     }
     
     template <
@@ -631,18 +654,20 @@
         typename  list_type ,
         typename  geom_opts
              >
-    __normal_call char_type edge_feat (
+    __normal_call void_type edge_feat (
         iptr_type *_enod ,
         list_type &_aset ,
+        char_type &_feat ,
+        char_type &_topo ,
         geom_opts &_opts
         )
     {
-        char_type _feat = 
-           (_aset.count() == +2)
-                ? null_feat : soft_feat ;
-        
         real_type _DtoR = 
        (real_type) +3.1415926536 / 180.0;
+
+        real_type _ZERO = -1. + 
+            std::numeric_limits
+                <real_type>::epsilon();
     
         real_type _phi2 = 
        (real_type)+180. - _opts.phi2();
@@ -653,10 +678,15 @@
             std::cos( _phi2 * _DtoR) ;
         real_type _soft = 
             std::cos( _eta2 * _DtoR) ;
+            
+        _feat =  null_feat ;
+        _topo = (char_type)_aset.count();
     
         for (auto _ipos  = _aset.head() ;
                   _ipos != _aset.tend() ;
                 ++_ipos  )
+        {
+        char_type _tbad  = +1 ;
         for (auto _jpos  = _ipos+1 ;
                   _jpos != _aset.tend() ;
                 ++_jpos  )
@@ -755,6 +785,8 @@
             else
                 _acos *= (real_type)-1.;
            
+            if (_acos >= _ZERO)
+            {
             if (_acos <= _hard)
             {
                 _feat  = 
@@ -766,9 +798,22 @@
                 _feat  = 
             std::max(_feat, soft_feat) ;
             }
+            }
+            else
+            {
+            if (_tbad >= +  1 )
+            {
+                _topo -= _tbad--;
+            }
+            }
         }
-        
-        return  _feat  ;
+        }
+        {
+            if (_topo != +  0 )
+            if (_topo != +  2 )
+                _feat = 
+            std::max(_feat, soft_feat) ;
+        }
     }
 
     /*
@@ -784,9 +829,17 @@
         geom_opts &_opts
         )
     {
-        containers::array<iptr_type> _eadj ;
-        containers::array<iptr_type> _fadj ;
-        containers::array<iptr_type> _set2 ;
+        containers::
+            array <iptr_type> _eadj ;
+        containers::
+            array <iptr_type> _fadj ;
+        containers::
+            array <iptr_type> _ebnd ;
+    
+        containers::
+            array <iptr_type> _nmrk ;
+        containers::
+            array <iptr_type> _emrk ;
     
     /*---------------------------------- init. geom feat. */
         for (auto _iter  = 
@@ -827,29 +880,55 @@
             }
         }
   
-        if (_opts.feat() )
-        {
     /*---------------------------------- find sharp feat. */
+        _nmrk.set_count (
+         this->_tria._set1.count() , 
+            containers::loose_alloc,-1) ;
+            
+        _emrk.set_count (
+         this->_tria._set2.count() , 
+            containers::loose_alloc,-1) ;
+        
+        iptr_type _nnum  = +0 ;
+        iptr_type _enum  = +0 ;
+    
         for (auto _epos  = 
              this->_tria._set2.head() ;
                   _epos != 
              this->_tria._set2.tend() ;
-                ++_epos  )
+                ++_epos, ++_enum)
         {
     /*---------------------------------- find sharp 1-dim */
             if (_epos->mark() >= +0)
             {
+            if (_epos->itag() <= -1 ||
+                _emrk[_enum]  >= +1 ||
+                _opts .feat() )
+            {
+    /*---------------------------------- set geo.-defined */
             _fadj.set_count (0);
             
-             this->_tria.edge_tri3 (
-                &_epos->node(0), _fadj) ;
-                
-            _epos->topo () =  
-               (char_type)_fadj.count() ;
-
-            _epos->feat () = edge_feat(
-                &_epos->node(0), _fadj, 
-                    _opts) ;        
+            this->_tria.edge_tri3 (
+               &_epos->node (0), _fadj) ;
+                    
+            edge_feat (
+               &_epos->node (0), 
+                _fadj ,
+                _epos->feat () ,
+                _epos->topo () , 
+                _opts ) ;
+             
+            if (_epos->itag() <= -1)
+            {
+    /*---------------------------------- set user-defined */
+            _epos->feat () = 
+                std::max(_epos->feat () , 
+                    soft_feat) ;
+                    
+            _nmrk[_epos->node(0)] = +1;
+            _nmrk[_epos->node(1)] = +1;
+            }
+            }
             }
         }
         
@@ -857,33 +936,45 @@
              this->_tria._set1.head() ;
                   _npos != 
              this->_tria._set1.tend() ;
-                ++_npos  )
+                ++_npos, ++_nnum)
         {
     /*---------------------------------- find sharp 0-dim */
-            if (_npos->mark() >= +0)
+            if (_npos->mark() >= +0 )
             {
+            if (_npos->itag() <= -1 ||
+                _nmrk[_nnum]  >= +1 ||
+                _opts .feat() )
+            {
+    /*---------------------------------- set geo.-defined */
             _eadj.set_count (0);
             _fadj.set_count (0);
             
-            _set2.set_count (0);
-            
-             this->_tria.node_edge (
-                &_npos->node(0), _eadj) ;
+            this->_tria.node_edge (
+               &_npos->node (0), _eadj) ;
                 
-             this->_tria.node_tri3 (
-                &_npos->node(0), _fadj) ;
+            this->_tria.node_tri3 (
+               &_npos->node (0), _fadj) ;
 
-             feat_list(_eadj, _set2);
+            _ebnd.set_count (0);
 
-            _npos->topo () =  
-               (char_type)_set2.count() ;
+            feat_list (_eadj, _ebnd);
+
+            node_feat (
+               &_npos->node (0), 
+                _ebnd ,
+                _npos->feat () ,
+                _npos->topo () , 
+                _opts ) ;
             
-            _npos->feat () = node_feat(
-                &_npos->node(0), _set2, 
-                    _opts) ;
+            if (_npos->itag () <= -1)
+            {
+    /*---------------------------------- set user-defined */
+            _npos->feat () = 
+                std::max(_npos->feat () , 
+                    soft_feat) ;
             }
-        }
-        
+            }
+            }
         }
   
         for (auto _iter  = 
@@ -992,7 +1083,7 @@
         if (_imin < (iptr_type) +0 &&
             _imax < (iptr_type) +0 )
             __assert( _imin >=  +0 && 
-            "INIT-PART:-ve part index") ;
+        "GEOM::INIT-PART: -ve part index!") ;
         
     /*----------------------------- push unique PART id's */
         auto _flag = 
@@ -1170,44 +1261,6 @@
             }
             } ;
         
-    /*----------------------------- setup user-feat. face */
-        for (auto _iter  = 
-             this->_tria._set2.head() ;
-                  _iter != 
-             this->_tria._set2.tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0 &&
-                _iter->itag() <= -1 )
-            {
-                this->_tria._set1[
-            _iter->node(0)].itag() =  -1 ;
-                
-                this->_tria._set1[
-            _iter->node(1)].itag() =  -1 ;
-            }
-        }
-        
-        for (auto _iter  = 
-             this->_tria._set3.head() ;
-                  _iter != 
-             this->_tria._set3.tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0 &&
-                _iter->itag() <= -1 )
-            {
-                this->_tria._set1[
-            _iter->node(0)].itag() =  -1 ;
-                
-                this->_tria._set1[
-            _iter->node(1)].itag() =  -1 ;
-            
-                this->_tria._set1[
-            _iter->node(2)].itag() =  -1 ;
-            }
-        }
-    
     /*----------------------------- init. aabb at -+ inf. */
         for(auto _idim = 3; _idim-- != 0 ; )
         {
@@ -1313,8 +1366,7 @@
         {
             if (_iter->mark() >= +0 )
             {
-            if (_opts .feat() && 
-                _iter->feat() != null_feat)
+            if (_iter->feat() != null_feat)
             {
     /*----------------------------- push any 'real' feat. */
             iptr_type _node = -1 ;
@@ -1332,6 +1384,10 @@
                 _mesh._tria.node
                     (_node)->topo() 
                         = _iter->topo() ;
+                        
+                _mesh._tria.node
+                    (_node)->part() 
+                        = _iter->itag() ;
             }
             }
             else
@@ -1353,6 +1409,10 @@
                 _mesh._tria.node
                     (_node)->topo() 
                         = _iter->topo() ;
+                        
+                _mesh._tria.node
+                    (_node)->part() 
+                        = _iter->itag() ;
             }
             }
             }
@@ -1965,12 +2025,11 @@
         hits_func &_hfun
         )
     {
-    /*------------------ tree-rect intersection predicate */
+    /*------------------ tree-flat intersection predicate */
         typedef 
-        geom_tree::aabb_pred_rect_k <
+        geom_tree::aabb_pred_flat_3 <
              real_type, 
-             iptr_type, 
-             +3        >    tree_pred ; 
+             iptr_type >    tree_pred ; 
 
     /*------------------ dual-face intersection predicate */
         typedef 
@@ -1978,7 +2037,9 @@
              hits_func >    hits_pred ; 
 
     /*------------------ call actual intersection testing */
-        tree_pred _pred(_flat. _rmin, 
+        tree_pred _pred(_flat. _ppos,
+                        _flat. _nvec,
+                        _flat. _rmin, 
                         _flat. _rmax) ;     
         hits_pred _func(_flat. _ppos, 
                         _flat. _nvec,
@@ -2006,10 +2067,9 @@
     {
     /*------------------ tree-line intersection predicate */
         typedef 
-        geom_tree::aabb_pred_line_k <
+        geom_tree::aabb_pred_line_3 <
              real_type, 
-             iptr_type, 
-             +3        >    tree_pred ;
+             iptr_type >    tree_pred ;
              
     /*------------------ tria-line intersection predicate */
         typedef 
@@ -2043,31 +2103,20 @@
         hits_func &_hfun
         )
     {
-    /*------------------ tree-rect intersection predicate */
+    /*------------------ tree-ball intersection predicate */
         typedef 
-        geom_tree::aabb_pred_rect_k <
+        geom_tree::aabb_pred_ball_3 <
              real_type, 
-             iptr_type, 
-             +3        >    tree_pred ; 
+             iptr_type >    tree_pred ; 
             
     /*------------------ ball-line intersection predicate */
         typedef 
         ball_line_pred <
              hits_func >    hits_pred ;
 
-    /*------------------ call actual intersection testing */      
-        real_type _rmin[ 3] = {
-        _ball._pmid[0] - _ball._rrad  ,
-        _ball._pmid[1] - _ball._rrad  ,
-        _ball._pmid[2] - _ball._rrad
-            } ;
-        real_type _rmax[ 3] = {
-        _ball._pmid[0] + _ball._rrad  ,
-        _ball._pmid[1] + _ball._rrad  ,
-        _ball._pmid[2] + _ball._rrad
-            } ;
-      
-        tree_pred _pred(_rmin, _rmax) ;
+    /*------------------ call actual intersection testing */          
+        tree_pred _pred(_ball. _pmid,
+                        _ball. _rrad) ;
         hits_pred _func(_ball. _pmid, 
                         _ball. _rrad,
                         *this, _hfun) ;
@@ -2093,12 +2142,11 @@
         hits_func &_hfun
         )
     {
-    /*------------------ tree-rect intersection predicate */
+    /*------------------ tree-ball intersection predicate */
         typedef 
-        geom_tree::aabb_pred_rect_k <
+        geom_tree::aabb_pred_ball_3 <
              real_type, 
-             iptr_type, 
-             +3        >    tree_pred ; 
+             iptr_type >    tree_pred ; 
 
     /*------------------ circ_tria intersection predicate */
         typedef 
@@ -2108,18 +2156,8 @@
         __unreferenced(_sbal) ;
 
     /*------------------ call actual intersection testing */ 
-        real_type _rmin[ 3] = {
-        _disc._pmid[0] - _disc._rrad  ,
-        _disc._pmid[1] - _disc._rrad  ,
-        _disc._pmid[2] - _disc._rrad
-            } ;
-        real_type _rmax[ 3] = {
-        _disc._pmid[0] + _disc._rrad  ,
-        _disc._pmid[1] + _disc._rrad  ,
-        _disc._pmid[2] + _disc._rrad
-            } ;
-            
-        tree_pred _pred(_rmin, _rmax) ;
+        tree_pred _pred(_disc. _pmid, 
+                        _disc. _rrad) ;
         hits_pred _func(_disc. _pmid, 
                         _disc. _nvec, 
                         _disc. _rrad, 
@@ -2266,10 +2304,9 @@
 
         /*-------------- tree-line intersection predicate */
             typedef 
-            geom_tree::aabb_pred_line_k <
+            geom_tree::aabb_pred_line_3 <
                  real_type, 
-                 iptr_type, 
-                 +3        >  tree_pred ; 
+                 iptr_type >  tree_pred ; 
 
         /*-------------- tria-line intersection predicate */
             typedef 
@@ -2361,10 +2398,9 @@
 
         /*-------------- tree-line intersection predicate */
             typedef 
-            geom_tree::aabb_pred_line_k <
+            geom_tree::aabb_pred_line_3 <
                  real_type, 
-                 iptr_type, 
-                 +3        >  tree_pred ; 
+                 iptr_type >  tree_pred ; 
 
         /*-------------- tria-line intersection predicate */
             typedef 

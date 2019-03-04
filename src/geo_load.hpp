@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 28 February, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -154,7 +154,17 @@
             if (this->_kind == 
                     jmsh_kind::ellipsoid_mesh)
             {
-                //!! do things here...
+                typename 
+                geom_data::ellipsoid_mesh_3d
+                    ::node_type _ndat ;
+                _ndat.pval(0) = _pval[0];
+                _ndat.pval(1) = _pval[1];
+                _ndat.pval(2) = + 0.0 ;
+                _ndat.itag () = _itag ;
+           
+                this->_geom->
+                   _ellipsoid_mesh_3d.
+               _mesh.push_node(_ndat, false) ;
             }
         }
     /*---------------------------------- parse EDGE2 data */
@@ -201,7 +211,16 @@
             if (this->_kind == 
                     jmsh_kind::ellipsoid_mesh)
             {
-                //!! do things here...
+                typename 
+                geom_data::ellipsoid_mesh_3d
+                    ::edge_type _edat ;
+                _edat.node(0) = _node[0];
+                _edat.node(1) = _node[1];
+                _edat.itag () = _itag ;
+
+                this->_geom->
+                   _ellipsoid_mesh_3d.
+               _mesh.push_edge(_edat, false) ;
             } 
         }
     /*---------------------------------- parse TRIA3 data */
@@ -308,7 +327,10 @@
                 _file, geom_reader(&_geom));
             }
             else
-            {           
+            {   
+                _jlog.push(
+            "**parse error: file not found!\n" ) ;
+                    
                 _errv = __file_not_located ;
             }
             _file.close ();
@@ -531,6 +553,43 @@
             _geom._ellipsoid_mesh_3d.
                 _radC = _gmsh._radii._data[0] ;
             }
+            
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _gmsh._vert3._size ; 
+                    ++_ipos )
+            {
+                typename 
+                geom_data::ellipsoid_mesh_3d
+                    ::node_type _ndat ;
+                _ndat.pval(0) = _gmsh.
+                    _vert3._data[_ipos]._ppos[0];
+                _ndat.pval(1) = _gmsh.
+                    _vert3._data[_ipos]._ppos[1];
+                _ndat.pval(2) = + 0.0 ;
+                _ndat.itag () = _gmsh.
+                    _vert3._data[_ipos]._itag ;
+            
+                _geom._ellipsoid_mesh_3d.
+                _mesh.push_node(_ndat , false) ;
+            }
+            
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _gmsh._edge2._size ; 
+                    ++_ipos )
+            {
+                typename 
+                geom_data::ellipsoid_mesh_3d
+                    ::edge_type _edat ;
+                _edat.node(0) = _gmsh.
+                    _edge2._data[_ipos]._node[0];
+                _edat.node(1) = _gmsh.
+                    _edge2._data[_ipos]._node[1];
+                _edat.itag () = _gmsh.
+                    _edge2._data[_ipos]._itag ;
+            
+                _geom._ellipsoid_mesh_3d.
+                _mesh.push_edge(_edat , false) ;
+            }
         }
         
         }
@@ -557,26 +616,8 @@
         geom_data &_geom
         )
     {
-        iptr_type _errv  = __no_error ;
-
-        std::string _path ;
-        std::string _name ;
-        std::string _fext ;
-        file_part (
-            _jcfg._geom_file, 
-                _path, _name, _fext ) ;
-
-        if (_fext.find("msh") == +0 )
-        {
         return geom_from_jmsh (
                 _jcfg, _jlog, _geom ) ;
-        }
-        else
-        {   
-            _errv =__file_not_located ;
-        }
-
-        return ( _errv ) ;
     }
     
     /*
@@ -869,6 +910,59 @@
         
                 _errv = __invalid_argument ;
             }
+            
+            iptr_type _imin = 
+            std::numeric_limits<iptr_type>::max() ;
+            iptr_type _imax = 
+            std::numeric_limits<iptr_type>::min() ;
+
+            iptr_type _nnPT = +0 ;
+            iptr_type _nnE2 = +0 ;
+
+            for (auto _iter  = _geom.
+            _ellipsoid_mesh_3d._mesh._set1.head() ;
+                      _iter != _geom.
+            _ellipsoid_mesh_3d._mesh._set1.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue;
+                
+                _nnPT += +1  ;
+            }
+
+            for (auto _iter  = _geom.
+            _ellipsoid_mesh_3d._mesh._set2.head() ;
+                      _iter != _geom.
+            _ellipsoid_mesh_3d._mesh._set2.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue;
+                
+                _imin = std::min(
+                    _imin, _iter->node(0)) ;
+                _imin = std::min(
+                    _imin, _iter->node(1)) ;
+                _imax = std::max(
+                    _imax, _iter->node(0)) ;
+                _imax = std::max(
+                    _imax, _iter->node(1)) ;
+                    
+                _nnE2 +=    +1 ;
+                
+                if (_imin < +0 || 
+                        _imax >= _nnPT)
+                {
+                    _errv = __invalid_argument ;
+                }            
+            }
+
+            if (_errv != __no_error)
+            {
+                _jlog.  push (
+    "**input error: GEOM. EDGE2 indexing is incorrect.\n") ;
+
+                return _errv ;
+            }
         }
 
         return (  _errv ) ;
@@ -1020,7 +1114,34 @@
                 _geom._ellipsoid_mesh_3d._radB) ;
             
             __dumpREAL("|3-RAD.|", 
-                _geom._ellipsoid_mesh_3d._radC) ;                       
+                _geom._ellipsoid_mesh_3d._radC) ; 
+                
+            _jlog.push("\n") ;
+                
+            iptr_type _nnPT = +0 ;
+            iptr_type _nnE2 = +0 ;
+            
+            for (auto _iter  = _geom.
+            _ellipsoid_mesh_3d._mesh._set1.head() ;
+                      _iter != _geom.
+            _ellipsoid_mesh_3d._mesh._set1.tend() ;
+                    ++_iter )
+            {
+            if (_iter->mark()>=+0) _nnPT += +1 ;
+            }
+            
+            __dumpINTS("|COORD.|", _nnPT)
+            
+            for (auto _iter  = _geom.
+            _ellipsoid_mesh_3d._mesh._set2.head() ;
+                      _iter != _geom.
+            _ellipsoid_mesh_3d._mesh._set2.tend() ;
+                    ++_iter )
+            {
+            if (_iter->mark()>=+0) _nnE2 += +1 ;
+            }
+            
+            __dumpINTS("|EDGE-2|", _nnE2)                         
         }
 
         _jlog.push("\n") ;

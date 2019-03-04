@@ -59,12 +59,12 @@
         iptr_type _sign = -1 ;
 
         tria_data _tdat;
-        _tdat._node[0] = 
-        _mesh._tria.tria(_tpos)->node(+0) ;
-        _tdat._node[1] = 
-        _mesh._tria.tria(_tpos)->node(+1) ;
-        _tdat._node[2] = 
-        _mesh._tria.tria(_tpos)->node(+2) ;
+        _tdat._node[0] = _mesh.
+            _tria.tria(_tpos)->node(+0) ;
+        _tdat._node[1] = _mesh.
+            _tria.tria(_tpos)->node(+1) ;
+        _tdat._node[2] = _mesh.
+            _tria.tria(_tpos)->node(+2) ;
         
         typename mesh_type::
                  tria_list::

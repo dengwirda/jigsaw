@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 10 September, 2017
+ * Last updated: 20 February, 2019
  *
- * Copyright 2013-2017
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -152,14 +152,28 @@
 ------------------------------------------------------------
  */
 
-#   define __isflip(__i) ( (__i)<0)
+#   define __isflip(__i) ( (__i) < 0)
     
-#   define __doflip(__i) (-(__i)-2)
+#   define __doflip(__i) (-(__i) - 2)
     
-#   define __unflip(__i) (((__i)<0) \
-         ? __doflip(__i) : (__i)  )
+#   define __unflip(__i) (((__i) < 0) \
+         ? __doflip(__i) : (__i) )
+   
+/* 
+------------------------------------------------------------
+ * integer "flip" routines
+------------------------------------------------------------
+ */
     
-    
+#   define __setbit(x,b) ((x)|=  (1ULL<<(b)))
+
+#   define __popbit(x,b) ((x)&= ~(1ULL<<(b)))
+
+#   define __flpbit(x,b) ((x)^=  (1ULL<<(b)))
+
+#   define __chkbit(x,b) (!!((x)&(1ULL<<(b))) )
+
+        
 #   endif   //__LIBBASIC__
 
 
