@@ -115,6 +115,10 @@
                 + 2 ,
                 tree_node,
                 allocator       >   tree_type ; 
+                
+    typedef geom_tree::aabb_pred_node_2 <
+                real_type, 
+                iptr_type       >   tree_pred ;
               
     public  :              
     
@@ -299,11 +303,8 @@
                 }
             }
         }
+        
         } ;
-   
-    typedef geom_tree::aabb_pred_node_k <
-            real_type , 
-            iptr_type , 2 > tree_pred ;
    
     /*
     --------------------------------------------------------

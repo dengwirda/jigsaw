@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 January, 2019
+     * Last updated: 19 February, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -70,6 +70,9 @@
 
         real_type static const _rtol = 
             (real_type)+1.00E-03 ;
+            
+        real_type static const _dtol = 
+            (real_type)+8.75E-01 ;
             
         real_type static const _epsb = 
             (real_type)+9.50E-01 ;
@@ -155,7 +158,7 @@
             else                    // adv.-front limiter
             {
                 _kind = 
-                 rdel_opts::offh_kind ;
+                 rdel_opts::offH_kind ;
             }
             
             _dist -= _pert * _dist ;
@@ -179,12 +182,18 @@
             _mesh._tria.find_node ( // test voro. limiter
                 &_ppos[0], _dual, _enod[ 0]) ;
             
-            if (_dual != _enod[0] )
+            real_type _dlen = 
+                geometry::length_2d(
+                    _ppos, &_mesh._tria.
+                       node(_dual)->pval(0)) ;
+      
+            if (_dual != _enod [ +0] )
+            if (_dlen <= _dtol*_hval )
             {
                 return  rdel_opts::null_kind ;
             }
-
-            if (_move < _rtol * _hval) break ;
+            
+            if (_move <= _rtol*_hval ) break ;
         }
 
         return ( _kind ) ;
@@ -259,14 +268,14 @@
         
         for(iptr_type _iter = +0; _iter++ != +4 ; )
         {
-            _kind    = rdel_opts::offh_kind ;
-
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
        
             real_type _hmid = 
             _nsiz[0] * (real_type)1./4. +
             _nsiz[1] * (real_type)1./4. +
             _nsiz[2] * (real_type)2./4. ;
+
+            _kind    = rdel_opts::offH_kind ;
             
             real_type _dist ;
             real_type _dsqr = 
@@ -290,13 +299,13 @@
             {                       // adv.-front limiter
                 _dist = _alth * _hmid;
                 _kind = 
-                 rdel_opts::offh_kind;
+                 rdel_opts::offH_kind;
             }
             if (_dist >= _dvec[3])  // off-centre limiter
             {
                 _dist =  _dvec[3];
                 _kind = 
-                 rdel_opts::offc_kind;
+                 rdel_opts::offC_kind;
             }
             if (_dist >= _dvec[2] * _epsb) 
             {                       // circumball limiter

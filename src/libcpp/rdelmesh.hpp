@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 29 December, 2018
+ * Last updated: 20 February, 2019
  *
- * Copyright 2013-2018
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -74,6 +74,7 @@
 #   include "rdel_mesh/rdel_complex_3.hpp"
 
 #   include "rdel_mesh/rdel_params.hpp"
+#   include "rdel_mesh/rdel_timers.hpp"
 
 #   include "rdel_mesh/rdel_filt_k.hpp"
 

@@ -44,7 +44,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 January, 2019
+     * Last updated: 02 March, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -347,6 +347,80 @@
         return ( _nn ) ; // return num roots
     }
 
+    /*
+    --------------------------------------------------------
+     * RECT-RECT-KD: rect-rect intersections
+    --------------------------------------------------------
+     */
+
+    template <
+    typename      data_type
+             >
+    __inline_call bool node_rect_2d (
+    __const_ptr  (data_type) _pp,
+    __const_ptr  (data_type) _b0,
+    __const_ptr  (data_type) _b1
+        )
+    {   return  _pp[0] >= _b0[0] &&
+                _pp[0] <= _b1[0] &&
+                _pp[1] >= _b0[1] &&
+                _pp[1] <= _b1[1] ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call bool node_rect_3d (
+    __const_ptr  (data_type) _pp,
+    __const_ptr  (data_type) _b0,
+    __const_ptr  (data_type) _b1
+        )
+    {   return  _pp[0] >= _b0[0] &&
+                _pp[0] <= _b1[0] &&
+                _pp[1] >= _b0[1] &&
+                _pp[1] <= _b1[1] &&
+                _pp[2] >= _b0[2] &&
+                _pp[2] <= _b1[2] ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call bool rect_rect_2d (
+    __const_ptr  (data_type) _a0,
+    __const_ptr  (data_type) _a1,
+    __const_ptr  (data_type) _b0,
+    __const_ptr  (data_type) _b1
+        )
+    {   return  _a0[0] <= _b1[0] &&
+                _b0[0] <= _a1[0] &&
+                _a0[1] <= _b1[1] &&
+                _b0[1] <= _a1[1] ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call bool rect_rect_3d (
+    __const_ptr  (data_type) _a0,
+    __const_ptr  (data_type) _a1,
+    __const_ptr  (data_type) _b0,
+    __const_ptr  (data_type) _b1
+        )
+    {   return  _a0[0] <= _b1[0] &&
+                _b0[0] <= _a1[0] &&
+                _a0[1] <= _b1[1] &&
+                _b0[1] <= _a1[1] &&
+                _a0[2] <= _b1[2] &&
+                _b0[2] <= _a1[2] ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * LINE-FLAT-KD: line-flat intersections
+    --------------------------------------------------------
+     */
+
     template <
     typename      data_type
              >
@@ -466,6 +540,12 @@
         }
     }
 
+    /*
+    --------------------------------------------------------
+     * TRIA-FLAT-KD: tria-flat intersections
+    --------------------------------------------------------
+     */
+
     template <
     typename      data_type
              >
@@ -499,6 +579,12 @@
 
         return ( _ni ) ;
     }
+
+    /*
+    --------------------------------------------------------
+     * PROJ-LINE-KD: node-line projections
+    --------------------------------------------------------
+     */
 
     template <
     typename      real_type
@@ -561,6 +647,49 @@
         return ( false ) ;
 
         _tt =  _d1 / _d2 ;
+        
+        return (  true ) ;        
+    }
+    
+    template <
+    typename      real_type
+             >
+    __normal_call bool proj_flat_3d (
+    __const_ptr  (real_type) _pi,
+    __const_ptr  (real_type) _pp, // node on flat
+    __const_ptr  (real_type) _nv, // nrm. of flat
+    __write_ptr  (real_type) _qq
+        )
+    {
+        real_type _ip[3];
+        _ip[0] = _pp[0] - _pi[0] ;
+        _ip[1] = _pp[1] - _pi[1] ;
+        _ip[2] = _pp[2] - _pi[2] ;
+        
+        _qq[0] = _pi[0] ;
+        _qq[1] = _pi[1] ;
+        _qq[2] = _pi[2] ;
+        
+        real_type _ep = +100. * 
+        std::numeric_limits<real_type>::epsilon();
+        
+        real_type _tt ;
+        real_type _d1 = 
+        geometry::dot_3d(_ip, _nv) ;
+        real_type _d2 = 
+        geometry::dot_3d(_nv, _nv) ;
+        
+        if (std::abs(_d2) <= _ep * std::abs(_d1) )
+        return ( false ) ;
+
+        _tt    = _d1/_d2 ;
+        
+        _qq[0] = 
+        _pi[0] + _tt * _nv[0] ;
+        _qq[1] = 
+        _pi[1] + _tt * _nv[1] ;
+        _qq[2] = 
+        _pi[2] + _tt * _nv[2] ;
         
         return (  true ) ;        
     }

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 02 February, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -287,7 +287,7 @@
             jmsh_reader   _jmsh ;
             std::ifstream _file ; 
             _file. open(
-            _jcfg._init_file, std::ifstream::in);
+            _jcfg._init_file, std::ifstream::in) ;
 
             if (_file.is_open() )
             {
@@ -296,6 +296,9 @@
             }
             else
             {           
+                _jlog.push(
+            "**parse error: file not found!\n" ) ;
+            
                 _errv = __file_not_located ;
             }
             _file.close ();
@@ -307,7 +310,7 @@
                     ++_iter  )
             {
                 _jlog.push(
-            "**parse error: " + * _iter + "\n") ;
+            "**parse error: " + * _iter + "\n" ) ;
             }
         }
         catch (...)
@@ -547,26 +550,8 @@
         mesh_data &_init
         )
     {
-        iptr_type _errv  = __no_error ;
-
-        std::string _path ;
-        std::string _name ;
-        std::string _fext ;
-        file_part (
-            _jcfg._init_file, 
-                _path, _name, _fext ) ;
-
-        if (_fext.find("msh") == +0 )
-        {
         return init_from_jmsh (
                 _jcfg, _jlog, _init ) ;
-        }
-        else
-        {   
-            _errv =__file_not_located ;
-        }
-
-        return ( _errv ) ;
     }
     
     /*

@@ -151,24 +151,24 @@
     class edge_data
         {
         public  :
-        iptr_type       _mark ;
-        iptr_type       _imax ;
+        iptr_type       _mark = +0;
+        iptr_type       _imax = +0;
         real_type       _cost ;
         } ;
         
     class face_data
         {
         public  :
-        iptr_type       _mark ;
-        iptr_type       _imax ;
+        iptr_type       _mark = +0;
+        iptr_type       _imax = +0;
         real_type       _cost ;
         } ;
         
     class tria_data
         {
         public  :
-        iptr_type       _mark ;
-        iptr_type       _imax ;        
+        iptr_type       _mark = +0;
+        iptr_type       _imax = +0;        
         real_type       _cost ;
         } ;
 
@@ -508,15 +508,18 @@
         __assert( false && 
             "EDGE-NODE: interior facet!") ;
             
-        return rdel_opts:: null_kind ;
+        return ( _kind ) ;
         }
 
         if (_kind == rdel_opts::null_kind )
         {
     /*----------------------- attempt offcentre placement */
-            _kind  = edge_offh(_geom , 
-                _size, _mesh , _enod , 
-                _pmax, _ppos , _args ) ;
+            if(__chkbit(_args.rule(),
+                    rdel_opts
+                  ::offH_kind) )
+            _kind = edge_offh( _geom, 
+                _size , _mesh, _enod, 
+                _pmax , _ppos, _args) ;
         }
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
@@ -580,7 +583,7 @@
         __assert( false && 
             "FACE-NODE: interior facet!") ;
         
-        return rdel_opts:: null_kind ;
+        return ( _kind ) ;
         }
 
     /*--------------------------------- find edge lengths */
@@ -759,20 +762,26 @@
         if (_kind == rdel_opts::null_kind )
         {
     /*----------------------- attempt offcentre placement */
-            _kind  = face_offh(_geom, 
-                _size, _mesh , _enod, 
-                _pmid, _evec , _dvec, 
-                _pmax, 
-                _ppos, _args ) ;
+            if(__chkbit(_args.rule(),
+                    rdel_opts
+                  ::offH_kind) )
+            _kind = face_offh( _geom, 
+                _size , _mesh, _enod, 
+                _pmid , _evec, _dvec, 
+                _pmax , 
+                _ppos , _args) ;
         }
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
         {
     /*----------------------- attempt sink-type placement */
-            _kind  = face_sink(_geom, 
-                _size, _mesh , _tadj, 
-                _enod, _pmax , 
-                _ppos, _args ) ;
+            if(__chkbit(_args.rule(),
+                    rdel_opts
+                  ::sink_kind) )
+            _kind = face_sink( _geom, 
+                _size , _mesh, _tadj, 
+                _enod , _pmax, 
+                _ppos , _args) ;
         }
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
@@ -835,23 +844,23 @@
         _tbal[2] = _mesh.
             _tria.tria(_tpos)->circ(2);
   
-        _tbal[3] = (real_type)+.0 ; 
+        _tbal[3] = (real_type)+0. ; 
         _tbal[3]+= 
-            geometry::lensqr_3d (_tbal, 
-               &_mesh._tria.node(
-                    _tnod[0])->pval(0)) ;
+        geometry::lensqr_3d (_tbal, 
+           &_mesh._tria.node(
+                _tnod[0])->pval( 0)) ;
         _tbal[3]+= 
-            geometry::lensqr_3d (_tbal, 
-               &_mesh._tria.node(
-                    _tnod[1])->pval(0)) ;
+        geometry::lensqr_3d (_tbal, 
+           &_mesh._tria.node(
+                _tnod[1])->pval( 0)) ;
         _tbal[3]+= 
-            geometry::lensqr_3d (_tbal, 
-               &_mesh._tria.node(
-                    _tnod[2])->pval(0)) ;
+        geometry::lensqr_3d (_tbal, 
+           &_mesh._tria.node(
+                _tnod[2])->pval( 0)) ;
         _tbal[3]+= 
-            geometry::lensqr_3d (_tbal, 
-               &_mesh._tria.node(
-                    _tnod[3])->pval(0)) ;
+        geometry::lensqr_3d (_tbal, 
+           &_mesh._tria.node(
+                _tnod[3])->pval( 0)) ;
         
         _tbal[3]/= (real_type)+4. ;
 
@@ -1014,20 +1023,22 @@
     /*----------------------------------- calc. edge-ball */
         real_type _elen ;
         _elen = geometry::lensqr_3d (
-           &_mesh._tria.
-             node(_enod[0])->pval(0),
-           &_mesh._tria.
-             node(_enod[1])->pval(0)) ;
+           &_mesh.
+        _tria.node(_enod[0])->pval(0) ,
+           &_mesh.
+        _tria.node(_enod[1])->pval(0)
+            ) ;
 
     /*----------------------------------- calc. face-ball */
         real_type _fbal [ +4];
         geometry::circ_ball_3d(_fbal,
-           &_mesh._tria.
-             node(_fnod[0])->pval(0),
-           &_mesh._tria.
-             node(_fnod[1])->pval(0),
-           &_mesh._tria.
-             node(_fnod[2])->pval(0)) ;
+           &_mesh.
+        _tria.node(_fnod[0])->pval(0) ,
+           &_mesh.
+        _tria.node(_fnod[1])->pval(0) ,
+           &_mesh.
+        _tria.node(_fnod[2])->pval(0)
+            ) ;
 
     /*------------------------- assemble "frontal" vector */
         real_type  _dvec[5] ;
@@ -1062,19 +1073,25 @@
         if (_kind == rdel_opts::null_kind )
         {
     /*----------------------- attempt offcentre placement */
-            _kind  = tria_offh(_geom, 
-                _size, _mesh , _fnod, 
-                _fbal, _tbal , _dvec, 
-                _ppos, _args ) ;
+            if(__chkbit(_args.rule(),
+                    rdel_opts
+                  ::offH_kind) )
+            _kind = tria_offh( _geom, 
+                _size , _mesh, _fnod, 
+                _fbal , _tbal, _dvec, 
+                _ppos , _args) ;
         }
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
         {
     /*----------------------- attempt sink-type placement */
-            _kind  = tria_sink(_geom, 
-                _size, _mesh , 
-                _tpos, _tnod , _tbal, 
-                _ppos, _args ) ;
+            if(__chkbit(_args.rule(),
+                    rdel_opts
+                  ::sink_kind) )
+            _kind = tria_sink( _geom, 
+                _size , _mesh, 
+                _tpos , _tnod, _tbal, 
+                _ppos , _args) ;
         }
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )

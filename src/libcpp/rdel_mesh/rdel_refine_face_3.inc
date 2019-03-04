@@ -449,7 +449,7 @@
         if (_kind != rdel_opts::null_kind)
         {
             if (_tdim != +3)
-            {
+            { 
     /*------------------------- re-queue face if un-split */
             _tscr.push_tail(_qdat) ;
             }

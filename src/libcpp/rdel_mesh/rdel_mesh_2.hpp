@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 January, 2019
+     * Last updated: 15 February, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -222,7 +222,8 @@
             node_data const& _idat,
             node_data const& _jdat
             ) const
-        {   return _idat._pass < _jdat._pass ; 
+        {   return _idat._node[0] < 
+                   _jdat._node[0] ; 
         }
         } ;
     class ball_pred
@@ -1324,35 +1325,35 @@
         _dump.push("\n")  ;
         _dump.push("\n")  ;
 
-        _dump.push("  |TYPE-1| (edge) = ") ;
+        _dump.push("  EDGE-CIRC = ") ;
         _dump.push(std::to_string(
-             _enod[rdel_opts::circ_kind])) ;
+             _enod[rdel_opts::circ_kind]));
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-2| (edge) = ") ;
+        _dump.push("  EDGE-OFFH = ") ;
         _dump.push(std::to_string(
-             _enod[rdel_opts::offh_kind])) ;
+             _enod[rdel_opts::offH_kind]));
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-D| (edge) = ") ;
+        _dump.push("  EDGE-OFFT = ") ;
         _dump.push(std::to_string(
-             _enod[rdel_opts::disk_kind])) ;
+             _enod[rdel_opts::offT_kind]));
         _dump.push("\n")  ;
         _dump.push("\n")  ;
 
-        _dump.push("  |TYPE-1| (tria) = ") ;
+        _dump.push("  TRIA-CIRC = ") ;
         _dump.push(std::to_string(
-             _tnod[rdel_opts::circ_kind])) ;
+             _tnod[rdel_opts::circ_kind]));
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-2| (tria) = ") ;
+        _dump.push("  TRIA-SINK = ") ;
         _dump.push(std::to_string(
-             _tnod[rdel_opts::offh_kind])) ;
+             _tnod[rdel_opts::sink_kind]));
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-3| (tria) = ") ;
+        _dump.push("  TRIA-OFFH = ") ;
         _dump.push(std::to_string(
-             _tnod[rdel_opts::offc_kind])) ;
+             _tnod[rdel_opts::offH_kind]));
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-4| (tria) = ") ;
+        _dump.push("  TRIA-OFFC = ") ;
         _dump.push(std::to_string(
-             _tnod[rdel_opts::sink_kind])) ;
+             _tnod[rdel_opts::offC_kind]));
         _dump.push("\n")  ;
         
         }

@@ -216,7 +216,7 @@
         }
     
     /*------------------------- calc. refinement priority */
-        _fdat._mark =  +3 ;
+        _fdat._mark =  +0 ;
     
     #   ifdef __bias_BNDS      
         for(_enum = +3; _enum-- != +0; )
@@ -459,7 +459,7 @@
         }
 
     /*------------------------- calc. refinement priority */
-        _tdat._mark =  +4 ;
+        _tdat._mark =  +0 ;
         
     #   ifdef __bias_BNDS
         for(_fnum = +4; _fnum-- != +0; )
