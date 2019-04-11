@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 January, 2019
+     * Last updated: 09 April, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -61,28 +61,9 @@
         fdat_list &_fcav
         )
     {
-    /*------------------------- init. for local hash obj. */
-        typename 
-            mesh_type::edge_list _eset (
-        typename mesh_type::edge_hash(),
-        typename mesh_type::edge_pred(), 
-           +.8, _mesh._eset.get_alloc()) ;
-        typename 
-            mesh_type::face_list _fset (
-        typename mesh_type::face_hash(),
-        typename mesh_type::face_pred(), 
-           +.8, _mesh._fset.get_alloc()) ;
-
+    /*------------------------- extract restricted k-face */   
         __unreferenced(_geom) ;
 
-    /*------------------------- push alloc. for hash obj. */
-        _eset._lptr.set_count (
-            _tset.count() * +6 , 
-        containers::loose_alloc, nullptr);
-        _fset._lptr.set_count (
-            _tset.count() * +4 , 
-        containers::loose_alloc, nullptr);
- 
         for ( auto _tpos  = _tset.head();
                    _tpos != _tset.tend();
                  ++_tpos  )
@@ -114,14 +95,11 @@
 
             typename mesh_type::
                      edge_list::
-                 item_type *_mptr=nullptr;
-            if (_eset.find(_fdat,_mptr)) 
-                continue ;
+                 item_type *_mptr=nullptr ;
             if (_mesh.
-                 find_edge(_fdat,_mptr)) 
-            _ecav.push_tail(_mptr->_data);
-            
-            _eset.push( _fdat) ;
+                 find_edge(_fdat, _mptr)) 
+                _ecav.
+                 push_tail(_mptr->_data);
         }
     /*------------------------- extract restricted 2-face */
         for ( auto _fpos = 4; _fpos-- != 0; )
@@ -155,18 +133,14 @@
 
             typename mesh_type::
                      face_list::
-                 item_type *_mptr=nullptr;
-            if (_fset.find(_fdat,_mptr)) 
-                continue ;
+                 item_type *_mptr=nullptr ;
             if (_mesh.
-                 find_face(_fdat,_mptr)) 
-            _fcav.push_tail(_mptr->_data);
-            
-            _fset.push( _fdat) ;
+                 find_face(_fdat, _mptr)) 
+                _fcav.
+                 push_tail(_mptr->_data);
         }     
         }  
     }
-
 
     /*
     --------------------------------------------------------
@@ -563,40 +537,28 @@
         fdat_list &_fold
         )
     {
+        __unreferenced( _geom ) ;
+        __unreferenced( _told ) ;
+
+        if (_epro.count() > +0)
+        {
     /*------------------------- init. for local hash obj. */
         typename 
             mesh_type::edge_list _eset (
         typename mesh_type::edge_hash(),
         typename mesh_type::edge_pred(), 
            +.8, _mesh._eset.get_alloc()) ;
-        typename 
-            mesh_type::face_list _fset (
-        typename mesh_type::face_hash(),
-        typename mesh_type::face_pred(), 
-           +.8, _mesh._fset.get_alloc()) ;
-
+        
     /*------------------------- push alloc. for hash obj. */
         _eset._lptr.set_count (
             _enew.count() * +2 , 
-        containers::loose_alloc, nullptr);
-        _fset._lptr.set_count (
-            _fnew.count() * +2 , 
-        containers::loose_alloc, nullptr);
-            
-        __unreferenced( _geom );
-        __unreferenced( _told );
-
+        containers::loose_alloc,nullptr) ;
+        
         for ( auto _epos  = _enew.head();
                    _epos != _enew.tend();
                  ++_epos  )
         {
             _eset.push(*_epos) ;
-        }
-        for ( auto _fpos  = _fnew.head();
-                   _fpos != _fnew.tend();
-                 ++_fpos  )
-        {
-            _fset.push(*_fpos) ;
         }
                 
         for ( auto _epos  = _eold.head();
@@ -615,6 +577,28 @@
             }
             }
         }
+        }
+
+        if (_fpro.count() > +0)
+        {
+    /*------------------------- init. for local hash obj. */
+        typename 
+            mesh_type::face_list _fset (
+        typename mesh_type::face_hash(),
+        typename mesh_type::face_pred(), 
+           +.8, _mesh._fset.get_alloc()) ;
+
+    /*------------------------- push alloc. for hash obj. */
+        _fset._lptr.set_count (
+            _fnew.count() * +2 , 
+        containers::loose_alloc,nullptr) ;
+
+        for ( auto _fpos  = _fnew.head();
+                   _fpos != _fnew.tend();
+                 ++_fpos  )
+        {
+            _fset.push(*_fpos) ;
+        }
         
         for ( auto _fpos  = _fold.head();
                    _fpos != _fold.tend();
@@ -631,6 +615,7 @@
                 return true ;
             }
             }
+        }
         }
 
         return false ;

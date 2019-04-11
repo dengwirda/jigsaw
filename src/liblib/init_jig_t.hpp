@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 July, 2018
+     * Last updated: 10 April, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -72,7 +72,10 @@
         _jcfg->_geom_feat = (indx_t) +0 ;
         _jcfg->_geom_eta1 = (real_t) +45.0 ;
         _jcfg->_geom_eta2 = (real_t) +45.0 ;
-        
+
+    /*------------------------------------- INIT keywords */    
+        _jcfg->_init_near = (real_t) +1.E-8;
+
     /*------------------------------------- HFUN keywords */
         _jcfg->_hfun_scal = JIGSAW_HFUN_RELATIVE ;
         _jcfg->_hfun_hmax = (real_t) +0.02 ;

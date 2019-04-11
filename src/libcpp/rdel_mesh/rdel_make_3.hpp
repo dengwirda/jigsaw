@@ -94,41 +94,41 @@
     
     /*----------- restricted delaunay tessellation in R^3 */  
     
-    typedef M                               mesh_type ;
-    typedef G                               geom_type ;
-    typedef A                               allocator ;
+    typedef M                           mesh_type ;
+    typedef G                           geom_type ;
+    typedef A                           allocator ;
 
     typedef typename 
-            mesh_type::real_type            real_type ;
+            mesh_type::real_type        real_type ;
     typedef typename 
-            mesh_type::iptr_type            iptr_type ;
+            mesh_type::iptr_type        iptr_type ;
             
     typedef typename 
-            allocator::size_type            uint_type ;
+            allocator::size_type        uint_type ;
 
     typedef typename 
-            mesh_type::node_data            node_data ;
+            mesh_type::node_data        node_data ;
     typedef typename 
-            mesh_type::edge_data            edge_data ;
+            mesh_type::edge_data        edge_data ;
     typedef typename 
-            mesh_type::face_data            face_data ;
+            mesh_type::face_data        face_data ;
     typedef typename 
-            mesh_type::tria_data            tria_data ;
+            mesh_type::tria_data        tria_data ;
 
     typedef containers::array       <
-                iptr_type           >       iptr_list ;
+                iptr_type           >   iptr_list ;
     
     typedef mesh::rdel_pred_base_3  <
                 geom_type,
-                mesh_type           >       rdel_pred ;
+                mesh_type           >   rdel_pred ;
 
     typedef mesh::rdel_params       <
                 real_type, 
-                iptr_type           >       rdel_opts ;
+                iptr_type           >   rdel_opts ;
 
     typedef mesh::rdel_timers       <
                 real_type ,
-                iptr_type           >       rdel_stat ;
+                iptr_type           >   rdel_stat ;
                                 
     /*
     --------------------------------------------------------
@@ -478,7 +478,8 @@
         typedef geom_tree::aabb_node_base_k     
                            tree_node ;
 
-        typedef geom_tree::aabb_item_node_k <
+        typedef geom_tree::
+                    aabb_item_node_k <
             real_type,
             iptr_type, 3>  tree_item ;
                     
@@ -503,14 +504,14 @@
             
             _bbox.push_tail() ;
             _bbox.tail()->
-                pval(0) = _node->pval( 0) ;
+               pval(0) = _node->pval(0) ;
             _bbox.tail()->
-                pval(1) = _node->pval( 1) ;
+               pval(1) = _node->pval(1) ;
             _bbox.tail()->
-                pval(2) = _node->pval( 2) ;
+               pval(2) = _node->pval(2) ;
   
             _bbox.tail()->
-                ipos () = _npos ;
+               ipos () = _npos ;
             
             }
         }
@@ -557,9 +558,12 @@
              auto _node = 
            &_init._mesh._set1 [*_iter] ;
             
-            _pmid[0] += _node->pval(0) ;
-            _pmid[1] += _node->pval(1) ;
-            _pmid[2] += _node->pval(2) ;
+            _pmid[0] += 
+                _node->pval(0);
+            _pmid[1] += 
+                _node->pval(1);
+            _pmid[2] += 
+                _node->pval(2);
         }
         
         _pmid[0] /= _iset.count () ;
@@ -579,8 +583,8 @@
                    
             if (_dsqr < _dmin)
             {
-                _dmin = _dsqr;
-                _imid =*_iter;
+                _dmin = _dsqr ;
+                _imid =*_iter ;
             }
         }
     

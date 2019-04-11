@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 February, 2019
+     * Last updated: 10 April, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -136,7 +136,16 @@
             this->_jjig->
            _rdel_opts.eta2() = _eta2; 
         }
-        
+ 
+    /*------------------------------------- INIT keywords */
+        __normal_call void_type push_init_near (
+            double        _near
+            ) 
+        {
+            this->_jjig->
+           _rdel_opts.near() = _near; 
+        }
+       
     /*------------------------------------- HFUN keywords */
         __normal_call void_type push_hfun_file (
             std::string   _file
@@ -478,6 +487,10 @@
                 eta1() = _jjig._geom_eta1 ;
             _jcfg._rdel_opts.
                 eta2() = _jjig._geom_eta2 ;
+
+    /*------------------------------------- INIT keywords */
+            _jcfg._rdel_opts.
+                near() = _jjig._init_near ;
             
     /*------------------------------------- HFUN keywords */
             if (_jjig._hfun_scal == 
@@ -589,7 +602,7 @@
                 _sstr.str("");                  \
                 _sstr.clear();                  \
                 _sstr <<                        \
-                "  **input error: " __tag "="   \
+                "**input error: " __tag " = "   \
                       << std::setw(+9)          \
                       << std::setfill(' ')      \
                       << __var << "\n";         \
@@ -605,7 +618,7 @@
                 _sstr.str("");                  \
                 _sstr.clear();                  \
                 _sstr <<                        \
-                "  **input error: " __tag "="   \
+                "**input error: " __tag " = "   \
                       << std::scientific        \
                       << std::setprecision(2)   \
                       << __var << "\n";         \
@@ -620,7 +633,7 @@
                 _sstr.str("");                  \
                 _sstr.clear();                  \
                 _sstr <<                        \
-              "  **input warning: " __tag "="   \
+              "**input warning: " __tag " = "   \
                       << std::scientific        \
                       << std::setprecision(2)   \
                       << __var << "\n";         \
@@ -653,6 +666,12 @@
             _jcfg._rdel_opts.eta2(), 
             (real_type)  0., 
             (real_type)180.)
+
+    /*---------------------------- test INIT keywords */
+        __testREAL("INIT-NEAR", 
+            _jcfg._rdel_opts.near(), 
+            (real_type)  0., 
+            (real_type)  1.)
 
     /*---------------------------- test HFUN keywords */
         __testREAL("HFUN-HMAX", 
@@ -860,6 +879,12 @@
         
         __dumpBOOL("GEOM-FEAT", 
             _jcfg._rdel_opts.feat())
+
+        _jlog.push("\n") ;
+
+    /*---------------------------- push INIT keywords */
+        __dumpREAL("INIT-NEAR", 
+            _jcfg._rdel_opts.near())
 
         _jlog.push("\n") ;
 

@@ -1,17 +1,17 @@
 
-//  gcc -Wall test_3.c 
+//  gcc -Wall test_6.c 
 //  -Xlinker -rpath=../lib/LNX-64 
-//  -L ../lib/LNX-64 -ljigsaw64r -o test_3
+//  -L ../lib/LNX-64 -ljigsaw64r -o test_6
 
-//  Use JIGSAW to mesh a simple geometry with user-defined
-//  mesh-spacing data defined on a "grid".
+//  Use JIGSAW to mesh a simple domain, but starting from
+//  user-defined initial-conditions. 
 
 #   include "../inc/lib_jigsaw.h"
     
 #   include "stdio.h"
     
     int main (
-        int          _argc, 
+        int          _argc , 
         char       **_argv
         )
     {
@@ -20,17 +20,17 @@
     /*-------------------------------- setup JIGSAW types */      
         jigsaw_jig_t _jjig ;
         jigsaw_msh_t _geom ;
-        jigsaw_msh_t _hfun ;
+        jigsaw_msh_t _init ;
         jigsaw_msh_t _mesh ;
   
         jigsaw_init_jig_t(&_jjig) ;
         jigsaw_init_msh_t(&_geom) ;
-        jigsaw_init_msh_t(&_hfun) ;
+        jigsaw_init_msh_t(&_init) ;
         jigsaw_init_msh_t(&_mesh) ;
  
     /* 
     --------------------------------------------------------
-     * JIGSAW's "mesh" is a piecewise linear complex:
+     * A simple square domain
     --------------------------------------------------------
      *
      *             e:2
@@ -47,15 +47,15 @@
      *
     --------------------------------------------------------
      */
-
-        jigsaw_VERT2_t _geom_vert2[4] = {   // setup geom.
+     
+        jigsaw_VERT2_t _vert2[4] = {    // setup geom.
             { {0., 0.}, +0 } ,
             { {1., 0.}, +0 } ,
             { {1., 1.}, +0 } ,
             { {0., 1.}, +0 }
             } ;
             
-        jigsaw_EDGE2_t _geom_edge2[4] = {
+        jigsaw_EDGE2_t _edge2[4] = {
             { {+0, +1}, +0 } ,
             { {+1, +2}, +0 } ,
             { {+2, +3}, +0 } ,
@@ -65,74 +65,55 @@
         _geom._flags 
             = JIGSAW_EUCLIDEAN_MESH;
         
-        _geom._vert2._data = &_geom_vert2[0] ;
+        _geom._vert2._data = &_vert2[0] ;
         _geom._vert2._size = +4 ;
         
-        _geom._edge2._data = &_geom_edge2[0] ;
-        _geom._edge2._size = +4 ;
-        
-    /* 
-    --------------------------------------------------------
-     * JIGSAW's "grid" uses a column-major numbering:
-    --------------------------------------------------------
-     *
-     *             v:5         
-     *  v:2 o-------o-------o v:8
-     *      |       |       |
-     *      |       |       |
-     *      |      v:4      |
-     *  v:1 o-------o-------o v:7
-     *      |       |       |
-     *      |       |       |
-     *      |       |       |
-     *  v:0 o-------o-------o v:6
-     *             v:3
-     *
-    --------------------------------------------------------
-     */  
-     
-        real_t         _hfun_xgrid[3] = {   // setup hfun.
-            0., .5, 1.
+        _geom._edge2._data = &_edge2[0] ;
+        _geom._edge2._size = +4 ;            
+    
+    /*-------------------------------- form init. config. */
+  
+        jigsaw_VERT2_t _point[4] = {
+            { {0., 0.}, +0 } ,
+            { {0., .5}, +0 } ,
+            { {0., 1.}, +0 } ,
+            { {.5, .5}, +0 }
             } ;
-            
-        real_t         _hfun_ygrid[3] = {
-            0., .5, 1.
+        
+        jigsaw_EDGE2_t _edges[3] = {
+            { {+0, +1}, -1 } ,      // -1 => "un-refinable"
+            { {+1, +2}, -1 } ,
+            { {+2, +3}, -1 }
             } ;
-     
-        real_t         _hfun_value[9] = {
-            .1, .1, .2, .1, .2, .3, .2, 
-            .3, .4
-            } ;
-            
-        _hfun._flags 
-            = JIGSAW_EUCLIDEAN_GRID;
+
+        _init._flags
+            = JIGSAW_EUCLIDEAN_MESH;
         
-        _hfun._xgrid._data = &_hfun_xgrid[0] ;
-        _hfun._xgrid._size = +3 ;
-        
-        _hfun._ygrid._data = &_hfun_ygrid[0] ;
-        _hfun._ygrid._size = +3 ;
-        
-        _hfun._value._data = &_hfun_value[0] ;
-        _hfun._value._size = +9 ;
-        
+        _init._vert2._data = &_point[0] ;
+        _init._vert2._size = +4 ;
+
+        _init._edge2._data = &_edges[0] ;
+        _init._edge2._size = +3 ;  
+
     /*-------------------------------- build JIGSAW tria. */
         
-        _jjig._verbosity = +1 ;
+        _jjig._verbosity =   +1 ;
         
+        _jjig._hfun_hmax = 0.33 ;
         _jjig._hfun_scal = 
-            JIGSAW_HFUN_ABSOLUTE ;
+            JIGSAW_HFUN_RELATIVE;
             
-        _jjig._hfun_hmax = 1. ;
-        _jjig._hfun_hmin = 0. ;
+        _jjig._mesh_dims =   +2 ;
+        _jjig._geom_feat =   +1 ;
+        _jjig._mesh_top1 =   +1 ;
+
+        _jjig._optm_iter =   +0 ;
         
-        _jjig._mesh_dims = +2 ;
- 
         _retv = jigsaw (
             &_jjig ,    // the config. opts
             &_geom ,    // geom. data
-              NULL ,    // empty init. data 
-            &_hfun ,    // hfun. data
+            &_init ,    // init. data 
+              NULL ,    // empty hfun. data
             &_mesh ) ;
  
     /*-------------------------------- print JIGSAW tria. */
@@ -157,7 +138,7 @@
                 _ipos != _mesh._tria3._size ; 
                    ++_ipos )
         {
-            printf("%i, %i, %i\n",
+            printf("%d, %d, %d\n",
             _mesh._tria3.
                 _data[_ipos]._node[0],
             _mesh._tria3.
@@ -172,7 +153,7 @@
         printf (
        "JIGSAW returned code : %d \n",_retv);
  
-
+ 
         return _retv ;
     }
 

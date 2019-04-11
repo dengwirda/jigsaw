@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 February, 2019
+     * Last updated: 10 April, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -90,6 +90,10 @@
         ) { }
     __normal_call void_type push_geom_eta2 (
         double       /*_eta2*/
+        ) { }
+
+    __normal_call void_type push_init_near (
+        double       /*_near*/
         ) { }
         
     __normal_call void_type push_hfun_scal (
@@ -408,6 +412,11 @@
             if (_stok[0] == "INIT_FILE")
                 {
             __putFILE(push_init_file, _stok) ;
+                }
+            else
+            if (_stok[0] == "INIT-NEAR")
+                {
+            __putREAL(push_init_near, _stok) ;
                 }
             else
         /*---------------------------- read HFUN keywords */

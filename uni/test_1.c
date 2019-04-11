@@ -3,6 +3,9 @@
 //  -Xlinker -rpath=../lib/LNX-64 
 //  -L ../lib/LNX-64 -ljigsaw64r -o test_1
 
+//  A simple example to start: use JIGSAW to mesh a square
+//  domain.
+
 #   include "../inc/lib_jigsaw.h"
     
 #   include "stdio.h"
@@ -77,11 +80,11 @@
         _jjig._mesh_dims =   +2 ;
         
         _retv = jigsaw (
-            &_jjig, // the config. opts
-            &_geom, // geom. data
-              NULL, // empty init. data 
-              NULL, // empty hfun. data
-            &_mesh) ;
+            &_jjig ,    // the config. opts
+            &_geom ,    // geom. data
+              NULL ,    // empty init. data 
+              NULL ,    // empty hfun. data
+            &_mesh ) ;
  
     /*-------------------------------- print JIGSAW tria. */
 
@@ -118,7 +121,7 @@
         jigsaw_free_msh_t(&_mesh);
  
         printf (
-    "JIGSAW returned code: %d \n", _retv) ;
+       "JIGSAW returned code : %d \n",_retv);
  
  
         return _retv ;

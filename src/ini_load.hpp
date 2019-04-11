@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 February, 2019
+     * Last updated: 09 April, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -115,11 +115,12 @@
                     ::node_type _ndat ;
                 _ndat.pval(0) = _pval[0];
                 _ndat.pval(1) = _pval[1];
+                _ndat.itag () = _itag ;
                 
                 _ndat.pval(2) = 
                         (real_type) +0. ;
                 
-                _ndat.fdim () = +0 ;
+                _ndat.fdim () =     +0  ;
                 
                 if (_itag < +0)
                     _ndat.feat () = 
@@ -143,11 +144,12 @@
                 _ndat.pval(0) = _pval[0];
                 _ndat.pval(1) = _pval[1];
                 _ndat.pval(2) = _pval[2];
+                _ndat.itag () = _itag ;
                 
                 _ndat.pval(3) = 
                         (real_type) +0. ;
                 
-                _ndat.fdim () = +0 ;
+                _ndat.fdim () =     +0  ;
                 
                 if (_itag < +0)
                     _ndat.feat () = 
@@ -180,6 +182,7 @@
                     ::edge_type _edat ;
                 _edat.node(0) = _node[0];
                 _edat.node(1) = _node[1];
+                _edat.itag () = _itag ;
                 
                 this->_init->
                    _euclidean_mesh_2d.
@@ -195,7 +198,8 @@
                     ::edge_type _edat ;
                 _edat.node(0) = _node[0];
                 _edat.node(1) = _node[1];
-                
+                _edat.itag () = _itag ;                
+
                 this->_init->
                    _euclidean_mesh_3d.
                _mesh.push_edge(_edat, false) ;
@@ -221,6 +225,7 @@
                 _tdat.node(0) = _node[0];
                 _tdat.node(1) = _node[1];
                 _tdat.node(2) = _node[2];
+                _tdat.itag () = _itag ;
                 
                 this->_init->
                    _euclidean_mesh_2d.
@@ -237,7 +242,8 @@
                 _tdat.node(0) = _node[0];
                 _tdat.node(1) = _node[1];
                 _tdat.node(2) = _node[2];
-                
+                _tdat.itag () = _itag ;                
+
                 this->_init->
                    _euclidean_mesh_3d.
                _mesh.push_tri3(_tdat, false) ;
@@ -271,6 +277,7 @@
                 _tdat.node(1) = _node[1];
                 _tdat.node(2) = _node[2];
                 _tdat.node(3) = _node[3];
+                _tdat.itag () = _itag ;
                 
                 this->_init->
                    _euclidean_mesh_3d.
@@ -363,14 +370,15 @@
                     _vert2._data[_ipos]._ppos[0];
                 _ndat.pval(1) = _imsh.
                     _vert2._data[_ipos]._ppos[1];
+                _ndat.itag () = _imsh.
+                    _vert2._data[_ipos]._itag ;
                 
                 _ndat.pval(2) = 
                         (real_type) +0. ;
                 
-                _ndat.fdim () = +0;
+                _ndat.fdim () =     +0  ;
                 
-                if (_imsh._vert2.
-                        _data[_ipos]._itag < +0)
+                if (_ndat.itag () < +0)
                     _ndat.feat () = 
                         mesh::user_feat ;
                 else
@@ -392,6 +400,8 @@
                     _edge2._data[_ipos]._node[0];
                 _edat.node(1) = _imsh.
                     _edge2._data[_ipos]._node[1];
+                _edat.itag () = _imsh.
+                    _edge2._data[_ipos]._itag ;
                 
                 _init._euclidean_mesh_2d.
                     _mesh.push_edge(_edat,false);
@@ -410,6 +420,8 @@
                     _tria3._data[_ipos]._node[1];
                 _tdat.node(2) = _imsh.
                     _tria3._data[_ipos]._node[2];
+                _tdat.itag () = _imsh.
+                    _tria3._data[_ipos]._itag ;
                 
                 _init._euclidean_mesh_2d.
                     _mesh.push_tri3(_tdat,false);
@@ -437,14 +449,15 @@
                     _vert3._data[_ipos]._ppos[1];
                 _ndat.pval(2) = _imsh.
                     _vert3._data[_ipos]._ppos[2];
+                _ndat.itag () = _imsh.
+                    _vert3._data[_ipos]._itag ;
                 
                 _ndat.pval(3) = 
                         (real_type) +0. ;
                 
-                _ndat.fdim () = +0;
+                _ndat.fdim () =     +0  ;
                 
-                if (_imsh._vert3.
-                        _data[_ipos]._itag < +0)
+                if (_ndat.itag () < +0)
                     _ndat.feat () = 
                         mesh::user_feat ;
                 else
@@ -466,6 +479,8 @@
                     _edge2._data[_ipos]._node[0];
                 _edat.node(1) = _imsh.
                     _edge2._data[_ipos]._node[1];
+                _edat.itag () = _imsh.
+                    _edge2._data[_ipos]._itag ;
                 
                 _init._euclidean_mesh_3d.
                     _mesh.push_edge(_edat,false);
@@ -479,11 +494,13 @@
                 mesh_data::euclidean_mesh_3d
                     ::face_type _tdat ;
                 _tdat.node(0) = _imsh.
-                    _tria4._data[_ipos]._node[0];
+                    _tria3._data[_ipos]._node[0];
                 _tdat.node(1) = _imsh.
-                    _tria4._data[_ipos]._node[1];
+                    _tria3._data[_ipos]._node[1];
                 _tdat.node(2) = _imsh.
-                    _tria4._data[_ipos]._node[2];
+                    _tria3._data[_ipos]._node[2];
+                _tdat.itag () = _imsh.
+                    _tria3._data[_ipos]._itag ;
                 
                 _init._euclidean_mesh_3d.
                     _mesh.push_tri3(_tdat,false);
@@ -504,7 +521,9 @@
                     _tria4._data[_ipos]._node[2];
                 _tdat.node(3) = _imsh.
                     _tria4._data[_ipos]._node[3];
-                
+                _tdat.itag () = _imsh.
+                    _tria4._data[_ipos]._itag ;                
+
                 _init._euclidean_mesh_3d.
                     _mesh.push_tri4(_tdat,false);
             }

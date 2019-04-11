@@ -98,17 +98,17 @@
 /*------------------------- delaunay triangulation in R^k */
     public  :
     
-    typedef N                               node_type ;
-    typedef T                               tria_type ;
-    typedef A                               allocator ;
-    typedef P                               tria_pred ;
+    typedef N                           node_type ;
+    typedef T                           tria_type ;
+    typedef A                           allocator ;
+    typedef P                           tria_pred ;
 
     typedef typename 
-            node_type::real_type            real_type ;
+            node_type::real_type        real_type ;
     typedef typename 
-            tria_type::iptr_type            iptr_type ;
+            tria_type::iptr_type        iptr_type ;
 
-    typedef char_type                       fptr_type ;
+    typedef char_type                   fptr_type ;
 
 /*------------------------- alternative to "static const" */
     
@@ -126,41 +126,41 @@
             node_type, 
             tria_type, 
             tria_pred, 
-            allocator   >                   self_type ;
+            allocator   >               self_type ;
 
     typedef typename 
-            tria_pred::face_ptrs            face_ptrs ;
+            tria_pred::face_ptrs        face_ptrs ;
     typedef typename 
-            tria_pred::face_hash            face_hash ;
+            tria_pred::face_hash        face_hash ;
     typedef typename 
-            tria_pred::face_same            face_same ;
+            tria_pred::face_same        face_same ;
 
     iptr_type static constexpr pool_byte_size = 96*1024 ;
 
     typedef allocators::_pool_alloc <
             allocators::basic_alloc ,
-                pool_byte_size      >       pool_base ;
+                pool_byte_size      >   pool_base ;
 
     typedef allocators::_wrap_alloc <
-                pool_base           >       pool_wrap ;
+                pool_base           >   pool_wrap ;
 
     typedef containers::hash_table  <
                 face_ptrs ,
                 face_hash ,
                 face_same ,
-                pool_wrap           >       hash_list ;
+                pool_wrap           >   hash_list ;
 
     typedef containers::block_array <
                 node_type , 
-                allocator           >       node_list ;
+                allocator           >   node_list ;
 
     typedef containers::block_array <
                 tria_type , 
-                allocator           >       tria_list ;
+                allocator           >   tria_list ;
 
     typedef containers::array       <
                 iptr_type , 
-                allocator           >       iptr_list ;
+                allocator           >   iptr_list ;
 
     public  :
     

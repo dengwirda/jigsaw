@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 February, 2019
+     * Last updated: 10 April, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -70,52 +70,54 @@
         enum node_kind { 
         null_kind = +0 , 
         fail_kind ,
-        circ_kind ,                 // "circ"-type refinement
-        sink_kind ,                 // "sink"-type off-centre
-        offH_kind ,                 // "size"-type off-centre 
-        offC_kind ,                 // "circ"-type off-centre
-        offE_kind ,                 // "err."-type off-centre
-        offT_kind ,                 // "topo"-type off-centre
-        last_kind    } ;
+        circ_kind ,             // "circ"-type refinement
+        sink_kind ,             // "sink"-type off-centre
+        offH_kind ,             // "size"-type off-centre 
+        offC_kind ,             // "circ"-type off-centre
+        offE_kind ,             // "err."-type off-centre
+        offT_kind ,             // "topo"-type off-centre
+        last_kind }    ;
 
-        iptr_type           _verb ; // logfile output verbosity
+        iptr_type   _verb ;     // logfile output verbosity
 
-        iptr_type           _seed ; // no. init. "seed" nodes
+        iptr_type   _seed ;     // no. init. "seed" nodes
         
-        real_type           _phi1 ; // 1-"hard" angle tolerance
-        real_type           _phi2 ; // 2-"hard" angle tolerance
+        real_type   _phi1 ;     // 1-"hard" angle tolerance
+        real_type   _phi2 ;     // 2-"hard" angle tolerance
         
-        real_type           _eta1 ; // 1-"soft" angle tolerance
-        real_type           _eta2 ; // 2-"soft" angle tolerance
+        real_type   _eta1 ;     // 1-"soft" angle tolerance
+        real_type   _eta2 ;     // 2-"soft" angle tolerance
 
-        bool_type           _feat ; // true for feature calc.
+        bool_type   _feat ;     // true for feature calc.
 
-        iptr_type           _dims ; // topo. dimensions to mesh
-        
-        iptr_type           _iter ; // max. num. refine iter.
-        
-        iptr_type           _rule ; // rule for cell refinement
-        
-        real_type           _siz1 ; // 1-dim. element size mul.
-        real_type           _siz2 ; // 2-dim. element size mul.
-        real_type           _siz3 ; // 3-dim. element size mul.
-        
-        real_type           _eps1 ; // 1-dim. 1-hausdorff error
-        real_type           _eps2 ; // 2-dim. 2-hausdorff error
-        
-        real_type           _rad2 ; // 2-dim. radius-edge ratio
-        real_type           _rad3 ; // 3-dim. radius-edge ratio
-        
-        real_type           _off2 ; // 2-off. radius-edge ratio
-        real_type           _off3 ; // 3-off. radius-edge ratio
-        
-        real_type           _snk2 ; // 2-dim. sink "safe" ratio
-        real_type           _snk3 ; // 3-dim. sink "safe" ratio
+        real_type   _near ;     // "zip" tolerance for IC's
 
-        real_type           _vol3 ; // volume-length ratio
+        iptr_type   _dims ;     // topo. dimensions to mesh
+        
+        iptr_type   _iter ;     // max. num. refine iter.
+        
+        iptr_type   _rule ;     // rule for cell refinement
+        
+        real_type   _siz1 ;     // 1-dim. element size mul.
+        real_type   _siz2 ;     // 2-dim. element size mul.
+        real_type   _siz3 ;     // 3-dim. element size mul.
+        
+        real_type   _eps1 ;     // 1-dim. 1-hausdorff error
+        real_type   _eps2 ;     // 2-dim. 2-hausdorff error
+        
+        real_type   _rad2 ;     // 2-dim. radius-edge ratio
+        real_type   _rad3 ;     // 3-dim. radius-edge ratio
+        
+        real_type   _off2 ;     // 2-off. radius-edge ratio
+        real_type   _off3 ;     // 3-off. radius-edge ratio
+        
+        real_type   _snk2 ;     // 2-dim. sink "safe" ratio
+        real_type   _snk3 ;     // 3-dim. sink "safe" ratio
 
-        bool_type           _top1 ; // impose 1-"manifold-ness"
-        bool_type           _top2 ; // impose 2-"manifold-ness"
+        real_type   _vol3 ;     // volume-length ratio
+
+        bool_type   _top1 ;     // impose 1-"manifold-ness"
+        bool_type   _top2 ;     // impose 2-"manifold-ness"
 
         public  :
             
@@ -174,6 +176,8 @@
             _eta2(real_type(+ 45.)) ,
             
             _feat(bool_type(false)) ,
+
+            _near(real_type(1.E-8)) ,
             
             _dims(iptr_type(+   3)) ,
             
@@ -248,6 +252,11 @@
         {   return  this->_feat ;
         }
         
+        __inline_call real_type      & near (
+            )
+        {   return  this->_near ;
+        }
+
         __inline_call iptr_type      & dims (
             )
         {   return  this->_dims ;
@@ -359,6 +368,11 @@
             ) const
         {   return  this->_feat ;
         }
+
+        __inline_call real_type const& near (
+            ) const
+        {   return  this->_near ;
+        }
         
         __inline_call iptr_type const& dims (
             ) const
@@ -432,7 +446,7 @@
 
     }
 
-#   endif // __RDEL_PARAMS__
+#   endif   // __RDEL_PARAMS__
 
 
 

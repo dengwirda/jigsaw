@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 July, 2018
+     * Last updated: 10 April, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -96,6 +96,9 @@
                     _jcfg->_geom_eta1 << "\n" ;
                 _file << "GEOM_ETA2 = " << 
                     _jcfg->_geom_eta2 << "\n" ;
+
+                _file << "INIT_NEAR = " << 
+                    _jcfg->_init_near << "\n" ;
    
         /*--------------------------------- HFUN keywords */
                 if (_jcfg->_hfun_scal == 

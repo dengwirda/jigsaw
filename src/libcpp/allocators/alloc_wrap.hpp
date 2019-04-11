@@ -64,14 +64,14 @@
     { 
 /*-------- pointer to base allocator: stateful allocators */
     public  :
-    typedef A                               allocator ;
-
-    typedef _wrap_alloc<allocator>          self_type ;
+    typedef A                           allocator ;
+    
+    typedef _wrap_alloc<allocator>      self_type ;
 
     typedef typename 
-            allocator::size_type            size_type ;
+            allocator::size_type        size_type ;
     typedef typename 
-            allocator::diff_type            diff_type ;
+            allocator::diff_type        diff_type ;
 
     private :
 
