@@ -7,7 +7,7 @@
   <img src = "../master/img/bunny-TRIA4-3.png">
 </p>
 
-`JIGSAW` is a computational library for unstructured mesh generation and tessellation; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes `refinement`-based algorithms for the construction of new meshes, `optimisation`-driven techniques for the improvement of existing grids, as well as routines to assemble (restricted) Delaunay tessellations and Voronoi complexes.
+`JIGSAW` is a computational library for unstructured mesh generation and tessellation; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes refinement-based algorithms for the construction of new meshes, optimisation-driven techniques for the improvement of existing grids, as well as routines to assemble (restricted) Delaunay tessellations, Voronoi complexes and Power diagrams.
 
 This package provides the underlying `C++` source for `JIGSAW`; defining a basic command-line interface and a `C`-format `API`. A <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including a range of additional facilities for file I/O, mesh visualisation and post-processing operations can be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
 
@@ -28,29 +28,44 @@ This package provides the underlying `C++` source for `JIGSAW`; defining a basic
 
 ## `Getting Started`
 
-The first step is to compile the code! The `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>.
+The first step is to compile and configure the code! `JIGSAW` can either be built directly from src, or installed using the <a href="https://anaconda.org/conda-forge/jigsaw">`conda`</a> package manager.
 
-`JIGSAW` is a `header-only` package - there is only the single main `jigsaw.cpp` file that simply `#include`'s the rest of the library as headers. The resulting build process should be fairly straight-forward as a result. `JIGSAW` does not currently dependent on any external packages or libraries.
+### `Install JIGSAW via conda`
+
+`JIGSAW` is available as a `conda` environment. To install and use, follow the steps below:
+
+	* Ensure you have the conda package manager installed. If not, <a href"https://docs.conda.io/en/latest/miniconda.html">Miniconda</a> is a lightweight option.
+	* Add conda-forge as a channel: `conda config --add channels conda-forge`
+	* Create a jigsaw environment: `conda create -n jigsaw jigsaw`
+
+Each time you want to use `JIGSAW` simply activate the environment using: `conda activate jigsaw`
+
+Once activated, the various `JIGSAW` command-line utilities will be available in your run path, `JIGSAW`'s shared library (`libjigsaw`) will be available in your library path and its include files in your include path.
+
+### `Building JIGSAW from src`
+
+The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>.
+
+`JIGSAW` is a `header-only` package - the single main `jigsaw.cpp` file simply `#include`'s the rest of the library as headers. The resulting build process should be fairly straightforward as a result. `JIGSAW` does not currently dependent on any external packages or libraries.
+
+`JIGSAW` can be built in several different ways: `(a)` as a set of command-line utilities that read and write mesh data to file, or `(b)` as a shared library accessible via a `C`-style `API`.
 
 #### `On Linux/Mac`
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
-	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG
-	-D __cmd_jigsaw -static-libstdc++ jigsaw.cpp
-	-o jigsaw64r
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -D NDEBUG
+	-D __cmd_jigsaw jigsaw.cpp -o jigsaw64r
 	
 will build the main `JIGSAW` cmd-line executable,
 
-	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG
-	-D __cmd_tripod -static-libstdc++ jigsaw.cpp
-	-o tripod64r
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -D NDEBUG
+	-D __cmd_tripod jigsaw.cpp -o tripod64r
 	
 will build the `TRIPOD` cmd-line utility (`JIGSAW`'s tessellation infrastructure) and,
 
 	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG
-	-D __lib_jigsaw -static-libstdc++ jigsaw.cpp
-	-shared -o libjigsaw64r.so
+	-D __lib_jigsaw jigsaw.cpp -shared -o libjigsaw64r.so
 
 will build `JIGSAW` as shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
