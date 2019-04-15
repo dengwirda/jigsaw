@@ -35,8 +35,8 @@ The first step is to compile and configure the code! `JIGSAW` can either be buil
 `JIGSAW` is available as a `conda` environment. To install and use, follow the steps below:
 
 	* Ensure you have conda installed. If not, Miniconda is a lightweight option.
-	* Add `conda-forge` as a channel: `conda config --add channels conda-forge`
-	* Create a `jigsaw` environment: `conda create -n jigsaw jigsaw`
+	* Add conda-forge as a channel: conda config --add channels conda-forge
+	* Create a jigsaw environment: conda create -n jigsaw jigsaw
 
 Each time you want to use `JIGSAW` simply activate the environment using: `conda activate jigsaw`
 
@@ -46,7 +46,7 @@ Once activated, the various `JIGSAW` command-line utilities will be available in
 
 The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>.
 
-`JIGSAW` is a `header-only` package - the single main `jigsaw.cpp` file simply `#include`'s the rest of the library as headers. The resulting build process should be fairly straightforward as a result. `JIGSAW` does not currently dependent on any external packages or libraries.
+`JIGSAW` is a `header-only` package - the single main `jigsaw.cpp` file simply `#include`'s the rest of the library directly. The resulting build process should be fairly straightforward as a result. `JIGSAW` does not currently dependent on any external packages or libraries.
 
 `JIGSAW` can be built in several different ways: `(a)` as a set of command-line utilities that read and write mesh data to file, or `(b)` as a shared library accessible via a `C`-style `API`.
 
