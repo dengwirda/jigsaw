@@ -34,9 +34,9 @@ The first step is to compile and configure the code! `JIGSAW` can either be buil
 
 `JIGSAW` is available as a `conda` environment. To install and use, follow the steps below:
 
-	* Ensure you have the conda package manager installed. If not, <a href"https://docs.conda.io/en/latest/miniconda.html">Miniconda</a> is a lightweight option.
-	* Add conda-forge as a channel: `conda config --add channels conda-forge`
-	* Create a jigsaw environment: `conda create -n jigsaw jigsaw`
+	* Ensure you have conda installed. If not, Miniconda is a lightweight option.
+	* Add `conda-forge` as a channel: `conda config --add channels conda-forge`
+	* Create a `jigsaw` environment: `conda create -n jigsaw jigsaw`
 
 Each time you want to use `JIGSAW` simply activate the environment using: `conda activate jigsaw`
 
