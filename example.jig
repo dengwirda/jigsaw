@@ -6,17 +6,13 @@
 #   To run this example navigate to the directory containing 
 #   this file and run the following from the cmd line:
 #
-#   On WIN-64 platforms:
+#   On WIN platforms:
 #
-#       bin\WIN-64\jigsaw64r.exe example.jig
+#       bin\jigsaw.exe example.jig
 #
-#   On LNX-64 platforms:
+#   On LNX platforms:
 #
-#       bin/LNX-64/jigsaw64r     example.jig
-#
-#   On MAC-64 platforms:
-#
-#       bin/MAC-64/jigsaw64r     example.jig
+#       bin/jigsaw     example.jig
 #
 #   This command calls JIGSAW using the config. data contai-
 #   ned in "example.jig", which, in unmodified form, creates 

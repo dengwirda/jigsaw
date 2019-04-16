@@ -1,7 +1,7 @@
 
 //  gcc -Wall test_1.c 
-//  -Xlinker -rpath=../lib/LNX-64 
-//  -L ../lib/LNX-64 -ljigsaw64r -o test_1
+//  -Xlinker -rpath=../lib 
+//  -L ../lib -ljigsaw -o test_1
 
 //  A simple example to start: use JIGSAW to mesh a square
 //  domain.

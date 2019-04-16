@@ -1,3 +1,0 @@
-#
-# to-do: place MAC binaries here and delete me!
-#

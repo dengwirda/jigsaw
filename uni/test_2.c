@@ -1,7 +1,7 @@
 
 //  gcc -Wall test_2.c 
-//  -Xlinker -rpath=../lib/LNX-64 
-//  -L ../lib/LNX-64 -ljigsaw64r -o test_2
+//  -Xlinker -rpath=../lib 
+//  -L ../lib -ljigsaw -o test_2
 
 //  Use JIGSAW to mesh a simple geometry with user-defined
 //  mesh-spacing data defined on a "mesh".

@@ -1,17 +1,4 @@
 
-
-    
-    //!! TODO:
-    //!! should use dd_flt wherever an intersection
-    //!!    is interpolated from existing points
-    //!!
-    //!! should apply a careful interpolation calc.
-    //!!    a'la line_tria -- any existing routines
-    //!!    that compute a "midpoint" need updating
-    //!!
-
-
-
     /*
     --------------------------------------------------------
      * INTERSECT-K: various (robust) intersection tests. 
@@ -44,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 March, 2019
+     * Last updated: 13 April, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -134,45 +121,39 @@
     __write_ptr  (data_type) _qb
         )
     {
-        size_t _nn = +0;
-        
-        data_type _pm[2] = {
-       (data_type)+.5 * (_pa[0]+_pb[0]),
-       (data_type)+.5 * (_pa[1]+_pb[1])
-            } ;
-        data_type _pd[2] = {
-       (data_type)+.5 * (_pb[0]-_pa[0]),
-       (data_type)+.5 * (_pb[1]-_pa[1])
-            } ;
-        data_type _mc[2] = {
-       (data_type)+1. * (_pm[0]-_pc[0]),
-       (data_type)+1. * (_pm[1]-_pc[1])
-            } ;
-        
-        data_type _aa = dot_2d(_pd, _pd) ;
-        data_type _bb = dot_2d(_pd, _mc) *
+        data_type _vv[2] ;
+        _vv[0] = _pb[0] -_pa[0] ;
+        _vv[1] = _pb[1] -_pa[1] ;
+
+        data_type _ca[2] ;
+        _ca[0] = _pa[0] -_pc[0] ;
+        _ca[1] = _pa[1] -_pc[1] ;
+
+        data_type _aa = 
+            geometry::dot_2d(_vv, _vv) ;
+        data_type _bb = 
+            geometry::dot_2d(_vv, _ca) *
                        (data_type) +2. ;    
-        data_type _cc = dot_2d(_mc, _mc) ;
+        data_type _cc = 
+            geometry::dot_2d(_ca, _ca) ;
         _cc -= _rc * _rc ;
-        
+      
+        size_t _nn = +0  ;  
         data_type _tt[2] ;
         if (polyroots(_aa, _bb, _cc, _tt))
         {
-        if (_tt[0] >= (data_type)-1. &&
+        if (_tt[0] >= (data_type)+0. &&
             _tt[0] <= (data_type)+1. )
         {
-            data_type *_qq = _nn++ == +0 
-                           ? _qa 
-                           : _qb ;
+    /*----------------------- compute 1st-root intersect. */
+            data_type _WB = 
+           (data_type)+0.+_tt[0] ;
             
-            dd_flt _WB = _tt[0] ;
-            _WB = (dd_flt)+1. + _WB;
-            _WB = (dd_flt)+.5 * _WB;
-            
-            dd_flt _WA = _tt[0] ;
-            _WA = (dd_flt)+1. - _WA;
-            _WA = (dd_flt)+.5 * _WA;
-            
+            data_type _WA = 
+           (data_type)+1.-_tt[0] ;
+       
+            _nn += +1 ;
+     
             dd_flt _PA[2] ;
             _PA[0]=_pa[0] ;
             _PA[1]=_pa[1] ;
@@ -182,30 +163,34 @@
             _PB[1]=_pb[1] ;
             
             dd_flt _QQ[2] ;
-            _QQ[0]=_PA[0] * _WA +
-                   _PB[0] * _WB ;
-            _QQ[1]=_PA[1] * _WA +
-                   _PB[1] * _WB ;
-                   
-            _qq[0]=_QQ[0] ;
-            _qq[1]=_QQ[1] ;
+            _QQ[0]=_PA[0] * _WA  +
+                   _PB[0] * _WB  ;
+            _QQ[1]=_PA[1] * _WA  +
+                   _PB[1] * _WB  ; 
+       
+            if (_nn == 1)
+            {
+            _qa[0]=_QQ[0] ;
+            _qa[1]=_QQ[1] ;
+            }
+            else
+            {
+            _qb[0]=_QQ[0] ;
+            _qb[1]=_QQ[1] ;
+            }
         }
-
-        if (_tt[1] >= (data_type)-1. &&
+        if (_tt[1] >= (data_type)+0. &&
             _tt[1] <= (data_type)+1. )
-        {
-            data_type *_qq = _nn++ == +0  
-                           ? _qa 
-                           : _qb ;
-                           
-            dd_flt _WB = _tt[1] ;
-            _WB = (dd_flt)+1. + _WB;
-            _WB = (dd_flt)+.5 * _WB;
+        {    
+    /*----------------------- compute 2nd-root intersect. */
+            data_type _WB = 
+           (data_type)+0.+_tt[1] ;
             
-            dd_flt _WA = _tt[1] ;
-            _WA = (dd_flt)+1. - _WA;
-            _WA = (dd_flt)+.5 * _WA;
+            data_type _WA = 
+           (data_type)+1.-_tt[1] ;
             
+            _nn += +1 ;
+
             dd_flt _PA[2] ;
             _PA[0]=_pa[0] ;
             _PA[1]=_pa[1] ;
@@ -215,13 +200,21 @@
             _PB[1]=_pb[1] ;
             
             dd_flt _QQ[2] ;
-            _QQ[0]=_PA[0] * _WA +
-                   _PB[0] * _WB ;
-            _QQ[1]=_PA[1] * _WA +
-                   _PB[1] * _WB ;
+            _QQ[0]=_PA[0] * _WA  +
+                   _PB[0] * _WB  ;
+            _QQ[1]=_PA[1] * _WA  +
+                   _PB[1] * _WB  ; 
                    
-            _qq[0]=_QQ[0] ;
-            _qq[1]=_QQ[1] ;
+            if (_nn == 1)
+            {
+            _qa[0]=_QQ[0] ;
+            _qa[1]=_QQ[1] ;
+            }
+            else
+            {
+            _qb[0]=_QQ[0] ;
+            _qb[1]=_QQ[1] ;
+            }
         }
         }
 
@@ -240,48 +233,41 @@
     __write_ptr  (data_type) _qb
         )
     {
-        size_t _nn = +0;
-        
-        data_type _pm[3] = {
-       (data_type)+.5 * (_pa[0]+_pb[0]),
-       (data_type)+.5 * (_pa[1]+_pb[1]),
-       (data_type)+.5 * (_pa[2]+_pb[2])
-            } ;
-        data_type _pd[3] = {
-       (data_type)+.5 * (_pb[0]-_pa[0]),
-       (data_type)+.5 * (_pb[1]-_pa[1]),
-       (data_type)+.5 * (_pb[2]-_pa[2])
-            } ;
-        data_type _mc[3] = {
-       (data_type)+1. * (_pm[0]-_pc[0]),
-       (data_type)+1. * (_pm[1]-_pc[1]),
-       (data_type)+1. * (_pm[2]-_pc[2])
-            } ;
-        
-        data_type _aa = dot_3d(_pd, _pd) ;
-        data_type _bb = dot_3d(_pd, _mc) *
+        data_type _vv[3] ;
+        _vv[0] = _pb[0] -_pa[0] ;
+        _vv[1] = _pb[1] -_pa[1] ;
+        _vv[2] = _pb[2] -_pa[2] ;
+
+        data_type _ca[3] ;
+        _ca[0] = _pa[0] -_pc[0] ;
+        _ca[1] = _pa[1] -_pc[1] ;
+        _ca[2] = _pa[2] -_pc[2] ;
+
+        data_type _aa = 
+            geometry::dot_3d(_vv, _vv) ;
+        data_type _bb = 
+            geometry::dot_3d(_vv, _ca) *
                        (data_type) +2. ;    
-        data_type _cc = dot_3d(_mc, _mc) ;
+        data_type _cc = 
+            geometry::dot_3d(_ca, _ca) ;
         _cc -= _rc * _rc ;
-        
+      
+        size_t _nn = +0  ;  
         data_type _tt[2] ;
         if (polyroots(_aa, _bb, _cc, _tt))
         {
-        if (_tt[0] >= (data_type)-1. &&
+        if (_tt[0] >= (data_type)+0. &&
             _tt[0] <= (data_type)+1. )
         {
-            data_type *_qq = _nn++ == +0 
-                           ? _qa 
-                           : _qb ;
-             
-            dd_flt _WB = _tt[0] ;
-            _WB = (dd_flt)+1. + _WB;
-            _WB = (dd_flt)+.5 * _WB;
+    /*----------------------- compute 1st-root intersect. */
+            data_type _WB = 
+           (data_type)+0.+_tt[0] ;
             
-            dd_flt _WA = _tt[0] ;
-            _WA = (dd_flt)+1. - _WA;
-            _WA = (dd_flt)+.5 * _WA;
-            
+            data_type _WA = 
+           (data_type)+1.-_tt[0] ;
+       
+            _nn += +1 ;
+     
             dd_flt _PA[3] ;
             _PA[0]=_pa[0] ;
             _PA[1]=_pa[1] ;
@@ -293,33 +279,38 @@
             _PB[2]=_pb[2] ;
             
             dd_flt _QQ[3] ;
-            _QQ[0]=_PA[0] * _WA +
-                   _PB[0] * _WB ;
-            _QQ[1]=_PA[1] * _WA +
-                   _PB[1] * _WB ;
-            _QQ[2]=_PA[2] * _WA +
-                   _PB[2] * _WB ; 
-                   
-            _qq[0]=_QQ[0] ;
-            _qq[1]=_QQ[1] ;
-            _qq[2]=_QQ[2] ;
+            _QQ[0]=_PA[0] * _WA  +
+                   _PB[0] * _WB  ;
+            _QQ[1]=_PA[1] * _WA  +
+                   _PB[1] * _WB  ;
+            _QQ[2]=_PA[2] * _WA  +
+                   _PB[2] * _WB  ; 
+       
+            if (_nn == 1)
+            {
+            _qa[0]=_QQ[0] ;
+            _qa[1]=_QQ[1] ;
+            _qa[2]=_QQ[2] ;
+            }
+            else
+            {
+            _qb[0]=_QQ[0] ;
+            _qb[1]=_QQ[1] ;
+            _qb[2]=_QQ[2] ;
+            }
         }
-
-        if (_tt[1] >= (data_type)-1. &&
+        if (_tt[1] >= (data_type)+0. &&
             _tt[1] <= (data_type)+1. )
-        {
-            data_type *_qq = _nn++ == +0  
-                           ? _qa 
-                           : _qb ;
-           
-            dd_flt _WB = _tt[1] ;
-            _WB = (dd_flt)+1. + _WB;
-            _WB = (dd_flt)+.5 * _WB;
+        {    
+    /*----------------------- compute 2nd-root intersect. */
+            data_type _WB = 
+           (data_type)+0.+_tt[1] ;
             
-            dd_flt _WA = _tt[1] ;
-            _WA = (dd_flt)+1. - _WA;
-            _WA = (dd_flt)+.5 * _WA;
+            data_type _WA = 
+           (data_type)+1.-_tt[1] ;
             
+            _nn += +1 ;
+
             dd_flt _PA[3] ;
             _PA[0]=_pa[0] ;
             _PA[1]=_pa[1] ;
@@ -331,16 +322,25 @@
             _PB[2]=_pb[2] ;
             
             dd_flt _QQ[3] ;
-            _QQ[0]=_PA[0] * _WA +
-                   _PB[0] * _WB ;
-            _QQ[1]=_PA[1] * _WA +
-                   _PB[1] * _WB ;
-            _QQ[2]=_PA[2] * _WA +
-                   _PB[2] * _WB ; 
+            _QQ[0]=_PA[0] * _WA  +
+                   _PB[0] * _WB  ;
+            _QQ[1]=_PA[1] * _WA  +
+                   _PB[1] * _WB  ;
+            _QQ[2]=_PA[2] * _WA  +
+                   _PB[2] * _WB  ; 
                    
-            _qq[0]=_QQ[0] ;
-            _qq[1]=_QQ[1] ;
-            _qq[2]=_QQ[2] ;
+            if (_nn == 1)
+            {
+            _qa[0]=_QQ[0] ;
+            _qa[1]=_QQ[1] ;
+            _qa[2]=_QQ[2] ;
+            }
+            else
+            {
+            _qb[0]=_QQ[0] ;
+            _qb[1]=_QQ[1] ;
+            _qb[2]=_QQ[2] ;
+            }
         }
         }
 
@@ -357,62 +357,94 @@
     typename      data_type
              >
     __inline_call bool node_rect_2d (
-    __const_ptr  (data_type) _pp,
-    __const_ptr  (data_type) _b0,
-    __const_ptr  (data_type) _b1
+    __const_ptr  (data_type) _pp, // node
+    __const_ptr  (data_type) _b0, // min. rect. B
+    __const_ptr  (data_type) _b1  // max. rect. B
         )
-    {   return  _pp[0] >= _b0[0] &&
-                _pp[0] <= _b1[0] &&
-                _pp[1] >= _b0[1] &&
-                _pp[1] <= _b1[1] ;
+    {   
+        if (_pp[0] >= _b0[0] &&
+            _pp[0] <= _b1[0] &&
+            _pp[1] >= _b0[1] &&
+            _pp[1] <= _b1[1] )
+        {
+            return (  true ) ;
+        }
+        else
+        {
+            return ( false ) ;
+        }
     }
 
     template <
     typename      data_type
              >
     __inline_call bool node_rect_3d (
-    __const_ptr  (data_type) _pp,
-    __const_ptr  (data_type) _b0,
-    __const_ptr  (data_type) _b1
+    __const_ptr  (data_type) _pp, // node
+    __const_ptr  (data_type) _b0, // min. rect. B
+    __const_ptr  (data_type) _b1  // max. rect. B
         )
-    {   return  _pp[0] >= _b0[0] &&
-                _pp[0] <= _b1[0] &&
-                _pp[1] >= _b0[1] &&
-                _pp[1] <= _b1[1] &&
-                _pp[2] >= _b0[2] &&
-                _pp[2] <= _b1[2] ;
+    {   
+        if (_pp[0] >= _b0[0] &&
+            _pp[0] <= _b1[0] &&
+            _pp[1] >= _b0[1] &&
+            _pp[1] <= _b1[1] &&
+            _pp[2] >= _b0[2] &&
+            _pp[2] <= _b1[2] )
+        {
+            return (  true ) ;
+        }
+        else
+        {
+            return ( false ) ;
+        }
     }
 
     template <
     typename      data_type
              >
     __inline_call bool rect_rect_2d (
-    __const_ptr  (data_type) _a0,
-    __const_ptr  (data_type) _a1,
-    __const_ptr  (data_type) _b0,
-    __const_ptr  (data_type) _b1
+    __const_ptr  (data_type) _a0, // min. rect. A
+    __const_ptr  (data_type) _a1, // max. rect. A
+    __const_ptr  (data_type) _b0, // min. rect. B
+    __const_ptr  (data_type) _b1  // max. rect. B
         )
-    {   return  _a0[0] <= _b1[0] &&
-                _b0[0] <= _a1[0] &&
-                _a0[1] <= _b1[1] &&
-                _b0[1] <= _a1[1] ;
+    {   
+        if (_a0[0] <= _b1[0] &&
+            _b0[0] <= _a1[0] &&
+            _a0[1] <= _b1[1] &&
+            _b0[1] <= _a1[1] )
+        {
+            return (  true ) ;
+        }
+        else
+        {
+            return ( false ) ;
+        }
     }
 
     template <
     typename      data_type
              >
     __inline_call bool rect_rect_3d (
-    __const_ptr  (data_type) _a0,
-    __const_ptr  (data_type) _a1,
-    __const_ptr  (data_type) _b0,
-    __const_ptr  (data_type) _b1
+    __const_ptr  (data_type) _a0, // min. rect. A
+    __const_ptr  (data_type) _a1, // max. rect. A
+    __const_ptr  (data_type) _b0, // min. rect. B
+    __const_ptr  (data_type) _b1  // max. rect. B
         )
-    {   return  _a0[0] <= _b1[0] &&
-                _b0[0] <= _a1[0] &&
-                _a0[1] <= _b1[1] &&
-                _b0[1] <= _a1[1] &&
-                _a0[2] <= _b1[2] &&
-                _b0[2] <= _a1[2] ;
+    { 
+        if (_a0[0] <= _b1[0] &&
+            _b0[0] <= _a1[0] &&
+            _a0[1] <= _b1[1] &&
+            _b0[1] <= _a1[1] &&
+            _a0[2] <= _b1[2] &&
+            _b0[2] <= _a1[2] )
+        {
+            return (  true ) ;
+        }
+        else
+        {
+            return ( false ) ;
+        }
     }
 
     /*
@@ -501,38 +533,38 @@
 
         if (_tt == (data_type)+0.)
         {
-        _qq[0] = _pa[0] ;
-        _qq[1] = _pa[1] ;
-        _qq[2] = _pa[2] ;
+            _qq[0] = _pa[0] ;
+            _qq[1] = _pa[1] ;
+            _qq[2] = _pa[2] ;
         }
         else
         if (_tt == (data_type)+1.)
         {
-        _qq[0] = _pb[0] ;
-        _qq[1] = _pb[1] ;
-        _qq[2] = _pb[2] ;
+            _qq[0] = _pb[0] ;
+            _qq[1] = _pb[1] ;
+            _qq[2] = _pb[2] ;
         }
         else
         {
-        dd_flt _AB[3];
-        _AB[0] = _pb[0] ;
-        _AB[1] = _pb[1] ;
-        _AB[2] = _pb[2] ;
-        _AB[0]-= _pa[0] ;
-        _AB[1]-= _pa[1] ;
-        _AB[2]-= _pa[2] ;
+            dd_flt   _AB[3] ;
+            _AB[0] = _pb[0] ;
+            _AB[1] = _pb[1] ;
+            _AB[2] = _pb[2] ;
+            _AB[0]-= _pa[0] ;
+            _AB[1]-= _pa[1] ;
+            _AB[2]-= _pa[2] ;
 
-        dd_flt _QQ[3];
-        _QQ[0] = _pa[0] ;
-        _QQ[1] = _pa[1] ;
-        _QQ[2] = _pa[2] ;    
-        _QQ[0]+= _AB[0] * _tt ;
-        _QQ[1]+= _AB[1] * _tt ;
-        _QQ[2]+= _AB[2] * _tt ;
+            dd_flt   _QQ[3] ;
+            _QQ[0] = _pa[0] ;
+            _QQ[1] = _pa[1] ;
+            _QQ[2] = _pa[2] ;    
+            _QQ[0]+= _AB[0] * _tt ;
+            _QQ[1]+= _AB[1] * _tt ;
+            _QQ[2]+= _AB[2] * _tt ;
 
-        _qq[0] = _QQ[0] ;
-        _qq[1] = _QQ[1] ;
-        _qq[2] = _QQ[2] ;
+            _qq[0] = _QQ[0] ;
+            _qq[1] = _QQ[1] ;
+            _qq[2] = _QQ[2] ;
         }
 
         return ( true ) ;

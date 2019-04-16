@@ -1,7 +1,7 @@
 
 //  gcc -Wall test_5.c 
-//  -Xlinker -rpath=../lib/LNX-64 
-//  -L ../lib/LNX-64 -ljigsaw64r -o test_5
+//  -Xlinker -rpath=../lib 
+//  -L ../lib -ljigsaw -o test_5
 
 //  An example that uses TRIPOD to build a "restricted" DT.
 

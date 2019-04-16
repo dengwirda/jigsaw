@@ -3,19 +3,16 @@
     // for cmd-jigsaw:
     //
     // g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
-    // -D __cmd_jigsaw -static-libstdc++ jigsaw.cpp 
-    // -o jigsaw64r
+    // -D __cmd_jigsaw jigsaw.cpp -o jigsaw
     //
     // g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
-    // -D __cmd_tripod -static-libstdc++ jigsaw.cpp 
-    // -o tripod64r
+    // -D __cmd_tripod jigsaw.cpp -o tripod
     //
     //
     // for lib-jigsaw:
     //
     // g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC 
-    // -D NDEBUG -D __lib_jigsaw -static-libstdc++ jigsaw.cpp 
-    // -shared -o libjigsaw64r.so
+    // -D NDEBUG -D __lib_jigsaw jigsaw.cpp -shared -o libjigsaw.so
     //
 
     /*

@@ -1,7 +1,7 @@
 
 //  gcc -Wall test_4.c 
-//  -Xlinker -rpath=../lib/LNX-64 
-//  -L ../lib/LNX-64 -ljigsaw64r -o test_4
+//  -Xlinker -rpath=../lib 
+//  -L ../lib -ljigsaw -o test_4
 
 //  An example that uses JIGSAW to mesh "multiply-connected" 
 //  geometry. 

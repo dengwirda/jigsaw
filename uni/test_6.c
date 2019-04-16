@@ -1,7 +1,7 @@
 
 //  gcc -Wall test_6.c 
-//  -Xlinker -rpath=../lib/LNX-64 
-//  -L ../lib/LNX-64 -ljigsaw64r -o test_6
+//  -Xlinker -rpath=../lib 
+//  -L ../lib -ljigsaw -o test_6
 
 //  Use JIGSAW to mesh a simple domain, but starting from
 //  user-defined initial-conditions. 
