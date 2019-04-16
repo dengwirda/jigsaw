@@ -18,31 +18,33 @@
         
     /*-------------------------------- setup JIGSAW types */      
         jigsaw_jig_t _jjig ;
+        jigsaw_init_jig_t(&_jjig) ;        
+
         jigsaw_msh_t _geom ;
+        jigsaw_init_msh_t(&_geom) ;        
+
         jigsaw_msh_t _init ;
-        jigsaw_msh_t _tria ;
-  
-        jigsaw_init_jig_t(&_jjig) ;
-        jigsaw_init_msh_t(&_geom) ;
-        jigsaw_init_msh_t(&_init) ;
+        jigsaw_init_msh_t(&_init) ;        
+
+        jigsaw_msh_t _tria ;        
         jigsaw_init_msh_t(&_tria) ;
  
     /* 
     --------------------------------------------------------
-     * A simple square domain
+     * JIGSAW's "mesh" is a piecewise linear complex:
     --------------------------------------------------------
      *
-     *             e:2
-     *  v:3 o---------------o v:2
-     *      |               |
-     *      |               |
-     *      |               |
-     *  e:3 |               | e:1
-     *      |               |
-     *      |               |
-     *      |               |
-     *  v:0 o---------------o v:1
-     *             e:0
+     *                 e:2
+     *      v:3 o---------------o v:2
+     *          |               |
+     *          |               |
+     *          |               |
+     *      e:3 |               | e:1
+     *          |               |
+     *          |               |
+     *          |               |
+     *      v:0 o---------------o v:1
+     *                 e:0
      *
     --------------------------------------------------------
      */

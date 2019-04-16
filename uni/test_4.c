@@ -19,11 +19,12 @@
         
     /*-------------------------------- setup JIGSAW types */      
         jigsaw_jig_t _jjig ;
+        jigsaw_init_jig_t(&_jjig) ;        
+
         jigsaw_msh_t _geom ;
-        jigsaw_msh_t _mesh ;
-  
-        jigsaw_init_jig_t(&_jjig) ;
-        jigsaw_init_msh_t(&_geom) ;
+        jigsaw_init_msh_t(&_geom) ;        
+
+        jigsaw_msh_t _mesh ;        
         jigsaw_init_msh_t(&_mesh) ;
  
     /* 
@@ -31,17 +32,17 @@
      * A domain with "interior" constraints
     --------------------------------------------------------
      *
-     *             e:2
-     *  v:3 o---------------o v:2
-     *      |               |
-     *      |      e:6      |
-     *      |     o---o     |
-     *  e:3 | e:7 |   | e:5 | e:1
-     *      |     o---o     |
-     *      |      e:4      |
-     *      |               |
-     *  v:0 o---------------o v:1
-     *             e:0
+     *                 e:2
+     *      v:3 o---------------o v:2
+     *          |               |
+     *          |      e:6      |
+     *          |     o---o     |
+     *      e:3 | e:7 |   | e:5 | e:1
+     *          |     o---o     |
+     *          |      e:4      |
+     *          |               |
+     *      v:0 o---------------o v:1
+     *                 e:0
      *
     --------------------------------------------------------
      */
