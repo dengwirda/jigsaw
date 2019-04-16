@@ -1850,9 +1850,9 @@
 
                 switch (_nhit)
                 {
-            /*--------------- call output function on hit */
                 case +2 :
                     {
+            /*--------------- call output function on hit */
                 this->_hfun (_jpos, _hits ,
                     _geom._tria .
                     _set2[_epos].feat() ,
@@ -1862,10 +1862,10 @@
                     _set2[_epos].itag() ) ;
                    
                 this->_hnum += +1;
-                    }
-            /*--------------- call output function on hit */
+                    }      // falls through
                 case +1 :
                     {
+            /*--------------- call output function on hit */
                 this->_hfun (_ipos, _hits ,
                     _geom._tria .
                     _set2[_epos].feat() ,
@@ -1878,7 +1878,7 @@
                 
                 this->_find = true ;
                 this->_hits =_hits ;
-                    }
+                    }      // falls through
                 }
             }
         }
@@ -1980,9 +1980,9 @@
 
                 switch (_nh)
                 {
-            /*--------------- call output function on hit */
                 case +2 :
                     {
+            /*--------------- call output function on hit */
                 this->_hfun (_jpos, _hits ,
                     _geom._tria .
                     _set3[_tpos].feat() ,
@@ -1990,10 +1990,10 @@
                     _set3[_tpos].topo() ,
                     _geom._tria .
                     _set3[_tpos].itag() ) ;
-                    }
-            /*--------------- call output function on hit */ 
+                    }      // falls through
                 case +1 :
                     {
+            /*--------------- call output function on hit */
                 this->_hfun (_ipos, _hits ,
                     _geom._tria .
                     _set3[_tpos].feat() ,
@@ -2003,7 +2003,7 @@
                     _set3[_tpos].itag() ) ;
             
                 this->_find = true ;
-                    }
+                    }      // falls through
                 }
             }
         }

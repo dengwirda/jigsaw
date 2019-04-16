@@ -166,25 +166,25 @@
             {
             case 8 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 7 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 6 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 5 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 4 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 3 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 2 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             }
         /*------------------------------ swap with "hole" */
            *_ipos = std::move(*_imin) ;
@@ -206,25 +206,25 @@
             {
             case 8 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 7 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 6 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 5 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 4 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 3 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             case 2 :
             if (this->_pred(*--_cpos,*_imin))
-                _imin=_cpos;
+                _imin=_cpos; // falls through
             }
         /*------------------------------ swap with "hole" */
             *_ipos = std::move( *_imin) ;

@@ -448,7 +448,8 @@
             std::numeric_limits
        <real_type>::epsilon (), +.75) ;
 
-        real_type _vdir[4] ;
+        iptr_type _enod[ +4] = {0} ;
+        real_type _vdir[ +4] ;
         _vdir[0] = (real_type) +0. ;
         _vdir[1] = (real_type) +0. ;
         _vdir[2] = (real_type) +0. ;
@@ -461,7 +462,6 @@
                   _edge != _eset.tend() ;
                 ++_edge  )
         {   
-            iptr_type _enod[ +3] ;
             mesh_type::tria_type::
             tria_type::face_node(
                 _enod, _edge->_eadj, 3, 1) ;
@@ -662,7 +662,8 @@
             std::numeric_limits
        <real_type>::epsilon (), +.75) ;
 
-        real_type _vnrm[4] ;
+        iptr_type _fnod[ +4] = {0} ;
+        real_type _vnrm[ +4] ;
         _vnrm[0] = (real_type) +0. ;
         _vnrm[1] = (real_type) +0. ;
         _vnrm[2] = (real_type) +0. ;
@@ -675,7 +676,6 @@
                   _face != _fset.tend() ;
                 ++_face  )
         {
-            iptr_type _fnod[ +4] ;
             mesh_type::tria_type::
             tria_type::face_node(
                 _fnod, _face->_fadj, 3, 2) ;

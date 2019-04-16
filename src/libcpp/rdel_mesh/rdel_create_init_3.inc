@@ -33,7 +33,7 @@
      *
      * Last updated: 08 April, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -120,7 +120,7 @@
     __normal_call bool_type have_edge (
         mesh_type &_mesh,
         iptr_list &_imap,
-        iptr_type &_eadj,
+        char_type &_eadj,
         iptr_type &_tadj,
         iptr_type *_enod        
         )
@@ -179,7 +179,7 @@
         
     /*--------------------- find all tria's about ENOD[0] */
         iptr_list _tset;
-        iptr_type _epos;
+        char_type _epos;
         _tset.set_alloc( +32) ;
 
         _mesh._tria.walk_node (
@@ -239,7 +239,7 @@
     __normal_call bool_type have_face (
         mesh_type &_mesh,
         iptr_list &_imap,
-        iptr_type &_fadj,
+        char_type &_fadj,
         iptr_type &_tadj,
         iptr_type *_fnod        
         )
@@ -300,7 +300,7 @@
 
     /*--------------------- find all tria's about ENOD[0] */
         iptr_list _tset;
-        iptr_type _fpos;
+        char_type _fpos;
         _tset.set_alloc( +32) ;
 
         _mesh._tria.walk_node (
@@ -581,7 +581,8 @@
             if (_iter->itag() <= -1)
             {
     /*------------------------------ find edge "in" DTRI. */
-            iptr_type _eadj, _tadj  ;
+            char_type _eadj ; 
+            iptr_type _tadj ;
             if (have_edge( _mesh, 
                _imap,_eadj,_tadj,
               &_iter->node( +0 )) )
@@ -637,7 +638,8 @@
             if (_iter->itag() <= -1)
             {
     /*------------------------------ find face "in" DTRI. */
-            iptr_type _fadj, _tadj  ;
+            char_type _fadj ; 
+            iptr_type _tadj ;
             if (have_face( _mesh, 
                _imap,_fadj,_tadj,
               &_iter->node( +0 )) )

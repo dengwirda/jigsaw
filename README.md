@@ -56,7 +56,7 @@ This process will build a series of executables and the shared library: `jigsaw`
 
 See `example.jig` for documentation on calling the command-line executables, and the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
-#### `Using g++/llvm`
+#### `Using g++ / llvm`
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. The build process is a simple one-liner (from <a href="../master/src/">`../jigsaw/src/`</a>):
 ````
@@ -87,7 +87,7 @@ Each time you want to use `JIGSAW` simply activate the environment using: `conda
 
 Once activated, the various `JIGSAW` command-line utilities will be available in your run path, `JIGSAW`'s shared library (`libjigsaw`) will be available in your library path and its include files in your include path.
 
-### `A Simple Example`
+### `CMD-LINE Examples`
 
 After compiling the code, try running the following command-line example to get started:
 ````
@@ -103,7 +103,7 @@ In this example, a high-quality tetrahedral mesh is generated for the 'stanford-
 
 A repository of additional surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>.
 
-### `API Example Code`
+### `LIBJIGSAW Scripts`
 
 A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/uni/">`../jigsaw/uni/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/inc/">`../jigsaw/inc/`</a>. 
 

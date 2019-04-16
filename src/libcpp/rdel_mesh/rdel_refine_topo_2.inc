@@ -155,19 +155,19 @@
             std::numeric_limits
        <real_type>::epsilon (), +.75) ;
 
-        real_type _vnrm[3] ;
+        iptr_type _enod[ +3] = {0} ;
+        real_type _vnrm[ +3] ;
         _vnrm[0] = (real_type) +0. ;
         _vnrm[1] = (real_type) +0. ;
         _vnrm[2] = (real_type) +0. ;
 
         _pmax[2] = (real_type) +0. ;
-    
+
     /*--------------------- find max. SDB in edge-set */
         for (auto _edge  = _eset.head() ;
                   _edge != _eset.tend() ;
                 ++_edge  )
         {   
-            iptr_type _enod[ +3] ;
             mesh_type::tria_type::
             tria_type::face_node(
                 _enod, _edge->_eadj, 2, 1) ;

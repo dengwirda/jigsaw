@@ -1146,7 +1146,7 @@ REAL orient2dexact (
   REAL aterms[4], bterms[4], cterms[4];
   REAL aterms3, bterms3, cterms3;
   REAL v[8], w[12];
-  int vlength, wlength;
+  int vlength=0, wlength=0;
 
   REAL bvirt, avirt, bround, around;
   REAL c, abig, ahi, alo, bhi, blo;
@@ -1190,7 +1190,7 @@ REAL orient2dadapt (
   REAL det, errbound;
   REAL B[4], C1[8], C2[12], D[16];
   REAL B3;
-  int C1length, C2length, Dlength;
+  int C1length=0, C2length=0, Dlength=0;
   REAL u[4];
   REAL u3, s1, t1, s0, t0;
 
@@ -1263,7 +1263,7 @@ REAL orient2d (
   REAL detleft, detright, det;
   REAL detsum, errbound;
 
-  detleft = (pa[0] - pc[0]) * (pb[1] - pc[1]);
+  detleft  = (pa[0] - pc[0]) * (pb[1] - pc[1]);
   detright = (pa[1] - pc[1]) * (pb[0] - pc[0]);
   det = detleft - detright;
 
@@ -1326,15 +1326,15 @@ REAL orient3dexact (
   REAL bxay0, cxby0, dxcy0, axdy0, cxay0, dxby0;
   REAL ab[4], bc[4], cd[4], da[4], ac[4], bd[4];
   REAL temp8[8];
-  int templen;
+  int templen=0;
   REAL abc[12], bcd[12], cda[12], dab[12];
-  int abclen, bcdlen, cdalen, dablen;
+  int abclen=0, bcdlen=0, cdalen=0, dablen=0;
   REAL adet[24], bdet[24], cdet[24], ddet[24];
-  int alen, blen, clen, dlen;
+  int alen=0, blen=0, clen=0, dlen=0;
   REAL abdet[48], cddet[48];
-  int ablen, cdlen;
+  int ablen=0, cdlen=0;
   REAL deter[96];
-  int deterlen;
+  int deterlen=0;
   int i;
 
   REAL bvirt, avirt, bround, around;
@@ -1406,12 +1406,12 @@ REAL orient3dadapt (
   REAL bc[4], ca[4], ab[4];
   REAL bc3, ca3, ab3;
   REAL adet[8], bdet[8], cdet[8];
-  int alen, blen, clen;
+  int alen=0, blen=0, clen=0;
   REAL abdet[16];
-  int ablen;
+  int ablen=0;
   REAL *finnow, *finother, *finswap;
   REAL fin1[192], fin2[192];
-  int finlength;
+  int finlength=0;
 
   REAL adxtail, bdxtail, cdxtail;
   REAL adytail, bdytail, cdytail;
@@ -1420,7 +1420,8 @@ REAL orient3dadapt (
   REAL bt_clarge, bt_alarge;
   REAL ct_alarge, ct_blarge;
   REAL at_b[4], at_c[4], bt_c[4], bt_a[4], ct_a[4], ct_b[4];
-  int at_blen, at_clen, bt_clen, bt_alen, ct_alen, ct_blen;
+  int at_blen=0, at_clen=0, bt_clen=0;
+  int bt_alen=0, ct_alen=0, ct_blen=0;
   REAL bdxt_cdy1, cdxt_bdy1, cdxt_ady1;
   REAL adxt_cdy1, adxt_bdy1, bdxt_ady1;
   REAL bdxt_cdy0, cdxt_bdy0, cdxt_ady0;
@@ -1430,14 +1431,14 @@ REAL orient3dadapt (
   REAL bdyt_cdx0, cdyt_bdx0, cdyt_adx0;
   REAL adyt_cdx0, adyt_bdx0, bdyt_adx0;
   REAL bct[8], cat[8], abt[8];
-  int bctlen, catlen, abtlen;
+  int bctlen=0, catlen=0, abtlen=0;
   REAL bdxt_cdyt1, cdxt_bdyt1, cdxt_adyt1;
   REAL adxt_cdyt1, adxt_bdyt1, bdxt_adyt1;
   REAL bdxt_cdyt0, cdxt_bdyt0, cdxt_adyt0;
   REAL adxt_cdyt0, adxt_bdyt0, bdxt_adyt0;
   REAL u[4], v[12], w[16];
   REAL u3;
-  int vlength, wlength;
+  int vlength=0, wlength=0;
   REAL negate;
 
   REAL bvirt, avirt, bround, around;
@@ -1869,17 +1870,17 @@ REAL incircleexact (
   REAL bxay0, cxby0, dxcy0, axdy0, cxay0, dxby0;
   REAL ab[4], bc[4], cd[4], da[4], ac[4], bd[4];
   REAL temp8[8];
-  int templen;
+  int templen=0;
   REAL abc[12], bcd[12], cda[12], dab[12];
-  int abclen, bcdlen, cdalen, dablen;
+  int abclen=0, bcdlen=0, cdalen=0, dablen=0;
   REAL det24x[24], det24y[24], det48x[48], det48y[48];
-  int xlen, ylen;
+  int xlen=0, ylen=0;
   REAL adet[96], bdet[96], cdet[96], ddet[96];
-  int alen, blen, clen, dlen;
+  int alen=0, blen=0, clen=0, dlen=0;
   REAL abdet[192], cddet[192];
-  int ablen, cdlen;
+  int ablen=0, cdlen=0;
   REAL deter[384];
-  int deterlen;
+  int deterlen=0;
   int i;
 
   REAL bvirt, avirt, bround, around;
@@ -1970,16 +1971,16 @@ REAL incircleadapt (
   REAL bc[4], ca[4], ab[4];
   REAL bc3, ca3, ab3;
   REAL axbc[8], axxbc[16], aybc[8], ayybc[16], adet[32];
-  int axbclen, axxbclen, aybclen, ayybclen, alen;
+  int axbclen=0, axxbclen=0, aybclen=0, ayybclen=0, alen=0;
   REAL bxca[8], bxxca[16], byca[8], byyca[16], bdet[32];
-  int bxcalen, bxxcalen, bycalen, byycalen, blen;
+  int bxcalen=0, bxxcalen=0, bycalen=0, byycalen=0, blen=0;
   REAL cxab[8], cxxab[16], cyab[8], cyyab[16], cdet[32];
-  int cxablen, cxxablen, cyablen, cyyablen, clen;
+  int cxablen=0, cxxablen=0, cyablen=0, cyyablen=0, clen=0;
   REAL abdet[64];
-  int ablen;
+  int ablen=0;
   REAL fin1[1152], fin2[1152];
   REAL *finnow, *finother, *finswap;
-  int finlength;
+  int finlength=0;
 
   REAL adxtail, bdxtail, cdxtail, adytail, bdytail, cdytail;
   REAL adxadx1, adyady1, bdxbdx1, bdybdy1, cdxcdx1, cdycdy1;
@@ -1992,25 +1993,29 @@ REAL incircleadapt (
   REAL u3, v3;
   REAL temp8[8], temp16a[16], temp16b[16], temp16c[16];
   REAL temp32a[32], temp32b[32], temp48[48], temp64[64];
-  int temp8len, temp16alen, temp16blen, temp16clen;
-  int temp32alen, temp32blen, temp48len, temp64len;
+  int temp8len=0, temp16alen=0, temp16blen=0, temp16clen=0;
+  int temp32alen=0, temp32blen=0, temp48len=0, temp64len=0;
   REAL axtbb[8], axtcc[8], aytbb[8], aytcc[8];
-  int axtbblen, axtcclen, aytbblen, aytcclen;
+  int axtbblen=0, axtcclen=0, aytbblen=0, aytcclen=0;
   REAL bxtaa[8], bxtcc[8], bytaa[8], bytcc[8];
-  int bxtaalen, bxtcclen, bytaalen, bytcclen;
+  int bxtaalen=0, bxtcclen=0, bytaalen=0, bytcclen=0;
   REAL cxtaa[8], cxtbb[8], cytaa[8], cytbb[8];
-  int cxtaalen, cxtbblen, cytaalen, cytbblen;
+  int cxtaalen=0, cxtbblen=0, cytaalen=0, cytbblen=0;
   REAL axtbc[8], aytbc[8], bxtca[8], bytca[8], cxtab[8], cytab[8];
-  int axtbclen, aytbclen, bxtcalen, bytcalen, cxtablen, cytablen;
+  int axtbclen=0, aytbclen=0, bxtcalen=0, bytcalen=0, cxtablen=0, cytablen=0;
   REAL axtbct[16], aytbct[16], bxtcat[16], bytcat[16], cxtabt[16], cytabt[16];
-  int axtbctlen, aytbctlen, bxtcatlen, bytcatlen, cxtabtlen, cytabtlen;
+  int axtbctlen=0, aytbctlen=0;
+  int bxtcatlen=0, bytcatlen=0;
+  int cxtabtlen=0, cytabtlen=0;
   REAL axtbctt[8], aytbctt[8], bxtcatt[8];
   REAL bytcatt[8], cxtabtt[8], cytabtt[8];
-  int axtbcttlen, aytbcttlen, bxtcattlen, bytcattlen, cxtabttlen, cytabttlen;
+  int axtbcttlen=0, aytbcttlen=0;
+  int bxtcattlen=0, bytcattlen=0;
+  int cxtabttlen=0, cytabttlen=0;
   REAL abt[8], bct[8], cat[8];
-  int abtlen, bctlen, catlen;
+  int abtlen=0, bctlen=0, catlen=0;
   REAL abtt[4], bctt[4], catt[4];
-  int abttlen, bcttlen, cattlen;
+  int abttlen=0, bcttlen=0, cattlen=0;
   REAL abtt3, bctt3, catt3;
   REAL negate;
 
@@ -2610,26 +2615,26 @@ REAL insphereexact (
   REAL ab[4], bc[4], cd[4], de[4], ea[4];
   REAL ac[4], bd[4], ce[4], da[4], eb[4];
   REAL temp8a[8], temp8b[8], temp16[16];
-  int temp8alen, temp8blen, temp16len;
+  int temp8alen=0, temp8blen=0, temp16len=0;
   REAL abc[24], bcd[24], cde[24], dea[24], eab[24];
   REAL abd[24], bce[24], cda[24], deb[24], eac[24];
-  int abclen, bcdlen, cdelen, dealen, eablen;
-  int abdlen, bcelen, cdalen, deblen, eaclen;
+  int abclen=0, bcdlen=0, cdelen=0, dealen=0, eablen=0;
+  int abdlen=0, bcelen=0, cdalen=0, deblen=0, eaclen=0;
   REAL temp48a[48], temp48b[48];
-  int temp48alen, temp48blen;
+  int temp48alen=0, temp48blen=0;
   REAL abcd[96], bcde[96], cdea[96], deab[96], eabc[96];
-  int abcdlen, bcdelen, cdealen, deablen, eabclen;
+  int abcdlen=0, bcdelen=0, cdealen=0, deablen=0, eabclen=0;
   REAL temp192[192];
   REAL det384x[384], det384y[384], det384z[384];
-  int xlen, ylen, zlen;
+  int xlen=0, ylen=0, zlen=0;
   REAL detxy[768];
-  int xylen;
+  int xylen=0;
   REAL adet[1152], bdet[1152], cdet[1152], ddet[1152], edet[1152];
-  int alen, blen, clen, dlen, elen;
+  int alen=0, blen=0, clen=0, dlen=0, elen=0;
   REAL abdet[2304], cddet[2304], cdedet[3456];
-  int ablen, cdlen;
+  int ablen=0, cdlen=0;
   REAL deter[5760];
-  int deterlen;
+  int deterlen=0;
   int i;
 
   REAL bvirt, avirt, bround, around;
@@ -2866,15 +2871,16 @@ REAL insphereadapt (
   REAL ab3, bc3, cd3, da3, ac3, bd3;
   REAL abeps, bceps, cdeps, daeps, aceps, bdeps;
   REAL temp8a[8], temp8b[8], temp8c[8], temp16[16], temp24[24], temp48[48];
-  int temp8alen, temp8blen, temp8clen, temp16len, temp24len, temp48len;
+  int temp8alen=0, temp8blen=0, temp8clen=0;
+  int temp16len=0, temp24len=0, temp48len=0;
   REAL xdet[96], ydet[96], zdet[96], xydet[192];
-  int xlen, ylen, zlen, xylen;
+  int xlen=0, ylen=0, zlen=0, xylen=0;
   REAL adet[288], bdet[288], cdet[288], ddet[288];
-  int alen, blen, clen, dlen;
+  int alen=0, blen=0, clen=0, dlen=0;
   REAL abdet[576], cddet[576];
-  int ablen, cdlen;
+  int ablen=0, cdlen=0;
   REAL fin1[1152];
-  int finlength;
+  int finlength=0;
 
   REAL aextail, bextail, cextail, dextail;
   REAL aeytail, beytail, ceytail, deytail;
@@ -3213,21 +3219,21 @@ REAL orient4dexact (
   REAL ab[4], bc[4], cd[4], de[4], ea[4];
   REAL ac[4], bd[4], ce[4], da[4], eb[4];
   REAL temp8a[8], temp8b[8], temp16[16];
-  int temp8alen, temp8blen, temp16len;
+  int temp8alen=0, temp8blen=0, temp16len=0;
   REAL abc[24], bcd[24], cde[24], dea[24], eab[24];
   REAL abd[24], bce[24], cda[24], deb[24], eac[24];
-  int abclen, bcdlen, cdelen, dealen, eablen;
-  int abdlen, bcelen, cdalen, deblen, eaclen;
+  int abclen=0, bcdlen=0, cdelen=0, dealen=0, eablen=0;
+  int abdlen=0, bcelen=0, cdalen=0, deblen=0, eaclen=0;
   REAL temp48a[48], temp48b[48];
-  int temp48alen, temp48blen;
+  int temp48alen=0, temp48blen=0;
   REAL abcd[96], bcde[96], cdea[96], deab[96], eabc[96];
-  int abcdlen, bcdelen, cdealen, deablen, eabclen;
+  int abcdlen=0, bcdelen=0, cdealen=0, deablen=0, eabclen=0;
   REAL adet[192], bdet[192], cdet[192], ddet[192], edet[192];
-  int alen, blen, clen, dlen, elen;
+  int alen, blen=0, clen=0, dlen=0, elen=0;
   REAL abdet[384], cddet[384], cdedet[576];
-  int ablen, cdlen;
+  int ablen=0, cdlen=0;
   REAL deter[960];
-  int deterlen;
+  int deterlen=0;
   int i;
 
   REAL bvirt, avirt, bround, around;
@@ -3435,13 +3441,14 @@ REAL orient4dadapt (
   REAL ab3, bc3, cd3, da3, ac3, bd3;
   REAL abeps, bceps, cdeps, daeps, aceps, bdeps;
   REAL temp8a[8], temp8b[8], temp8c[8], temp16[16], temp24[24];
-  int temp8alen, temp8blen, temp8clen, temp16len, temp24len;
+  int temp8alen=0, temp8blen=0, temp8clen=0;
+  int temp16len=0, temp24len=0;
   REAL adet[48], bdet[48], cdet[48], ddet[48];
-  int alen, blen, clen, dlen;
+  int alen=0, blen=0, clen=0, dlen=0;
   REAL abdet[96], cddet[96];
-  int ablen, cdlen;
+  int ablen=0, cdlen=0;
   REAL fin1[192];
-  int finlength;
+  int finlength=0;
 
   REAL aextail, bextail, cextail, dextail;
   REAL aeytail, beytail, ceytail, deytail;

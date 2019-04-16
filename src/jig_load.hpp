@@ -457,8 +457,11 @@
         )
     {
         iptr_type _errv  = __no_error ;
+
         try
         {
+            __unreferenced(_jlog) ;
+
     /*------------------------------------- MISC keywords */
             _jcfg._verbosity = 
                          _jjig._verbosity ;
