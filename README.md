@@ -30,7 +30,7 @@ This package provides the underlying `C++` source for `JIGSAW`; defining a basic
 
 The first step is to compile and configure the code! `JIGSAW` can either be built directly from src, or installed using the <a href="https://anaconda.org/conda-forge/jigsaw">`conda`</a> package manager.
 
-### `Building JIGSAW from src`
+### `Building from src`
 
 The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>.
 
@@ -75,7 +75,7 @@ g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG
 ````
 will build `JIGSAW` as a shared library (`libjigsaw`).
 
-### `Install JIGSAW via conda`
+### `Install via conda`
 
 `JIGSAW` is also available as a `conda` environment. To install and use, follow the steps below:
 
