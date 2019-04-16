@@ -56,7 +56,7 @@ This process will build a series of executables and the shared library: `jigsaw`
 
 See `example.jig` for documentation on calling the command-line executables, and the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
-#### `Via g++/llvm`
+#### `Using g++/llvm`
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. The build process is a simple one-liner (from <a href="../master/src/">`../jigsaw/src/`</a>):
 ````
