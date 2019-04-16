@@ -13,7 +13,7 @@ This package provides the underlying `C++` source for `JIGSAW`; defining a basic
 
 `JIGSAW` has been compiled and tested on various `64-bit` `Linux`, `Windows` and `MacOS` based platforms. 
 
-## `Code Structure`
+### `Code Structure`
 
 `JIGSAW` is written as a `header-only` library in `C++`. Both a basic command-line interface and a `C`-format `API` are defined:
 
@@ -26,7 +26,7 @@ This package provides the underlying `C++` source for `JIGSAW`; defining a basic
       ├── out -- default folder for JIGSAW output
       └── uni -- unit tests and libjigsaw example programs
 
-## `Getting Started`
+### `Getting Started`
 
 The first step is to compile and configure the code! `JIGSAW` can either be built directly from src, or installed using the <a href="https://anaconda.org/conda-forge/jigsaw">`conda`</a> package manager.
 
@@ -87,7 +87,7 @@ Each time you want to use `JIGSAW` simply activate the environment using: `conda
 
 Once activated, the various `JIGSAW` command-line utilities will be available in your run path, `JIGSAW`'s shared library (`libjigsaw`) will be available in your library path and its include files in your include path.
 
-## `A Simple Example`
+### `A Simple Example`
 
 After compiling the code, try running the following command-line example to get started:
 ````
@@ -103,7 +103,7 @@ In this example, a high-quality tetrahedral mesh is generated for the 'stanford-
 
 A repository of additional surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>.
 
-## `API Example Code`
+### `API Example Code`
 
 A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/uni/">`../jigsaw/uni/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/inc/">`../jigsaw/inc/`</a>. 
 
@@ -119,13 +119,13 @@ The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> u
 
 This process will build the unit-tests as a series of executables in <a href="../master/uni/">`../jigsaw/uni/`</a>. `BUILD_MODE` is a compiler configuration flag: either `RELEASE` or `DEBUG`.
 
-## `License`
+### `License`
 
 This program may be freely redistributed under the condition that the copyright notices (including this entire header) are not removed, and no compensation is received through use of the software.  Private, research, and institutional use is free.  You may distribute modified versions of this code `UNDER THE CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR NOTICE IS GIVEN OF THE MODIFICATIONS`. Distribution of this code as part of a commercial system is permissible `ONLY BY DIRECT ARRANGEMENT WITH THE AUTHOR`. (If you are not directly supplying this code to a customer, and you are instead telling them how they can obtain it for free, then you are not required to make any arrangement with me.) 
 
 `DISCLAIMER`:  Neither I nor: Columbia University, the Massachusetts Institute of Technology, the University of Sydney, nor the National Aeronautics and Space Administration warrant this code in any way whatsoever.  This code is provided "as-is" to be used at your own risk.
 
-## `References`
+### `References`
 
 There are a number of publications that describe the algorithms used in `JIGSAW` in detail. If you make use of `JIGSAW` in your work, please consider including a reference to the following:
 
