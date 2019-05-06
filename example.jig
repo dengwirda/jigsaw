@@ -16,7 +16,7 @@
 #
 #   This command calls JIGSAW using the config. data contai-
 #   ned in "example.jig", which, in unmodified form, creates 
-#   a tetrahedral    mesh of the "stanford-bunny" geometry. 
+#   a tetrahedral mesh of the "stanford-bunny" geometry. 
 #
 
 #   The subsequent sections detail the various configuration 
