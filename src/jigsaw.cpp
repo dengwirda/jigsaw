@@ -32,7 +32,7 @@
     --------------------------------------------------------
      *
      * JIGSAW release 0.9.10.x
-     * Last updated: 10 April, 2019
+     * Last updated: 18 April, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -427,6 +427,10 @@
         typedef mesh ::hfun_mesh_euclidean_3d  <
                     real_type,
                     iptr_type>   euclidean_mesh_3d ;
+
+        typedef mesh ::hfun_mesh_ellipsoid_3d  <
+                    real_type,
+                    iptr_type>   ellipsoid_mesh_3d ;
                     
         typedef mesh ::hfun_grid_euclidean_2d  <
                     real_type,
@@ -451,6 +455,8 @@
         euclidean_mesh_2d       _euclidean_mesh_2d ;
         euclidean_mesh_3d       _euclidean_mesh_3d ;
         
+        ellipsoid_mesh_3d       _ellipsoid_mesh_3d ;
+
         euclidean_grid_2d       _euclidean_grid_2d ;
         euclidean_grid_3d       _euclidean_grid_3d ;
         
@@ -473,6 +479,8 @@
            _euclidean_mesh_2d.init() ;
             this->
            _euclidean_mesh_3d.init() ;
+            this->
+           _ellipsoid_mesh_3d.init() ;
             
             this->
            _euclidean_grid_2d.init() ;

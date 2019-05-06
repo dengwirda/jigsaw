@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 16 January, 2019
+ * Last updated: 30 April, 2019
  *
  * Copyright 2013-2019
  * Darren Engwirda
@@ -717,10 +717,8 @@
             real_type _dloc = 
             _bmin[_idim] - _ppos[_idim];
         
-            _dist +=  _dloc ;
-        
-          //_dist = 
-          //    std::max (_dist, _dloc);
+            _dist = 
+                std::max (_dist, _dloc);
         }
         else
         if (_ppos[_idim] > _bmax[_idim])
@@ -728,20 +726,18 @@
             real_type _dloc = 
             _ppos[_idim] - _bmax[_idim];
         
-            _dist +=  _dloc ;
-        
-          //_dist = 
-          //    std::max (_dist, _dloc);
+            _dist = 
+                std::max (_dist, _dloc);
         }
         }
         
-        return ( _dist ) ;
+        return ( _dist * _dist ) ;
     }
     
 /*-------- search collection via recursive aabb traversal */
     template <
-    typename      tree_pred ,// tree intersections
-    typename      item_pred  // item intersections
+        typename  tree_pred ,// tree intersections
+        typename  item_pred  // item intersections
              >
     __normal_call bool_type find (
         tree_pred &_pred,
@@ -796,16 +792,19 @@
     }
     
 /*-------- check for nearsest in collection via traversal */
+    template <
+        typename  projector  
+             >    
     __normal_call bool_type near (
-        real_type *_ppos ,
-        item_data*&_near
+        real_type *_ppos , 
+        projector &_proj
         )
     {
         class node_dist
             {
     /*----------------------------- node/dist type for PQ */
             public  :
-                real_type       _dist ;
+                real_type       _dsqr ;
                 node_type      *_node ;
             } ;
             
@@ -818,8 +817,8 @@
                 node_dist const&_adat ,
                 node_dist const&_bdat
                 ) const
-            {   return ( _adat. _dist <
-                         _bdat. _dist ) ;
+            {   return ( _adat. _dsqr <
+                         _bdat. _dsqr ) ;
             }
             } ;
     
@@ -828,12 +827,8 @@
         if (this->_root 
                 == nullptr) return _find;
   
-        real_type _dist = 
+        real_type _dsqr = 
             +std::numeric_limits
-                <real_type>::infinity() ;
-        
-        real_type _dloc = 
-            -std::numeric_limits
                 <real_type>::infinity() ;
 
     /*----------------- maintain stack of unvisited nodes */
@@ -843,7 +838,7 @@
     
         node_dist _ndat ;
         _ndat._node =  _root ;
-        _ndat._dist = 
+        _ndat._dsqr = 
         calc_rect_dist(_ppos ,
            &_root->_pmin[0],
                &_root->_pmax[0]) ;
@@ -855,34 +850,18 @@
         /*------------------------ test next closest node */
             _nnpq._pop_root (_ndat) ;
 
-            if (_ndat._dist<=_dist)
+            if (_ndat._dsqr<=_dsqr)
             {
         /*------------------------ descend if maybe close */
             
             if (_ndat.
-                _node->_hptr  != nullptr )
+                _node-> _hptr   != nullptr)
             {
         /*------------------------ leaf: update item-dist */
-                for (item_data  *_iptr = 
-                    _ndat._node->_hptr ; 
-                        _iptr != nullptr ; 
-                    _iptr = _iptr->_next )
-                {
-                    _dloc = 
-                    calc_rect_dist(_ppos ,
-                   &_iptr->_data.pmin(0) ,
-                   &_iptr->_data.pmax(0)
-                        ) ;
-                  
-                    if (_dloc < _dist)
-                    {
-                /*---------------- keep track of min-len. */
-                        _dist = _dloc;
-                        _near = _iptr;
-                    }
-                }
+                _find =  true ;                
 
-                _find =  true ;
+                _dsqr = _proj(
+                        _ndat._node->_hptr) ;
             }
 
             if (_ndat.
@@ -896,17 +875,19 @@
                     _ndat._node->lower(1) ;
                 
                 _ndat._node =  _inod ;
-                _ndat._dist = 
+                _ndat._dsqr = 
                 calc_rect_dist(_ppos ,
                    &_inod->_pmin[ 0],
                        &_inod->_pmax[ 0]) ;
+
                 _nnpq.push(_ndat)  ;
                 
                 _ndat._node =  _jnod ;
-                _ndat._dist = 
+                _ndat._dsqr = 
                 calc_rect_dist(_ppos ,
                    &_jnod->_pmin[ 0],
                        &_jnod->_pmax[ 0]) ;
+                
                 _nnpq.push(_ndat)  ;
             }
             

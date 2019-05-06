@@ -57,6 +57,7 @@
 
 #   INIT_FILE = *.msh
 
+
 #   ---> INIT_NEAR - {default = 1.E-8} relative "zip" tol.
 #       applied when processing initial conditions. In cases
 #       where "sharp-feature" detection is active, nodes in 

@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 13 August, 2018
+ * Last updated: 18 April, 2019
  *
- * Copyright 2013-2018
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -60,6 +60,8 @@
 
 #   include "mesh_func/hfun_mesh_euclidean_2.hpp"
 #   include "mesh_func/hfun_mesh_euclidean_3.hpp"
+
+#   include "mesh_func/hfun_mesh_ellipsoid_3.hpp"
 
 #   include "mesh_func/hfun_grid_euclidean_2.hpp"
 #   include "mesh_func/hfun_grid_euclidean_3.hpp"

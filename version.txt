@@ -19,6 +19,9 @@
   - Improved support for initial conditions, allow-
     ing "un-refinable" edges/faces to be specified.
 
+  - Support for unstructured H(x) specifications on 
+    the ellipsoid.
+
 
   * Version 0.9.8 :
     --------------
