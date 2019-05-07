@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 February, 2019
+     * Last updated: 30 April, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -153,7 +153,20 @@
             if (this->_kind == 
                     jmsh_kind::ellipsoid_mesh)
             {
-                //!! do things
+                std::int32_t _npos ;
+                typename 
+                hfun_data::ellipsoid_mesh_3d
+                    ::node_type _ndat ;
+                _ndat.pval(0) = _pval[0];
+                _ndat.pval(1) = _pval[1];
+                _ndat.pval(2) = +0.0 ;
+                
+                _npos = this->_hfun->
+                   _ellipsoid_mesh_3d.
+                _mesh.push_node(_ndat, false) ;
+                        
+                this->_pmap.
+                    push_tail(_npos) ;
             }
         }      
     /*-------------------------------- read COORD section */
@@ -227,7 +240,7 @@
                         _ypos.push_tail(_ppos) ;
                 }            
             }
-        }           
+        }      
     /*-------------------------------- read VALUE section */
         __normal_call void_type push_value (
             std:: size_t  _ipos ,
@@ -283,6 +296,20 @@
             }
             else
             if (this->_kind == 
+                    jmsh_kind::ellipsoid_mesh)
+            {
+                if (_ipos < this->_pmap.count())
+                {
+                std::int32_t  _nmap ;
+                _nmap = this->_pmap [_ipos];
+                
+                this->_hfun->
+                _ellipsoid_mesh_3d._mesh.
+                    _set1[_nmap].hval() = *_vval;
+                }
+            }
+            else
+            if (this->_kind == 
                     jmsh_kind::ellipsoid_grid)
             {
                 this->_hfun->
@@ -316,10 +343,20 @@
                _mesh.push_tri3(_tdat, false) ;
             }
             else
-            if (this->_ndim == +3)
+            if (this->_kind == 
+                    jmsh_kind::ellipsoid_mesh)
             {
-                // 3-dimensional!!          
-            }  
+                typename 
+                hfun_data::ellipsoid_mesh_3d
+                    ::tri3_type _tdat ;
+                _tdat.node(0) = _node[0];
+                _tdat.node(1) = _node[1];
+                _tdat.node(2) = _node[2];
+                
+                this->_hfun->
+                    _ellipsoid_mesh_3d.
+               _mesh.push_tri3(_tdat, false) ;
+            }
         }
     /*-------------------------------- read TRIA4 section */
         __normal_call void_type push_tria4 (
@@ -331,11 +368,6 @@
             __unreferenced(_ipos) ;
             __unreferenced(_itag) ;
 
-            if (this->_ndim == +2)
-            {
-                // 2-dimensional!!            
-            }
-            else
             if (this->_ndim == +3 &&
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
@@ -353,6 +385,25 @@
                _mesh.push_tri4(_tdat, false) ;
             }
         }
+    /*---------------------------------- parse RADII data */
+        __normal_call void_type push_radii (
+            double       *_erad
+            )
+        {
+            this->_hfun->_ellipsoid_mesh_3d.
+                _radA = _erad[ 0] ;
+            this->_hfun->_ellipsoid_mesh_3d.
+                _radB = _erad[ 1] ;
+            this->_hfun->_ellipsoid_mesh_3d.
+                _radC = _erad[ 2] ;
+
+            this->_hfun->_ellipsoid_grid_3d.
+                _radA = _erad[ 0] ;
+            this->_hfun->_ellipsoid_grid_3d.
+                _radB = _erad[ 1] ;
+            this->_hfun->_ellipsoid_grid_3d.
+                _radC = _erad[ 2] ;  
+        }     
         } ;
     
     /*---------------------------------- parse HFUN. file */
@@ -418,6 +469,9 @@
         try
         {
         
+        __unreferenced (_jlog) ;
+        __unreferenced (_jcfg) ;
+
         if (_hmsh._flags == 
                 JIGSAW_EUCLIDEAN_MESH )
         {
@@ -449,7 +503,7 @@
                 _hfun._euclidean_mesh_2d.
                 _mesh.push_node(_ndat, false) ;
             }
-            
+
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._tria3._size ; 
                     ++_ipos )
@@ -525,6 +579,77 @@
         }
         else
         if (_hmsh._flags == 
+                JIGSAW_ELLIPSOID_MESH )
+        {
+    /*--------------------------------- ellipsoid-mesh-3d */
+            _hfun._kind 
+                = jmsh_kind::ellipsoid_mesh ;
+            _hfun._ndim = +3;
+    
+            if (_hmsh._vert2._size !=
+                _hmsh._value._size )
+            return __invalid_argument ;
+
+            if (_hmsh._radii._size==+3)
+            {
+            _hfun._ellipsoid_mesh_3d.
+                _radA = _hmsh._radii._data[0] ;
+            _hfun._ellipsoid_mesh_3d.
+                _radB = _hmsh._radii._data[1] ;
+            _hfun._ellipsoid_mesh_3d.
+                _radC = _hmsh._radii._data[2] ;
+            }
+            else
+            if (_hmsh._radii._size==+1)
+            {
+            _hfun._ellipsoid_mesh_3d.
+                _radA = _hmsh._radii._data[0] ;
+            _hfun._ellipsoid_mesh_3d.
+                _radB = _hmsh._radii._data[0] ;
+            _hfun._ellipsoid_mesh_3d.
+                _radC = _hmsh._radii._data[0] ;
+            }
+    
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._vert2._size ; 
+                    ++_ipos )
+            {
+                typename 
+                hfun_data::ellipsoid_mesh_3d
+                    ::node_type _ndat ;
+                _ndat.pval(0) = _hmsh.
+                    _vert2._data[_ipos]._ppos[0];
+                _ndat.pval(1) = _hmsh.
+                    _vert2._data[_ipos]._ppos[1];
+                _ndat.pval(2) = + 0.0 ;
+                _ndat.hval () = _hmsh.
+                    _value._data[_ipos] ;
+                
+                _hfun._ellipsoid_mesh_3d.
+                _mesh.push_node(_ndat, false) ;
+            }
+            
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._tria3._size ; 
+                    ++_ipos )
+            {
+                typename 
+                hfun_data::ellipsoid_mesh_3d
+                    ::tri3_type _tdat ;
+                _tdat.node(0) = _hmsh.
+                    _tria3._data[_ipos]._node[0];
+                _tdat.node(1) = _hmsh.
+                    _tria3._data[_ipos]._node[1];
+                _tdat.node(2) = _hmsh.
+                    _tria3._data[_ipos]._node[2];
+                
+                _hfun._ellipsoid_mesh_3d.
+                _mesh.push_tri3(_tdat, false) ;
+            }            
+   
+        }
+        else
+        if (_hmsh._flags == 
                 JIGSAW_EUCLIDEAN_GRID )
         {
             if (_hmsh._zgrid._size== 0)
@@ -565,7 +690,7 @@
             else
             if (_hmsh._zgrid._size!= 0)
             {
-    /*--------------------------------- euclidean-grid-2d */
+    /*--------------------------------- euclidean-grid-3d */
             _hfun._kind 
                 = jmsh_kind::euclidean_grid ;
             _hfun._ndim = +3;
@@ -614,11 +739,31 @@
         {
             if (_hmsh._zgrid._size== 0)
             {
-    /*--------------------------------- euclidean-grid-2d */
+    /*--------------------------------- ellipsoid-grid-3d */
             _hfun._kind 
                 = jmsh_kind::ellipsoid_grid ;
             _hfun._ndim = +3;
     
+            if (_hmsh._radii._size==+3)
+            {
+            _hfun._ellipsoid_grid_3d.
+                _radA = _hmsh._radii._data[0] ;
+            _hfun._ellipsoid_grid_3d.
+                _radB = _hmsh._radii._data[1] ;
+            _hfun._ellipsoid_grid_3d.
+                _radC = _hmsh._radii._data[2] ;
+            }
+            else
+            if (_hmsh._radii._size==+1)
+            {
+            _hfun._ellipsoid_grid_3d.
+                _radA = _hmsh._radii._data[0] ;
+            _hfun._ellipsoid_grid_3d.
+                _radB = _hmsh._radii._data[0] ;
+            _hfun._ellipsoid_grid_3d.
+                _radC = _hmsh._radii._data[0] ;
+            }
+
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._xgrid._size ; 
                     ++_ipos )
@@ -1051,6 +1196,83 @@
         }
         else
         if (_hfun._kind ==
+             jmsh_kind::ellipsoid_mesh)
+        {
+    /*--------------------------------- ellipsoid-mesh-3d */
+            real_type _hmin = 
+            std::numeric_limits<real_type>::max() ;
+            
+            iptr_type _imin = 
+            std::numeric_limits<iptr_type>::max() ;
+            iptr_type _imax = 
+            std::numeric_limits<iptr_type>::min() ;
+
+            iptr_type _nmax = +0 ;
+
+            for (auto _iter  = _hfun.
+            _ellipsoid_mesh_3d._mesh._set1.head() ;
+                      _iter != _hfun.
+            _ellipsoid_mesh_3d._mesh._set1.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+            
+                _hmin = std::min(
+                    _hmin, _iter->hval ()) ;
+            }
+
+            for (auto _iter  = _hfun.
+            _ellipsoid_mesh_3d._mesh._set1.head() ;
+                      _iter != _hfun.
+            _ellipsoid_mesh_3d._mesh._set1.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+
+                _nmax += +1  ;                
+            }
+
+            for (auto _iter  = _hfun.
+            _ellipsoid_mesh_3d._mesh._set3.head() ;
+                      _iter != _hfun.
+            _ellipsoid_mesh_3d._mesh._set3.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+            
+                _imin = std::min(
+                    _imin, _iter->node(0)) ;
+                _imin = std::min(
+                    _imin, _iter->node(1)) ;
+                _imin = std::min(
+                    _imin, _iter->node(2)) ;
+                    
+                _imax = std::max(
+                    _imax, _iter->node(0)) ;
+                _imax = std::max(
+                    _imax, _iter->node(1)) ;
+                _imax = std::max(
+                    _imax, _iter->node(2)) ;
+            }
+
+            if (_hmin <= (real_type) +0.)
+            {
+                _jlog.push (
+    "**input error: HFUN. values must be strictly +ve.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
+            if (_imin < +0 || _imax>=_nmax)
+            {
+                _jlog.push (
+    "**input error: HFUN. tria. indexing is incorrect.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+        }
+        else
+        if (_hfun._kind ==
              jmsh_kind::ellipsoid_grid)
         {
     /*--------------------------------- ellipsoid-grid-3d */
@@ -1233,7 +1455,7 @@
             }
             
             __dumpINTS("|COORD.|", _num1)
-            
+
             for (auto _iter  = _hfun.
             _euclidean_mesh_2d._mesh._set3.head() ;
                       _iter != _hfun.
@@ -1390,15 +1612,64 @@
         }
         else
         if (_hfun._kind ==
+             jmsh_kind::ellipsoid_mesh)
+        {
+    /*--------------------------------- ellipsoid-mesh-3d */
+            _jlog.push(
+                "  ELLIPSOID-MESH\n\n") ;
+            
+            iptr_type _num1 = +0 ;
+            iptr_type _num3 = +0 ;
+            
+            for (auto _iter  = _hfun.
+            _ellipsoid_mesh_3d._mesh._set1.head() ;
+                      _iter != _hfun.
+            _ellipsoid_mesh_3d._mesh._set1.tend() ;
+                    ++_iter )
+            {
+                if (_iter->mark() < 0) continue ;
+                
+                _hmin = std::min (
+                    _hmin, _iter->hval()) ;
+                _hmax = std::max (
+                    _hmax, _iter->hval()) ;
+            }
+            
+            __dumpREAL(".MIN(H).", _hmin)
+            __dumpREAL(".MAX(H).", _hmax)
+            
+            _jlog.push("  \n") ;
+            
+            for (auto _iter  = _hfun.
+            _ellipsoid_mesh_3d._mesh._set1.head() ;
+                      _iter != _hfun.
+            _ellipsoid_mesh_3d._mesh._set1.tend() ;
+                    ++_iter )
+            {
+            if (_iter->mark()>=+0) _num1 += +1 ;
+            }
+            
+            __dumpINTS("|COORD.|", _num1)
+
+            for (auto _iter  = _hfun.
+            _ellipsoid_mesh_3d._mesh._set3.head() ;
+                      _iter != _hfun.
+            _ellipsoid_mesh_3d._mesh._set3.tend() ;
+                    ++_iter )
+            {
+            if (_iter->mark()>=+0) _num3 += +1 ;
+            }
+            
+            __dumpINTS("|TRIA-3|", _num3)
+            
+        }
+        else
+        if (_hfun._kind ==
              jmsh_kind::ellipsoid_grid)
         {
     /*--------------------------------- ellipsoid-grid-3d */
             _jlog.push(
                 "  ELLIPSOID-GRID\n\n") ;
-            
-            __dumpINTS("|NDIMS.|",  +3) ;
-            
-            _jlog.push("\n") ;
             
             for (auto _iter  = _hfun.
             _ellipsoid_grid_3d._hmat.head() ;

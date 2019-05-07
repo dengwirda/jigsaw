@@ -1,3 +1,0 @@
-#
-# to-do: place WIN binaries here and delete me!
-#

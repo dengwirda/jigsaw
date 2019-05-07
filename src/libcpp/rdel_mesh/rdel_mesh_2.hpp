@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 February, 2019
+     * Last updated: 08 April, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -122,19 +122,19 @@
     
     /*-------- restricted delaunay mesh-generation in R^2 */  
     
-    typedef M                               mesh_type ;
-    typedef P                               mesh_pred ;
-    typedef G                               geom_type ;
-    typedef H                               hfun_type ;
-    typedef A                               allocator ;
+    typedef M                           mesh_type ;
+    typedef P                           mesh_pred ;
+    typedef G                           geom_type ;
+    typedef H                           hfun_type ;
+    typedef A                           allocator ;
 
     typedef typename 
-            mesh_type::real_type            real_type ;
+            mesh_type::real_type        real_type ;
     typedef typename 
-            mesh_type::iptr_type            iptr_type ;
+            mesh_type::iptr_type        iptr_type ;
             
     typedef typename 
-            allocator::size_type            uint_type ;
+            allocator::size_type        uint_type ;
 
     typedef char_type  mode_type ;
     
@@ -161,58 +161,63 @@
         } ;
     
     typedef typename 
-            mesh_type::node_data            node_data ;
+            mesh_type::node_data        node_data ;
     typedef typename 
-            mesh_type::ball_data            ball_data ;
+            mesh_type::ball_data        ball_data ;
     typedef typename 
-            mesh_type::edge_data            edge_data ;
+            mesh_type::edge_data        edge_data ;
     typedef typename 
-            mesh_type::tria_data            tria_data ;
+            mesh_type::tria_data        tria_data ;
+
+    typedef typename 
+            mesh_type::edge_list        edge_hash ;
+    typedef typename 
+            mesh_type::tria_list        tria_hash ;
 
     typedef mesh::rdel_params       <
                 real_type, 
-                iptr_type           >       rdel_opts ;
+                iptr_type           >   rdel_opts ;
 
     typedef mesh::rdel_timers       <
                 real_type ,
-                iptr_type           >       rdel_stat ;
+                iptr_type           >   rdel_stat ;
 
     typedef containers::array       <
-                iptr_type           >       iptr_list ;
+                iptr_type           >   iptr_list ;
 
 /*------------------------------------------ cavity lists */
     typedef containers::array       <
-                edge_data           >       edat_list ;
+                edge_data           >   edat_list ;
     
     typedef containers::array       <
-                edge_cost           >       escr_list ;
+                edge_cost           >   escr_list ;
     
     typedef containers::array       <
-                tria_data           >       tdat_list ;
+                tria_data           >   tdat_list ;
     
     typedef containers::array       <
-                tria_cost           >       tscr_list ;
+                tria_cost           >   tscr_list ;
 
 /*------------------------------------------ refine lists */
     typedef containers::priorityset <
                 node_data, 
-                node_pred           >       node_heap ;
+                node_pred           >   node_heap ;
 
     typedef containers::priorityset <
                 edge_cost, 
-                edge_pred           >       edge_heap ;
+                edge_pred           >   edge_heap ;
 
     typedef containers::priorityset <
                 tria_cost, 
-                tria_pred           >       tria_heap ;
-                
+                tria_pred           >   tria_heap ;
+    
 /*------------------------------------------ collar lists */
     typedef containers::array       <
-                ball_data           >       ball_list ;
+                ball_data           >   ball_list ;
                 
     typedef containers::priorityset <
                 ball_data, 
-                ball_pred           >       ball_heap ;
+                ball_pred           >   ball_heap ;
                                            
     class node_pred
         {
@@ -262,6 +267,15 @@
                  ::tria_pred(_idat, _jdat) ;
         }
         } ;
+
+
+    /*
+    --------------------------------------------------------
+     * RDEL-CREATE: set-up initial nodes/faces. 
+    --------------------------------------------------------
+     */
+
+    #include "rdel_create_init_2.inc" 
 
 
     /*
@@ -522,187 +536,15 @@
     typename      init_type
              >
     __static_call
-    __normal_call void_type init_sort (
-        init_type &_init,
-        iptr_list &_iset
-        )
-    {
-        typedef geom_tree::aabb_node_base_k     
-                           tree_node ;
-
-        typedef geom_tree::aabb_item_node_k <
-            real_type,
-            iptr_type, 2>  tree_item ;
-                    
-        typedef geom_tree::aabb_tree <
-            tree_item, 2,
-            tree_node,
-            allocator   >  tree_type ;
-                
-        containers::array<tree_item> _bbox;
-       
-    /*------------------------------ initialise aabb-tree */ 
-        iptr_type _npos  = 0 ;
-        tree_type _tree  ;
-        for (auto _node  = 
-            _init._mesh._set1.head() ; 
-                  _node != 
-            _init._mesh._set1.tend() ;
-                ++_node, ++_npos)
-        {
-            if (_node->mark() >= +0)
-            {
-            
-            _bbox.push_tail() ;
-            _bbox.tail()->
-                pval(0) = _node->pval( 0) ;
-            _bbox.tail()->
-                pval(1) = _node->pval( 1) ;
-  
-            _bbox.tail()->
-                ipos () = _npos ;
-            
-            }
-        }
-       
-        iptr_type _NBOX = 
-            (iptr_type) std::pow (8, 2) ;       // 8^ndim
-       
-        _tree.load(_bbox.head(),
-                   _bbox.tend(), _NBOX) ;
-        
-    /*------------------------------ randomised tree sort */    
-        _tree.brio(_iset) ;
-    }
-
-    template <
-    typename      init_type
-             >
-    __static_call
-    __normal_call void_type init_init (
-        init_type &_init,
-        mesh_type &_mesh
-        )
-    {
-    /*------------------------------ form insertion order */
-        iptr_type _hint  = -1 ;
-        iptr_list _iset  ;
-        init_sort(_init, _iset) ;
-        
-    /*------------------------------ find "central" point */
-        iptr_type _imid  = -1 ;
-        real_type _dmin  = 
-           +std::numeric_limits
-                <real_type>::infinity();
-                        
-        real_type _pmid[2] ;
-        _pmid[0] = (real_type) +0. ;
-        _pmid[1] = (real_type) +0. ;
-        
-        for (auto _iter  = _iset.head();
-                  _iter != _iset.tend();
-                ++_iter  )
-        {
-             auto _node = 
-           &_init._mesh._set1 [*_iter] ;
-            
-            _pmid[0] += _node->pval(0) ;
-            _pmid[1] += _node->pval(1) ;
-        }
-        
-        _pmid[0] /= _iset.count () ;
-        _pmid[1] /= _iset.count () ;
-        
-        for (auto _iter  = _iset.head();
-                  _iter != _iset.tend();
-                ++_iter  )
-        {
-             auto _node = 
-           &_init._mesh._set1 [*_iter] ;
-        
-            real_type _dsqr = 
-            geometry::lensqr_2d(
-               &_node->pval(0), _pmid) ;
-                   
-            if (_dsqr < _dmin)
-            {
-                _dmin = _dsqr;
-                _imid =*_iter;
-            }
-        }
-    
-    /*------------------------------ seed mesh from init. */
-        if (_imid > -1)
-        {
-             auto _node = 
-           &_init._mesh._set1 [ _imid] ;
-        
-            iptr_type _npos = -1 ;
-            if (_mesh._tria.push_node(
-               &_node->pval(0) , 
-                _npos, _hint ) )
-            {
-            
-            _mesh._tria.node
-                (_npos)->fdim() 
-                    = _node->fdim() ;
-                        
-            _mesh._tria.node
-                (_npos)->feat() 
-                    = _node->feat() ;
-                    
-            _mesh._tria.node
-                (_npos)->topo() = 2 ;  
-            
-            _hint = _mesh._tria.
-                node(_npos)->next() ;
-            
-            }
-        }
-        
-    /*------------------------------ seed mesh from init. */
-        for (auto _iter  = _iset.head();
-                  _iter != _iset.tend();
-                ++_iter  )
-        {
-            if (*_iter == _imid) continue;
-            
-             auto _node = 
-           &_init._mesh._set1 [*_iter] ;
-        
-            iptr_type _npos = -1 ;
-            if (_mesh._tria.push_node(
-               &_node->pval(0) , 
-                _npos, _hint ) )
-            {
-            
-            _mesh._tria.node
-                (_npos)->fdim() 
-                    = _node->fdim() ;
-                        
-            _mesh._tria.node
-                (_npos)->feat() 
-                    = _node->feat() ;
-                    
-            _mesh._tria.node
-                (_npos)->topo() = 2 ;  
-            
-            _hint = _mesh._tria.
-                node(_npos)->next() ;
-            
-            }
-        }
-    }
-
-    template <
-    typename      init_type
-             >
-    __static_call
     __normal_call void_type init_mesh (
         geom_type &_geom,
         init_type &_init,
         hfun_type &_hfun,
         mesh_type &_mesh,
+        typename 
+    mesh_type::edge_list & _epro,
+        typename 
+    mesh_type::edge_list & _ebad,
         rdel_opts &_opts
         )
     {
@@ -738,8 +580,15 @@
   
         real_type _plen[ 2] = {
         _pmax[ 0] - _pmin[ 0] ,
-        _pmax[ 1] - _pmin[ 1] ,
-            } ;  
+        _pmax[ 1] - _pmin[ 1] }  ;  
+
+        real_type _scal = 
+                    (real_type)+0.0 ;
+        _scal =  std::max(
+            _scal , _plen[ 0]);
+        _scal =  std::max(
+            _scal , _plen[ 1]);
+
         _plen[ 0]*= (real_type)+2.0 ;
         _plen[ 1]*= (real_type)+2.0 ;
         
@@ -778,8 +627,13 @@
          seed_feat(_mesh, _opts) ;
                         
     /*------------------------------ seed mesh from init. */
-         
-         init_init(_init, _mesh) ;
+         real_type _NEAR =
+            _scal *_opts.near() * 
+            _scal *_opts.near() ;         
+
+         init_init(_init, _mesh ,
+                   _epro, _ebad ,
+                   _NEAR) ;
         
     /*------------------------------ seed mesh from geom. */
         _geom.
@@ -868,16 +722,22 @@
         typename mesh_type::edge_hash(),
         typename mesh_type::edge_pred(), 
             +.8,_mesh._eset.get_alloc()) ;
+
+        typename 
+            mesh_type::edge_list _ebad (
+        typename mesh_type::edge_hash(),
+        typename mesh_type::edge_pred(), 
+            +.8,_mesh._eset.get_alloc()) ;
  
     /*------------------------------ init. point counters */
         containers:: fixed_array<
             iptr_type ,
-            rdel_opts::last_kind> _enod;          
+            rdel_opts::last_kind> _enod;
+        _enod.fill(  +0 ) ;
+          
         containers:: fixed_array<
             iptr_type , 
             rdel_opts::last_kind> _tnod;
-
-        _enod.fill(  +0 ) ;
         _tnod.fill(  +0 ) ;
 
     /*------------------------------ initialise mesh obj. */
@@ -886,7 +746,16 @@
     #   endif//__use_timers
 
         init_mesh( _geom , _init, _hfun, 
-            _mesh, _args );
+            _mesh, _epro , 
+            _ebad, _args )  ;
+
+        if (_ebad.count() > +0)
+        {
+            _dump.push("\n");
+            _dump.push(
+    "**input warning: initial edge(s) not recovered! \n") ;
+            _dump.push("\n");
+        }
 
     #   ifdef  __use_timers
         _ttoc = _time.now() ;       

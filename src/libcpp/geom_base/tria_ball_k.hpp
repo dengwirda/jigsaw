@@ -1333,7 +1333,7 @@
         _bb[3] = std::max ( _r4,
                  std::max ( _r3,
                  std::max ( _r1, _r2)
-                         )) ;
+                        ) ) ;
     }
           
     }

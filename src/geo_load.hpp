@@ -374,6 +374,9 @@
         try
         {
         
+        __unreferenced (_jlog) ;
+        __unreferenced (_jcfg) ;
+
         if (_gmsh._flags == 
                 JIGSAW_EUCLIDEAN_MESH )
         {

@@ -53,7 +53,7 @@
 
 #   include "geom_base/vect_base_k.hpp"
 
-#   include "geom_base/geom_pred_k.hpp"
+#   include "geom_base/predicate_k.hpp"
 
 #   include "geom_base/intersect_k.hpp"
 

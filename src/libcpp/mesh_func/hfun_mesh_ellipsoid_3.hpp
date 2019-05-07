@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * HFUN-MESH-EUCLIDEAN-kD: unstructured H(X) in R^k.
+     * HFUN-MESH-ELLIPSOID-3D: ellipsoidal H(x) in R^3.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -43,8 +43,8 @@
 
 #   pragma once
 
-#   ifndef __HFUN_MESH_EUCLIDEAN_3__
-#   define __HFUN_MESH_EUCLIDEAN_3__
+#   ifndef __HFUN_MESH_ELLIPSOID_3__
+#   define __HFUN_MESH_ELLIPSOID_3__
 
     namespace mesh {
 
@@ -53,27 +53,25 @@
     typename I ,
     typename A = allocators::basic_alloc
              >
-    class hfun_mesh_euclidean_3d 
+    class hfun_mesh_ellipsoid_3d
         : public hfun_base_kd <I, R> 
     {
     public  :
     
-    /*------------------------- euclidean size-fun in R^3 */
+    /*------------------------- euclidean size-fun in R^2 */
     
     typedef R                       real_type ;
     typedef I                       iptr_type ;
     typedef A                       allocator ;
-    
-    typedef typename
-            allocator::size_type    uint_type ;
 
-    typedef hfun_mesh_euclidean_3d  <
+    typedef hfun_mesh_ellipsoid_3d  <
             real_type ,
             iptr_type >             hfun_type ;
 
     typedef typename  hfun_base_kd  <
             iptr_type , 
             real_type >::hint_type  hint_type ;
+            
 
     class node_type: public tria_complex_node_3<I,R>
         {
@@ -97,13 +95,11 @@
         
     typedef tria_complex_edge_2<I>  edge_type ;
     typedef tria_complex_tria_3<I>  tri3_type ;
-    typedef tria_complex_tria_4<I>  tri4_type ;
        
-    typedef mesh::tria_complex_3<
+    typedef mesh::tria_complex_2<
                 node_type,
                 edge_type,
                 tri3_type,
-                tri4_type,
                 allocator       >   mesh_type ;
 
     typedef geom_tree::aabb_node_base_k
@@ -119,18 +115,27 @@
                 + 3 ,
                 tree_node,
                 allocator       >   tree_type ; 
+                
+    typedef geom_tree::aabb_pred_node_3 <
+                real_type, 
+                iptr_type       >   tree_pred ;
               
     public  :              
     
+    /*--------------- (x/a)**2 + (y/b)**2 + (z/c)**2 = 1. */
+        
+    real_type                      _radA ;
+    real_type                      _radB ;
+    real_type                      _radC ;
+
     containers::
         fixed_array<real_type,3>   _bmin ;
     containers::
         fixed_array<real_type,3>   _bmax ;
    
     mesh_type                      _mesh ;
-
     tree_type                      _tree ;
-  
+
     public  :
 
     /*
@@ -148,7 +153,7 @@
             public  :
             __inline_call 
                 bool_type operator () (
-                tri4_type const& _tdat
+                tri3_type const& _tdat
                 ) const
             {   return _tdat.mark() >= 0 ;
             }
@@ -166,6 +171,33 @@
                     real_type>::infinity() ;
         }
   
+    /*----------------------------- convert to R^3 coord. */
+        for (auto _iter  = 
+             this->_mesh._set1.head() ;
+                  _iter !=
+             this->_mesh._set1.tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0)
+            {
+            real_type _alon, _alat ;
+            _alon = _iter->pval(0) ;
+            _alat = _iter->pval(1) ;
+            
+            _iter->pval(0) = 
+                this->   _radA*
+                std::cos(_alon) * 
+                std::cos(_alat) ;
+            _iter->pval(1) = 
+                this->   _radB*
+                std::sin(_alon) * 
+                std::cos(_alat) ;
+            _iter->pval(2) = 
+                this->   _radC*
+                std::sin(_alat) ;
+            }
+        }
+
     /*----------------------------- calc. aabb for inputs */
         for (auto  _iter  = 
              this->_mesh._set1.head() ;
@@ -203,7 +235,7 @@
             ::epsilon(),(real_type).8) ;
             
         iptr_type static
-        constexpr _NBOX=(iptr_type)+8  ;
+        constexpr _NBOX=(iptr_type)+4  ;
 
         real_type _BTOL[3] ;
         _BTOL[0] = this->_bmax [ 0 ] - 
@@ -219,17 +251,70 @@
 
     /*-------------------- make aabb-tree and init. bbox. */
         aabb_mesh( this->_mesh._set1 , 
-                   this->_mesh._set4 , 
+                   this->_mesh._set3 , 
                    this->_tree,_BTOL ,
                   _NBOX , tria_pred()) ;
     }
     
     /*
     --------------------------------------------------------
-     * NEAR-TRIA: scan for nearest tria.
+     * FIND-TRIA: scan for nearest tria.
     --------------------------------------------------------
      */  
-     
+    
+    class find_tria
+        {
+        public  :
+        real_type              *_ppos ;
+        
+        mesh_type              *_mesh ;
+        
+        bool_type               _find ;
+        iptr_type               _tpos ;
+        
+        public  :
+    
+    /*------------------------ make a tree-tria predicate */
+        __inline_call find_tria (
+            real_type*_psrc = nullptr ,
+            mesh_type*_msrc = nullptr
+            ) : _ppos(_psrc) ,
+                _mesh(_msrc) ,
+                _find(false) ,
+                _tpos(   -1)   {}
+
+    /*------------------------ call pred. on tree matches */
+        __inline_call 
+            void_type operator () (
+                typename  
+            tree_type::item_data  *_iptr
+            )
+        {
+            if (this->_find) return ;
+        
+            for ( ; _iptr != nullptr; 
+                    _iptr = _iptr->_next)
+            {
+                real_type  _qtmp[+3];
+                iptr_type  _tpos = 
+                    _iptr->_data.ipos() ;
+                
+                if (near_pred ( _ppos ,
+                        _qtmp ,*_mesh , 
+                        _tpos ) )
+                {
+    /*------------------------ is fully inside: finished! */
+                this->_find =  true ;
+                this->_tpos = _tpos ;
+                
+                break ;
+
+                }
+            }
+        }
+        
+        } ;
+ 
     class near_tria
         {
         public  :
@@ -329,21 +414,18 @@
         geometry::hits_type _hits ;
         if (geometry::proj_tria_3d(_ppos, 
            &_mesh._set1[
-            _mesh._set4[
+            _mesh._set3[
             _tpos].node(0)].pval(0) ,
            &_mesh._set1[
-            _mesh._set4[
+            _mesh._set3[
             _tpos].node(1)].pval(0) ,
            &_mesh._set1[
-            _mesh._set4[
+            _mesh._set3[
             _tpos].node(2)].pval(0) ,
-           &_mesh._set1[
-            _mesh._set4[
-            _tpos].node(3)].pval(0) ,
             _qpos,_hits) )
         {
             return (_hits ==
-                 geometry::tria_hits) ;
+                 geometry::face_hits) ;
         }
         else
         {
@@ -361,12 +443,12 @@
         hint_type _hint
         )
     {   
-    /*------------------------- test whether hint is valid */
+    /*------------------------ test whether hint is valid */
         return _hint >= (iptr_type)0
          && _hint < (iptr_type) 
-            this->_mesh._set4.count()
+            this->_mesh._set3.count()
          && this->_mesh.
-           _set4 [_hint].mark() >= 0 ;
+           _set3 [_hint].mark() >= 0 ;
     }
    
     /*
@@ -374,7 +456,7 @@
      * EVAL: eval. size-fun. value.
     --------------------------------------------------------
      */
-    
+   
     __normal_call real_type eval (
         real_type *_ppos ,
         hint_type &_hint
@@ -382,6 +464,10 @@
     /*------------------------ find tria + linear interp. */
     {
         real_type _QPOS[ 3] ;
+        _QPOS[0] = _ppos[0] ;
+        _QPOS[1] = _ppos[1] ;
+        _QPOS[2] = _ppos[2] ;        
+
         real_type _hval = 
     +std::numeric_limits<real_type>::infinity() ;
     
@@ -403,20 +489,14 @@
 
         if (_hint == this->null_hint())
         {
-    /*------------------------ scan to find bounding tria */
-            near_tria _proj (_ppos,
+    /*------------------------ outside: find nearest tria */
+            near_tria _func (_ppos,
                       _QPOS,&_mesh) ;
         
-            this->_tree.near(_ppos, 
-                             _proj) ;
+            this->
+           _tree.near(_ppos, _func) ;
         
-            _hint = _proj._tpos ;
-        }
-        else
-        {
-            _QPOS[0] = _ppos[0] ;
-            _QPOS[1] = _ppos[1] ;
-            _QPOS[2] = _ppos[2] ;
+           _hint =  _func._tpos ;
         }
     
         if (_hint != this->null_hint())
@@ -425,33 +505,29 @@
         real_type _hsum = (real_type)+.0 ;
         real_type _vsum = (real_type)+.0 ;
 
-        for(auto _fpos = 4; _fpos-- != 0; )
+        for(auto _fpos = 3; _fpos-- != 0; )
         {
-            iptr_type  _fnod [4] ;
-            tri4_type::
-            face_node(_fnod, _fpos, 3, 2) ;
+            iptr_type  _fnod [3] ;
+            tri3_type::
+            face_node(_fnod, _fpos, 2, 1) ;
 
             _fnod[0] = this->_mesh.
-            _set4[_hint].node(_fnod[0]);
+            _set3[_hint].node(_fnod[0]);
             _fnod[1] = this->_mesh.
-            _set4[_hint].node(_fnod[1]);
+            _set3[_hint].node(_fnod[1]);
             _fnod[2] = this->_mesh.
-            _set4[_hint].node(_fnod[2]);
-            _fnod[3] = this->_mesh.
-            _set4[_hint].node(_fnod[3]);
+            _set3[_hint].node(_fnod[2]);
             
             real_type _tvol = 
-                geometry::tetra_vol_3d (
+                geometry::tria_area_3d (
                &this->_mesh.
                _set1[_fnod[0]].pval(0) ,
                &this->_mesh.
                _set1[_fnod[1]].pval(0) ,
-               &this->_mesh.
-               _set1[_fnod[2]].pval(0) ,
                _QPOS) ;
 
             _hsum += _tvol * this-> 
-            _mesh._set1[_fnod[3]].hval()  ; 
+            _mesh._set1[_fnod[2]].hval() ;
             
             _vsum += _tvol ;
         }
@@ -462,7 +538,7 @@
         }
 
     /*------------------------- size-fun interp. to ppos. */
-        return  _hval ;  
+        return  _hval ;
     }
     
     } ;
@@ -470,7 +546,7 @@
 
     }
 
-#   endif   //__HFUN_MESH_EUCLIDEAN_3__
+#   endif   //__HFUN_MESH_ELLIPSOID_3__
 
     
     

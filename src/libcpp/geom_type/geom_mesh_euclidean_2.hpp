@@ -1250,7 +1250,7 @@
                     _set2[_epos].itag() ) ;
                    
                 this->_hnum += +1;
-                    }
+                    }      // falls through
                 
                 case +1 :
                     {
@@ -1267,7 +1267,7 @@
                 
                 this->_find = true ;
                 this->_hits =_hits ;
-                    }
+                    }      // falls through
                 }
             }
         }

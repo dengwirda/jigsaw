@@ -102,11 +102,12 @@
             iptr_type    &_fmin
             ) const
         {   
-            bool_type _done = true ;
-            iptr_type _fpos ;
-            iptr_type _fadj ;
-            iptr_type _tadj ;
-            
+            bool_type _done = true  ;
+            iptr_type _fpos;
+            iptr_type _fadj;
+            iptr_type _tadj;
+            iptr_type _fnod[3] = {0};
+
             for(_fpos = 3; _fpos-- != 0; )
             {
         /*--------------- check dist. wrt. k-th face apex */
@@ -120,7 +121,6 @@
             if(_tadj == _mesh.null_flag())
                 continue ;
 
-            iptr_type  _fnod[ 3] ;
             mesh_type::tria_type::
             face_node(_fnod, _fadj, 2, 1) ;
             /*

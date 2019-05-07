@@ -61,16 +61,16 @@
     
     /*--------- restricted voronoi mesh-generation in R^2 */  
     
-    typedef M                               mesh_type ;
-    typedef P                               mesh_pred ;
-    typedef G                               geom_type ;
-    typedef H                               hfun_type ;
-    typedef A                               allocator ;
+    typedef M                           mesh_type ;
+    typedef P                           mesh_pred ;
+    typedef G                           geom_type ;
+    typedef H                           hfun_type ;
+    typedef A                           allocator ;
 
     typedef typename 
-            mesh_type::real_type            real_type ;
+            mesh_type::real_type        real_type ;
     typedef typename 
-            mesh_type::iptr_type            iptr_type ;
+            mesh_type::iptr_type        iptr_type ;
             
     char_type static constexpr null_ball = +0 ;
     char_type static constexpr feat_ball = +1 ;
@@ -102,54 +102,54 @@
         } ;
 
     typedef typename 
-            mesh_type::node_data            node_data ;
+            mesh_type::node_data        node_data ;
     typedef typename 
-            mesh_type::ball_data            ball_data ;
+            mesh_type::ball_data        ball_data ;
     typedef typename 
-            mesh_type::edge_data            edge_data ;
+            mesh_type::edge_data        edge_data ;
     typedef typename 
-            mesh_type::tria_data            tria_data ;
+            mesh_type::tria_data        tria_data ;
 
     typedef mesh::rdel_params       <
                 real_type, 
-                iptr_type           >       rdel_opts ;
+                iptr_type           >   rdel_opts ;
 
     typedef containers::array       <
-                iptr_type           >       iptr_list ;
+                iptr_type           >   iptr_list ;
 
 /*------------------------------------------ cavity lists */
     typedef containers::array       <
-                edge_data           >       edat_list ;
+                edge_data           >   edat_list ;
     
     typedef containers::array       <
-                edge_cost           >       escr_list ;
+                edge_cost           >   escr_list ;
     
     typedef containers::array       <
-                tria_data           >       tdat_list ;
+                tria_data           >   tdat_list ;
     
     typedef containers::array       <
-                tria_cost           >       tscr_list ;
+                tria_cost           >   tscr_list ;
 
 /*------------------------------------------ refine lists */
     typedef containers::priorityset <
                 node_data, 
-                node_pred           >       node_heap ;
+                node_pred           >   node_heap ;
 
     typedef containers::priorityset <
                 edge_cost, 
-                edge_pred           >       edge_heap ;
+                edge_pred           >   edge_heap ;
 
     typedef containers::priorityset <
                 tria_cost, 
-                tria_pred           >       tria_heap ;
+                tria_pred           >   tria_heap ;
                 
 /*------------------------------------------ collar lists */
     typedef containers::array       <
-                ball_data           >       ball_list ;
+                ball_data           >   ball_list ;
                 
     typedef containers::priorityset <
                 ball_data, 
-                ball_pred           >       ball_heap ;
+                ball_pred           >   ball_heap ;
                                          
     class node_pred
         {

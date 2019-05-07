@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 January, 2019
+     * Last updated: 09 April, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -60,20 +60,9 @@
         edat_list &_ecav
         )
     {
-    /*------------------------- init. for local hash obj. */
-        typename 
-            mesh_type::edge_list _eset (
-        typename mesh_type::edge_hash(),
-        typename mesh_type::edge_pred(), 
-           +.8, _mesh._eset.get_alloc()) ;
-        
+    /*------------------------- extract restricted k-face */
         __unreferenced(_geom) ;
 
-    /*------------------------- push alloc. for hash obj. */
-        _eset._lptr.set_count (
-            _tset.count() * +3 , 
-        containers::loose_alloc, nullptr);
-        
         for ( auto _tpos  = _tset.head();
                    _tpos != _tset.tend();
                  ++_tpos  )
@@ -105,14 +94,11 @@
 
             typename mesh_type::
                      edge_list::
-                 item_type *_mptr=nullptr;
-            if (_eset.find(_fdat,_mptr)) 
-                continue ;
+                 item_type *_mptr=nullptr ;
             if (_mesh.
-                 find_edge(_fdat,_mptr))
-            _ecav.push_tail(_mptr->_data);
-            
-            _eset.push( _fdat) ;
+                 find_edge(_fdat, _mptr))
+                _ecav.
+                 push_tail(_mptr->_data);
         }
         }
     }
@@ -344,6 +330,11 @@
         edat_list &_eold
         )
     {
+        __unreferenced( _geom ) ;
+        __unreferenced( _told ) ;
+
+        if (_epro.count() > +0)
+        {
     /*------------------------- init. for local hash obj. */
         typename 
             mesh_type::edge_list _eset (
@@ -354,11 +345,8 @@
     /*------------------------- push alloc. for hash obj. */
         _eset._lptr.set_count (
             _enew.count() * +2 , 
-        containers::loose_alloc, nullptr);
-            
-        __unreferenced( _geom );
-        __unreferenced( _told );
-
+        containers::loose_alloc,nullptr) ;
+        
         for ( auto _epos  = _enew.head();
                    _epos != _enew.tend();
                  ++_epos  )
@@ -382,7 +370,8 @@
             }
             }
         }
-        
+        }
+
         return false ;
     }
 

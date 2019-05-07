@@ -1,3 +1,0 @@
-#
-# to-do: place LNX binaries here and delete me!
-#

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 September, 2017
+     * Last updated: 18 April, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -111,7 +111,7 @@
         if (_geom._kind ==
              jmsh_kind::ellipsoid_mesh)
         {
-    /*--------------------------------- euclidean-mesh-3d */
+    /*--------------------------------- ellipsoid-mesh-3d */
             _scal  = (real_type) +0. ;
             _scal += 
         _geom._ellipsoid_mesh_3d._bmax[0] -
@@ -232,6 +232,32 @@
         }
     
         }
+        }
+        else
+        if (_hfun._kind ==
+             jmsh_kind::ellipsoid_mesh)
+        {
+    /*--------------------------------- ellipsoid-mesh-3d */
+        for (auto _node  = _hfun.
+        _ellipsoid_mesh_3d._mesh._set1.head();
+                  _node != _hfun.
+        _ellipsoid_mesh_3d._mesh._set1.tend();
+                ++_node  )
+        {
+            if (_node->mark() < 0) continue;
+
+            _node->hval() = 
+                _scal  * _node->hval();
+            
+            _node->hval() = 
+                std::min(_node->hval(), 
+                    _scal *_jcfg._hfun_hmax) ;
+                
+            _node->hval() = 
+                std::max(_node->hval(), 
+                    _scal *_jcfg._hfun_hmin) ;
+        }
+
         }
         else
         if (_hfun._kind ==

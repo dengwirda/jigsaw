@@ -74,16 +74,22 @@
         
     public  :
     
+    /*--------------- (x/a)**2 + (y/b)**2 + (z/c)**2 = 1. */
+        
+    real_type                      _radA ;
+    real_type                      _radB ;
+    real_type                      _radC ;
+
     containers::array <
-        real_type, allocator>      _xpos;
+        real_type, allocator>      _xpos ;
     containers::array <
-        real_type, allocator>      _ypos;
+        real_type, allocator>      _ypos ;
     
     containers::array <
-        real_type, allocator>      _hmat; 
+        real_type, allocator>      _hmat ; 
         
-    bool_type                      _xvar;
-    bool_type                      _yvar;
+    bool_type                      _xvar ;
+    bool_type                      _yvar ;
                
     public  :
 

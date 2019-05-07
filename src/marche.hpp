@@ -97,6 +97,8 @@
     {
         iptr_type _retv = +0;
         
+        __unreferenced(_fmsh) ;
+
         hfun_data _ffun ;               // FUNC data
         jcfg_data _jcfg ;
     

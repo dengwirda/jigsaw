@@ -73,33 +73,33 @@
 /*------ a dynamically allocated, contiguous array object */
     public  :
     
-    typedef D                               data_type ;
-    typedef A                               allocator ;
+    typedef D                           data_type ;
+    typedef A                           allocator ;
 
     typedef typename 
-            allocator::size_type            size_type ;
+            allocator::size_type        size_type ;
     typedef typename 
-            allocator::diff_type            diff_type ;
+            allocator::diff_type        diff_type ;
 
     typedef __cont::array       <
                 data_type, 
-                allocator       >           self_type ;
+                allocator       >       self_type ;
         
     typedef __cont::write_array_iterator <
-                self_type       >           _write_it ;
+                self_type       >       _write_it ;
     typedef __cont::const_array_iterator <
-                self_type       >           _const_it ;
+                self_type       >       _const_it ;
    
     typedef allocators::_item_alloc <
                 data_type, 
-                allocator       >           obj_alloc ;     
+                allocator       >       obj_alloc ;     
 
     private :
 
         enum {_hptr, _tptr, _lptr} ;
 
     containers::
-    fixed_array<__write_ptr(data_type),+3>      _ptrs ;
+    fixed_array<__write_ptr(data_type),+3>  _ptrs ;
 
     private :
 

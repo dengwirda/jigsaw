@@ -6,21 +6,17 @@
 #   To run this example navigate to the directory containing 
 #   this file and run the following from the cmd line:
 #
-#   On WIN-64 platforms:
+#   On WIN platforms:
 #
-#       bin\WIN-64\jigsaw64r.exe example.jig
+#       bin\jigsaw.exe example.jig
 #
-#   On LNX-64 platforms:
+#   On LNX platforms:
 #
-#       bin/LNX-64/jigsaw64r     example.jig
-#
-#   On MAC-64 platforms:
-#
-#       bin/MAC-64/jigsaw64r     example.jig
+#       bin/jigsaw     example.jig
 #
 #   This command calls JIGSAW using the config. data contai-
 #   ned in "example.jig", which, in unmodified form, creates 
-#   a tetrahedral    mesh of the "stanford-bunny" geometry. 
+#   a tetrahedral mesh of the "stanford-bunny" geometry. 
 #
 
 #   The subsequent sections detail the various configuration 
@@ -60,6 +56,17 @@
 #
 
 #   INIT_FILE = *.msh
+
+
+#   ---> INIT_NEAR - {default = 1.E-8} relative "zip" tol.
+#       applied when processing initial conditions. In cases
+#       where "sharp-feature" detection is active, nodes in 
+#       the initial set are zipped to their nearest feature
+#       node if the separation length is less than NEAR*SCAL
+#       where SCAL is the max. bounding-box dimension.
+#
+
+#   INIT_NEAR = 1.E-6
 
 
 #

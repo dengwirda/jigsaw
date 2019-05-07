@@ -779,12 +779,13 @@
     {
         iptr_type _errv  = __no_error  ;
 
-        __unreferenced(_jlog) ;
-
         try
         {
             containers::array<iptr_type> _nmap;
-            
+        
+            __unreferenced (_jlog) ;
+            __unreferenced (_jcfg) ;
+    
             if (_rdel._ndim == +2 &&    // save 2-dim. mesh
                 _rdel._kind ==
                 jmsh_kind::euclidean_mesh)
@@ -1648,12 +1649,13 @@
     {
         iptr_type _errv  = __no_error  ;
 
-        __unreferenced(_jlog) ;
-
         try
         {
             containers::array<iptr_type> _nmap ;
-             
+        
+            __unreferenced (_jcfg) ;
+            __unreferenced (_jlog) ;
+     
             if (_mesh._ndim == +2 &&    // save 2-dim. mesh
                 _mesh._kind ==
                 jmsh_kind::euclidean_mesh)

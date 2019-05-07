@@ -61,16 +61,16 @@
     
     /*--------- restricted voronoi mesh-generation in R^3 */  
     
-    typedef M                               mesh_type ;
-    typedef P                               mesh_pred ;
-    typedef G                               geom_type ;
-    typedef H                               hfun_type ;
-    typedef A                               allocator ;
+    typedef M                           mesh_type ;
+    typedef P                           mesh_pred ;
+    typedef G                           geom_type ;
+    typedef H                           hfun_type ;
+    typedef A                           allocator ;
 
     typedef typename 
-            mesh_type::real_type            real_type ;
+            mesh_type::real_type        real_type ;
     typedef typename 
-            mesh_type::iptr_type            iptr_type ;
+            mesh_type::iptr_type        iptr_type ;
             
             
     } ;

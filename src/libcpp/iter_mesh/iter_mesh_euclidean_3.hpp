@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 September, 2018
+     * Last updated: 09 April, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -80,6 +80,7 @@ template <
         public  :
         
         iptr_type                     _hidx ;
+        iptr_type                     _itag ;
         
         char_type                     _fdim ;
         char_type                     _feat ;
@@ -93,6 +94,14 @@ template <
         __inline_call iptr_type const& hidx (
             ) const
         {   return  this->_hidx ;
+        }
+        __inline_call iptr_type      & itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
         }
         __inline_call char_type      & fdim (
             )

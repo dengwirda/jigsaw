@@ -66,21 +66,21 @@
     { 
 /*------------ simple wrapper for "c-style" static arrays */
     public  :
-    typedef D                               data_type ;
+    typedef D                           data_type ;
 
-    typedef std::   size_t                  size_type ;
-    typedef std::ptrdiff_t                  diff_type ;
+    typedef std::   size_t              size_type ;
+    typedef std::ptrdiff_t              diff_type ;
 
     size_type static const _size = L > +0 ? 
                                    L : +1 ;
 
     typedef __cont::fixed_array <
-                data_type, L    >           self_type ;
+                data_type, L    >       self_type ;
 
     typedef __cont::const_array_iterator <
-                self_type       >           _const_it ;
+                self_type       >       _const_it ;
     typedef __cont::write_array_iterator <
-                self_type       >           _write_it ;
+                self_type       >       _write_it ;
 
     private  :
 

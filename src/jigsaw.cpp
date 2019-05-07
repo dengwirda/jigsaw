@@ -2,20 +2,18 @@
     //
     // for cmd-jigsaw:
     //
-    // g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
-    // -D __cmd_jigsaw -static-libstdc++ jigsaw.cpp 
-    // -o jigsaw64r
+    // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto 
+    // -D NDEBUG -D __cmd_jigsaw jigsaw.cpp -o ../bin/jigsaw
     //
-    // g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
-    // -D __cmd_tripod -static-libstdc++ jigsaw.cpp 
-    // -o tripod64r
+    // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto 
+    // -D NDEBUG -D __cmd_tripod jigsaw.cpp -o ../bin/tripod
     //
     //
     // for lib-jigsaw:
     //
-    // g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC 
-    // -D NDEBUG -D __lib_jigsaw -static-libstdc++ jigsaw.cpp 
-    // -shared -o libjigsaw64r.so
+    // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto 
+    // -fPIC -D NDEBUG -D __lib_jigsaw jigsaw.cpp -shared 
+    // -o ../lib/libjigsaw.so
     //
 
     /*
@@ -33,8 +31,8 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * JIGSAW release 0.9.9.x
-     * Last updated: 20 February, 2019
+     * JIGSAW release 0.9.10.x
+     * Last updated: 18 April, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -200,7 +198,7 @@
 
 #   endif
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.9"
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.10"
 
     /*---------------------------------- for i/o on files */
    
@@ -429,6 +427,10 @@
         typedef mesh ::hfun_mesh_euclidean_3d  <
                     real_type,
                     iptr_type>   euclidean_mesh_3d ;
+
+        typedef mesh ::hfun_mesh_ellipsoid_3d  <
+                    real_type,
+                    iptr_type>   ellipsoid_mesh_3d ;
                     
         typedef mesh ::hfun_grid_euclidean_2d  <
                     real_type,
@@ -453,6 +455,8 @@
         euclidean_mesh_2d       _euclidean_mesh_2d ;
         euclidean_mesh_3d       _euclidean_mesh_3d ;
         
+        ellipsoid_mesh_3d       _ellipsoid_mesh_3d ;
+
         euclidean_grid_2d       _euclidean_grid_2d ;
         euclidean_grid_3d       _euclidean_grid_3d ;
         
@@ -475,6 +479,8 @@
            _euclidean_mesh_2d.init() ;
             this->
            _euclidean_mesh_3d.init() ;
+            this->
+           _ellipsoid_mesh_3d.init() ;
             
             this->
            _euclidean_grid_2d.init() ;

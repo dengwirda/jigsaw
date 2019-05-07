@@ -1,7 +1,10 @@
 
 //  gcc -Wall test_4.c 
-//  -Xlinker -rpath=../lib/LNX-64 
-//  -L ../lib/LNX-64 -ljigsaw64r -o test_4
+//  -Xlinker -rpath=../lib 
+//  -L ../lib -ljigsaw -o test_4
+
+//  An example that uses JIGSAW to mesh "multiply-connected" 
+//  geometry. 
 
 #   include "../inc/lib_jigsaw.h"
     
@@ -16,11 +19,12 @@
         
     /*-------------------------------- setup JIGSAW types */      
         jigsaw_jig_t _jjig ;
+        jigsaw_init_jig_t(&_jjig) ;        
+
         jigsaw_msh_t _geom ;
-        jigsaw_msh_t _mesh ;
-  
-        jigsaw_init_jig_t(&_jjig) ;
-        jigsaw_init_msh_t(&_geom) ;
+        jigsaw_init_msh_t(&_geom) ;        
+
+        jigsaw_msh_t _mesh ;        
         jigsaw_init_msh_t(&_mesh) ;
  
     /* 
@@ -28,17 +32,17 @@
      * A domain with "interior" constraints
     --------------------------------------------------------
      *
-     *             e:2
-     *  v:3 o---------------o v:2
-     *      |               |
-     *      |      e:6      |
-     *      |     o---o     |
-     *  e:3 | e:7 |   | e:5 | e:1
-     *      |     o---o     |
-     *      |      e:4      |
-     *      |               |
-     *  v:0 o---------------o v:1
-     *             e:0
+     *                 e:2
+     *      v:3 o---------------o v:2
+     *          |               |
+     *          |      e:6      |
+     *          |     o---o     |
+     *      e:3 | e:7 |   | e:5 | e:1
+     *          |     o---o     |
+     *          |      e:4      |
+     *          |               |
+     *      v:0 o---------------o v:1
+     *                 e:0
      *
     --------------------------------------------------------
      */
@@ -98,11 +102,11 @@
         _jjig._mesh_dims =   +2 ;
         
         _retv = jigsaw (
-            &_jjig, // the config. opts
-            &_geom, // geom. data
-              NULL, // empty init. data 
-              NULL, // empty hfun. data
-            &_mesh) ;
+            &_jjig ,    // the config. opts
+            &_geom ,    // geom. data
+              NULL ,    // empty init. data 
+              NULL ,    // empty hfun. data
+            &_mesh ) ;
  
     /*-------------------------------- print JIGSAW tria. */
 
@@ -139,7 +143,7 @@
         jigsaw_free_msh_t(&_mesh);
  
         printf (
-    "JIGSAW returned code: %d \n", _retv) ;
+       "JIGSAW returned code : %d \n",_retv);
  
  
         return _retv ;

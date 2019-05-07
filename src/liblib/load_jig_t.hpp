@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 July, 2018
+     * Last updated: 10 April, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -110,6 +110,15 @@
         {
             this->
            _jjig->_geom_eta2 = _eta2; 
+        }
+
+    /*------------------------------------- INIT keywords */
+        __normal_call void_type push_init_near (
+            double        _near
+            ) 
+        {
+            this->
+           _jjig->_init_near = _near; 
         }
         
     /*------------------------------------- HFUN keywords */

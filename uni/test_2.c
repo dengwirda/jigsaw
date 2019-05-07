@@ -1,7 +1,10 @@
 
 //  gcc -Wall test_2.c 
-//  -Xlinker -rpath=../lib/LNX-64 
-//  -L ../lib/LNX-64 -ljigsaw64r -o test_2
+//  -Xlinker -rpath=../lib 
+//  -L ../lib -ljigsaw -o test_2
+
+//  Use JIGSAW to mesh a simple geometry with user-defined
+//  mesh-spacing data defined on a "mesh".
 
 #   include "../inc/lib_jigsaw.h"
     
@@ -16,13 +19,15 @@
         
     /*-------------------------------- setup JIGSAW types */      
         jigsaw_jig_t _jjig ;
+        jigsaw_init_jig_t(&_jjig) ;        
+
         jigsaw_msh_t _geom ;
+        jigsaw_init_msh_t(&_geom) ;        
+
         jigsaw_msh_t _hfun ;
-        jigsaw_msh_t _mesh ;
-  
-        jigsaw_init_jig_t(&_jjig) ;
-        jigsaw_init_msh_t(&_geom) ;
-        jigsaw_init_msh_t(&_hfun) ;
+        jigsaw_init_msh_t(&_hfun) ;        
+
+        jigsaw_msh_t _mesh ;        
         jigsaw_init_msh_t(&_mesh) ;
  
     /* 
@@ -30,17 +35,17 @@
      * JIGSAW's "mesh" is a piecewise linear complex:
     --------------------------------------------------------
      *
-     *             e:2
-     *  v:3 o---------------o v:2
-     *      |               |
-     *      |               |
-     *      |               |
-     *  e:3 |               | e:1
-     *      |               |
-     *      |               |
-     *      |               |
-     *  v:0 o---------------o v:1
-     *             e:0
+     *                 e:2
+     *      v:3 o---------------o v:2
+     *          |               |
+     *          |               |
+     *          |               |
+     *      e:3 |               | e:1
+     *          |               |
+     *          |               |
+     *          |               |
+     *      v:0 o---------------o v:1
+     *                 e:0
      *
     --------------------------------------------------------
      */
@@ -73,15 +78,15 @@
      * JIGSAW's "mesh" is a piecewise linear complex:
     --------------------------------------------------------
      *
-     *  v:3 o---------------o v:2
-     *      | \    t:2    / |
-     *      |   \       /   |
-     *      |     \ 4 /     |
-     *      | t:3   o   t:1 |
-     *      |     /   \     |
-     *      |   /       \   |
-     *      | /    t:0    \ |
-     *  v:0 o---------------o v:1
+     *      v:3 o---------------o v:2
+     *          | \    t:2    / |
+     *          |   \       /   |
+     *          |     \ 4 /     |
+     *          | t:3   o   t:1 |
+     *          |     /   \     |
+     *          |   /       \   |
+     *          | /    t:0    \ |
+     *      v:0 o---------------o v:1
      *
     --------------------------------------------------------
      */
@@ -102,7 +107,7 @@
             } ;
             
         real_t _hfun_value[5] = {
-            .1, .1, .1, .1, .2
+            .2, .2, .2, .2, .5
             } ;
             
         _hfun._flags 
@@ -130,11 +135,11 @@
         _jjig._mesh_dims = +2 ;
         
         _retv = jigsaw (
-            &_jjig, // the config. opts
-            &_geom, // geom. data
-              NULL, // empty init. data 
-            &_hfun, // hfun. data
-            &_mesh) ;
+            &_jjig ,    // the config. opts
+            &_geom ,    // geom. data
+              NULL ,    // empty init. data 
+            &_hfun ,    // hfun. data
+            &_mesh ) ;
  
     /*-------------------------------- print JIGSAW tria. */
 
@@ -171,7 +176,7 @@
         jigsaw_free_msh_t(&_mesh);
  
         printf (
-    "JIGSAW returned code: %i \n", _retv) ;
+       "JIGSAW returned code : %d \n",_retv);
  
  
         return _retv ;

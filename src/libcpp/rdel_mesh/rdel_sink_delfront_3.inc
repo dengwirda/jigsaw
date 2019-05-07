@@ -64,62 +64,62 @@
         )
     {
         class sink_pred
-            {
+        {
     /*-------------------- helper: find "sink" candidates */
-            public  :
-            
-            typedef typename
-                mesh_type::tria_type tria_type ;
-            
-            public  :
-                iptr_type _fnod[ 3] ;
+        public  :
+        
+        typedef typename
+            mesh_type::tria_type tria_type ;
+        
+        public  :
+            iptr_type _fnod[ 3] ;
 
-            public  :
-            __inline_call sink_pred (
-                iptr_type*_fsrc
-                )
-            {
-                this->_fnod[0] = _fsrc[ 0];
-                this->_fnod[1] = _fsrc[ 1];
-                this->_fnod[2] = _fsrc[ 2];
-            }
+        public  :
+        __inline_call sink_pred (
+            iptr_type*_fsrc
+            )
+        {
+            this->_fnod[0] = _fsrc[ 0];
+            this->_fnod[1] = _fsrc[ 1];
+            this->_fnod[2] = _fsrc[ 2];
+        }
 
-            __inline_call bool_type operator() (
-                tria_type&_tria,
-                iptr_type _tpos,
-                iptr_type _fpos
-                )
-            {
-                iptr_type _tnod[4] = {
-                _tria.tria(_tpos)->node(0),
-                _tria.tria(_tpos)->node(1),
-                _tria.tria(_tpos)->node(2),
-                _tria.tria(_tpos)->node(3)
-                    } ;
+        __inline_call bool_type operator() (
+            tria_type&_tria,
+            iptr_type _tpos,
+            iptr_type _fpos
+            )
+        {
+            iptr_type _tnod[4] = {
+            _tria.tria(_tpos)->node(0),
+            _tria.tria(_tpos)->node(1),
+            _tria.tria(_tpos)->node(2),
+            _tria.tria(_tpos)->node(3)
+                } ;
 
-                __unreferenced(_fpos) ;
+            __unreferenced(_fpos) ;
 
-                iptr_type _same = +0;
-                if (_tnod[0] == _fnod[0] ||
-                    _tnod[0] == _fnod[1] ||
-                    _tnod[0] == _fnod[2] )
-                    _same += +1 ;
-                if (_tnod[1] == _fnod[0] ||
-                    _tnod[1] == _fnod[1] ||
-                    _tnod[1] == _fnod[2] )
-                    _same += +1 ;
-                if (_tnod[2] == _fnod[0] ||
-                    _tnod[2] == _fnod[1] ||
-                    _tnod[2] == _fnod[2] )
-                    _same += +1 ;
-                if (_tnod[3] == _fnod[0] ||
-                    _tnod[3] == _fnod[1] ||
-                    _tnod[3] == _fnod[2] )
-                    _same += +1 ;
-            
-                return ( _same >= +1 ) ;
-            }
-            } ;
+            iptr_type _same = +0;
+            if (_tnod[0] == _fnod[0] ||
+                _tnod[0] == _fnod[1] ||
+                _tnod[0] == _fnod[2] )
+                _same += +1 ;
+            if (_tnod[1] == _fnod[0] ||
+                _tnod[1] == _fnod[1] ||
+                _tnod[1] == _fnod[2] )
+                _same += +1 ;
+            if (_tnod[2] == _fnod[0] ||
+                _tnod[2] == _fnod[1] ||
+                _tnod[2] == _fnod[2] )
+                _same += +1 ;
+            if (_tnod[3] == _fnod[0] ||
+                _tnod[3] == _fnod[1] ||
+                _tnod[3] == _fnod[2] )
+                _same += +1 ;
+        
+            return ( _same >= +1 ) ;
+        }
+        } ;
 
         typename rdel_opts::node_kind 
         _kind  = rdel_opts::null_kind ;
@@ -263,67 +263,67 @@
         )
     {
         class sink_pred
-            {
+        {
     /*-------------------- helper: find "sink" candidates */
-            public  :
+        public  :
+        
+        typedef typename
+            mesh_type::tria_type tria_type ;
+        
+        public  :
+            iptr_type _tnod[ 4] ;
+
+        public  :
+        __inline_call sink_pred (
+            iptr_type*_tsrc
+            )
+        {
+            this->_tnod[0] = _tsrc[ 0];
+            this->_tnod[1] = _tsrc[ 1];
+            this->_tnod[2] = _tsrc[ 2];
+            this->_tnod[3] = _tsrc[ 3];
+        }
+
+        __inline_call bool_type operator() (
+            tria_type&_tria,
+            iptr_type _tpos,
+            iptr_type _fpos
+            )
+        {
+            iptr_type _nadj[4] = {
+            _tria.tria(_tpos)->node(0),
+            _tria.tria(_tpos)->node(1),
+            _tria.tria(_tpos)->node(2),
+            _tria.tria(_tpos)->node(3)
+                } ;
+
+            __unreferenced(_fpos) ;
+
+            iptr_type _same = +0;
+            if (_nadj[0] == _tnod[0] ||
+                _nadj[0] == _tnod[1] ||
+                _nadj[0] == _tnod[2] ||
+                _nadj[0] == _tnod[3] )
+                _same += +1 ;
+            if (_nadj[1] == _tnod[0] ||
+                _nadj[1] == _tnod[1] ||
+                _nadj[1] == _tnod[2] ||
+                _nadj[1] == _tnod[3] )
+                _same += +1 ;
+            if (_nadj[2] == _tnod[0] ||
+                _nadj[2] == _tnod[1] ||
+                _nadj[2] == _tnod[2] ||
+                _nadj[2] == _tnod[3] )
+                _same += +1 ;
+            if (_nadj[3] == _tnod[0] ||
+                _nadj[3] == _tnod[1] ||
+                _nadj[3] == _tnod[2] ||
+                _nadj[3] == _tnod[3] )
+                _same += +1 ;
             
-            typedef typename
-                mesh_type::tria_type tria_type ;
-            
-            public  :
-                iptr_type _tnod[ 4] ;
-
-            public  :
-            __inline_call sink_pred (
-                iptr_type*_tsrc
-                )
-            {
-                this->_tnod[0] = _tsrc[ 0];
-                this->_tnod[1] = _tsrc[ 1];
-                this->_tnod[2] = _tsrc[ 2];
-                this->_tnod[3] = _tsrc[ 3];
-            }
-
-            __inline_call bool_type operator() (
-                tria_type&_tria,
-                iptr_type _tpos,
-                iptr_type _fpos
-                )
-            {
-                iptr_type _nadj[4] = {
-                _tria.tria(_tpos)->node(0),
-                _tria.tria(_tpos)->node(1),
-                _tria.tria(_tpos)->node(2),
-                _tria.tria(_tpos)->node(3)
-                    } ;
-
-                __unreferenced(_fpos) ;
-
-                iptr_type _same = +0;
-                if (_nadj[0] == _tnod[0] ||
-                    _nadj[0] == _tnod[1] ||
-                    _nadj[0] == _tnod[2] ||
-                    _nadj[0] == _tnod[3] )
-                    _same += +1 ;
-                if (_nadj[1] == _tnod[0] ||
-                    _nadj[1] == _tnod[1] ||
-                    _nadj[1] == _tnod[2] ||
-                    _nadj[1] == _tnod[3] )
-                    _same += +1 ;
-                if (_nadj[2] == _tnod[0] ||
-                    _nadj[2] == _tnod[1] ||
-                    _nadj[2] == _tnod[2] ||
-                    _nadj[2] == _tnod[3] )
-                    _same += +1 ;
-                if (_nadj[3] == _tnod[0] ||
-                    _nadj[3] == _tnod[1] ||
-                    _nadj[3] == _tnod[2] ||
-                    _nadj[3] == _tnod[3] )
-                    _same += +1 ;
-                
-                return  _same >=  +1  ;
-            }
-            } ;
+            return  _same >=  +1  ;
+        }
+        } ;
 
         typename rdel_opts::node_kind 
         _kind  = rdel_opts::null_kind ;

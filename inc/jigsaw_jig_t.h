@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 July, 2018
+     * Last updated: 10 April, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -107,6 +107,19 @@
         
         real_t                  _geom_eta2 ;
              
+    /* 
+    --------------------------------------------------------
+     * INIT_NEAR - {default = 1.E-8} relative "zip" tol.
+     * applied when processing initial conditions. In cases
+     * where "sharp-feature" detection is active, nodes in 
+     * the initial set are zipped to their nearest feature
+     * node if the separation length is less than NEAR*SCAL
+     * where SCAL is the max. bounding-box dimension. 
+    --------------------------------------------------------
+     */
+
+        real_t                  _init_near ;
+
     /* 
     --------------------------------------------------------
      * HFUN_SCAL - {default = 'relative'} scaling type for 
