@@ -13,6 +13,12 @@
 #   JIGSAW: an unstructured mesh generation library 
 #------------------------------------------------------------
 
+  * Version 0.9.11:
+    --------------
+
+  - cmake support for WIN32/64 via MSVC.
+
+
   * Version 0.9.10:
     --------------
 

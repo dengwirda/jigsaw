@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 September, 2018
+     * Last updated: 18 June, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -1882,14 +1882,13 @@
                     }
                 }
 
-                iptr_type _last  = +0;
                 for (auto _iter  = _nmap.head();
                           _iter != _nmap.tend();
                         ++_iter  )
                 {
                     if ( *_iter >= +0)
                     {
-                         *_iter = _last ++ ;
+                         *_iter = _nnum ++ ;
                     }
                 }
                 

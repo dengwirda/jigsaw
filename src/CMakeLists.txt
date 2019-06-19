@@ -3,9 +3,9 @@ set (CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set (INSTALL_LOCAL TRUE)
-  message ("installing locally")
+  message ( ">> INSTALLING LOCALLY" )
 else (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  message ("installing to ${CMAKE_INSTALL_PREFIX}")
+  message ( ">> INSTALLING TO ${CMAKE_INSTALL_PREFIX}" )
 endif (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 add_executable (jigsaw-cmd jigsaw.cpp)

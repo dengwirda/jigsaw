@@ -3,9 +3,9 @@ project (JIGSAW_UNIT_TEST)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set (INSTALL_LOCAL TRUE)
-  message ("installing locally")
+  message ( ">> INSTALLING LOCALLY" )
 else (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  message ("installing to ${CMAKE_INSTALL_PREFIX}")
+  message ( ">> INSTALLING TO ${CMAKE_INSTALL_PREFIX}" )
 endif (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 if (DEFINED INSTALL_LOCAL)
@@ -14,7 +14,7 @@ else ()
   find_library (LIBJIGSAW jigsaw HINTS "${CMAKE_INSTALL_PREFIX}/lib")
 endif ()
 
-message ("libjigsaw location: ${LIBJIGSAW}")
+message ( ">> LIBJIGSAW LOCATION: ${LIBJIGSAW}" )
 
 add_executable (test_1 test_1.c)
 target_link_libraries (test_1 ${LIBJIGSAW})
