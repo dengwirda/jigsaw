@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 19 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -476,7 +476,7 @@
                   ++_item  )
         {
             _index->
-              _data[_item] = (real_t) +0 ;
+              _data[_item] = (indx_t) +0 ;
         }
     }
 

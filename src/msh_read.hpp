@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 19 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -288,7 +288,7 @@
         if (_stok.count() == +2)
         {
             this->
-           _ndim = std::stol( _stok[1]);
+           _ndim = std::stoi( _stok[1]);
            
            _dest.
             push_ndims (this->_ndim) ;
@@ -1260,7 +1260,8 @@
             std::transform(_line.begin() , 
                            _line.  end() , 
                            _line.begin() , 
-                         ::toupper) ;
+            [](unsigned char c){ return 
+              (unsigned char)::toupper(c); } ) ;
             
             containers::
                 array<std::string> _stok ;
