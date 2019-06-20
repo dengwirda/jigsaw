@@ -226,7 +226,7 @@
                            __str.  end(),   \
                            __str.begin(),   \
             [](unsigned char c){ return \
-              (unsigned char)::toupper(c) ; } )
+              (unsigned char)::toupper(c) ; } ) ;
 
     /*---------------------------------- read "file" data */
         #define __putFILE(__fun, __tok)     \
