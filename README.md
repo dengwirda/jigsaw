@@ -55,7 +55,7 @@ This process will build a series of executables and shared libraries: `jigsaw` i
 
 See `example.jig` for documentation on calling the command-line executables, and the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
-### `Install via conda`
+### `Using conda`
 
 `JIGSAW` is also available as a `conda` environment. To install and use, follow the steps below:
 

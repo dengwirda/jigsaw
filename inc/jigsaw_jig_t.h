@@ -123,7 +123,7 @@
     /* 
     --------------------------------------------------------
      * HFUN_SCAL - {default = 'relative'} scaling type for 
-     * mesh-size fuction. HFUN_SCAL='relative' interprets 
+     * mesh-size function. HFUN_SCAL='relative' interprets 
      * mesh-size values as percentages of the (mean) length 
      * of the axis-aligned bounding-box (AABB) associated 
      * with the geometry. HFUN_SCAL = 'absolute' interprets 
@@ -176,7 +176,7 @@
     
     /* 
     --------------------------------------------------------
-     * MESH_KERN - {default = 'delfront'} meshing kernal,
+     * MESH_KERN - {default = 'delfront'} meshing kernel,
      * choice of the standard Delaunay-refinement algorithm 
      * (KERN='delaunay') or the Frontal-Delaunay method 
      * (KERN='delfront').

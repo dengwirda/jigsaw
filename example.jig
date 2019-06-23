@@ -31,8 +31,6 @@
 
 #   ---> GEOM_FILE - 'GEOMNAME.MSH', a string containing the 
 #       name of the geometry file (is required at input). 
-#       See SAVEMSH for additional details regarding the cr-
-#       eation of *.MSH files.
 #
 
     GEOM_FILE = geo/bunny.msh
@@ -99,7 +97,7 @@
 
 #   ---> GEOM_ETA1 - {default=45deg} 1-dim. feature-angle, 
 #       features are located between any neighbouring 
-#       "edges" that subtend angles less than ETA1 deg.
+#       edges that subtend angles less than ETA1 degrees.
 #
 
 #   GEOM_ETA1 = 60
@@ -107,7 +105,7 @@
 
 #   ---> GEOM_ETA2 - {default=45deg} 2-dim. feature angle, 
 #       features are located between any neighbouring 
-#       "faces" that subtend angles less than ETA2 deg.
+#       faces that subtend angles less than ETA2 degrees.
 #
 
 #   GEOM_ETA2 = 60
@@ -122,13 +120,15 @@
 #       name of the mesh-size file (is required at input).
 #       The mesh-size function is specified as a general pi-
 #       ecewise linear function, defined at the vertices of
-#       an unstructured triangulation. See SAVEMSH for addi-
-#       tional details.
+#       an unstructured triangulation or on a structured 
+#       grid.
 #
+
+#   HFUN_FILE = *.msh
 
 
 #   ---> HFUN_SCAL - {default='relative'} scaling type for 
-#       mesh-size fuction. HFUN_SCAL='relative' interprets 
+#       mesh-size function. HFUN_SCAL='relative' interprets 
 #       mesh-size values as percentages of the (mean) length 
 #       of the axis-aligned bounding-box (AABB) associated 
 #       with the geometry. HFUN_SCAL='absolute' interprets 
@@ -167,7 +167,7 @@
 #   MESH_DIMS = 2
 
 
-#   ---> MESH_KERN - {default='delfront'} meshing kernal,
+#   ---> MESH_KERN - {default='delfront'} meshing kernel,
 #       choice of the standard Delaunay-refinement algorithm 
 #       (KERN='delaunay') or the Frontal-Delaunay method 
 #       (KERN='delfront').
@@ -287,7 +287,7 @@
 #   ---> MESH_VOL3 - {default=0.00} min. volume-length ratio 
 #       for 3-tria elements. 3-tria elements are refined 
 #       until the volume-length ratio exceeds VOL3. Can be 
-#       used to supress "sliver" elements.
+#       used to suppress "sliver" elements.
 #
 
 #   MESH_VOL3 = 0.10
