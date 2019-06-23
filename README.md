@@ -9,7 +9,7 @@
 
 `JIGSAW` is a computational library for unstructured mesh generation and tessellation; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes refinement-based algorithms for the construction of new meshes, optimisation-driven techniques for the improvement of existing grids, as well as routines to assemble (restricted) Delaunay tessellations, Voronoi complexes and Power diagrams.
 
-This package provides the underlying `C++` source for `JIGSAW`; defining a basic command-line interface and a `C`-format `API`. Higher-level scripting interfaces, supporting a range of additional facilities for file I/O, mesh visualisation and post-processing operations are also available, including for <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> <a href="https://github.com/dengwirda/jigsaw-matlab">here</a> and for <a href="https://www.python.org/">`Python`</a> <a href="https://github.com/dengwirda/jigsaw-python">here</a>.
+This package provides the underlying `C++` source for `JIGSAW`; defining a basic command-line interface and a `C`-format `API`. Higher-level scripting interfaces, supporting a range of additional facilities for file I/O, mesh visualisation and post-processing operations are also available, including for <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> <a href="https://github.com/dengwirda/jigsaw-matlab">here</a> and for <a href="https://www.python.org/">`PYTHON`</a> <a href="https://github.com/dengwirda/jigsaw-python">here</a>.
 
 `JIGSAW` has been compiled and tested on various `64-bit` `Linux`, `Windows` and `MacOS` based platforms. 
 
