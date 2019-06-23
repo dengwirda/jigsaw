@@ -9,7 +9,7 @@
 
 `JIGSAW` is a computational library for unstructured mesh generation and tessellation; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes refinement-based algorithms for the construction of new meshes, optimisation-driven techniques for the improvement of existing grids, as well as routines to assemble (restricted) Delaunay tessellations, Voronoi complexes and Power diagrams.
 
-This package provides the underlying `C++` source for `JIGSAW`; defining a basic command-line interface and a `C`-format `API`. A <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including a range of additional facilities for file I/O, mesh visualisation and post-processing operations can be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
+This package provides the underlying `C++` source for `JIGSAW`; defining a basic command-line interface and a `C`-format `API`. Higher-level scripting interfaces, supporting a range of additional facilities for file I/O, mesh visualisation and post-processing operations are also available, including for <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> <a href="https://github.com/dengwirda/jigsaw-matlab">here</a> and for <a href="https://www.python.org/">Python</a> <a href="https://github.com/dengwirda/jigsaw-python">here</a>.
 
 `JIGSAW` has been compiled and tested on various `64-bit` `Linux`, `Windows` and `MacOS` based platforms. 
 
@@ -32,7 +32,7 @@ The first step is to compile and configure the code! `JIGSAW` can either be buil
 
 ### `Building from src`
 
-The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>.
+The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>. It has been built using various `C++11` conforming versions of the `g++`, `clang++` and `msvc` compilers.
 
 `JIGSAW` is a `header-only` package - the single main `jigsaw.cpp` file simply `#include`'s the rest of the library directly. `JIGSAW` does not currently dependent on any external packages or libraries.
 
@@ -49,7 +49,7 @@ The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`<
     * cd build
     * cmake .. -D CMAKE_BUILD_TYPE=BUILD_MODE
     * cmake --build . --config BUILD_MODE --target install
-    * Delete the temporary build directory.
+    * Delete the temporary BUILD directory.
 
 This process will build a series of executables and shared libraries: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, as well as `libjigsaw` - `JIGSAW`'s shared `API`. `BUILD_MODE` can be used to select different compiler configurations and should generally either be `Release` or `Debug`. 
 
@@ -81,7 +81,7 @@ On LNX platforms:
 ````
 In this example, a high-quality tetrahedral mesh is generated for the 'stanford-bunny' geometry and the result written to file. The input geometry is specified as a triangulated surface, and is read from `../jigsaw/geo/bunny.msh`. The volume and surface mesh outputs are written to `../jigsaw/out/bunny.msh`. See the `example.jig` text-file for a description of `JIGSAW`'s configuration options. 
 
-A repository of additional surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>.
+A repository of additional surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>. A description of the `*.jig` and `*.msh` input file formats can be found in the <a href="https://github.com/dengwirda/jigsaw/wiki">wiki</a>.
 
 ### `libJIGSAW Scripts`
 
@@ -94,7 +94,7 @@ The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> u
     * cd build
     * cmake .. -D CMAKE_BUILD_TYPE=BUILD_MODE
     * cmake --build . --config BUILD_MODE --target install
-    * Delete the temporary build directory.
+    * Delete the temporary BUILD directory.
 
 This process will build the unit-tests as a series of executables in <a href="../master/uni/">`../jigsaw/uni/`</a>. `BUILD_MODE` is a compiler configuration flag: either `Release` or `Debug`.
 
