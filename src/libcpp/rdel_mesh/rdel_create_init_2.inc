@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 April, 2019
+     * Last updated: 21 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -299,7 +299,7 @@
                 _imid =*_iter ;
             }
         }
-    
+
     /*------------------------------ seed node from init. */
         if (_imid > -1)
         {
@@ -360,7 +360,7 @@
 
             }
         }
-        
+
     /*------------------------------ seed node from init. */
         for (auto _iter  = _iset.head();
                   _iter != _iset.tend();
@@ -459,11 +459,11 @@
             _edat._tadj    = _tadj  ;
 
             algorithms::isort (
-                &_edat._node[0], 
-                &_edat._node[2], 
+            _edat._node.head(), 
+            _edat._node.tend(), 
             std::less<iptr_type>()) ;
 
-            _epro.push(_edat)  ;
+            _epro.push(_edat) ;
 
             }
             else
@@ -478,7 +478,7 @@
             _edat._part    = 
                     _iter->itag() ;
 
-            _ebad.push(_edat)  ;
+            _ebad.push(_edat) ;
 
             }
 

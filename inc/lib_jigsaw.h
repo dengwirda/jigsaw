@@ -14,7 +14,7 @@
      * JIGSAW: Interface to the JIGSAW meshing library.
     --------------------------------------------------------
      *
-     * Last updated: 22 January, 2019
+     * Last updated: 19 June, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -56,6 +56,22 @@
 #   ifndef __LIB_JIGSAW__
 #   define __LIB_JIGSAW__
 
+#   ifdef  __cplusplus
+    extern "C" {
+#   endif
+
+#   ifdef  _WIN32
+
+#   ifdef  __lib_jigsaw
+#       define SHARED __declspec(dllexport)
+#   else
+#       define SHARED __declspec(dllimport)
+#   endif
+
+#   else
+#       define SHARED
+#   endif
+
 #   include "stdint.h"
 #   include "stddef.h"
 
@@ -76,7 +92,7 @@
     
 #   define jigsaw_make_mesh jigsaw 
     
-    extern indx_t jigsaw (    
+    SHARED indx_t jigsaw (    
     
     /* JCFG (REQUIRED): settings obj. definition.
      */
@@ -107,7 +123,7 @@
     --------------------------------------------------------
      */
         
-    extern indx_t tripod (    
+    SHARED indx_t tripod (    
     
     /* JCFG (REQUIRED): settings obj. definition.
      */
@@ -133,7 +149,7 @@
     --------------------------------------------------------
      */
        
-    extern indx_t marche (    
+    SHARED indx_t marche (    
     
     /* JCFG (REQUIRED): settings obj. definition.
      */
@@ -150,11 +166,11 @@
     --------------------------------------------------------
      */
         
-    extern void   jigsaw_init_msh_t (
+    SHARED void   jigsaw_init_msh_t (
         jigsaw_msh_t   *_mesh
         ) ;
 
-    extern void   jigsaw_init_jig_t (
+    SHARED void   jigsaw_init_jig_t (
         jigsaw_jig_t   *_jjig
         ) ;
         
@@ -165,23 +181,23 @@
      */
       
     /*
-    extern indx_t jigsaw_save_msh_t (
+    SHARED indx_t jigsaw_save_msh_t (
         char *_file,
         jigsaw_msh_t   *_mesh
         ) ;
      */
 
-    extern indx_t jigsaw_save_jig_t (
+    SHARED indx_t jigsaw_save_jig_t (
         char *_file,
         jigsaw_jig_t   *_jjig
         ) ;
         
-    extern indx_t jigsaw_load_msh_t (
+    SHARED indx_t jigsaw_load_msh_t (
         char *_file,
         jigsaw_msh_t   *_mesh
         ) ;
 
-    extern indx_t jigsaw_load_jig_t (
+    SHARED indx_t jigsaw_load_jig_t (
         char *_file,
         jigsaw_jig_t   *_jjig
         ) ;
@@ -192,118 +208,124 @@
     --------------------------------------------------------
      */
     
-    extern void  jigsaw_alloc_vert2 (
+    SHARED void  jigsaw_alloc_vert2 (
         jigsaw_VERT2_array_t *_xsrc ,
         size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_vert3 (
+    SHARED void  jigsaw_alloc_vert3 (
         jigsaw_VERT3_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_edge2 (
+    SHARED void  jigsaw_alloc_edge2 (
         jigsaw_EDGE2_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_tria3 (
+    SHARED void  jigsaw_alloc_tria3 (
         jigsaw_TRIA3_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_quad4 (
+    SHARED void  jigsaw_alloc_quad4 (
         jigsaw_QUAD4_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_tria4 (
+    SHARED void  jigsaw_alloc_tria4 (
         jigsaw_TRIA4_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_hexa8 (
+    SHARED void  jigsaw_alloc_hexa8 (
         jigsaw_HEXA8_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_wedg6 (
+    SHARED void  jigsaw_alloc_wedg6 (
         jigsaw_WEDG6_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_pyra5 (
+    SHARED void  jigsaw_alloc_pyra5 (
         jigsaw_PYRA5_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_bound (
+    SHARED void  jigsaw_alloc_bound (
         jigsaw_BOUND_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_index (
+    SHARED void  jigsaw_alloc_index (
         jigsaw_INDEX_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void  jigsaw_alloc_reals (
+    SHARED void  jigsaw_alloc_reals (
         jigsaw_REALS_array_t *_xsrc ,
 		size_t _size
         ) ;
         
-    extern void   jigsaw_free_msh_t (
+    SHARED void   jigsaw_free_msh_t (
         jigsaw_msh_t   *_mesh
         ) ;
         
-    extern void   jigsaw_free_vert2 (
+    SHARED void   jigsaw_free_vert2 (
         jigsaw_VERT2_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_vert3 (
+    SHARED void   jigsaw_free_vert3 (
         jigsaw_VERT3_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_edge2 (
+    SHARED void   jigsaw_free_edge2 (
         jigsaw_EDGE2_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_tria3 (
+    SHARED void   jigsaw_free_tria3 (
         jigsaw_TRIA3_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_quad4 (
+    SHARED void   jigsaw_free_quad4 (
         jigsaw_QUAD4_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_tria4 (
+    SHARED void   jigsaw_free_tria4 (
         jigsaw_TRIA4_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_hexa8 (
+    SHARED void   jigsaw_free_hexa8 (
         jigsaw_HEXA8_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_wedg6 (
+    SHARED void   jigsaw_free_wedg6 (
         jigsaw_WEDG6_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_pyra5 (
+    SHARED void   jigsaw_free_pyra5 (
         jigsaw_PYRA5_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_bound (
+    SHARED void   jigsaw_free_bound (
         jigsaw_BOUND_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_index (
+    SHARED void   jigsaw_free_index (
         jigsaw_INDEX_array_t *_xsrc
         ) ;
         
-    extern void   jigsaw_free_reals (
+    SHARED void   jigsaw_free_reals (
         jigsaw_REALS_array_t *_xsrc
         ) ;
-     
+ 
+#   ifdef  __cplusplus
+    }
+#   endif
+
+#   undef   SHARED
+    
 #   endif   // __LIB_JIGSAW__
 
 

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 April, 2019
+     * Last updated: 21 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -660,11 +660,11 @@
             _fdat._tadj    = _tadj  ;
 
             algorithms::isort (
-                &_fdat._node[0], 
-                &_fdat._node[3], 
+            _fdat._node.head(), 
+            _fdat._node.tend(), 
             std::less<iptr_type>()) ;
 
-            _fpro.push(_fdat)  ;
+            _fpro.push(_fdat) ;
 
             }
             else
@@ -681,7 +681,7 @@
             _fdat._part    = 
                     _iter->itag() ;
 
-            _fbad.push(_fdat)  ;
+            _fbad.push(_fdat) ;
 
             }
 

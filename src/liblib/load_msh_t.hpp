@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 19 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -72,8 +72,8 @@
             std::int32_t         _ftag ;
             jmsh_kind::
             enum_data            _kind ;
-            std::int32_t         _ndim ;
-            std::int32_t         _nval ;
+            std:: size_t         _ndim ;
+            std:: size_t         _nval ;
             
         public  :
         __normal_call msht_reader (
@@ -113,7 +113,7 @@
         }
     /*-------------------------------- read NDIMS section */
         __normal_call void_type push_ndims (
-            std::int32_t  _ndim
+            std:: size_t  _ndim
             )
         {   
             this->_ndim = _ndim ;
@@ -483,7 +483,7 @@
             if (_ipos < this->_jmsh->_value._size)
             {
             
-            for (auto _ival = +0; 
+            for (auto _ival = +0u ; 
                 _ival< this->_nval; ++_ival)
             {
                 this->_jmsh->_value.
