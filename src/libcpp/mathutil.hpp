@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * MATRIX-UTIL: (small) matrix utilities. 
+     * MATH-UTIL: general-purpose math utilities. 
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 January, 2019
+     * Last updated: 01 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -43,11 +43,71 @@
 
 #   pragma once
 
-#   ifndef __MATRIX_UTIL__
-#   define __MATRIX_UTIL__
+#   ifndef __MATH_UTIL__
+#   define __MATH_UTIL__
 
-    namespace geometry
+    namespace math
     {
+
+    /*
+    --------------------------------------------------------
+     * calc. polynomial roots. 
+    --------------------------------------------------------
+     */
+
+    template <
+    typename      real_type
+             >
+    __normal_call bool_type polyroots (
+        real_type _aa,      // aa*xx^2+bb*xx+cc=0
+        real_type _bb,
+        real_type _cc,
+    __write_ptr  (real_type) _xx
+        )
+    {
+        real_type _rt = 
+            std::numeric_limits
+                <real_type>::epsilon() ;
+
+        bool_type _real = false ;
+
+        real_type _sq = _bb * _bb -
+       (real_type)+4. * _aa * _cc ;
+
+        if (_sq >= (real_type)+0.)  // real roots
+        {
+            _sq  = std::sqrt(_sq) ;
+        
+            _xx[0] = (-_bb + _sq) ;
+            _xx[1] = (-_bb - _sq) ;
+
+            real_type _xm = std::max (
+                std::abs(_xx[0]), 
+                std::abs(_xx[1])) ;
+
+            if (std::abs(_aa) >  
+                std::abs(_xm) * _rt)
+            {
+                _real =  true ;
+
+                _aa *=(real_type)+2. ;
+
+                _xx[0] /= _aa ;
+                _xx[1] /= _aa ;
+            }
+            else
+            if (std::abs(_bb) >  
+                std::abs(_cc) * _rt)
+            {
+                _real =  true ;
+
+                _xx[0] = -_cc / _bb  ;
+                _xx[1] = -_cc / _bb  ;
+            }
+        }
+
+        return _real ;
+    }
 
     /*
     --------------------------------------------------------
@@ -197,6 +257,7 @@
 
     }
 
-#   endif//__MATRIX_UTIL__
+#   endif//__MATH_UTIL__
+
 
 

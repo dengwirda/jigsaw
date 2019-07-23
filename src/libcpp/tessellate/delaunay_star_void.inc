@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 May, 2017
+     * Last updated: 03 July, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -73,9 +73,12 @@
         iptr_type static constexpr
             FACE_SIZE = tria_pred::_dims+1;
         
-        this->_fset._lptr.set_count (
-            _tset.count()*tria_dims ,
-        containers::loose_alloc, nullptr) ;
+        this->_fset.set_slots (
+            _tset.count()* tria_dims ) ;
+
+        __assert ( 
+            this->_fset.count() == +0 &&
+        "star-tria-void: hashtable non-empty!" ) ;
 
         for(auto _iter  = _tset.head() ; 
                     _iter != _tset.tend() ; 

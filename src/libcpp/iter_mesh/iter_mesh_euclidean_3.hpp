@@ -123,7 +123,7 @@ template <
         
     class edge_type : public edge_base
         {
-    /*------------------------- edge type for ITER-MESH-2 */
+    /*------------------------- edge type for ITER-MESH-3 */
         public  :
         
         iptr_type                     _itag ;
@@ -142,7 +142,7 @@ template <
     
     class face_type : public face_base
         {
-    /*------------------------- face type for ITER-MESH-2 */
+    /*------------------------- face type for ITER-MESH-3 */
         public  :
         
         iptr_type                     _itag ;
@@ -161,7 +161,7 @@ template <
         
     class tria_type : public tria_base
         {
-    /*------------------------- tria type for ITER-MESH-2 */
+    /*------------------------- tria type for ITER-MESH-3 */
         public  :
         
         iptr_type                     _itag ;

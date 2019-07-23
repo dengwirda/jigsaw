@@ -131,13 +131,13 @@
     class edge_data
         {
         public  :
-        real_type               _cost ;
+        float               _cost ;
         } ;
 
     class tria_data
         {
         public  :
-        real_type               _cost ;
+        float               _cost ;
         } ;
 
     /*------------------------ refinement priority pred. */
@@ -147,8 +147,9 @@
         edge_data const&_idat ,
         edge_data const&_jdat
         )
-    {   return ( _idat. _cost > 
-                 _jdat. _cost ) ;
+    {   
+        return _idat._cost > 
+               _jdat._cost ;
     }
     
     __static_call
@@ -156,8 +157,9 @@
         tria_data const&_idat ,
         tria_data const&_jdat
         )
-    {   return ( _idat. _cost > 
-                 _jdat. _cost ) ;
+    {   
+        return _idat._cost > 
+               _jdat._cost ;
     }
     
     /*

@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 30 April, 2019
+ * Last updated: 10 July, 2019
  *
  * Copyright 2013-2019
  * Darren Engwirda
@@ -93,9 +93,6 @@
     /*------------------------------- tree-based pointers */
         node_type          *_pptr;
         node_data          *_lptr;
-    /*------------------------------- marker: search algs */
-        iptr_type           _mark;
-        iptr_type           _size;
     /*----------------------------- tree-pointer handlers */
         __inline_call item_data* items (
             ) const
@@ -441,15 +438,13 @@
         item_data *_hptr   = nullptr;
         item_data *_idat   = nullptr;
         {
-        iptr_type  _rsiz = +0 ;
-        for(; _head != _tend; ++_head, ++_rsiz)
+        for(; _head != _tend; ++_head)
         {
     /*------------------------------ alloc. and push item */
             make_item(*_head, _idat);
             push_item( _hptr, _idat);
         }
         this->_root->_hptr  = _hptr ;
-        this->_root->_size  = _rsiz ;
         }
         
         init_aabb_node (this->_root);
@@ -553,16 +548,13 @@
             this->_size  += +2 ;
             
             _pnod->_hptr  = _pptr ;
-            _pnod->_size  = _pnum ;
             _pnod->_lptr  = _ndat ;
             
             _lnod->_hptr  = _lptr ;
-            _lnod->_size  = _lnum ;
             _lnod->_lptr  = nullptr ;
             _lnod->_pptr  = _pnod ;
             
             _rnod->_hptr  = _rptr ;
-            _rnod->_size  = _rnum ;
             _rnod->_lptr  = nullptr ;
             _rnod->_pptr  = _pnod ;
         
@@ -836,12 +828,14 @@
             node_dist ,
             node_pred    > _nnpq ;
     
+        _nnpq.set_alloc(+64) ;
+
         node_dist _ndat ;
         _ndat._node =  _root ;
         _ndat._dsqr = 
         calc_rect_dist(_ppos ,
            &_root->_pmin[0],
-               &_root->_pmax[0]) ;
+           &_root->_pmax[0]) ;
         _nnpq.push    (_ndat);
         
     /*----------------- traverse tree while len. reducing */

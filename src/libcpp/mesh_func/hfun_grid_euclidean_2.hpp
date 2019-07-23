@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 July, 2018
+     * Last updated: 28 June, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -71,8 +71,12 @@
     typedef typename  hfun_base_kd  <
             iptr_type , 
             real_type >::hint_type  hint_type ;
+
+    typedef containers::array   <
+            real_type , 
+            allocator >             real_list ;   
       
-      
+ 
     containers::array <
         real_type, allocator>      _xpos;
     containers::array <
@@ -80,6 +84,9 @@
     
     containers::array <
         real_type, allocator>      _hmat; 
+
+    containers::array <
+        real_type, allocator>      _dhdx; 
         
     bool_type                      _xvar;
     bool_type                      _yvar;
@@ -90,12 +97,255 @@
         iptr_type _ipos,
         iptr_type _jpos,
         iptr_type&_indx
-        )
+        ) const
     {
+    /*------------ helper: convert into "un-rolled" index */
         iptr_type _ynum = 
        (iptr_type)this->_ypos.count() ;
 
         _indx = _jpos * _ynum + _ipos ;
+    }
+
+    __inline_call void_type subs_from_indx (
+        iptr_type  _indx,
+        iptr_type &_ipos,
+        iptr_type &_jpos        
+        ) const
+    {
+    /*------------ helper: convert from "un-rolled" index */
+        iptr_type _ynum = 
+       (iptr_type)this->_ypos.count() ;
+
+        _ipos = _indx % _ynum ;
+        _jpos =(_indx - _ipos )/_ynum ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * CLIP-HFUN: impose |dh/dx| limits.
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type clip (
+        )
+    {
+        class  less_than
+        {
+    /*-------------------- "LESS-THAN" operator for queue */
+        public  :
+            typename            
+            real_list::_write_it _hptr;
+ 
+        public  :
+        __inline_call less_than  (
+            typename
+            real_list::_write_it _hsrc
+            ) : _hptr(_hsrc) {}
+
+        __inline_call 
+            bool_type operator() (
+            iptr_type _ipos,
+            iptr_type _jpos
+            )
+        {   return *(this->_hptr+_ipos) <
+                   *(this->_hptr+_jpos) ;
+        }
+        } ;
+
+        typedef typename
+            allocator:: size_type   uint_type ;
+
+        uint_type static constexpr 
+            _null = 
+        std::numeric_limits<uint_type>::max() ;
+
+        containers::prioritymap <
+            iptr_type ,
+            less_than ,
+            allocator > 
+        _sort((less_than(this->_hmat.head())));
+
+        containers:: array      <
+            typename
+            allocator:: size_type,
+            allocator >     _keys;
+        
+    /*-------------------- push nodes onto priority queue */
+        _keys.set_count (
+            _hmat.count(),
+        containers::tight_alloc, _null) ;
+
+        iptr_type _inum  = +0;
+        for (auto _iter  = 
+                   this->_hmat.head() ;
+                  _iter != 
+                   this->_hmat.tend() ;
+                ++_iter , ++_inum)
+        {
+            {
+                _keys[_inum] = 
+                    _sort.push(_inum) ;
+            }
+        }
+
+    /*-------------------- compute h(x) via fast-marching */
+        iptr_type IBEG = +0;
+        iptr_type IEND = this->_ypos.count() - 1 ;
+        
+        iptr_type JBEG = +0;
+        iptr_type JEND = this->_xpos.count() - 1 ;
+
+        for ( ; !_sort.empty() ; )
+        {
+            iptr_type _base ;
+            _sort._pop_root(_base) ;
+
+            _keys[_base] = _null ;
+
+            iptr_type  _ipos, _jpos ;
+            subs_from_indx(
+                _base, _ipos, _jpos);
+ 
+            for (auto _IPOS = _ipos - 1 ;
+                      _IPOS < _ipos + 1 ;
+                    ++_IPOS )
+            for (auto _JPOS = _jpos - 1 ;
+                      _JPOS < _jpos + 1 ;
+                    ++_JPOS )
+            {
+                if (_IPOS >= IBEG && _IPOS < IEND)
+                if (_JPOS >= JBEG && _JPOS < JEND)
+                {
+    /*-------------------- un-pack implicit cell indexing */
+                 auto _ipii = _IPOS + 0 ;
+                 auto _ipjj = _JPOS + 0 ;
+
+                iptr_type  _inod;
+                indx_from_subs(
+                    _ipii, _ipjj, _inod);
+
+                 auto _jpii = _IPOS + 1 ;
+                 auto _jpjj = _JPOS + 0 ;
+
+                iptr_type  _jnod;
+                indx_from_subs(
+                    _jpii, _jpjj, _jnod);
+
+                 auto _kpii = _IPOS + 1 ;
+                 auto _kpjj = _JPOS + 1 ;
+
+                iptr_type  _knod;
+                indx_from_subs(
+                    _kpii, _kpjj, _knod);
+
+                 auto _lpii = _IPOS + 0 ;
+                 auto _lpjj = _JPOS + 1 ;
+
+                iptr_type  _lnod;
+                indx_from_subs(
+                    _lpii, _lpjj, _lnod);
+
+    /*-------------------- skip any cells with null nodes */
+                if (_keys[_inod] == _null &&
+                    _inod != _base) continue ;
+                if (_keys[_jnod] == _null &&
+                    _jnod != _base) continue ;
+                if (_keys[_knod] == _null &&
+                    _knod != _base) continue ;
+                if (_keys[_lnod] == _null &&
+                    _lnod != _base) continue ;
+
+    /*-------------------- set-up cell vertex coordinates */
+                real_type _IXYZ[2];
+                _IXYZ[0] = this->_xpos[_ipjj];
+                _IXYZ[1] = this->_ypos[_ipii];
+
+                real_type _JXYZ[2];
+                _JXYZ[0] = this->_xpos[_jpjj];
+                _JXYZ[1] = this->_ypos[_jpii];
+
+                real_type _KXYZ[2];
+                _KXYZ[0] = this->_xpos[_kpjj];
+                _KXYZ[1] = this->_ypos[_kpii];
+
+                real_type _LXYZ[2];
+                _LXYZ[0] = this->_xpos[_lpjj];
+                _LXYZ[1] = this->_ypos[_lpii];
+
+                if (this->_dhdx.count() >1)
+                {
+    /*-------------------- update adj. set, g = g(x) case */
+                if (eikonal_quad_2d (
+                   _IXYZ , _JXYZ ,
+                   _KXYZ , _LXYZ ,
+                    this->_hmat[_inod],
+                    this->_hmat[_jnod],
+                    this->_hmat[_knod],
+                    this->_hmat[_lnod],
+                    this->_dhdx[_inod],
+                    this->_dhdx[_jnod],
+                    this->_dhdx[_knod],
+                    this->_dhdx[_lnod])  )
+                {
+
+                if (_keys[_inod] != _null)
+                    _sort.update(
+                    _keys[_inod] ,  _inod) ;
+
+                if (_keys[_jnod] != _null)
+                    _sort.update(
+                    _keys[_jnod] ,  _jnod) ;
+
+                if (_keys[_knod] != _null)
+                    _sort.update(
+                    _keys[_knod] ,  _knod) ;
+
+                if (_keys[_lnod] != _null)
+                    _sort.update(
+                    _keys[_lnod] ,  _lnod) ;
+
+                }
+                }
+                else
+                if (this->_dhdx.count()==1)
+                {
+    /*-------------------- update adj. set, const. g case */
+                if (eikonal_quad_2d (
+                   _IXYZ , _JXYZ ,
+                   _KXYZ , _LXYZ ,
+                    this->_hmat[_inod],
+                    this->_hmat[_jnod],
+                    this->_hmat[_knod],
+                    this->_hmat[_lnod],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ])  )
+                {
+
+                if (_keys[_inod] != _null)
+                    _sort.update(
+                    _keys[_inod] ,  _inod) ;
+
+                if (_keys[_jnod] != _null)
+                    _sort.update(
+                    _keys[_jnod] ,  _jnod) ;
+
+                if (_keys[_knod] != _null)
+                    _sort.update(
+                    _keys[_knod] ,  _knod) ;
+
+                if (_keys[_lnod] != _null)
+                    _sort.update(
+                    _keys[_lnod] ,  _lnod) ;
+
+                }
+                }
+
+                }
+            }
+        }
+
     }
     
     /*

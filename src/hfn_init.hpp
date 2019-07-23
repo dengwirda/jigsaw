@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 April, 2019
+     * Last updated: 28 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -142,23 +142,18 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-2d */
-        for (auto _node  = _hfun.
-        _euclidean_mesh_2d._mesh._set1.head();
-                  _node != _hfun.
-        _euclidean_mesh_2d._mesh._set1.tend();
-                ++_node  )
+        for (auto _iter  = _hfun.
+            _euclidean_mesh_2d._hval.head();
+                  _iter != _hfun.
+            _euclidean_mesh_2d._hval.tend();
+                ++_iter  )
         {
-            if (_node->mark() < 0) continue;
+           *_iter = _scal *  *_iter;
             
-            _node->hval() = 
-                _scal  * _node->hval();
-            
-            _node->hval() = 
-                std::min(_node->hval(), 
+           *_iter = std::min(*_iter, 
                     _scal *_jcfg._hfun_hmax) ;
                 
-            _node->hval() = 
-                std::max(_node->hval(), 
+           *_iter = std::max(*_iter, 
                     _scal *_jcfg._hfun_hmin) ;
         }
         
@@ -191,23 +186,18 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-3d */
-        for (auto _node  = _hfun.
-        _euclidean_mesh_3d._mesh._set1.head();
-                  _node != _hfun.
-        _euclidean_mesh_3d._mesh._set1.tend();
-                ++_node  )
+        for (auto _iter  = _hfun.
+            _euclidean_mesh_3d._hval.head();
+                  _iter != _hfun.
+            _euclidean_mesh_3d._hval.tend();
+                ++_iter  )
         {
-            if (_node->mark() < 0) continue;
-
-            _node->hval() = 
-                _scal  * _node->hval();
+           *_iter = _scal *  *_iter;
             
-            _node->hval() = 
-                std::min(_node->hval(), 
+           *_iter = std::min(*_iter, 
                     _scal *_jcfg._hfun_hmax) ;
                 
-            _node->hval() = 
-                std::max(_node->hval(), 
+           *_iter = std::max(*_iter, 
                     _scal *_jcfg._hfun_hmin) ;
         }
         
@@ -238,23 +228,18 @@
              jmsh_kind::ellipsoid_mesh)
         {
     /*--------------------------------- ellipsoid-mesh-3d */
-        for (auto _node  = _hfun.
-        _ellipsoid_mesh_3d._mesh._set1.head();
-                  _node != _hfun.
-        _ellipsoid_mesh_3d._mesh._set1.tend();
-                ++_node  )
+        for (auto _iter  = _hfun.
+            _ellipsoid_mesh_3d._hval.head();
+                  _iter != _hfun.
+            _ellipsoid_mesh_3d._hval.tend();
+                ++_iter  )
         {
-            if (_node->mark() < 0) continue;
-
-            _node->hval() = 
-                _scal  * _node->hval();
+           *_iter = _scal *  *_iter;
             
-            _node->hval() = 
-                std::min(_node->hval(), 
+           *_iter = std::min(*_iter, 
                     _scal *_jcfg._hfun_hmax) ;
                 
-            _node->hval() = 
-                std::max(_node->hval(), 
+           *_iter = std::max(*_iter, 
                     _scal *_jcfg._hfun_hmin) ;
         }
 

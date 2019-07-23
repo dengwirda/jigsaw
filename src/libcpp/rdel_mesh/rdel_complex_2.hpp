@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 April, 2018
+     * Last updated: 03 July, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -231,7 +231,7 @@
     class node_hash
         {
         public  :
-        __inline_call iptr_type operator() (
+        __inline_call uint32_t  operator() (
             node_data const&_node
             ) const
         {
@@ -245,7 +245,7 @@
         {
     /*----------------------- hash node indexing for ball */
         public  :
-        __inline_call iptr_type operator() (
+        __inline_call uint32_t  operator() (
             ball_data const&_ball
             ) const
         {
@@ -257,7 +257,7 @@
     class edge_hash
         {
         public  :
-        __inline_call iptr_type operator() (
+        __inline_call uint32_t  operator() (
             edge_data const&_edge
             ) const
         {
@@ -270,7 +270,7 @@
     class tria_hash
         {
         public  :
-        __inline_call iptr_type operator() (
+        __inline_call uint32_t  operator() (
             tria_data const&_tria
             ) const
         {
@@ -410,19 +410,39 @@
             _tpol(
         sizeof(typename tria_list::item_type)) ,
         
-            _nset(node_hash(), 
-                  node_pred(), 
-            +.8, (pool_wrap(&_npol))) ,
-            _bset(ball_hash(), 
-                  ball_pred(), 
-            +.8, (pool_wrap(&_bpol))) ,
-            _eset(edge_hash(), 
-                  edge_pred(), 
-            +.8, (pool_wrap(&_epol))) ,
-            _tset(tria_hash(), 
-                  tria_pred(), 
-            +.8, (pool_wrap(&_tpol)))
+        _nset(node_hash(), 
+              node_pred(), 
+        +.8, (pool_wrap(&_npol))) ,
+        _bset(ball_hash(), 
+              ball_pred(), 
+        +.8, (pool_wrap(&_bpol))) ,
+        _eset(edge_hash(), 
+              edge_pred(), 
+        +.8, (pool_wrap(&_epol))) ,
+        _tset(tria_hash(), 
+              tria_pred(), 
+        +.8, (pool_wrap(&_tpol)))
     {
+    }
+
+    __normal_call void_type clear (
+        containers::alloc_types _alloc = 
+        containers::loose_alloc        
+        )
+    {
+        this->_tria.clear(_alloc) ;
+
+        this->_nset.clear(_alloc) ;
+        this->_npol.clear()  ;
+
+        this->_bset.clear(_alloc) ;
+        this->_bpol.clear()  ;
+
+        this->_eset.clear(_alloc) ;
+        this->_epol.clear()  ;
+
+        this->_tset.clear(_alloc) ;
+        this->_tpol.clear()  ;
     }
 
     __inline_call 
@@ -461,6 +481,22 @@
         tria_data      &_same
         )
     {   return this->_tset._pop(_tdat, _same); 
+    }
+
+    __inline_call bool_type _pop_ball (
+        ball_data const&_bdat
+        )
+    {   return this->_bset._pop(_bdat); 
+    }
+    __inline_call bool_type _pop_edge (
+        edge_data const&_edat
+        )
+    {   return this->_eset._pop(_edat); 
+    }
+    __inline_call bool_type _pop_tria (
+        tria_data const&_tdat
+        )
+    {   return this->_tset._pop(_tdat); 
     }
 
     __inline_call bool_type find_ball (

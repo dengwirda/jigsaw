@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 December, 2018
+     * Last updated: 10 July, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -97,10 +97,15 @@
         
         _edat._cost =    _pmax[3] ;
         
-        _edat._imax =    _enod[0] ;
-        _edat._imax = std::max(
-            _edat._imax, _enod[1]);
+    //  scaling via node numbering seems to make slightly
+    //  better (more topologically regular) meshes
+    //  this implicitly boosts the refinement priority of 
+    //  "old" cells, which typically produces meshes with
+    //  fewer "seams"...
 
+        _edat._cost/=    _enod[0]+1  ;
+        _edat._cost/=    _enod[1]+1  ;
+        
     /*------------------------- eval. size func. at _tbal */
         real_type _esiz = (real_type)+0.;
         _esiz   += _hfun.eval(
@@ -216,6 +221,11 @@
         }
     
     /*------------------------- calc. refinement priority */
+        iptr_type _ebnd=_emin ;
+        real_type _best;
+        _best  =  _llen[_emax];
+        _best += (real_type)1.;
+        
         _fdat._mark =  +0 ;
     
     #   ifdef __bias_BNDS      
@@ -242,6 +252,12 @@
                  item_type *_eptr = nullptr ;
             if (_mesh.find_edge(_edat,_eptr))
             {
+                if (_best > _llen[_enum])
+                {
+                    _ebnd = _enum ;
+                    _best = _llen[_enum];
+                }
+
                 _fdat._mark -= +1 ;
             }       
         }
@@ -259,12 +275,21 @@
     /*------------------------- calc. refinement priority */
         _fdat._cost = _prat * _pmax[3] ;
       
-        _fdat._imax =    _fnod[0] ;
-        _fdat._imax = std::max(
-            _fdat._imax, _fnod[1]);
-        _fdat._imax = std::max(
-            _fdat._imax, _fnod[2]);
-         
+    //  scaling via node numbering seems to make slightly
+    //  better (more topologically regular) meshes
+    //  this implicitly boosts the refinement priority of 
+    //  "old" cells, which typically produces meshes with
+    //  fewer "seams"...
+
+        iptr_type  _enod[ +3];
+        mesh_type::tria_type::tria_type::
+        face_node(_enod, _ebnd, 2, 1);
+        _enod[ +0] = _fnod[_enod[+0]];
+        _enod[ +1] = _fnod[_enod[+1]];
+
+        _fdat._cost/=     _enod[0] + 1 ;
+        _fdat._cost/=     _enod[1] + 1 ;
+
     /*------------------------- refinement classification */
         if (_prat >= _args.rad2() *
                      _args.rad2() )
@@ -384,7 +409,6 @@
         
     /*--------------------------------- find 2-face radii */
         real_type  _frad[4] ;
-        real_type  _frat[4] ;
         iptr_type  _fnum ;
         for(_fnum = +4; _fnum-- != +0; )
         {
@@ -408,32 +432,7 @@
            &_mesh._tria.
              node(_fnod[2])->pval(0)) ;
 
-            real_type _ll12 = 
-                geometry::lensqr_3d (
-           &_mesh._tria.
-             node(_fnod[0])->pval(0),
-           &_mesh._tria.
-             node(_fnod[1])->pval(0)) ;
-             
-            real_type _ll23 = 
-                geometry::lensqr_3d (
-           &_mesh._tria.
-             node(_fnod[1])->pval(0),
-           &_mesh._tria.
-             node(_fnod[2])->pval(0)) ;
-
-            real_type _ll31 = 
-                geometry::lensqr_3d (
-           &_mesh._tria.
-             node(_fnod[2])->pval(0),
-           &_mesh._tria.
-             node(_fnod[0])->pval(0)) ;
-
-            _frad[_fnum] = _fbal[ 3] ;
-            
-            _frat[_fnum] = _fbal[ 3] / 
-                std::min(_ll12, 
-                    std::min(_ll23, _ll31));
+            _frad[_fnum] =  _fbal[3];
         }
         
     /*--------------------------------- find min/max edge */
@@ -459,6 +458,11 @@
         }
 
     /*------------------------- calc. refinement priority */
+        iptr_type _fbnd=_fmin ;
+        real_type _best;
+        _best  =  _frad[_fmax];
+        _best += (real_type)1.;
+
         _tdat._mark =  +0 ;
         
     #   ifdef __bias_BNDS
@@ -490,6 +494,12 @@
                  item_type *_fptr = nullptr ;
             if (_mesh.find_face(_fdat,_fptr))
             {
+                if (_best > _frad[_fnum])
+                {
+                    _fbnd = _enum ;
+                    _best = _frad[_fnum];
+                }
+
                 _tdat._mark -= +1 ;
             }       
         }
@@ -498,20 +508,33 @@
     /*------------------------- eval. radius--edge ratios */
         real_type _erat = _tbal[   +3] / 
                           _llen[_emin] ;
+
+        real_type _frat = _tbal[   +3] / 
+                          _frad[_fmin] ;
                           
         __unreferenced(   _erat) ;
+        __unreferenced(   _frat) ;
         
     /*------------------------- calc. refinement priority */        
         _tdat._cost = 
-            _erat / _frat[_fmin] * _tbal[3] ;
+            _erat * _frat * _tbal[3] ;
 
-        _tdat._imax =    _tnod[0] ;
-        _tdat._imax = std::max(
-            _tdat._imax, _tnod[1]);
-        _tdat._imax = std::max(
-            _tdat._imax, _tnod[2]);
-        _tdat._imax = std::max(
-            _tdat._imax, _tnod[3]);
+    //  scaling via node numbering seems to make slightly
+    //  better (more topologically regular) meshes
+    //  this implicitly boosts the refinement priority of 
+    //  "old" cells, which typically produces meshes with
+    //  fewer "seams"...
+
+        iptr_type  _fnod[ +4];
+        mesh_type::tria_type::tria_type::
+        face_node(_fnod, _fbnd, 3, 2);
+        _fnod[ +0] = _tnod[_fnod[+0]];
+        _fnod[ +1] = _tnod[_fnod[+1]];
+        _fnod[ +2] = _tnod[_fnod[+2]];
+
+        _tdat._cost/=     _fnod[0] + 1 ;
+        _tdat._cost/=     _fnod[1] + 1 ;
+        _tdat._cost/=     _fnod[2] + 1 ;
 
     /*------------------------- refinement classification */
         if (_erat >= _args.rad3() *

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 March, 2019
+     * Last updated: 10 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -179,7 +179,7 @@
                                     tree_node ;
 
     typedef geom_tree::aabb_item_rect_k <
-                real_type,
+                    float,
                 iptr_type, +3   >   tree_item ;
                 
     typedef geom_tree::aabb_tree<
@@ -192,24 +192,63 @@
     public  :
     
     containers::
-        fixed_array<real_type,3>    _bmin ;
+        fixed_array<real_type,3>   _bmin ;
     containers::
-        fixed_array<real_type,3>    _bmax ;
+        fixed_array<real_type,3>   _bmax ;
         
-    mesh_type                       _mesh ;
+    mesh_type                      _mesh ;
 
-    tree_type                       _ebox ;
+    tree_type                      _ebox ;
   
     /*--------------- (x/a)**2 + (y/b)**2 + (z/c)**2 = 1. */
         
-    real_type                       _radA ;
-    real_type                       _radB ;
-    real_type                       _radC ;
+    real_type                      _radA = 1. ;
+    real_type                      _radB = 1. ;
+    real_type                      _radC = 1. ;
     
-    real_type                       _rEPS ;
+    real_type                      _rEPS ;
 
     public  :
     
+    __inline_call void_type toR3 (
+      __const_ptr(real_type) _apos ,
+      __write_ptr(real_type) _ppos        
+        ) const
+    {
+    /*------------ helper: convert from S^2 to R^3 coord. */
+        _ppos[0] = this->_radA *
+            std::cos( _apos[0] ) * 
+            std::cos( _apos[1] ) ;
+
+        _ppos[1] = this->_radB *
+            std::sin( _apos[0] ) * 
+            std::cos( _apos[1] ) ;
+        
+        _ppos[2] = this->_radC *
+            std::sin( _apos[1] ) ;
+    }
+
+    __inline_call void_type toS2 (
+      __const_ptr(real_type) _ppos ,
+      __write_ptr(real_type) _apos        
+        ) const
+    {
+    /*------------ helper: convert from R^3 to S^2 coord. */
+        real_type _xmul = 
+            _ppos[0] * this->_radB ;
+        real_type _ymul = 
+            _ppos[1] * this->_radA ;
+        real_type _zrat = 
+            _ppos[2] / this->_radC ;
+
+        _zrat = std::min(+1.,_zrat);
+        _zrat = std::max(-1.,_zrat);
+
+        _apos[0]= std::atan2(_ymul, 
+                             _xmul);
+        _apos[1]= std::asin (_zrat);
+    }
+
     /*
     --------------------------------------------------------
      * INIT-GEOM: init. geometry data structures.
@@ -244,21 +283,17 @@
             if (_iter->mark() < 0)
                 continue ;
             
-            real_type _alon, _alat ;
-            _alon = _iter->pval(0) ;
-            _alat = _iter->pval(1) ;
-            
-            _iter->pval(0) = 
-                this->   _radA*
-                std::cos(_alon) * 
-                std::cos(_alat) ;
-            _iter->pval(1) = 
-                this->   _radB*
-                std::sin(_alon) * 
-                std::cos(_alat) ;
-            _iter->pval(2) = 
-                this->   _radC*
-                std::sin(_alat) ;
+            real_type _apos[2];
+            real_type _ppos[3];
+
+            _apos[0] = _iter->pval(0) ;
+            _apos[1] = _iter->pval(1) ;
+
+            toR3(_apos, _ppos);
+
+            _iter->pval(0) = _ppos[0] ;
+            _iter->pval(1) = _ppos[1] ;
+            _iter->pval(2) = _ppos[2] ;
         }
 
     /*--------------------------- form rel.-tol. for prj. */
@@ -298,12 +333,12 @@
             _tdat.ipos() = _inum ;
         
             make_aabb (
-                &this->_mesh.
-           _set1[_enod[0]].pval(0) ,
-                &this->_mesh.
-           _set1[_enod[1]].pval(0) ,
-                &_tdat .pmin(0), 
-                &_tdat .pmax(0)) ;
+           &this->_mesh.
+            _set1[_enod[ 0 ]].pval(0) ,
+           &this->_mesh.
+            _set1[_enod[ 1 ]].pval(0) ,
+           &_tdat .pmin( 0 ), 
+           &_tdat .pmax( 0 )) ;
             
             _bbox.push_tail(_tdat) ;
         }
@@ -612,8 +647,8 @@
     __normal_call void_type make_aabb (
         real_type *_apos,
         real_type *_bpos,
-        real_type *_rmin,
-        real_type *_rmax
+        float     *_rmin,
+        float     *_rmax
         )
     {
     /*- build an AABB that encloses a spheroidal arc-seg. */
@@ -633,17 +668,16 @@
         _rmax[2] = std::max(
             _apos[2], _bpos[2]) ;
             
-        real_type _rmid[3] = {
-       (real_type) +.5 * _rmin[0] +
-       (real_type) +.5 * _rmax[0] ,
-       (real_type) +.5 * _rmin[1] +
-       (real_type) +.5 * _rmax[1] ,
-       (real_type) +.5 * _rmin[2] +
-       (real_type) +.5 * _rmax[2] ,
+        float     _rmid[3] = {
+       (float)     +.5 * _rmin[0] +
+       (float)     +.5 * _rmax[0] ,
+       (float)     +.5 * _rmin[1] +
+       (float)     +.5 * _rmax[1] ,
+       (float)     +.5 * _rmin[2] +
+       (float)     +.5 * _rmax[2] ,
             } ;
             
-        real_type _rlen;
-        _rlen = (real_type) +0. ;
+        float     _rlen =   +0. ;
         _rlen = std::max (
         _rlen , _rmax[0]-_rmin[0]);
         _rlen = std::max (
@@ -651,7 +685,7 @@
         _rlen = std::max (
         _rlen , _rmax[2]-_rmin[2]);
     
-        _rlen*= (real_type) +.5 ;
+        _rlen*= (float)     +.5 ;
         _rlen+= _rEPS ;
     
         _rmin[0] = std::min(
@@ -1409,7 +1443,7 @@
     /*------------------ tree-flat intersection predicate */
         typedef 
         geom_tree::aabb_pred_flat_3 <
-             real_type, 
+                 float , 
              iptr_type >    tree_pred ; 
 
     /*------------------ dual-face intersection predicate */
@@ -1417,11 +1451,29 @@
         flat_intersect <
              hits_func >    hits_pred ;
              
+        float           _PPOS[3] ;
+        _PPOS[0] =      _flat. _ppos[0] ;
+        _PPOS[1] =      _flat. _ppos[1] ;
+        _PPOS[2] =      _flat. _ppos[2] ;
+
+        float           _NVEC[3] ;
+        _NVEC[0] =      _flat. _nvec[0] ;
+        _NVEC[1] =      _flat. _nvec[1] ;
+        _NVEC[2] =      _flat. _nvec[2] ;
+
+        float           _RMIN[3] ;
+        _RMIN[0] =      _flat. _rmin[0] ;
+        _RMIN[1] =      _flat. _rmin[1] ;
+        _RMIN[2] =      _flat. _rmin[2] ;
+
+        float           _RMAX[3] ;
+        _RMAX[0] =      _flat. _rmax[0] ;
+        _RMAX[1] =      _flat. _rmax[1] ;
+        _RMAX[2] =      _flat. _rmax[2] ;
+
     /*------------------ call actual intersection testing */
-        tree_pred _pred(_flat. _ppos,
-                        _flat. _nvec,
-                        _flat. _rmin, 
-                        _flat. _rmax) ;     
+        tree_pred _pred(_PPOS, _NVEC,
+                        _RMIN, _RMAX) ;     
         hits_pred _func(_flat,
                         *this, _hfun) ;
 
@@ -1448,13 +1500,21 @@
     /*------------------ tree-ball intersection predicate */
         typedef 
         geom_tree::aabb_pred_ball_3 <
-             real_type, 
+                 float , 
              iptr_type >    tree_pred ; 
             
     /*------------------ ball-line intersection predicate */
         typedef 
         ball_intersect <
              hits_func >    hits_pred ;
+
+        float           _PMID[3] ;
+        _PMID[0] =      _ball. _pmid[0] ;
+        _PMID[1] =      _ball. _pmid[1] ;
+        _PMID[2] =      _ball. _pmid[2] ;
+
+        float           _RRAD;
+        _RRAD    =      _ball. _rrad;
 
     /*------------------ call actual intersection testing */      
         real_type _rmin[3] = {
@@ -1468,8 +1528,7 @@
         _ball._pmid[2] +_ball. _rrad
             } ;
       
-        tree_pred _pred(_ball. _pmid, 
-                        _ball. _rrad) ;
+        tree_pred _pred(_PMID, _RRAD) ;
         hits_pred _func(_ball,
                         _rmin, _rmax,
                         *this, _hfun) ;

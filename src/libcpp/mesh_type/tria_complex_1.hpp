@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 April, 2018
+     * Last updated: 30 June, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -105,7 +105,7 @@
             ) : _nset( _nsrc) {}
     /*----------------------- hash node indexing for node */
         __inline_call 
-            iptr_type operator() (
+            uint32_t  operator() (
             iptr_type _npos
             ) const
         {
@@ -125,7 +125,7 @@
             ) : _eset( _esrc) {}
     /*----------------------- hash node indexing for edge */
         __inline_call 
-            iptr_type operator() (
+            uint32_t  operator() (
             iptr_type _epos
             ) const
         {
@@ -157,7 +157,7 @@
             ) : _nset( _nsrc) {}
     /*----------------------- compute "equal-to" for node */
         __inline_call 
-            iptr_type operator() (
+            bool_type operator() (
             iptr_type _ipos,
             iptr_type _jpos
             ) const
@@ -170,8 +170,7 @@
             _jnod[0] = this->_nset->
                 operator[](_jpos).node( 0) ;
             
-            return ( _inod[0] ==
-                     _jnod[0] );
+            return _inod[0] == _jnod[0]  ;
         }
         } ;
  
@@ -186,7 +185,7 @@
             ) : _eset( _esrc) {}
     /*----------------------- compute "equal-to" for edge */
         __inline_call 
-            iptr_type operator() (
+            bool_type operator() (
             iptr_type _ipos,
             iptr_type _jpos
             ) const
@@ -211,10 +210,8 @@
                 &_jnod[0], &_jnod[2], 
                     std::less<iptr_type>());
             
-            return ( _inod[0] ==
-                     _jnod[0] &&
-                     _inod[1] ==
-                     _jnod[1] );
+            return _inod[0] == _jnod[0] &&
+                   _inod[1] == _jnod[1]  ;
         }
         } ;
         
@@ -229,11 +226,11 @@
     typedef allocators::_wrap_alloc <
                 pool_base           >   pool_wrap ;
 
-    typedef containers::hash_table  <
-                iptr_type, 
-                node_hash, 
-                node_pred,
-                pool_wrap>              node_maps ;
+  //typedef containers::hash_table  <
+  //            iptr_type, 
+  //            node_hash, 
+  //            node_pred,
+  //            pool_wrap>              node_maps ;
 
     typedef containers::hash_table  <
                 iptr_type, 
@@ -253,7 +250,7 @@
     conn_list                   _adj1 ;
     conn_list                   _adj2 ;
 
-    node_maps                   _map1 ;
+  //node_maps                   _map1 ;
     edge_maps                   _map2 ;
     
     node_list                   _set1 ;
@@ -368,10 +365,10 @@
             _adj1(pool_wrap(&_csrc)),
             _adj2(pool_wrap(&_csrc)),
         /*------------------------------ init. hash lists */
-            _map1(
-             node_hash(& this->_set1) , 
-             node_pred(& this->_set1) , 
-            +.8, (pool_wrap(&_hsrc))) ,
+          //_map1(
+          // node_hash(& this->_set1) , 
+          // node_pred(& this->_set1) , 
+          //+.8, (pool_wrap(&_hsrc))) ,
             _map2(
              edge_hash(& this->_set2) , 
              edge_pred(& this->_set2) , 
@@ -399,7 +396,7 @@
             this->_adj1.clear (_kind) ;
             this->_adj2.clear (_kind) ;
             
-            this->_map1.clear (_kind) ;
+          //this->_map1.clear (_kind) ;
             this->_map2.clear (_kind) ;
 
             this->_set1.clear (_kind) ;
@@ -411,7 +408,8 @@
             this->_tmp1.clear (_kind) ;
             this->_tmp2.clear (_kind) ;
             
-        //!!do something with pool'd-alloc?
+            this->_hsrc.clear ();
+            this->_csrc.clear ();
     }
     
     /*
@@ -438,17 +436,22 @@
      */
      
     __normal_call iptr_type push_node (
-        node_type const&_ndat,
+        node_type const& _ndat,
         bool_type _link = true,
         iptr_type _itop = -1
         )
     {
-        iptr_type _ipos = _get_node() ;
+        iptr_type _ipos = -1 ;
         
         if (!_link)
         {
-  
+        
+        __assert( _itop == -1 &&
+        "tria-complex: non-top node!" ) ;
+
     /*------------------------ init. external d-face data */
+       _ipos = _get_node();        
+
         this->_set1[_ipos]  = _ndat ;
         this->_set1[_ipos].mark() = 0 ;
         
@@ -456,70 +459,42 @@
         this->
        _set1 [_ipos].node(0) =_ipos ;
        
-    /*------------------------ push face data to hash set */
-        this->_map1.push(_ipos) ;
-        
     /*------------------------ init. local adj. index set */
         init_list(this->_adj1, _ipos) ;
-  
+        
         }
         else
         {
-              
-    /*------------------------ init. external d-face data */
-        this->_set1[_ipos]  = _ndat ;
-        this->_set1[_ipos].mark() = 0 ;
         
         if (_itop == -1)
         {
+    /*------------------------ init. external d-face data */
+       _ipos = _get_node();        
+
+        this->_set1[_ipos]  = _ndat ;
+        this->_set1[_ipos].mark() = 0 ;
         this->_set1[_ipos].self() = 1 ;
+
         this->
-       _set1 [_ipos].node(0) =_ipos ;
-        }
-        else
-        this->_set1[_ipos].self() = 0 ;
-   
-        typename
-        node_maps::_write_it  _same ;
-        if (this->
-           _map1.find(_ipos , _same))
-        {
-    /*---- existing d-face found: append to existing data */
-            if (_itop == -1)
-            {
-        /*----- if it's a "top"-level face, copy data */
-                this->_set1[*_same] =
-                this->_set1[ _ipos] ;
-            }
-            else
-            {
-        /*----- otherwise, append index to adj. lists */
-                this->
-               _adj1.push(_itop,*_same) ;
-            }        
-                           
-            _put_node(_ipos) ; 
-        }
-        else
-        {
-    /*---- d-face is new: push and descend to (d-1)-faces */   
-            if (_itop == -1)
-            {
-        /*----- if it's a "top"-level face, keep data */
-                init_list(
-                    this->_adj1, _ipos) ;
-            }
-            else
-            {
-        /*----- otherwise, append index to adj. lists */
-                this->
-               _adj1.push(_itop, _ipos) ;
-            }
-            
-        /*-------------- push new face data onto hash */
-            this->_map1.push(_ipos) ;
-        }
+       _set1 [_ipos].node(0) = _ipos;
+
+    /*------------------------ init. local adj. index set */
+        init_list(this->_adj1, _ipos) ;
         
+        }
+        else
+        {
+    /*------------------------ init. internal d-face data */
+        __assert(find_node(
+               &_ndat.node(0), _ipos) &&
+        "tria-complex: node not here" );
+
+    /*------------------------ append index to adj. lists */   
+        this->_adj1.push(
+                _itop, _ndat.node(0)) ;
+        
+        }
+
         }
         
         return _ipos ;
@@ -532,7 +507,7 @@
      */
      
     __normal_call iptr_type push_edge (
-        edge_type const&_edat,
+        edge_type const& _edat,
         bool_type _link = true,
         iptr_type _itop = -1   
         )
@@ -542,14 +517,14 @@
         
         if (!_link)
         {
-        
+            
+        __assert( _itop == -1 &&
+        "tria-complex: non-top cell!" ) ;
+
     /*------------------------ init. external d-face data */
         this->_set2[_ipos]  = _edat ;
         this->_set2[_ipos].mark() = 0 ;
         this->_set2[_ipos].self() = 1 ;
-        
-    /*------------------------ push face data to hash set */
-        this->_map2.push(_ipos) ;
         
     /*------------------------ init. local adj. index set */
         init_list(this->_adj2, _ipos) ;
@@ -584,8 +559,8 @@
         /*----- otherwise, append index to adj. lists */
                 this->
                _adj2.push(_itop,*_same) ;
-            }     
-                      
+            }      
+                     
             _put_edge(_ipos) ; 
         }
         else
@@ -611,7 +586,7 @@
                 _ndat.node(0) = 
                     _edat.node(_npos) ;
                 
-                push_node( 
+                push_node(
                  _ndat, _link, _ipos) ;
             }
             
@@ -626,13 +601,17 @@
     
     /*
     --------------------------------------------------------
-     * MAKE-PTRS: build item-to-item adj.
+     * MAKE-LINK: build item-to-item adj.
     --------------------------------------------------------
      */
   
-    __normal_call void_type make_ptrs (
+    __normal_call void_type make_link (
         )
     {
+        this->_map2.set_slots(
+            (this->_set2.count()*5)/4 + 1
+            ) ;
+
         this->_adj1.empty () ;
         this->_adj2.empty () ;
     
@@ -641,6 +620,9 @@
                   _iter != this->_set2.tend();
                 ++_iter, ++_epos  )
         {
+        /*-------------- push face data onto hash set */
+            this->_map2.push(_epos) ;
+
         /*-------------- descend into (d-1)-face data */
             iptr_type _ipos;
             for (_ipos = +2; _ipos-- != 0; )
@@ -663,7 +645,7 @@
      
     __inline_call bool_type null_node (
         iptr_type _npos
-        )
+        ) const
     {
         return this->_set1[_npos].self()==0
             && this->_adj1.empty(_npos);
@@ -671,7 +653,7 @@
     
     __inline_call bool_type null_edge (
         iptr_type _epos
-        )
+        ) const
     {
         return this->_set2[_epos].self()==0
             && this->_adj2.empty(_epos);
@@ -714,8 +696,8 @@
     --------------------------------------------------------
      */
      
-    __normal_call void_type _pop_node (
-        iptr_type*_nptr ,
+    __inline_call void_type _pop_node (
+        iptr_type const*_nptr,
         iptr_type _itop = -1
         )
     {
@@ -725,7 +707,7 @@
         _node[0] = _nptr[0];
         
     /*-------------------------- find current 0-node pos. */
-        if ((_npos = _node[0]) < +0)
+        if ( !find_node (_node, _npos))
         {
             return ;
         }
@@ -755,11 +737,7 @@
         if (null_node (_npos))
         {
     /*---- ref. count: delete (d+0), (d-1)-faces if empty */
-            
-        iptr_type _same ;
-        this->_map1._pop(_npos, _same);
-        
-        _put_node(_npos); 
+            _put_node (_npos); 
         }
     }
   
@@ -770,7 +748,7 @@
      */
      
     __normal_call void_type _pop_edge (
-        iptr_type*_nptr ,
+        iptr_type const*_nptr,
         iptr_type _itop = -1
         )
     {
@@ -834,12 +812,42 @@
     
     /*
     --------------------------------------------------------
+     * FIND-NODE: return index of assoc. 0-node.
+    --------------------------------------------------------
+     */
+     
+    __normal_call bool_type find_node (
+        iptr_type const*_nptr ,
+        iptr_type&_npos
+        ) const
+    {
+    /*-------------------------- find current 0-node pos. */
+        size_type _node =*_nptr;
+        
+        if (_node >= +0 &&
+            _node < this->_set1.count() &&
+            _set1 [_node].mark() >= +0)
+        {
+    /*------------------------------- found matching node */
+            _npos =_node ;
+        
+            return  true ;
+        }
+        else
+        {
+    /*------------------------------- couldn't find match */
+            return false ;
+        }
+    }
+
+    /*
+    --------------------------------------------------------
      * FIND-EDGE: return index of assoc. 1-edge.
     --------------------------------------------------------
      */
      
     __normal_call bool_type find_edge (
-        iptr_type*_node,
+        iptr_type const*_node ,
         iptr_type&_epos
         )
     {
@@ -881,8 +889,8 @@
     template <
     typename      list_type
              >
-    __normal_call void_type node_edge (
-        iptr_type*_node,
+    __inline_call void_type node_edge (
+        iptr_type const*_node ,
         list_type&_conn
         )
     {

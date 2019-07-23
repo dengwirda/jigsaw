@@ -13,6 +13,26 @@
 #   JIGSAW: an unstructured mesh generation library 
 #------------------------------------------------------------
 
+  * Version 0.9.12:
+    --------------
+
+  - Support for "gradient-limiting" of mesh-spacing
+    data via the cmd-line utility MARCHE. This tool 
+    solves a variant of the Eikonal equation
+
+    MAX(|dh/dx|,g) = g,
+
+    where g = g(x) is a gradient threshold to be 
+    applied to the distribution h(x). MARCHE can be 
+    used to construct smooth mesh-spacing functions 
+    from noisy input data. MARCHE shares common I/O 
+    protocols, options, etc with JIGSAW.
+
+  - Optimisation of various low-level functionality
+    throughout. 0.9.12.x should use less memory and 
+    be slightly faster overall.
+
+
   * Version 0.9.11:
     --------------
 

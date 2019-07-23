@@ -116,6 +116,8 @@
         iptr_type _fdim
         )
     {
+        __unreferenced(_fdim) ;
+
         return ( false ) ;
     }
 
@@ -213,6 +215,7 @@
         )
     {   
         __unreferenced(_disc) ;
+        __unreferenced(_sbal) ;
         __unreferenced(_hfun) ;
 
         return ( false ) ;

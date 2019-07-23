@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2019
+     * Last updated: 28 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -68,9 +68,6 @@
         {
         public  :
             hfun_data           *_hfun ;
-            
-            containers::array<
-                std::int32_t >   _pmap ;
             
             std::int32_t         _ftag ;
             jmsh_kind::
@@ -115,26 +112,21 @@
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
             {
-                std::int32_t _npos ;
                 typename 
                 hfun_data::euclidean_mesh_2d
                     ::node_type _ndat ;
                 _ndat.pval(0) = _pval[0];
                 _ndat.pval(1) = _pval[1];
                 
-                _npos = this->_hfun->
-                   _euclidean_mesh_2d.
-                _mesh.push_node(_ndat, false) ;
-                        
-                this->_pmap.
-                    push_tail(_npos) ; 
+                this->_hfun->
+                    _euclidean_mesh_2d.
+                _mesh.push_node(_ndat, false) ; 
             }           
             else
             if (this->_ndim == +3 &&
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
             {
-                std::int32_t _npos ;
                 typename 
                 hfun_data::euclidean_mesh_3d
                     ::node_type _ndat ;
@@ -142,18 +134,14 @@
                 _ndat.pval(1) = _pval[1];
                 _ndat.pval(2) = _pval[2];
                 
-                _npos = this->_hfun->
-                   _euclidean_mesh_3d.
+                this->_hfun->
+                    _euclidean_mesh_3d.
                 _mesh.push_node(_ndat, false) ;
-                        
-                this->_pmap.
-                    push_tail(_npos) ;
             }
             else
             if (this->_kind == 
                     jmsh_kind::ellipsoid_mesh)
             {
-                std::int32_t _npos ;
                 typename 
                 hfun_data::ellipsoid_mesh_3d
                     ::node_type _ndat ;
@@ -161,14 +149,79 @@
                 _ndat.pval(1) = _pval[1];
                 _ndat.pval(2) = +0.0 ;
                 
-                _npos = this->_hfun->
-                   _ellipsoid_mesh_3d.
+                this->_hfun->
+                    _ellipsoid_mesh_3d.
                 _mesh.push_node(_ndat, false) ;
-                        
-                this->_pmap.
-                    push_tail(_npos) ;
             }
         }      
+    /*-------------------------------- read TRIA3 section */
+        __normal_call void_type push_tria3 (
+            std:: size_t  _ipos ,
+            std::int32_t *_node ,
+            std::int32_t  _itag
+            )
+        {
+            __unreferenced(_ipos) ;
+            __unreferenced(_itag) ;
+
+            if (this->_ndim == +2 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_mesh)
+            {
+                typename 
+                hfun_data::euclidean_mesh_2d
+                    ::tri3_type _tdat ;
+                _tdat.node(0) = _node[0];
+                _tdat.node(1) = _node[1];
+                _tdat.node(2) = _node[2];
+                
+                this->_hfun->
+                    _euclidean_mesh_2d.
+               _mesh.push_tri3(_tdat, false) ;
+            }
+            else
+            if (this->_kind == 
+                    jmsh_kind::ellipsoid_mesh)
+            {
+                typename 
+                hfun_data::ellipsoid_mesh_3d
+                    ::tri3_type _tdat ;
+                _tdat.node(0) = _node[0];
+                _tdat.node(1) = _node[1];
+                _tdat.node(2) = _node[2];
+                
+                this->_hfun->
+                    _ellipsoid_mesh_3d.
+               _mesh.push_tri3(_tdat, false) ;
+            }
+        }
+    /*-------------------------------- read TRIA4 section */
+        __normal_call void_type push_tria4 (
+            std:: size_t  _ipos ,
+            std::int32_t *_node ,
+            std::int32_t  _itag
+            )
+        {
+            __unreferenced(_ipos) ;
+            __unreferenced(_itag) ;
+
+            if (this->_ndim == +3 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_mesh)
+            {
+                typename 
+                hfun_data::euclidean_mesh_3d
+                    ::tri4_type _tdat ;
+                _tdat.node(0) = _node[0];
+                _tdat.node(1) = _node[1];
+                _tdat.node(2) = _node[2];
+                _tdat.node(3) = _node[3];
+                
+                this->_hfun->
+                    _euclidean_mesh_3d.
+               _mesh.push_tri4(_tdat, false) ;
+            }
+        }
     /*-------------------------------- read COORD section */
         __normal_call void_type push_coord (
             std:: size_t _idim,
@@ -240,6 +293,66 @@
                         _ypos.push_tail(_ppos) ;
                 }            
             }
+        }
+    /*-------------------------------- open VALUE section */
+        __normal_call void_type open_value (
+            std:: size_t  _nrow ,
+            std:: size_t  _nval
+            )
+        {
+            __unreferenced(_nval) ;
+
+            if (this->_ndim == +2 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_mesh)
+            {
+                this->_hfun->
+                    _euclidean_mesh_2d.
+                        _hval.set_count(_nrow) ;
+            }
+            else
+            if (this->_ndim == +2 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_grid)
+            {
+                this->_hfun->
+                    _euclidean_grid_2d.
+                        _hmat.set_count(_nrow) ;
+            }
+            else
+            if (this->_ndim == +3 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_mesh)
+            {
+                this->_hfun->
+                    _euclidean_mesh_3d.
+                        _hval.set_count(_nrow) ;
+            }
+            else
+            if (this->_ndim == +3 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_grid)
+            {
+                this->_hfun->
+                    _euclidean_grid_3d.
+                        _hmat.set_count(_nrow) ;
+            }
+            else
+            if (this->_kind == 
+                    jmsh_kind::ellipsoid_mesh)
+            {
+                this->_hfun->
+                    _ellipsoid_mesh_3d.
+                        _hval.set_count(_nrow) ;
+            }
+            else
+            if (this->_kind == 
+                    jmsh_kind::ellipsoid_grid)
+            {
+                this->_hfun->
+                    _ellipsoid_grid_3d.
+                        _hmat.set_count(_nrow) ;
+            }
         }      
     /*-------------------------------- read VALUE section */
         __normal_call void_type push_value (
@@ -251,15 +364,9 @@
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
             {
-                if (_ipos < this->_pmap.count())
-                {
-                std::int32_t  _nmap ;
-                _nmap = this->_pmap [_ipos];
-                
                 this->_hfun->
-                _euclidean_mesh_2d._mesh.
-                    _set1[_nmap].hval() = *_vval;
-                }
+                    _euclidean_mesh_2d.
+                        _hval[_ipos] = *_vval;
             }
             else
             if (this->_ndim == +2 &&
@@ -268,22 +375,16 @@
             {
                 this->_hfun->
                     _euclidean_grid_2d.
-                        _hmat.push_tail(*_vval) ;
+                        _hmat[_ipos] = *_vval;
             }
             else
             if (this->_ndim == +3 &&
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
             {
-                if (_ipos < this->_pmap.count())
-                {
-                std::int32_t  _nmap ;
-                _nmap = this->_pmap [_ipos];
-                
                 this->_hfun->
-                _euclidean_mesh_3d._mesh.
-                    _set1[_nmap].hval() = *_vval;
-                }
+                    _euclidean_mesh_3d.
+                        _hval[_ipos] = *_vval;
             }
             else
             if (this->_ndim == +3 &&
@@ -292,21 +393,15 @@
             {
                 this->_hfun->
                     _euclidean_grid_3d.
-                        _hmat.push_tail(*_vval) ;
+                        _hmat[_ipos] = *_vval;
             }
             else
             if (this->_kind == 
                     jmsh_kind::ellipsoid_mesh)
             {
-                if (_ipos < this->_pmap.count())
-                {
-                std::int32_t  _nmap ;
-                _nmap = this->_pmap [_ipos];
-                
                 this->_hfun->
-                _ellipsoid_mesh_3d._mesh.
-                    _set1[_nmap].hval() = *_vval;
-                }
+                    _ellipsoid_mesh_3d.
+                        _hval[_ipos] = *_vval;
             }
             else
             if (this->_kind == 
@@ -314,75 +409,125 @@
             {
                 this->_hfun->
                     _ellipsoid_grid_3d.
-                        _hmat.push_tail(*_vval) ;
+                        _hmat[_ipos] = *_vval;
             }
         }
-    /*-------------------------------- read TRIA3 section */
-        __normal_call void_type push_tria3 (
-            std:: size_t  _ipos ,
-            std::int32_t *_node ,
-            std::int32_t  _itag
+    /*-------------------------------- open SLOPE section */
+        __normal_call void_type open_slope (
+            std:: size_t  _nrow ,
+            std:: size_t  _nval
             )
         {
-            __unreferenced(_ipos) ;
-            __unreferenced(_itag) ;
+            __unreferenced(_nval) ;
 
             if (this->_ndim == +2 &&
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
             {
-                typename 
-                hfun_data::euclidean_mesh_2d
-                    ::tri3_type _tdat ;
-                _tdat.node(0) = _node[0];
-                _tdat.node(1) = _node[1];
-                _tdat.node(2) = _node[2];
-                
                 this->_hfun->
                     _euclidean_mesh_2d.
-               _mesh.push_tri3(_tdat, false) ;
+                        _dhdx.set_count(_nrow) ;
+            }
+            else
+            if (this->_ndim == +2 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_grid)
+            {
+                this->_hfun->
+                    _euclidean_grid_2d.
+                        _dhdx.set_count(_nrow) ;
+            }
+            else
+            if (this->_ndim == +3 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_mesh)
+            {
+                this->_hfun->
+                    _euclidean_mesh_3d.
+                        _dhdx.set_count(_nrow) ;
+            }
+            else
+            if (this->_ndim == +3 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_grid)
+            {
+                this->_hfun->
+                    _euclidean_grid_3d.
+                        _dhdx.set_count(_nrow) ;
             }
             else
             if (this->_kind == 
                     jmsh_kind::ellipsoid_mesh)
             {
-                typename 
-                hfun_data::ellipsoid_mesh_3d
-                    ::tri3_type _tdat ;
-                _tdat.node(0) = _node[0];
-                _tdat.node(1) = _node[1];
-                _tdat.node(2) = _node[2];
-                
                 this->_hfun->
                     _ellipsoid_mesh_3d.
-               _mesh.push_tri3(_tdat, false) ;
+                        _dhdx.set_count(_nrow) ;
             }
-        }
-    /*-------------------------------- read TRIA4 section */
-        __normal_call void_type push_tria4 (
+            else
+            if (this->_kind == 
+                    jmsh_kind::ellipsoid_grid)
+            {
+                this->_hfun->
+                    _ellipsoid_grid_3d.
+                        _dhdx.set_count(_nrow) ;
+            }
+        }      
+    /*-------------------------------- read SLOPE section */
+        __normal_call void_type push_slope (
             std:: size_t  _ipos ,
-            std::int32_t *_node ,
-            std::int32_t  _itag
+            double       *_vval
             )
         {
-            __unreferenced(_ipos) ;
-            __unreferenced(_itag) ;
-
+            if (this->_ndim == +2 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_mesh)
+            {
+                this->_hfun->
+                    _euclidean_mesh_2d.
+                        _dhdx[_ipos] = *_vval;
+            }
+            else
+            if (this->_ndim == +2 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_grid)
+            {
+                this->_hfun->
+                    _euclidean_grid_2d.
+                        _dhdx[_ipos] = *_vval;
+            }
+            else
             if (this->_ndim == +3 &&
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
             {
-                typename 
-                hfun_data::euclidean_mesh_3d
-                    ::tri4_type _tdat ;
-                _tdat.node(0) = _node[0];
-                _tdat.node(1) = _node[1];
-                _tdat.node(2) = _node[2];
-                _tdat.node(3) = _node[3];
-                
                 this->_hfun->
                     _euclidean_mesh_3d.
-               _mesh.push_tri4(_tdat, false) ;
+                        _dhdx[_ipos] = *_vval;
+            }
+            else
+            if (this->_ndim == +3 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_grid)
+            {
+                this->_hfun->
+                    _euclidean_grid_3d.
+                        _dhdx[_ipos] = *_vval;
+            }
+            else
+            if (this->_kind == 
+                    jmsh_kind::ellipsoid_mesh)
+            {
+                this->_hfun->
+                    _ellipsoid_mesh_3d.
+                        _dhdx[_ipos] = *_vval;
+            }
+            else
+            if (this->_kind == 
+                    jmsh_kind::ellipsoid_grid)
+            {
+                this->_hfun->
+                    _ellipsoid_grid_3d.
+                        _dhdx[_ipos] = *_vval;
             }
         }
     /*---------------------------------- parse RADII data */
@@ -494,11 +639,9 @@
                 hfun_data::euclidean_mesh_2d
                     ::node_type _ndat ;
                 _ndat.pval(0) = _hmsh.
-                    _vert2._data[_ipos]._ppos[0];
+                _vert2._data[_ipos]._ppos[0];
                 _ndat.pval(1) = _hmsh.
-                    _vert2._data[_ipos]._ppos[1];
-                _ndat.hval () = _hmsh.
-                    _value._data[_ipos] ;
+                _vert2._data[_ipos]._ppos[1];
                 
                 _hfun._euclidean_mesh_2d.
                 _mesh.push_node(_ndat, false) ;
@@ -512,16 +655,40 @@
                 hfun_data::euclidean_mesh_2d
                     ::tri3_type _tdat ;
                 _tdat.node(0) = _hmsh.
-                    _tria3._data[_ipos]._node[0];
+                _tria3._data[_ipos]._node[0];
                 _tdat.node(1) = _hmsh.
-                    _tria3._data[_ipos]._node[1];
+                _tria3._data[_ipos]._node[1];
                 _tdat.node(2) = _hmsh.
-                    _tria3._data[_ipos]._node[2];
+                _tria3._data[_ipos]._node[2];
                 
                 _hfun._euclidean_mesh_2d.
                 _mesh.push_tri3(_tdat, false) ;
             }
-    
+
+            _hfun._euclidean_mesh_2d._hval.
+                set_count(_hmsh._value._size) ;
+
+            _hfun._euclidean_mesh_2d._dhdx.
+                set_count(_hmsh._slope._size) ;
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._value._size ; 
+                    ++_ipos )
+            {
+                _hfun._euclidean_mesh_2d.
+                    _hval[_ipos] = 
+                    _hmsh._value._data[_ipos] ;
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._slope._size ; 
+                    ++_ipos )
+            {
+                _hfun._euclidean_mesh_2d.
+                    _dhdx[_ipos] = 
+                    _hmsh._slope._data[_ipos] ;
+            }
+
             }
             else
             if (_hmsh._vert3._size > 0)
@@ -543,13 +710,11 @@
                 hfun_data::euclidean_mesh_3d
                     ::node_type _ndat ;
                 _ndat.pval(0) = _hmsh.
-                    _vert3._data[_ipos]._ppos[0];
+                _vert3._data[_ipos]._ppos[0];
                 _ndat.pval(1) = _hmsh.
-                    _vert3._data[_ipos]._ppos[1];
+                _vert3._data[_ipos]._ppos[1];
                 _ndat.pval(2) = _hmsh.
-                    _vert3._data[_ipos]._ppos[2];
-                _ndat.hval () = _hmsh.
-                    _value._data[_ipos] ;
+                _vert3._data[_ipos]._ppos[2];
                 
                 _hfun._euclidean_mesh_3d.
                 _mesh.push_node(_ndat, false) ;
@@ -563,18 +728,42 @@
                 hfun_data::euclidean_mesh_3d
                     ::tri4_type _tdat ;
                 _tdat.node(0) = _hmsh.
-                    _tria4._data[_ipos]._node[0];
+                _tria4._data[_ipos]._node[0];
                 _tdat.node(1) = _hmsh.
-                    _tria4._data[_ipos]._node[1];
+                _tria4._data[_ipos]._node[1];
                 _tdat.node(2) = _hmsh.
-                    _tria4._data[_ipos]._node[2];
+                _tria4._data[_ipos]._node[2];
                 _tdat.node(3) = _hmsh.
-                    _tria4._data[_ipos]._node[3];
+                _tria4._data[_ipos]._node[3];
                 
                 _hfun._euclidean_mesh_3d.
                 _mesh.push_tri4(_tdat, false) ;
             }
-    
+
+            _hfun._euclidean_mesh_3d._hval.
+                set_count(_hmsh._value._size) ;
+
+            _hfun._euclidean_mesh_3d._dhdx.
+                set_count(_hmsh._slope._size) ;
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._value._size ; 
+                    ++_ipos )
+            {
+                _hfun._euclidean_mesh_3d.
+                    _hval[_ipos] = 
+                    _hmsh._value._data[_ipos] ;
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._slope._size ; 
+                    ++_ipos )
+            {
+                _hfun._euclidean_mesh_3d.
+                    _dhdx[_ipos] = 
+                    _hmsh._slope._data[_ipos] ;
+            }
+
             }
         }
         else
@@ -584,7 +773,7 @@
     /*--------------------------------- ellipsoid-mesh-3d */
             _hfun._kind 
                 = jmsh_kind::ellipsoid_mesh ;
-            _hfun._ndim = +3;
+            _hfun._ndim = +2;
     
             if (_hmsh._vert2._size !=
                 _hmsh._value._size )
@@ -618,12 +807,10 @@
                 hfun_data::ellipsoid_mesh_3d
                     ::node_type _ndat ;
                 _ndat.pval(0) = _hmsh.
-                    _vert2._data[_ipos]._ppos[0];
+                _vert2._data[_ipos]._ppos[0];
                 _ndat.pval(1) = _hmsh.
-                    _vert2._data[_ipos]._ppos[1];
+                _vert2._data[_ipos]._ppos[1];
                 _ndat.pval(2) = + 0.0 ;
-                _ndat.hval () = _hmsh.
-                    _value._data[_ipos] ;
                 
                 _hfun._ellipsoid_mesh_3d.
                 _mesh.push_node(_ndat, false) ;
@@ -637,16 +824,40 @@
                 hfun_data::ellipsoid_mesh_3d
                     ::tri3_type _tdat ;
                 _tdat.node(0) = _hmsh.
-                    _tria3._data[_ipos]._node[0];
+                _tria3._data[_ipos]._node[0];
                 _tdat.node(1) = _hmsh.
-                    _tria3._data[_ipos]._node[1];
+                _tria3._data[_ipos]._node[1];
                 _tdat.node(2) = _hmsh.
-                    _tria3._data[_ipos]._node[2];
+                _tria3._data[_ipos]._node[2];
                 
                 _hfun._ellipsoid_mesh_3d.
                 _mesh.push_tri3(_tdat, false) ;
-            }            
-   
+            }
+
+            _hfun._ellipsoid_mesh_3d._hval.
+                set_count(_hmsh._value._size) ;
+
+            _hfun._ellipsoid_mesh_3d._dhdx.
+                set_count(_hmsh._slope._size) ;
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._value._size ; 
+                    ++_ipos )
+            {
+                _hfun._ellipsoid_mesh_3d.
+                    _hval[_ipos] = 
+                    _hmsh._value._data[_ipos] ;
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._slope._size ; 
+                    ++_ipos )
+            {
+                _hfun._ellipsoid_mesh_3d.
+                    _dhdx[_ipos] = 
+                    _hmsh._slope._data[_ipos] ;
+            }
+
         }
         else
         if (_hmsh._flags == 
@@ -659,31 +870,51 @@
                 = jmsh_kind::euclidean_grid ;
             _hfun._ndim = +2;
     
+            _hfun._euclidean_grid_2d._xpos.
+                set_count(_hmsh._xgrid._size) ;
+            _hfun._euclidean_grid_2d._ypos.
+                set_count(_hmsh._ygrid._size) ;
+
+            _hfun._euclidean_grid_2d._hmat.
+                set_count(_hmsh._value._size) ;
+            
+            _hfun._euclidean_grid_2d._dhdx.
+                set_count(_hmsh._slope._size) ;
+
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._xgrid._size ; 
                     ++_ipos )
             {
-                _hfun._euclidean_grid_2d._xpos.
-                    push_tail(_hmsh.
-                        _xgrid._data[_ipos]);
+                _hfun._euclidean_grid_2d.
+                    _xpos[_ipos] = 
+                    _hmsh._xgrid._data[_ipos] ;
             }
             
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._ygrid._size ; 
                     ++_ipos )
             {
-                _hfun._euclidean_grid_2d._ypos.
-                    push_tail(_hmsh.
-                        _ygrid._data[_ipos]);
+                _hfun._euclidean_grid_2d.
+                    _ypos[_ipos] = 
+                    _hmsh._ygrid._data[_ipos] ;
             }
         
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._value._size ; 
                     ++_ipos )
             {
-                _hfun._euclidean_grid_2d._hmat.
-                    push_tail(_hmsh.
-                        _value._data[_ipos]);
+                _hfun._euclidean_grid_2d.
+                    _hmat[_ipos] = 
+                    _hmsh._value._data[_ipos] ;
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._slope._size ; 
+                    ++_ipos )
+            {
+                _hfun._euclidean_grid_2d.
+                    _dhdx[_ipos] = 
+                    _hmsh._slope._data[_ipos] ;
             }
             
             }
@@ -695,40 +926,62 @@
                 = jmsh_kind::euclidean_grid ;
             _hfun._ndim = +3;
     
+            _hfun._euclidean_grid_3d._xpos.
+                set_count(_hmsh._xgrid._size) ;
+            _hfun._euclidean_grid_3d._ypos.
+                set_count(_hmsh._ygrid._size) ;
+            _hfun._euclidean_grid_3d._zpos.
+                set_count(_hmsh._zgrid._size) ;
+
+            _hfun._euclidean_grid_3d._hmat.
+                set_count(_hmsh._value._size) ;
+
+            _hfun._euclidean_grid_3d._dhdx.
+                set_count(_hmsh._slope._size) ;
+
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._xgrid._size ; 
                     ++_ipos )
             {
-                _hfun._euclidean_grid_3d._xpos.
-                    push_tail(_hmsh.
-                        _xgrid._data[_ipos]);
+                _hfun._euclidean_grid_3d.
+                    _xpos[_ipos] = 
+                    _hmsh._xgrid._data[_ipos] ;
             }
             
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._ygrid._size ; 
                     ++_ipos )
             {
-                _hfun._euclidean_grid_3d._ypos.
-                    push_tail(_hmsh.
-                        _ygrid._data[_ipos]);
+                _hfun._euclidean_grid_3d.
+                    _ypos[_ipos] = 
+                    _hmsh._ygrid._data[_ipos] ;
             }
             
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._zgrid._size ; 
                     ++_ipos )
             {
-                _hfun._euclidean_grid_3d._zpos.
-                    push_tail(_hmsh.
-                        _zgrid._data[_ipos]);
+                _hfun._euclidean_grid_3d.
+                    _zpos[_ipos] = 
+                    _hmsh._zgrid._data[_ipos] ;
             }
         
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._value._size ; 
                     ++_ipos )
             {
-                _hfun._euclidean_grid_3d._hmat.
-                    push_tail(_hmsh.
-                        _value._data[_ipos]);
+                _hfun._euclidean_grid_3d.
+                    _hmat[_ipos] = 
+                    _hmsh._value._data[_ipos] ;
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._slope._size ; 
+                    ++_ipos )
+            {
+                _hfun._euclidean_grid_3d.
+                    _dhdx[_ipos] = 
+                    _hmsh._slope._data[_ipos] ;
             }
             
             }
@@ -742,7 +995,7 @@
     /*--------------------------------- ellipsoid-grid-3d */
             _hfun._kind 
                 = jmsh_kind::ellipsoid_grid ;
-            _hfun._ndim = +3;
+            _hfun._ndim = +2;
     
             if (_hmsh._radii._size==+3)
             {
@@ -764,31 +1017,51 @@
                 _radC = _hmsh._radii._data[0] ;
             }
 
+            _hfun._ellipsoid_grid_3d._xpos.
+                set_count(_hmsh._xgrid._size) ;
+            _hfun._ellipsoid_grid_3d._ypos.
+                set_count(_hmsh._ygrid._size) ;
+
+            _hfun._ellipsoid_grid_3d._hmat.
+                set_count(_hmsh._value._size) ;
+
+            _hfun._ellipsoid_grid_3d._dhdx.
+                set_count(_hmsh._slope._size) ;
+
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._xgrid._size ; 
                     ++_ipos )
             {
-                _hfun._ellipsoid_grid_3d._xpos.
-                    push_tail(_hmsh.
-                        _xgrid._data[_ipos]);
+                _hfun._ellipsoid_grid_3d.
+                    _xpos[_ipos] = 
+                    _hmsh._xgrid._data[_ipos] ;
             }
             
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._ygrid._size ; 
                     ++_ipos )
             {
-                _hfun._ellipsoid_grid_3d._ypos.
-                    push_tail(_hmsh.
-                        _ygrid._data[_ipos]);
+                _hfun._ellipsoid_grid_3d.
+                    _ypos[_ipos] = 
+                    _hmsh._ygrid._data[_ipos] ;
             }
         
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _hmsh._value._size ; 
                     ++_ipos )
             {
-                _hfun._ellipsoid_grid_3d._hmat.
-                    push_tail(_hmsh.
-                        _value._data[_ipos]);
+                _hfun._ellipsoid_grid_3d.
+                    _hmat[_ipos] = 
+                    _hmsh._value._data[_ipos] ;
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _hmsh._value._size ; 
+                    ++_ipos )
+            {
+                _hfun._ellipsoid_grid_3d.
+                    _dhdx[_ipos] = 
+                    _hmsh._slope._data[_ipos] ;
             }  
             
             }      
@@ -868,6 +1141,8 @@
     /*--------------------------------- euclidean-mesh-2d */
             real_type _hmin = 
             std::numeric_limits<real_type>::max() ;
+            real_type _smin = 
+            std::numeric_limits<real_type>::max() ;
             
             iptr_type _imin = 
             std::numeric_limits<iptr_type>::max() ;
@@ -877,15 +1152,21 @@
             iptr_type _nmax = +0 ;
 
             for (auto _iter  = _hfun.
-            _euclidean_mesh_2d._mesh._set1.head() ;
+                _euclidean_mesh_2d._hval.head() ;
                       _iter != _hfun.
-            _euclidean_mesh_2d._mesh._set1.tend() ;
+                _euclidean_mesh_2d._hval.tend() ;
                     ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
-            
-                _hmin = std::min(
-                    _hmin, _iter->hval ()) ;
+                _hmin = std::min(_hmin, *_iter) ;
+            }
+
+            for (auto _iter  = _hfun.
+                _euclidean_mesh_2d._dhdx.head() ;
+                      _iter != _hfun.
+                _euclidean_mesh_2d._dhdx.tend() ;
+                    ++_iter  )
+            {
+                _smin = std::min(_smin, *_iter) ;
             }
             
             for (auto _iter  = _hfun.
@@ -922,10 +1203,34 @@
                     _imax, _iter->node(2)) ;
             }
 
+            auto _hnum = _hfun.
+                _euclidean_mesh_2d._hval.count();
+
+            auto _gnum = _hfun.
+                _euclidean_mesh_2d._dhdx.count();
+
+            if (_gnum > +0 && 
+                    _gnum != 1 && 
+                        _gnum != _hnum)
+            {
+                _jlog.push (
+    "**input error: DHDX. matrix incorrect dimensions.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
     "**input error: HFUN. values must be strictly +ve.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
+            if (_smin <= (real_type) +0.)
+            {
+                _jlog.push (
+    "**input error: DHDX. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -946,6 +1251,8 @@
     /*--------------------------------- euclidean-grid-2d */
             real_type _hmin = 
             std::numeric_limits<real_type>::infinity();
+            real_type _smin = 
+            std::numeric_limits<real_type>::infinity();
   
             for (auto _iter  = _hfun.
             _euclidean_grid_2d._hmat.head();
@@ -954,6 +1261,15 @@
                     ++_iter  )
             {
                 _hmin = std::min(_hmin, *_iter) ;
+            }
+
+            for (auto _iter  = _hfun.
+            _euclidean_grid_2d._dhdx.head();
+                      _iter != _hfun.
+            _euclidean_grid_2d._dhdx.tend();
+                    ++_iter  )
+            {
+                _smin = std::min(_smin, *_iter) ;
             }
   
             bool_type _mono = true;
@@ -992,7 +1308,10 @@
                 
             auto _hnum = _hfun.
                 _euclidean_grid_2d._hmat.count();
- 
+
+            auto _gnum = _hfun.
+                _euclidean_grid_2d._dhdx.count();
+
             if (_hnum != _xnum * _ynum)
             {
                 _jlog.push (
@@ -1001,10 +1320,28 @@
                 _errv = __invalid_argument ;
             }
  
+            if (_gnum > +0 && 
+                    _gnum != 1 && 
+                        _gnum != _hnum)
+            {
+                _jlog.push (
+    "**input error: DHDX. matrix incorrect dimensions.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
     "**input error: HFUN. values must be strictly +ve.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
+            if (_smin <= (real_type) +0.)
+            {
+                _jlog.push (
+    "**input error: DHDX. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -1025,6 +1362,8 @@
     /*--------------------------------- euclidean-mesh-3d */
             real_type _hmin = 
             std::numeric_limits<real_type>::max() ;
+            real_type _smin = 
+            std::numeric_limits<real_type>::max() ;
             
             iptr_type _imin = 
             std::numeric_limits<iptr_type>::max() ;
@@ -1034,15 +1373,21 @@
             iptr_type _nmax = +0 ;
 
             for (auto _iter  = _hfun.
-            _euclidean_mesh_3d._mesh._set1.head() ;
+                _euclidean_mesh_3d._hval.head() ;
                       _iter != _hfun.
-            _euclidean_mesh_3d._mesh._set1.tend() ;
+                _euclidean_mesh_3d._hval.tend() ;
                     ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
-            
-                _hmin = std::min(
-                    _hmin, _iter->hval ()) ;
+                _hmin = std::min(_hmin, *_iter) ;
+            }
+
+            for (auto _iter  = _hfun.
+                _euclidean_mesh_3d._dhdx.head() ;
+                      _iter != _hfun.
+                _euclidean_mesh_3d._dhdx.tend() ;
+                    ++_iter  )
+            {
+                _smin = std::min(_smin, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1083,10 +1428,34 @@
                     _imax, _iter->node(3)) ;
             }
 
+            auto _hnum = _hfun.
+                _euclidean_mesh_3d._hval.count();
+
+            auto _gnum = _hfun.
+                _euclidean_mesh_3d._dhdx.count();
+
+            if (_gnum > +0 && 
+                    _gnum != 1 && 
+                        _gnum != _hnum)
+            {
+                _jlog.push (
+    "**input error: DHDX. matrix incorrect dimensions.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
     "**input error: HFUN. values must be strictly +ve.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
+            if (_smin <= (real_type) +0.)
+            {
+                _jlog.push (
+    "**input error: DHDX. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -1107,6 +1476,8 @@
     /*--------------------------------- euclidean-grid-3d */
             real_type _hmin = 
             std::numeric_limits<real_type>::infinity();
+            real_type _smin = 
+            std::numeric_limits<real_type>::infinity();
   
             for (auto _iter  = _hfun.
             _euclidean_grid_3d._hmat.head();
@@ -1115,6 +1486,15 @@
                     ++_iter  )
             {
                 _hmin = std::min(_hmin, *_iter) ;
+            }
+
+            for (auto _iter  = _hfun.
+            _euclidean_grid_3d._dhdx.head();
+                      _iter != _hfun.
+            _euclidean_grid_3d._dhdx.tend();
+                    ++_iter  )
+            {
+                _smin = std::min(_smin, *_iter) ;
             }
   
             bool_type _mono = true;
@@ -1169,7 +1549,10 @@
                 
             auto _hnum = _hfun.
                 _euclidean_grid_3d._hmat.count();
- 
+
+            auto _gnum = _hfun.
+                _euclidean_grid_3d._dhdx.count();
+
             if (_hnum!=_xnum*_ynum*_znum)
             {
                 _jlog.push (
@@ -1178,10 +1561,28 @@
                 _errv = __invalid_argument ;
             }
  
+            if (_gnum > +0 && 
+                    _gnum != 1 && 
+                        _gnum != _hnum)
+            {
+                _jlog.push (
+    "**input error: DHDX. matrix incorrect dimensions.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
     "**input error: HFUN. values must be strictly +ve.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
+            if (_smin <= (real_type) +0.)
+            {
+                _jlog.push (
+    "**input error: DHDX. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -1201,6 +1602,8 @@
     /*--------------------------------- ellipsoid-mesh-3d */
             real_type _hmin = 
             std::numeric_limits<real_type>::max() ;
+            real_type _smin = 
+            std::numeric_limits<real_type>::max() ;
             
             iptr_type _imin = 
             std::numeric_limits<iptr_type>::max() ;
@@ -1210,15 +1613,21 @@
             iptr_type _nmax = +0 ;
 
             for (auto _iter  = _hfun.
-            _ellipsoid_mesh_3d._mesh._set1.head() ;
+                _ellipsoid_mesh_3d._hval.head() ;
                       _iter != _hfun.
-            _ellipsoid_mesh_3d._mesh._set1.tend() ;
+                _ellipsoid_mesh_3d._hval.tend() ;
                     ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
-            
-                _hmin = std::min(
-                    _hmin, _iter->hval ()) ;
+                _hmin = std::min(_hmin, *_iter) ;
+            }
+
+            for (auto _iter  = _hfun.
+                _ellipsoid_mesh_3d._dhdx.head() ;
+                      _iter != _hfun.
+                _ellipsoid_mesh_3d._dhdx.tend() ;
+                    ++_iter  )
+            {
+                _smin = std::min(_smin, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1255,10 +1664,34 @@
                     _imax, _iter->node(2)) ;
             }
 
+            auto _hnum = _hfun.
+                _ellipsoid_mesh_3d._hval.count();
+
+            auto _gnum = _hfun.
+                _ellipsoid_mesh_3d._dhdx.count();
+
+            if (_gnum > +0 && 
+                    _gnum != 1 && 
+                        _gnum != _hnum)
+            {
+                _jlog.push (
+    "**input error: DHDX. matrix incorrect dimensions.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
     "**input error: HFUN. values must be strictly +ve.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
+            if (_smin <= (real_type) +0.)
+            {
+                _jlog.push (
+    "**input error: DHDX. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -1278,6 +1711,8 @@
     /*--------------------------------- ellipsoid-grid-3d */
             real_type _hmin = 
             std::numeric_limits<real_type>::infinity();
+            real_type _smin = 
+            std::numeric_limits<real_type>::infinity();
   
             for (auto _iter  = _hfun.
             _ellipsoid_grid_3d._hmat.head();
@@ -1286,6 +1721,15 @@
                     ++_iter  )
             {
                 _hmin = std::min(_hmin, *_iter) ;
+            }
+
+            for (auto _iter  = _hfun.
+            _ellipsoid_grid_3d._dhdx.head();
+                      _iter != _hfun.
+            _ellipsoid_grid_3d._dhdx.tend();
+                    ++_iter  )
+            {
+                _smin = std::min(_smin, *_iter) ;
             }
   
             bool_type _mono = true;
@@ -1324,6 +1768,9 @@
                 
             auto _hnum = _hfun.
                 _ellipsoid_grid_3d._hmat.count();
+
+            auto _gnum = _hfun.
+                _ellipsoid_grid_3d._dhdx.count();
  
             if (_hnum != _xnum * _ynum)
             {
@@ -1332,11 +1779,29 @@
         
                 _errv = __invalid_argument ;
             }
+
+            if (_gnum > +0 && 
+                    _gnum != 1 && 
+                        _gnum != _hnum)
+            {
+                _jlog.push (
+    "**input error: DHDX. matrix incorrect dimensions.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
  
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
     "**input error: HFUN. values must be strictly +ve.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
+            if (_smin <= (real_type) +0.)
+            {
+                _jlog.push (
+    "**input error: DHDX. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -1425,26 +1890,24 @@
             
             iptr_type _num1 = +0 ;
             iptr_type _num3 = +0 ;
-            
+
             for (auto _iter  = _hfun.
-            _euclidean_mesh_2d._mesh._set1.head() ;
+                _euclidean_mesh_2d._hval.head() ;
                       _iter != _hfun.
-            _euclidean_mesh_2d._mesh._set1.tend() ;
-                    ++_iter )
+                _euclidean_mesh_2d._hval.tend() ;
+                    ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
-                
-                _hmin = std::min (
-                    _hmin, _iter->hval()) ;
-                _hmax = std::max (
-                    _hmax, _iter->hval()) ;
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
             }
             
             __dumpREAL(".MIN(H).", _hmin)
             __dumpREAL(".MAX(H).", _hmax)
             
             _jlog.push("  \n") ;
-            
+ 
             for (auto _iter  = _hfun.
             _euclidean_mesh_2d._mesh._set1.head() ;
                       _iter != _hfun.
@@ -1525,17 +1988,15 @@
             iptr_type _num4 = +0 ;
             
             for (auto _iter  = _hfun.
-            _euclidean_mesh_3d._mesh._set1.head() ;
+                _euclidean_mesh_3d._hval.head() ;
                       _iter != _hfun.
-            _euclidean_mesh_3d._mesh._set1.tend() ;
-                    ++_iter )
+                _euclidean_mesh_3d._hval.tend() ;
+                    ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
-                
-                _hmin = std::min (
-                    _hmin, _iter->hval()) ;
-                _hmax = std::max (
-                    _hmax, _iter->hval()) ;
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
             }
             
             __dumpREAL(".MIN(H).", _hmin)
@@ -1622,17 +2083,15 @@
             iptr_type _num3 = +0 ;
             
             for (auto _iter  = _hfun.
-            _ellipsoid_mesh_3d._mesh._set1.head() ;
+                _ellipsoid_mesh_3d._hval.head() ;
                       _iter != _hfun.
-            _ellipsoid_mesh_3d._mesh._set1.tend() ;
-                    ++_iter )
+                _ellipsoid_mesh_3d._hval.tend() ;
+                    ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
-                
-                _hmin = std::min (
-                    _hmin, _iter->hval()) ;
-                _hmax = std::max (
-                    _hmax, _iter->hval()) ;
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
             }
             
             __dumpREAL(".MIN(H).", _hmin)

@@ -31,12 +31,12 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 27 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
-     * de2363@columbia.edu
-     * https://github.com/dengwirda/
+     * darren.engwirda@columbia.edu
+     * https://github.com/dengwirda
      *
     --------------------------------------------------------
      */
@@ -220,13 +220,16 @@
         jigsaw_REALS_array_t    _ygrid;
         jigsaw_REALS_array_t    _zgrid;
 
-
     /* if (_flags == EUCLIDEAN_MESH) */
     /* OR (_flags == EUCLIDEAN_GRID) */
     /* OR (_flags == ELLIPSOID_MESH) */
     /* OR (_flags == ELLIPSOID_GRID) */
     
         jigsaw_REALS_array_t    _value;
+
+    /* for |dfdx| limiting in MARCHE */
+
+        jigsaw_REALS_array_t    _slope;
        
     /* if (_flags == EUCLIDEAN_DUAL) */
     

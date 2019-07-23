@@ -14,7 +14,7 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 02 July, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -51,15 +51,9 @@
     --------------------------------------------------------
      */
      
-    template <
-        typename  jlog_data
-             >
-    __normal_call void_type jigsaw_banner (
-        jlog_data &_jlog
-        )
-    {
-    /*-- NB: silliness re. escape sequences */
-        _jlog.push (
+    namespace JIGSAW {
+
+    std::string asciibanner =
     " \n"
     "#------------------------------------------------------------\n"
     "#\n"
@@ -75,10 +69,770 @@
     "# JIGSAW: an unstructured mesh generation library.  \n"
     "#------------------------------------------------------------\n"
     " \n"
-    "  " __JGSWVSTR "\n\n"
-        ) ;
+    "  " __JGSWVSTR "\n\n"  ;
+
+    /*
+    --------------------------------------------------------
+     * Call the 2-dimensional mesh generator.
+    --------------------------------------------------------
+     */
+ 
+    template <
+        typename  geom_type ,
+        typename  init_type ,
+        typename  hfun_type ,
+        typename  mesh_type ,
+        typename  jlog_data
+             >
+    __normal_call void_type mesh_euclidean_2d (
+        geom_type &_geom,
+        init_type &_init,
+        hfun_type &_hfun,
+        mesh_type &_mesh,
+        jcfg_data &_args,
+        jlog_data &_jlog
+        )
+    {
+        if (_args._mesh_pred == 
+                jcfg_data::mesh_pred::delaunay)
+        {
+    /*-------------------------- call DELAUNAY kernel */
+            typedef 
+                mesh::rdel_delaunay_2d  <
+                geom_type ,
+                hfun_type ,
+                mesh_type >         rdel_pred ;
+                
+            typedef mesh::rdel_mesh_2d  <
+                mesh_type , 
+                rdel_pred ,
+                geom_type ,
+                hfun_type ,
+                init_type >         rdel_func ;
+
+            typedef 
+            jcfg_data::rdel_opts    rdel_opts ;
+
+            rdel_opts *_opts =  
+               &_args._rdel_opts;
+
+            rdel_func::rdel_mesh( 
+                _geom, _init ,
+                _hfun, _mesh ,
+               *_opts, _jlog )  ;
+        }
+        else
+        if (_args._mesh_pred ==
+                jcfg_data::mesh_pred::delfront)
+        {
+    /*-------------------------- call DELFRONT kernel */
+            typedef 
+                mesh::rdel_delfront_2d  <
+                geom_type ,
+                hfun_type ,
+                mesh_type >         rdel_pred ;
+                
+            typedef mesh::rdel_mesh_2d  <
+                mesh_type , 
+                rdel_pred ,
+                geom_type ,
+                hfun_type ,
+                init_type >         rdel_func ;
+
+            typedef 
+            jcfg_data::rdel_opts    rdel_opts ;
+
+            rdel_opts *_opts =  
+               &_args._rdel_opts;
+
+            rdel_func::rdel_mesh( 
+                _geom, _init ,
+                _hfun, _mesh ,
+               *_opts, _jlog )  ;
+        }
     }
+
+    /*
+    --------------------------------------------------------
+     * Call the 3-dimensional mesh generator.
+    --------------------------------------------------------
+     */
      
+    template <
+        typename  geom_type ,
+        typename  init_type ,
+        typename  hfun_type ,
+        typename  mesh_type ,
+        typename  jlog_data
+             >
+    __normal_call void_type mesh_euclidean_3d (
+        geom_type &_geom,
+        init_type &_init,
+        hfun_type &_hfun,
+        mesh_type &_mesh,
+        jcfg_data &_args,
+        jlog_data &_jlog
+        )
+    {    
+        if (_args._mesh_pred == 
+                jcfg_data::mesh_pred::delaunay)
+        {
+    /*-------------------------- call DELAUNAY kernel */
+            typedef 
+                mesh::rdel_delaunay_3d  <
+                geom_type ,
+                hfun_type ,
+                mesh_type >         rdel_pred ;
+                
+            typedef mesh::rdel_mesh_3d  <
+                mesh_type , 
+                rdel_pred ,
+                geom_type ,
+                hfun_type ,
+                init_type >         rdel_func ;
+
+            typedef 
+            jcfg_data::rdel_opts    rdel_opts ;
+
+            rdel_opts *_opts =  
+               &_args._rdel_opts;
+
+            rdel_func::rdel_mesh( 
+                _geom, _init ,
+                _hfun, _mesh ,
+               *_opts, _jlog )  ;
+        }
+        else
+        if (_args._mesh_pred ==
+                jcfg_data::mesh_pred::delfront)
+        {
+    /*-------------------------- call DELFRONT kernel */
+            typedef 
+                mesh::rdel_delfront_3d  <
+                geom_type ,
+                hfun_type ,
+                mesh_type >         rdel_pred ;
+                
+            typedef mesh::rdel_mesh_3d  <
+                mesh_type , 
+                rdel_pred ,
+                geom_type ,
+                hfun_type ,
+                init_type >         rdel_func ;
+
+            typedef 
+            jcfg_data::rdel_opts    rdel_opts ;
+
+            rdel_opts *_opts =  
+               &_args._rdel_opts;
+
+            rdel_func::rdel_mesh( 
+                _geom, _init ,
+                _hfun, _mesh ,
+               *_opts, _jlog )  ;
+        }
+    }
+
+    /*
+    --------------------------------------------------------
+     * Call the k-dimensional mesh generator.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  jlog_data
+             >
+    __normal_call iptr_type mesh_impl (
+        jcfg_data &_args,
+        jlog_data &_jlog,
+        geom_data &_geom,
+        mesh_data &_init,
+        hfun_data &_hfun,
+        rdel_data &_rdel
+        )
+    {
+        iptr_type _errv = __no_error ;
+
+        try 
+        {
+            if (_geom._ndim == +2 &&
+                _geom._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*--------------- have euclidean-mesh GEOM kernel */
+            
+            if (_hfun._ndim == +0 )
+            {
+        /*--------------- with constant-value HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +2 ;
+                
+                mesh_euclidean_2d (
+                _geom._euclidean_mesh_2d,
+                _init._euclidean_mesh_2d,
+                _hfun._constant_value_kd,
+                _rdel._euclidean_rdel_2d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +2 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*--------------- with euclidean-mesh HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +2 ;
+                
+                mesh_euclidean_2d (
+                _geom._euclidean_mesh_2d,
+                _init._euclidean_mesh_2d,
+                _hfun._euclidean_mesh_2d,
+                _rdel._euclidean_rdel_2d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +2 &&
+                _hfun._kind ==
+                 jmsh_kind::euclidean_grid)
+            {
+        /*--------------- with euclidean-grid HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +2 ;
+                
+                mesh_euclidean_2d (
+                _geom._euclidean_mesh_2d,
+                _init._euclidean_mesh_2d,
+                _hfun._euclidean_grid_2d,
+                _rdel._euclidean_rdel_2d,
+                _args, _jlog) ;
+            }
+            
+            }
+            else           
+            if (_geom._ndim == +3 &&
+                _geom._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*--------------- have euclidean-mesh GEOM kernel */
+            
+            if (_hfun._ndim == +0 )
+            {
+        /*--------------- with constant-value HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +3 ;
+                
+                mesh_euclidean_3d (
+                _geom._euclidean_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _hfun._constant_value_kd,
+                _rdel._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +3 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*--------------- with euclidean-mesh HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +3 ;
+                
+                mesh_euclidean_3d (
+                _geom._euclidean_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _hfun._euclidean_mesh_3d,
+                _rdel._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +3 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_grid)
+            {
+        /*--------------- with euclidean-grid HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +3 ;
+                
+                mesh_euclidean_3d (
+                _geom._euclidean_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _hfun._euclidean_grid_3d,
+                _rdel._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
+            
+            }
+            else
+            if (_geom._kind ==
+                jmsh_kind::ellipsoid_mesh)
+            {
+        /*--------------- have ellipsoid-mesh GEOM kernel */
+            
+            if (_hfun._ndim == +0 )
+            {
+        /*--------------- with constant-value HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +3 ;
+                
+                mesh_euclidean_3d (
+                _geom._ellipsoid_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _hfun._constant_value_kd,
+                _rdel._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._kind ==
+                jmsh_kind::ellipsoid_grid)
+            {
+        /*--------------- with ellipsoid-grid HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +3 ;
+                
+                mesh_euclidean_3d (
+                _geom._ellipsoid_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _hfun._ellipsoid_grid_3d,
+                _rdel._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._kind ==
+                jmsh_kind::ellipsoid_mesh)
+            {
+        /*--------------- with ellipsoid-mesh HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +3 ;
+                
+                mesh_euclidean_3d (
+                _geom._ellipsoid_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _hfun._ellipsoid_mesh_3d,
+                _rdel._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +3 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*--------------- with euclidean-mesh HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +3 ;
+                
+                mesh_euclidean_3d (
+                _geom._ellipsoid_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _hfun._euclidean_mesh_3d,
+                _rdel._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +3 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_grid)
+            {
+        /*--------------- with euclidean-grid HFUN kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +3 ;
+                
+                mesh_euclidean_3d (
+                _geom._ellipsoid_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _hfun._euclidean_grid_3d,
+                _rdel._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
+            
+            }
+        }
+        catch (...)
+        {
+            _errv = __unknown_error ;
+        }
+
+        return (  _errv ) ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * Call the 2-dimensional mesh optimiser.
+    --------------------------------------------------------
+     */
+ 
+    template <
+        typename  geom_type ,
+        typename  hfun_type ,
+        typename  mesh_type ,
+        typename  jlog_data
+             >
+    __normal_call void_type iter_euclidean_2d (
+        geom_type &_geom ,
+        hfun_type &_hfun ,
+        mesh_type &_mesh ,
+        jcfg_data &_args ,
+        jlog_data &_jlog
+        )
+    {
+        if (true)   /* kernel? */
+        {
+    /*------------------------------ call ITER kernel */
+            typedef mesh::
+                iter_pred_euclidean_2d <
+                real_type ,
+                iptr_type >         pred_type ;
+            
+            typedef mesh::iter_mesh_2  <
+                geom_type ,
+                typename
+                mesh_type::
+                mesh_type ,
+                hfun_type ,
+                pred_type >         iter_func ;
+            
+            typedef 
+            jcfg_data::iter_opts    iter_opts ;
+
+            iter_opts *_opts =  
+               &_args._iter_opts;
+            
+            pred_type  _pred ;
+            iter_func::iter_mesh(
+                _geom, _hfun , 
+                _mesh. _mesh, 
+                _pred,
+               *_opts, _jlog )  ;
+        }
+    }
+    
+    template <
+        typename  geom_type ,
+        typename  hfun_type ,
+        typename  mesh_type ,
+        typename  jlog_data
+             >
+    __normal_call void_type iter_ellipsoid_3d (
+        geom_type &_geom ,
+        hfun_type &_hfun ,
+        mesh_type &_mesh ,
+        jcfg_data &_args ,
+        jlog_data &_jlog
+        )
+    {
+        if (true)   /* kernel? */
+        {
+    /*------------------------------ call ITER kernel */
+            typedef mesh::
+                iter_pred_ellipsoid_3d <
+                real_type ,
+                iptr_type >         pred_type ;
+            
+            typedef mesh::iter_mesh_2  <
+                geom_type ,
+                typename
+                mesh_type::
+                mesh_type ,
+                hfun_type ,
+                pred_type >         iter_func ;
+            
+            typedef 
+            jcfg_data::iter_opts    iter_opts ;
+
+            iter_opts *_opts =  
+               &_args._iter_opts;
+            
+            pred_type  _pred ;
+            iter_func::iter_mesh(
+                _geom, _hfun , 
+                _mesh. _mesh, 
+                _pred,
+               *_opts, _jlog )  ;
+        }
+    }
+    
+    /*
+    --------------------------------------------------------
+     * Call the 3-dimensional mesh optimiser.
+    --------------------------------------------------------
+     */
+ 
+    template <
+        typename  geom_type ,
+        typename  hfun_type ,
+        typename  mesh_type ,
+        typename  jlog_data
+             >
+    __normal_call void_type iter_euclidean_3d (
+        geom_type &/*_geom*/,
+        hfun_type &/*_hfun*/,
+        mesh_type &/*_mesh*/,
+        jcfg_data &/*_args*/,
+        jlog_data &/*_jlog*/
+        )
+    {   //!! yes, indeed...
+    
+    }    
+
+    /*
+    --------------------------------------------------------
+     * Call the k-dimensional mesh optimiser.
+    --------------------------------------------------------
+     */
+ 
+    template <
+        typename  jlog_data
+             >
+    __normal_call iptr_type iter_impl (
+        jcfg_data &_args,
+        jlog_data &_jlog,
+        geom_data &_geom,
+        hfun_data &_hfun,
+        mesh_data &_mesh
+        )
+    {
+        iptr_type _errv = __no_error ;
+
+        try 
+        {
+            if (_geom._ndim == +2 &&
+                _geom._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*----------- have euclidean-mesh GEOM kernel */
+            
+            if (_hfun._ndim == +0 )
+            {
+        /*----------- with constant-value HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +2 ;
+        
+                iter_euclidean_2d (
+                _geom._euclidean_mesh_2d,
+                _hfun._constant_value_kd,
+                _mesh._euclidean_mesh_2d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +2 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*----------- with euclidean-mesh HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +2 ;
+        
+                iter_euclidean_2d (
+                _geom._euclidean_mesh_2d,
+                _hfun._euclidean_mesh_2d,
+                _mesh._euclidean_mesh_2d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +2 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_grid)
+            {
+        /*----------- with euclidean-grid HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +2 ;
+                
+                iter_euclidean_2d (
+                _geom._euclidean_mesh_2d,
+                _hfun._euclidean_grid_2d,
+                _mesh._euclidean_mesh_2d,
+                _args, _jlog) ;
+            }
+            
+            }
+            else           
+            if (_geom._ndim == +3 &&
+                _geom._kind ==
+                 jmsh_kind::euclidean_mesh)
+            {
+        /*----------- have euclidean-mesh GEOM kernel */
+            
+            if (_hfun._ndim == +0 )
+            {
+        /*----------- with constant-value HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +3 ;
+        
+                /*
+                iter_euclidean_3d (
+                _geom._euclidean_mesh_3d,
+                _hfun._constant_value_kd,
+                _mesh._euclidean_mesh_3d,
+                _args, _jlog) ;
+                 */
+            }
+            else
+            if (_hfun._ndim == +3 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*----------- with euclidean-mesh HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +3 ;
+        
+                /*
+                iter_euclidean_3d (
+                _geom._euclidean_mesh_3d,
+                _hfun._euclidean_mesh_3d,
+                _mesh._euclidean_mesh_3d,
+                _args, _jlog) ;
+                 */
+            }
+            else
+            if (_hfun._ndim == +3 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_grid)
+            {
+        /*----------- with euclidean-grid HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +3 ;
+                
+                /*
+                iter_euclidean_3d (
+                _geom._euclidean_mesh_3d,
+                _hfun._euclidean_grid_3d,
+                _mesh._euclidean_mesh_3d,
+                _args, _jlog) ;
+                 */
+            }
+            
+            }
+            if (_geom._kind ==
+                jmsh_kind::ellipsoid_mesh)
+            {
+        /*----------- have ellipsoid-mesh GEOM kernel */
+            
+            if (_hfun._ndim == +0 )
+            {
+        /*----------- with constant-value HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +3 ;
+        
+                iter_ellipsoid_3d (
+                _geom._ellipsoid_mesh_3d,
+                _hfun._constant_value_kd,
+                _mesh._euclidean_mesh_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._kind ==
+                jmsh_kind::ellipsoid_grid)
+            {
+        /*----------- with ellipsoid-grid HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +3 ;
+                
+                iter_ellipsoid_3d (
+                _geom._ellipsoid_mesh_3d,
+                _hfun._ellipsoid_grid_3d,
+                _mesh._euclidean_mesh_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._kind ==
+                jmsh_kind::ellipsoid_mesh)
+            {
+        /*----------- with ellipsoid-mesh HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +3 ;
+                
+                iter_ellipsoid_3d (
+                _geom._ellipsoid_mesh_3d,
+                _hfun._ellipsoid_mesh_3d,
+                _mesh._euclidean_mesh_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +3 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*----------- with euclidean-mesh HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +3 ;
+             
+                iter_ellipsoid_3d (
+                _geom._ellipsoid_mesh_3d,
+                _hfun._euclidean_mesh_3d,
+                _mesh._euclidean_mesh_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_hfun._ndim == +3 &&
+                _hfun._kind ==
+                jmsh_kind::euclidean_grid)
+            {
+        /*----------- with euclidean-grid HFUN kernel */
+                _mesh._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _mesh._ndim  = +3 ;
+             
+                iter_ellipsoid_3d (
+                _geom._ellipsoid_mesh_3d,
+                _hfun._euclidean_grid_3d,
+                _mesh._euclidean_mesh_3d,
+                _args, _jlog) ;
+            }       
+        }
+                
+        }
+        catch (...)
+        {
+            _errv = __unknown_error ;
+        }
+
+        return (  _errv ) ;
+    }
+
+    }
+   
 #   ifdef __lib_jigsaw
 
 #   include "liblib/init_jig_t.hpp"
@@ -127,8 +881,9 @@
         {
             _jcfg._verbosity = _jjig->_verbosity ;
         }
-        jlog_null _jlog(_jcfg) ;
-        jigsaw_banner  (_jlog) ;
+         jlog_null _jlog(_jcfg) ;
+        _jlog.push(JIGSAW::
+                   asciibanner) ;
         
     /*--------------------------------- parse *.JCFG data */
         if (_jjig != nullptr )
@@ -276,9 +1031,9 @@
 #           endif//__use_timers
 
             _mesh._euclidean_mesh_2d.
-                _mesh.make_ptrs();
+                _mesh.make_link();
             _mesh._euclidean_mesh_3d.
-                _mesh.make_ptrs();
+                _mesh.make_link();
 
             if (_jcfg._verbosity > 0 )
             {
@@ -386,7 +1141,8 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            if ((_retv = make_mesh (
+            if ((_retv = 
+                JIGSAW ::mesh_impl (
                  _jcfg, _jlog ,
                  _geom, _mesh , 
                  _hfun, _rdel)) != __no_error)
@@ -449,7 +1205,8 @@
                 return  _retv ;
             }
 
-            if ((_retv = iter_mesh (
+            if ((_retv = 
+                JIGSAW ::iter_impl (
                  _jcfg, _jlog ,
                  _geom, 
                  _hfun, _mesh)) != __no_error)
@@ -469,7 +1226,7 @@
     /*--------------------------------- dump mesh to data */
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
-                "  Writing MESH file...\n\n" ) ;
+                "  Writing MESH data...\n\n" ) ;
 
 #           ifdef  __use_timers
             _ttic   = _time.now();
@@ -479,7 +1236,7 @@
                 _jcfg._iter_opts.iter() == +0 )
             {
 
-            if ((_retv = save_msht (
+            if ((_retv = save_rdel (
                  _jcfg, _jlog , 
                  _rdel,*_mmsh)) != __no_error)
             {
@@ -490,7 +1247,7 @@
             else
             {
 
-            if ((_retv = save_msht (
+            if ((_retv = save_mesh (
                  _jcfg, _jlog , 
                  _mesh,*_mmsh)) != __no_error)
             {
@@ -544,13 +1301,24 @@
         {
             std::string _ssrc(_argv[_argc]) ;
             
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
-            file_part ( _ssrc ,
-                _path , _name , _fext)  ;
+            if (_ssrc.find("-h") == 0 ||
+                _ssrc.find(
+                       "--help") == 0 )
+            {
+                _retv = -2 ;
+                
+                std::cout << 
+                "run jigsaw jigname.jig";
+                std::cout <<  std::endl ;
+                
+                break ;
+            }
 
-            if (_ssrc.find("-whoami") == 0)
+            if (_ssrc.find("-v") == 0 ||
+                _ssrc.find(
+                    "--version") == 0 ||
+                _ssrc.find(
+                      "-whoami") == 0 )
             {
                 _retv = -2 ;
                 
@@ -559,6 +1327,12 @@
                 
                 break ;
             }
+
+            std::string _path ;
+            std::string _name ;
+            std::string _fext ;
+            file_part ( _ssrc ,
+                _path , _name , _fext ) ;
 
             if (_fext.find("jig") == 0)
             {
@@ -575,8 +1349,9 @@
         if (_retv != +0) return ( _retv ) ;
 
     /*--------------------------------- setup *.JLOG file */
-        jlog_text _jlog(_jcfg) ;
-        jigsaw_banner  (_jlog) ;
+         jlog_text _jlog(_jcfg) ;
+        _jlog.push(JIGSAW::
+                   asciibanner) ;
       
         if(!_jcfg._jcfg_file.empty())
         {
@@ -723,9 +1498,9 @@
 #           endif//__use_timers
 
             _mesh._euclidean_mesh_2d.
-                _mesh.make_ptrs();
+                _mesh.make_link();
             _mesh._euclidean_mesh_3d.
-                _mesh.make_ptrs();
+                _mesh.make_link();
 
             if (_jcfg._verbosity > 0 )
             {
@@ -833,7 +1608,8 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            if ((_retv = make_mesh (
+            if ((_retv = 
+                JIGSAW ::mesh_impl (
                  _jcfg, _jlog ,
                  _geom, _mesh ,
                  _hfun, _rdel)) != __no_error)
@@ -921,7 +1697,8 @@
                 return  _retv ;
             }
 
-            if ((_retv = iter_mesh (
+            if ((_retv = 
+                JIGSAW ::iter_impl (
                  _jcfg, _jlog ,
                  _geom, 
                  _hfun, _mesh)) != __no_error)
@@ -952,7 +1729,7 @@
                 _jcfg._iter_opts.iter() == +0 )
             {
 
-            if ((_retv = save_jmsh (
+            if ((_retv = save_rdel (
                  _jcfg, 
                  _jlog, _rdel)) != __no_error)
             {
@@ -963,7 +1740,7 @@
             else
             {
 
-            if ((_retv = save_jmsh (
+            if ((_retv = save_mesh (
                  _jcfg, 
                  _jlog, _mesh)) != __no_error)
             {

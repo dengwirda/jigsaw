@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 September, 2018
+     * Last updated: 05 July, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -67,39 +67,16 @@
         __unreferenced(_jcfg) ;
         __unreferenced(_jlog) ;
     
-    //!! need to free memory here as well somehow?
-    
         if (_rdel._ndim == +2 &&
             _rdel._kind ==
             jmsh_kind::euclidean_mesh)
         {
-      
+    /*---------------------------------- copy 2-dim. mesh */
         _mesh._euclidean_mesh_2d._mesh.
             clear(containers::loose_alloc) ;
       
         _mesh._kind = _rdel._kind ;
         _mesh._ndim = _rdel._ndim ;
-        
-        _mesh._euclidean_mesh_2d._mesh.
-            _map1._lptr.set_count (
-           (_rdel._euclidean_rdel_2d.
-            _tria._nset.count()*5)/4, 
-        containers::loose_alloc, nullptr);
-                
-        _mesh._euclidean_mesh_2d._mesh.
-            _map2._lptr.set_count (
-           (_rdel._euclidean_rdel_2d.
-            _eset.count()*5) / 4 +
-           (_rdel._euclidean_rdel_2d.
-            _tset.count()*7) / 3 , 
-        containers::loose_alloc, nullptr);
-        
-        _mesh._euclidean_mesh_2d._mesh.
-            _map3._lptr.set_count (
-           (_rdel._euclidean_rdel_2d.
-            _tset.count()*5) / 4 , 
-        containers::loose_alloc, nullptr);
-        
         
         for (auto _iter  = _rdel.
         _euclidean_rdel_2d._tria._nset.head() ;
@@ -123,10 +100,13 @@
             _node.feat () = _iter->feat () ;
             
             _mesh._euclidean_mesh_2d.
-                _mesh.push_node (_node) ;
+                _mesh.push_node (_node, false) ;
             }
         }
     
+        _rdel._euclidean_rdel_2d._tria.
+            clear(containers::tight_alloc) ;
+
         for (auto _iter  = _rdel.
         _euclidean_rdel_2d._eset._lptr.head() ;
                   _iter != _rdel.
@@ -151,11 +131,14 @@
                 _item->_data._part;
             
             _mesh._euclidean_mesh_2d.
-                _mesh.push_edge (_face) ;
+                _mesh.push_edge (_face, false) ;
             }
             }
         }
     
+        _rdel._euclidean_rdel_2d._eset.
+            clear(containers::tight_alloc) ;
+
         for (auto _iter  = _rdel.
         _euclidean_rdel_2d._tset._lptr.head() ;
                   _iter != _rdel.
@@ -182,55 +165,33 @@
                 _item->_data._part;
             
             _mesh._euclidean_mesh_2d.
-                _mesh.push_tri3 (_face) ;
+                _mesh.push_tri3 (_face, false) ;
             }
             }
         }
-        
+    
+        _rdel._euclidean_rdel_2d._tset.
+            clear(containers::tight_alloc) ;
+
+        _rdel._euclidean_rdel_2d.
+            clear(containers::tight_alloc) ;
+
+        _mesh._euclidean_mesh_2d.
+                        _mesh.make_link () ;
+    
         }
         else
         if (_rdel._ndim == +3 &&
             _rdel._kind ==
             jmsh_kind::euclidean_mesh)
         {
-        
+    /*---------------------------------- copy 3-dim. mesh */
         _mesh._euclidean_mesh_3d._mesh.
             clear(containers::loose_alloc) ;
         
         _mesh._kind = _rdel._kind ;
         _mesh._ndim = _rdel._ndim ;
-        
-        _mesh._euclidean_mesh_3d._mesh.
-            _map1._lptr.set_count (
-           (_rdel._euclidean_rdel_3d.
-            _tria._nset.count()*5)/4, 
-        containers::loose_alloc, nullptr);
-        
-        _mesh._euclidean_mesh_3d._mesh.
-            _map2._lptr.set_count (
-           (_rdel._euclidean_rdel_3d.
-            _eset.count()*5) / 4 +
-           (_rdel._euclidean_rdel_3d.
-            _fset.count()*7) / 3 +
-           (_rdel._euclidean_rdel_3d.
-            _tset.count()*9) / 2 , 
-        containers::loose_alloc, nullptr);
-        
-        _mesh._euclidean_mesh_3d._mesh.
-            _map3._lptr.set_count (
-           (_rdel._euclidean_rdel_3d.
-            _fset.count()*5) / 4 +
-           (_rdel._euclidean_rdel_3d.
-            _tset.count()*8) / 3 , 
-        containers::loose_alloc, nullptr);
-        
-        _mesh._euclidean_mesh_3d._mesh.
-            _map4._lptr.set_count (
-           (_rdel._euclidean_rdel_3d.
-            _tset.count()*5) / 4 , 
-        containers::loose_alloc, nullptr);
-        
-        
+
         for (auto _iter  = _rdel.
         _euclidean_rdel_3d._tria._nset.head() ;
                   _iter != _rdel.
@@ -254,10 +215,13 @@
             _node.feat () = _iter->feat () ;
             
             _mesh._euclidean_mesh_3d.
-                _mesh.push_node (_node) ;
+                _mesh.push_node (_node, false) ;
             }
         }
         
+        _rdel._euclidean_rdel_3d._tria.
+            clear(containers::tight_alloc) ;
+
         for (auto _iter  = _rdel.
         _euclidean_rdel_3d._eset._lptr.head() ;
                   _iter != _rdel.
@@ -282,11 +246,14 @@
                 _item->_data._part;
             
             _mesh._euclidean_mesh_3d.
-                _mesh.push_edge (_face) ;
+                _mesh.push_edge (_face, false) ;
             }
             }
         }
         
+        _rdel._euclidean_rdel_3d._eset.
+            clear(containers::tight_alloc) ;
+
         for (auto _iter  = _rdel.
         _euclidean_rdel_3d._fset._lptr.head() ;
                   _iter != _rdel.
@@ -313,11 +280,14 @@
                 _item->_data._part;
             
             _mesh._euclidean_mesh_3d.
-                _mesh.push_tri3 (_face) ;
+                _mesh.push_tri3 (_face, false) ;
             }
             }
         }
         
+        _rdel._euclidean_rdel_3d._fset.
+            clear(containers::tight_alloc) ;
+
         for (auto _iter  = _rdel.
         _euclidean_rdel_3d._tset._lptr.head() ;
                   _iter != _rdel.
@@ -346,11 +316,20 @@
                 _item->_data._part;
             
             _mesh._euclidean_mesh_3d.
-                _mesh.push_tri4 (_face) ;
+                _mesh.push_tri4 (_face, false) ;
             }
             }
         }
         
+        _rdel._euclidean_rdel_3d._tset.
+            clear(containers::tight_alloc) ;
+
+        _rdel._euclidean_rdel_3d.
+            clear(containers::tight_alloc) ;
+
+        _mesh._euclidean_mesh_3d.
+                        _mesh.make_link () ;
+
         }
     
         return ( _errv ) ;
@@ -360,4 +339,4 @@
 #   endif   //__MSH_COPY__
 
 
-    
+

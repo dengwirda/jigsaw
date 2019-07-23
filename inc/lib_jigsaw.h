@@ -155,7 +155,7 @@
      */
         jigsaw_jig_t   *_jcfg,
     
-    /* HFUN (REQUIRED): apply limiter to |df/dx|.
+    /* FFUN (REQUIRED): apply limiter to |df/dx|.
      */
         jigsaw_msh_t   *_ffun
         ) ;

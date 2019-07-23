@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 August, 2018
+     * Last updated: 03 July, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -117,7 +117,7 @@
                 _tnod[3] == _fnod[2] )
                 _same += +1 ;
         
-            return ( _same >= +1 ) ;
+            return ( _same >= +2 ) ;
         }
         } ;
 
@@ -133,13 +133,6 @@
         _mesh._tria.walk_tria(_tadj, 
          sink_pred(&_fnod[0]),_tset) ;
         
-        typename 
-            mesh_type::face_list _fset (
-        typename mesh_type::face_hash(),
-        typename mesh_type::face_pred(), 
-            +.8,_mesh._fset.get_alloc()
-            ) ;
-
         real_type _near = _args.snk2() *
                           _args.snk2() ;
         _near *= _fbal[3] ;
@@ -173,6 +166,7 @@
             _snod[2] = _mesh._tria.
              tria(*_tpos)->node(_snod[2]);
 
+    /*-------------------------------- test sink topology */
             if (_mesh._tria.
             node(_snod[0])->fdim() > +2 ||
                 _mesh._tria.
@@ -181,6 +175,23 @@
             node(_snod[2])->fdim() > +2 )
                 continue ;
 
+            iptr_type _same = +0;
+            if (_snod[0] == _fnod[0] ||
+                _snod[0] == _fnod[1] ||
+                _snod[0] == _fnod[2] )
+                _same += +1 ;
+            if (_snod[1] == _fnod[0] ||
+                _snod[1] == _fnod[1] ||
+                _snod[1] == _fnod[2] )
+                _same += +1 ;
+            if (_snod[2] == _fnod[0] ||
+                _snod[2] == _fnod[1] ||
+                _snod[2] == _fnod[2] )
+                _same += +1 ;
+            if (_same == +0) continue;
+            if (_same == +3) continue;
+
+    /*-------------------------------- sink must be in DT */
             algorithms::isort (
                 &_snod[0], &_snod[3],
                     std::less<iptr_type>()) ;
@@ -203,14 +214,8 @@
             else
             {   continue ;// not restricted
             }    
-            
-            if (_fset.find(_fdat, _fptr)) 
-            {   continue ;// only test once
-            }
-            else
-            {   _fset.push(_fdat) ;
-            }
 
+    /*-------------------------------- sink must inc ball */
             char_type  _feat, _topo;
             iptr_type  _itag;
             real_type  _sbal[4];
@@ -227,6 +232,7 @@
             {
             if (_best    < _sbal[3])
             {
+    /*-------------------------------- retain best so far */
                 _best    = _sbal[3];
 
                 _kind    = 
@@ -321,7 +327,7 @@
                 _nadj[3] == _tnod[3] )
                 _same += +1 ;
             
-            return  _same >=  +1  ;
+            return  _same >=  +2  ;
         }
         } ;
 
@@ -359,6 +365,20 @@
         {
             if ( *_iter == _tpos) continue;
 
+            real_type  _ball[4];
+            _ball[0] = _mesh.
+               _tria.tria(*_iter)->circ(0);
+            _ball[1] = _mesh.
+               _tria.tria(*_iter)->circ(1);
+            _ball[2] = _mesh.
+               _tria.tria(*_iter)->circ(2);
+
+            real_type _dsqr = geometry
+                ::lensqr_3d(_tbal, _ball) ;
+
+            if (_dsqr    < _near   )
+            {
+    /*-------------------------------- sink must be in DT */
             iptr_type  _nadj[4];
             _nadj[0] = _mesh.
             _tria.tria(*_iter)->node(0);
@@ -367,7 +387,7 @@
             _nadj[2] = _mesh.
             _tria.tria(*_iter)->node(2);
             _nadj[3] = _mesh.
-            _tria.tria(*_iter)->node(3);
+            _tria.tria(*_iter)->node(3);            
 
             typename mesh_type::
                      tria_data _tdat ;
@@ -389,14 +409,7 @@
             {   continue ;// not restricted
             }
 
-            real_type  _ball[4];
-            _ball[0] = _mesh.
-               _tria.tria(*_iter)->circ(0);
-            _ball[1] = _mesh.
-               _tria.tria(*_iter)->circ(1);
-            _ball[2] = _mesh.
-               _tria.tria(*_iter)->circ(2);
-      
+    /*-------------------------------- sink must inc ball */            
             _ball[3] = (real_type)+.0 ; 
             _ball[3]+= 
                 geometry::lensqr_3d (_ball, 
@@ -417,13 +430,10 @@
             
             _ball[3]/= (real_type)+4. ;            
 
-            real_type _dsqr = geometry
-                ::lensqr_3d(_tbal, _ball) ;
-
-            if (_dsqr    < _near   )
-            {
+            
             if (_best    < _ball[3])
             {
+    /*-------------------------------- retain best so far */
                 _kind    =  
                     rdel_opts::sink_kind  ;
 

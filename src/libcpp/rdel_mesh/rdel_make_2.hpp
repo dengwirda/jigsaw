@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 January, 2019
+     * Last updated: 06 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -86,6 +86,7 @@
     template <
     typename M ,
     typename G ,
+    typename I ,
     typename A = allocators::basic_alloc
              >
     class rdel_make_2d
@@ -96,6 +97,7 @@
     
     typedef M                           mesh_type ;
     typedef G                           geom_type ;
+    typedef I                           init_type ;
     typedef A                           allocator ;
 
     typedef typename 
@@ -239,8 +241,8 @@
         geom_type &_geom ,
         iptr_type  _tpos ,
         iptr_type &_sign ,
-        typename 
-    mesh_type::tria_list & _tria_test ,
+        /* typename 
+    mesh_type::tria_list & _tria_test , */
         iptr_type &_ntri ,
         rdel_opts &_opts
         )
@@ -271,15 +273,7 @@
 
             _tdat._tadj    = _tpos;
 
-            typename mesh_type::
-                     tria_list::
-                item_type *_mptr = nullptr;
-            if(_tria_test.
-                find( _tdat, _mptr) )
-            { 
-        /*--------------------------- don't test repeats! */
-                return ;
-            }
+        //!!_tria_test.push (_tdat) ; won't have repeats!
 
         /*--------------------------- call tria predicate */
             _tdat._part =  _sign ;
@@ -303,9 +297,6 @@
 
             if (_rBND)
             _mesh.push_tria(_tdat) ;
-            
-            
-        //!!_tria_test.push(_tdat) ;  won't have repeats!
         
         }
     }
@@ -359,9 +350,6 @@
     --------------------------------------------------------
      */
 
-    template <
-    typename      init_type
-             >
     __static_call
     __normal_call void_type init_sort (
         init_type &_init,
@@ -417,9 +405,6 @@
         _tree.brio(_iset) ;
     }
 
-    template <
-    typename      init_type
-             >
     __static_call
     __normal_call void_type init_init (
         init_type &_init,
@@ -536,9 +521,6 @@
         }
     }
 
-    template <
-    typename      init_type
-             >
     __static_call
     __normal_call void_type init_mesh (
         geom_type &_geom,
@@ -625,7 +607,6 @@
      */
 
     template <
-    typename      init_type ,
     typename      jlog_file
              >
     __static_call
@@ -674,19 +655,6 @@
         
         iptr_type _ndup  = +0 ;
     
-    /*------------------------- init. for local hash obj. */
-        typename 
-            mesh_type::edge_list _eset (
-        typename mesh_type::edge_hash(),
-        typename mesh_type::edge_pred(), 
-           +.8, _mesh._eset.get_alloc()) ;
-           
-        typename 
-            mesh_type::tria_list _tset (
-        typename mesh_type::tria_hash(),
-        typename mesh_type::tria_pred(), 
-           +.8, _mesh._tset.get_alloc()) ;
-
     /*------------------------- DT cells to check for rDT */
         iptr_list _tnew ;
         _tnew.set_alloc (
@@ -719,9 +687,12 @@
             _geom.have_feat(1) )
         { 
 
-        _eset._lptr.set_count (
-            _tnew.count()*3 , 
-        containers::loose_alloc,nullptr) ;
+        typename 
+            mesh_type::edge_list _eset (
+        typename mesh_type::edge_hash(),
+        typename mesh_type::edge_pred(), 
+           +.8, _mesh._eset.get_alloc(),
+           _tnew.count()*3) ;
 
     #   ifdef  __use_timers
         _ttic = _time.now() ;
@@ -756,9 +727,12 @@
       //if (_nedg >= +1) _safe = false ;
         if (_ndup >= +1) _safe = false ;
         
-        _tset._lptr.set_count (
-            _tnew.count()*1 , 
-        containers::loose_alloc,nullptr) ;
+      //typename 
+      //    mesh_type::tria_list _tset (
+      //typename mesh_type::tria_hash(),
+      //typename mesh_type::tria_pred(), 
+      //   +.8, _mesh._tset.get_alloc(),
+      //   _tnew.count()*1) ;
         
     #   ifdef  __use_timers
         _ttic = _time.now() ;
@@ -772,8 +746,7 @@
 
             test_tria(_mesh, _geom,
                      *_iter, 
-                      _sign, 
-                      _tset, _ntri, 
+                      _sign, _ntri, 
                       _args) ;
         }
 
@@ -785,53 +758,112 @@
 
         }
         
-        /*
-        if (_args.verb() >= +2 )
-        {   
-    //------------------------- push rDEL memory metrics *
-        
-        _dump.push("\n")  ;
-        _dump.push("  rDT statistics... \n") ;
-        _dump.push("\n")  ;
-        
-        }
-         */
-        
         if (_args.verb() >= +2 )
         {
     /*------------------------- push rDEL scheme metrics */
         
         _dump.push("\n")  ;
-        _dump.push("  rDT statistics... \n") ;
+        _dump.push("**DELTRI statistics... \n") ;
+        _dump.push("\n")  ;
+
+        _dump.push("**FUNCTION timing: ") ;
         _dump.push("\n")  ;
 
         _dump.push("  MESH-SEED = ") ;
         _dump.push(
-        std::to_string (_tcpu._mesh_seed)) ;
+        std::to_string (_tcpu._mesh_seed));
         _dump.push("\n")  ;
 
         _dump.push("  EDGE-INIT = ") ;
         _dump.push(
-        std::to_string (_tcpu._edge_init)) ;
+        std::to_string (_tcpu._edge_init));
         _dump.push("\n")  ;
         _dump.push("  TRIA-INIT = ") ;
         _dump.push(
-        std::to_string (_tcpu._tria_init)) ;
+        std::to_string (_tcpu._tria_init));
         _dump.push("\n")  ;
         _dump.push("\n")  ;
         
-        _dump.push("  |rDEL-1| (edge) = ") ;
-        _dump.push(std::to_string (_nedg)) ;
+        _dump.push("**RESTRICTED-TRIA: ") ;
+        _dump.push("\n")  ;
+
+        _dump.push("  rDEL-EDGE = ");
+        _dump.push(std::to_string (_nedg));
         _dump.push("\n")  ;
         
-        _dump.push("  |rDEL-2| (tria) = ") ;
-        _dump.push(std::to_string (_ntri)) ;
+        _dump.push("  rDEL-TRIA = ");
+        _dump.push(std::to_string (_ntri));
         _dump.push("\n")  ;
         _dump.push("\n")  ;
         
         }
+
+        if (_args.verb() >= +3 )
+        {   
+    /*------------------------- push rDEL memory metrics */
         
         _dump.push("\n")  ;
+        _dump.push("**MEMORY statistics... \n") ;
+        _dump.push("\n")  ;
+        
+        _dump.push("**DELAUNAY-OBJECT: ") ;
+        _dump.push("\n")  ;
+
+        _dump.push("  NODE-BYTE = ") ;
+        _dump.push(std::to_string(
+            sizeof(typename mesh_type::
+                tria_type:: node_type)) ) ;
+        _dump.push("\n")  ;
+        _dump.push("  NODE-LIST = ") ;
+        _dump.push(std::to_string(
+            _mesh._tria._nset.alloc())) ;
+        _dump.push("\n")  ;
+
+        _dump.push("  TRIA-BYTE = ") ;
+        _dump.push(std::to_string(
+            sizeof(typename mesh_type::
+                tria_type:: tria_type)) ) ;
+        _dump.push("\n")  ;
+        _dump.push("  TRIA-LIST = ") ;
+        _dump.push(std::to_string(
+            _mesh._tria._tset.alloc())) ;
+        _dump.push("\n")  ;
+        _dump.push("\n")  ;
+
+        _dump.push("**RESTRICTED-TRIA: ") ;
+        _dump.push("\n")  ;
+
+        _dump.push("  EDGE-BYTE = ") ;
+        _dump.push(std::to_string(
+            sizeof(
+        typename mesh_type::edge_item)) ) ;
+        _dump.push("\n")  ;
+        _dump.push("  EDGE-HASH = ") ;
+        _dump.push(std::to_string(
+            _mesh._eset._lptr.alloc())) ;
+        _dump.push("\n")  ;
+        _dump.push("  POOL-BYTE = ") ;
+        _dump.push(std::to_string(
+            _mesh._epol.bytes () ) ) ;
+        _dump.push("\n")  ;
+        
+        _dump.push("  TRIA-BYTE = ") ;
+        _dump.push(std::to_string(
+            sizeof(
+        typename mesh_type::tria_item)) ) ;
+        _dump.push("\n")  ;
+        _dump.push("  TRIA-HASH = ") ;
+        _dump.push(std::to_string(
+            _mesh._tset._lptr.alloc())) ;
+        _dump.push("\n")  ;
+        _dump.push("  POOL-BYTE = ") ;
+        _dump.push(std::to_string(
+            _mesh._tpol.bytes () ) ) ;
+        _dump.push("\n")  ;
+        _dump.push("\n")  ;
+
+        }
+        
     }
     
     } ;

@@ -14,7 +14,7 @@
      * TRIPOD: a "restricted" delaunay tessellator.
     --------------------------------------------------------
      *
-     * Last updated: 19 January, 2019
+     * Last updated: 02 July, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -50,16 +50,10 @@
      *
     --------------------------------------------------------
      */
-     
-    template <
-        typename  jlog_data
-             >
-    __normal_call void_type tripod_banner (
-        jlog_data &_jlog
-        )
-    {
-    /*-- NB: silliness re. escape sequences */
-        _jlog.push (
+  
+    namespace TRIPOD {
+
+    std::string asciibanner =
     " \n"
     "#------------------------------------------------------------\n"
     "#\n"
@@ -75,10 +69,167 @@
     "# TRIPOD: a \"restricted\" delaunay tessellator.  \n"
     "#------------------------------------------------------------\n"
     " \n"
-    "  " __JGSWVSTR "\n\n"
-        ) ;
+    "  " __JGSWVSTR "\n\n"  ;
+
+    /*
+    --------------------------------------------------------
+     * Call the 2-dimensional tessellator.
+    --------------------------------------------------------
+     */
+ 
+    template <
+        typename  geom_type ,
+        typename  init_type ,
+        typename  rdel_type ,
+        typename  jlog_data
+             >
+    __normal_call void_type rdel_euclidean_2d (
+        geom_type &_geom,
+        init_type &_init,
+        rdel_type &_rdel,
+        jcfg_data &_args,
+        jlog_data &_jlog
+        )
+    {
+        {
+    /*------------------------------ call rDEL kernel */
+            typedef mesh::rdel_make_2d  <
+                rdel_type , 
+                geom_type ,
+                init_type >         rdel_func ;
+
+            typedef 
+            jcfg_data::rdel_opts    rdel_opts ;
+
+            rdel_opts  *_opts =  
+               &_args._rdel_opts ;
+
+            rdel_func::rdel_make ( 
+                _geom,  _init ,
+                _rdel, *_opts , _jlog ) ;
+        }
     }
     
+    /*
+    --------------------------------------------------------
+     * Call the 3-dimensional tessellator.
+    --------------------------------------------------------
+     */
+ 
+    template <
+        typename  geom_type ,
+        typename  init_type ,
+        typename  rdel_type ,
+        typename  jlog_data
+             >
+    __normal_call void_type rdel_euclidean_3d (
+        geom_type &_geom,
+        init_type &_init,
+        rdel_type &_rdel,
+        jcfg_data &_args,
+        jlog_data &_jlog
+        )
+    {
+        {
+    /*------------------------------ call rDEL kernel */
+            typedef mesh::rdel_make_3d  <
+                rdel_type , 
+                geom_type ,
+                init_type >         rdel_func ;
+
+            typedef 
+            jcfg_data::rdel_opts    rdel_opts ;
+
+            rdel_opts  *_opts =  
+               &_args._rdel_opts ;
+
+            rdel_func::rdel_make ( 
+                _geom,  _init ,
+                _rdel, *_opts , _jlog ) ;
+        }
+    }
+    
+    /*
+    --------------------------------------------------------
+     * Call the k-dimensional tessellator.
+    --------------------------------------------------------
+     */
+ 
+    template <
+        typename  jlog_data
+             >
+    __normal_call iptr_type rdel_impl (
+        jcfg_data &_args,
+        jlog_data &_jlog,
+        mesh_data &_init,
+        geom_data &_geom,
+        rdel_data &_rdel
+        )
+    {
+        iptr_type _errv = __no_error ;
+
+        try 
+        {
+            if (_geom._ndim == +2 &&
+                _geom._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*----------- have euclidean-mesh GEOM kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +2 ;
+                
+                rdel_euclidean_2d (
+                _geom._euclidean_mesh_2d,
+                _init._euclidean_mesh_2d,
+                _rdel._euclidean_rdel_2d,
+                _args, _jlog) ;
+            }
+            else           
+            if (_geom._ndim == +3 &&
+                _geom._kind ==
+                jmsh_kind::euclidean_mesh)
+            {
+        /*----------- have euclidean-mesh GEOM kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +3 ;
+                
+                rdel_euclidean_3d (
+                _geom._euclidean_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _rdel._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
+            else
+            if (_geom._kind ==
+                jmsh_kind::ellipsoid_mesh)
+            {
+        /*----------- have ellipsoid-mesh GEOM kernel */
+                _rdel._kind  = 
+                jmsh_kind::euclidean_mesh;
+                
+                _rdel._ndim  = +3 ;
+                
+                rdel_euclidean_3d (
+                _geom._ellipsoid_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _rdel._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
+        }
+        catch (...)
+        {
+            _errv = __unknown_error ;
+        }
+
+        return (  _errv ) ;
+    }
+
+    }
+
 #   ifdef __lib_jigsaw
 
 #   include "liblib/init_jig_t.hpp"
@@ -125,9 +276,10 @@
         {
             _jcfg._verbosity = _jjig->_verbosity ;
         }
-        jlog_null _jlog(_jcfg) ;
-        tripod_banner  (_jlog) ;
-        
+         jlog_null _jlog(_jcfg) ;
+        _jlog.push(TRIPOD::
+                   asciibanner) ;
+
     /*--------------------------------- parse *.JCFG data */
         if (_jjig != nullptr )
         {
@@ -208,10 +360,10 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _init._euclidean_mesh_2d.
-                _mesh.make_ptrs();
-            _init._euclidean_mesh_3d.
-                _mesh.make_ptrs();
+          //_init._euclidean_mesh_2d.
+          //    _mesh.make_link();
+          //_init._euclidean_mesh_3d.
+          //    _mesh.make_link();
 
             if (_jcfg._verbosity > 0 )
             {
@@ -310,7 +462,8 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            if ((_retv = make_rdel (
+            if ((_retv = 
+                TRIPOD ::rdel_impl  (
                  _jcfg, _jlog ,
                  _init, 
                  _geom, _rdel)) != __no_error)
@@ -329,17 +482,33 @@
     /*--------------------------------- dump mesh to data */
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
-                "  Writing MESH file...\n\n" ) ;
+                "  Writing MESH data...\n\n" ) ;
 
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            if ((_retv = save_msht (
+            if (_jcfg._rdel_opts.dims() >= +1)
+            {
+
+            if ((_retv = save_rdel (
                  _jcfg, _jlog , 
                  _rdel,*_mmsh)) != __no_error)
             {
                 return  _retv ;
+            }
+
+            }
+            else
+            {
+
+            if ((_retv = save_tria (
+                 _jcfg, _jlog , 
+                 _rdel,*_mmsh)) != __no_error)
+            {
+                return  _retv ;
+            }
+
             }
         
 #           ifdef  __use_timers         
@@ -386,13 +555,24 @@
         {
             std::string _ssrc(_argv[_argc]) ;
             
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
-            file_part ( _ssrc ,
-                _path , _name , _fext)  ;
+            if (_ssrc.find("-h") == 0 ||
+                _ssrc.find(
+                       "--help") == 0 )
+            {
+                _retv = -2 ;
+                
+                std::cout << 
+                "run tripod jigname.jig";
+                std::cout <<  std::endl ;
+                
+                break ;
+            }
 
-            if (_ssrc.find("-whoami") == 0)
+            if (_ssrc.find("-v") == 0 ||
+                _ssrc.find(
+                    "--version") == 0 ||
+                _ssrc.find(
+                      "-whoami") == 0 )
             {
                 _retv = -2 ;
                 
@@ -401,6 +581,12 @@
                 
                 break ;
             }
+
+            std::string _path ;
+            std::string _name ;
+            std::string _fext ;
+            file_part ( _ssrc ,
+                _path , _name , _fext ) ;
 
             if (_fext.find("jig") == 0)
             {
@@ -417,8 +603,9 @@
         if (_retv != +0) return ( _retv ) ;
 
     /*--------------------------------- setup *.JLOG file */
-        jlog_text _jlog(_jcfg) ;
-        tripod_banner  (_jlog) ;
+         jlog_text _jlog(_jcfg) ;
+        _jlog.push(TRIPOD::
+                   asciibanner) ;
       
         if(!_jcfg._jcfg_file.empty())
         {
@@ -499,10 +686,10 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _init._euclidean_mesh_2d.
-                _mesh.make_ptrs();
-            _init._euclidean_mesh_3d.
-                _mesh.make_ptrs();
+          //_init._euclidean_mesh_2d.
+          //    _mesh.make_link();
+          //_init._euclidean_mesh_3d.
+          //    _mesh.make_link();
 
             if (_jcfg._verbosity > 0 )
             {
@@ -601,7 +788,8 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            if ((_retv = make_rdel (
+            if ((_retv = 
+                TRIPOD ::rdel_impl  (
                  _jcfg, _jlog ,
                  _init, 
                  _geom, _rdel)) != __no_error)
@@ -651,13 +839,29 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            if ((_retv = save_jmsh (
+            if (_jcfg._rdel_opts.dims() >= +1)
+            {
+
+            if ((_retv = save_rdel (
                  _jcfg, 
                  _jlog, _rdel)) != __no_error)
             {
                 return  _retv ;
             }
-        
+
+            }
+            else
+            {
+
+            if ((_retv = save_tria (
+                 _jcfg, 
+                 _jlog, _rdel)) != __no_error)
+            {
+                return  _retv ;
+            }
+
+            }
+      
 #           ifdef  __use_timers         
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
@@ -672,6 +876,6 @@
 #   endif   //__cmd_tripod
 
 #   endif   //__lib_jigsaw
-     
-     
-     
+
+
+

@@ -43,9 +43,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 03 July, 2019
  *
- * Copyright 2013-2017
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -329,8 +329,8 @@
         "const_block_iterator: out of range!" ) ;
 #       endif
         return (*this->_ptr)
-            [this->_off / container::_size]
-            [this->_off % container::_size] ;
+            [this->_off >> container::_pwr2]
+            [this->_off & (container::_size-1)] ;
     }
 
     } ;
@@ -422,8 +422,8 @@
         "write_block_iterator: out of range!" ) ;
 #       endif
         return (*this->_ptr)
-            [this->_off / container::_size]
-            [this->_off % container::_size] ;
+            [this->_off >> container::_pwr2]
+            [this->_off & (container::_size-1)] ;
     }
 
     } ;

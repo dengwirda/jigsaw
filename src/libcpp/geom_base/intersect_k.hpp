@@ -59,60 +59,6 @@
 
     /*
     --------------------------------------------------------
-     * helper: solve quadratic equations
-    --------------------------------------------------------
-     */
-
-    template <
-    typename      data_type
-             >
-    __normal_call bool_type polyroots (
-        data_type _aa,      // aa*xx^2+bb*xx+cc=0
-        data_type _bb,
-        data_type _cc,
-    __write_ptr  (data_type) _xx
-        )
-    {
-        bool_type _real = false ;
-
-        data_type _sq = _bb * _bb -
-       (data_type)+4. * _aa * _cc ;
-
-        if (_sq >= (data_type)+0.)  // real roots
-        {
-            _sq  = std::sqrt(_sq) ;
-        
-            _real = true;
-
-            _xx[0] = (-_bb + _sq) ;
-            _xx[1] = (-_bb - _sq) ;
-
-            data_type _xm = std::max (
-                std::abs(_xx[0]), 
-                std::abs(_xx[1])) ;
-
-            data_type _rt = 
-        std::numeric_limits<data_type>::epsilon() ;
-
-            if (_aa >= _xm * _rt)
-            {
-                _aa *=(data_type)+2.;
-
-                _xx[0] /= _aa ;
-                _xx[1] /= _aa ;
-            }
-            else
-            {
-                _xx[0] = -_cc / _bb ;
-                _xx[1] = -_cc / _bb ;
-            }
-        }
-
-        return _real ;
-    }
-
-    /*
-    --------------------------------------------------------
      * BALL-LINE-KD: ball-line intersections
     --------------------------------------------------------
      */
@@ -148,7 +94,8 @@
       
         size_t _nn = +0  ;  
         data_type _tt[2] ;
-        if (polyroots(_aa, _bb, _cc, _tt))
+        if ( math::
+        polyroots(_aa, _bb, _cc, _tt))
         {
         if (_tt[0] >= (data_type)+0. &&
             _tt[0] <= (data_type)+1. )
@@ -262,7 +209,8 @@
       
         size_t _nn = +0  ;  
         data_type _tt[2] ;
-        if (polyroots(_aa, _bb, _cc, _tt))
+        if ( math::
+        polyroots(_aa, _bb, _cc, _tt))
         {
         if (_tt[0] >= (data_type)+0. &&
             _tt[0] <= (data_type)+1. )
@@ -708,23 +656,15 @@
                   real_type &_tt
         )
     {
-        _tt = (real_type)+0.0 ;
-    
-        real_type _ap[2];
+        real_type _ap[2] ;
         _ap[0] = _pp[0] - _pa[0] ;
         _ap[1] = _pp[1] - _pa[1] ;
-        
-        real_type _ep =  +1.0 * 
-        std::numeric_limits<real_type>::epsilon();
         
         real_type _d1 = 
         geometry::dot_2d(_ap, _va) ;
         real_type _d2 = 
         geometry::dot_2d(_va, _va) ;
         
-        if (std::abs(_d2) <= _ep * std::abs(_d1) )
-        return ( false ) ;
-
         _tt =  _d1 / _d2 ;
         
         return (  true ) ;        
@@ -795,23 +735,15 @@
                   real_type &_tt
         )
     {
-        _tt = (real_type)+0.0 ;
-    
-        real_type _ap[3];
+        real_type _ap[3] ;
         _ap[0] = _pp[0] - _pa[0] ;
         _ap[1] = _pp[1] - _pa[1] ;
         _ap[2] = _pp[2] - _pa[2] ;
-        
-        real_type _ep =  +1.0 * 
-        std::numeric_limits<real_type>::epsilon();
-        
+                
         real_type _d1 = 
         geometry::dot_3d(_ap, _va) ;
         real_type _d2 = 
         geometry::dot_3d(_va, _va) ;
-        
-        if (std::abs(_d2) <= _ep * std::abs(_d1) )
-        return ( false ) ;
 
         _tt =  _d1 / _d2 ;
         
@@ -899,21 +831,11 @@
         _ip[1] = _pp[1] - _pi[1] ;
         _ip[2] = _pp[2] - _pi[2] ;
         
-        _qq[0] = _pi[0] ;
-        _qq[1] = _pi[1] ;
-        _qq[2] = _pi[2] ;
-        
-        real_type _ep =  +1.0 * 
-        std::numeric_limits<real_type>::epsilon();
-        
         real_type _tt ;
         real_type _d1 = 
         geometry::dot_3d(_ip, _nv) ;
         real_type _d2 = 
         geometry::dot_3d(_nv, _nv) ;
-        
-        if (std::abs(_d2) <= _ep * std::abs(_d1) )
-        return ( false ) ;
 
         _tt    = _d1/_d2 ;
         
@@ -1861,7 +1783,8 @@
             _mm[__ij(1,1,2)] = _PC[1]-_PD[1] ;
 
             double _im [2*2] , _dm;
-            inv_2x2(2, _mm, 2, _im, _dm) ;
+            math::inv_2x2(
+                +2, _mm, +2, _im, _dm) ;
 
             double _rv [2*1] ;
             _rv[__ij(0,0,2)] = _PC[0]-_PA[0] ;

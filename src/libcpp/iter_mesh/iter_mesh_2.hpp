@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 March, 2019
+     * Last updated: 10 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -81,7 +81,7 @@
     char_type static 
         constexpr _cvt_kind = +2 ;   // centroidal voro.
     char_type static 
-        constexpr _sdQ_kind = +3 ;   // local cost grad.
+        constexpr dQdx_kind = +3 ;   // local cost grad.
  
     typedef mesh::iter_params  <
             real_type ,
@@ -311,18 +311,8 @@
         
         _msrc /= _csrc.count() ;
         _mdst /= _cdst.count() ;
-        
-    
-        if ( true )
-        {  
-    /*--------------------- okay if all are improving */        
-            if (_0dst > _0src &&
-                _mdst > _msrc )
-                _move = +1;
-                
-            if (_move > +0) return ;
-        }
-            
+
+
         if ( true )
         {  
     /*--------------------- okay if min. is improving */        
@@ -334,7 +324,7 @@
     
             if (_move > +0) return ;
         }
-        
+   
         _qtol /= _cdst.count() ;
         
         if (_0dst >= _good)
@@ -529,7 +519,7 @@
                 _line, _ladj) ;
         }
         else
-        if (_kind == _sdQ_kind)
+        if (_kind == dQdx_kind)
         {
             if (_TMIN<=_TLIM)
             { 
@@ -591,29 +581,29 @@
             _dnew.set_count(0) ;
     
     /*---------------- test quasi-monotonicity w.r.t. Q^T */     
-            loop_tscr( _mesh, _pred , 
+            loop_tscr( _mesh, _pred, 
                        _tset, 
                        _tnew) ;
             
             move_okay( _tnew, 
                 _told, _move,
-            std::sqrt( _TLIM) , _opts.qtol()) ;
+                _TLIM, _opts.qtol()) ;
                 
-            if (_move < 0) continue ;
+            if (_move < 0) continue;
                   
-            if ( _TMIN>=_TLIM)
+            if (_TMIN>=_TLIM)
             {
     /*---------------- test quasi-monotonicity w.r.t. Q^D */
-            loop_dscr( _mesh, _pred , 
+            loop_dscr( _mesh, _pred, 
                        _tset, 
                        _dnew) ;
             
             move_okay( _dnew, 
                 _dold, _move,
-            std::sqrt( _DLIM) , _opts.qtol()) ;
+                _DLIM, _opts.qtol()) ;
             }
                   
-            if (_move >= +0)  break ;            
+            if (_move >= +0)  break;            
         }
  
         if (_move <= (iptr_type)0)
@@ -626,7 +616,7 @@
         }
         
     }
-    
+
     /*
     --------------------------------------------------------
      * MOVE-DUAL: "smart" weight update for single node.
@@ -731,18 +721,18 @@
             
             _dnew.set_count(0) ;
             
-            _scal *= (real_type)+.5 ;
+            _scal *= (real_type).5 ;
             
     /*---------------- test quasi-monotonicity w.r.t. Q^D */
-            loop_dscr( _mesh, _pred , 
+            loop_dscr( _mesh, _pred, 
                        _tset, 
                        _dnew) ;
             
             move_okay( _dnew, 
                 _dold, _move, 
-            std::sqrt( _DLIM) , _opts.qtol()) ;
+                _DLIM, _opts.qtol()) ;
                   
-            if (_move >= +0)  break ;
+            if (_move >= +0)  break;
         }
  
         if (_move <= (iptr_type) +0)
@@ -1115,7 +1105,7 @@
                 move_node( _geom, _mesh ,
                     _hfun, _pred, _hval , 
                     _opts, _node, 
-                       _sdQ_kind, 
+                       dQdx_kind, 
                     _okay, _tset, 
                     _told, _tnew,
                     _dold, _dnew, 
@@ -1441,9 +1431,9 @@
                     if (_eset.count() > _DEG_MAX)
                     {
                         real_type _qinc = 
-                            (real_type) -0.500 ;
+                            (real_type) -1./4. ;
                         real_type _ltol = 
-                            (real_type) +0.500 ;
+                            (real_type) +3./4. ;
                     
                         iptr_type  _nnew = -1;
                                 
@@ -1491,9 +1481,9 @@
                     if (_eset.count() < _DEG_MIN)
                     {
                         real_type _qinc = 
-                            (real_type) -0.500 ;
+                            (real_type) -1./4. ;
                         real_type _ltol = 
-                            (real_type) +2.000 ;
+                            (real_type) +4./3. ;
                         
                         iptr_type  _nnew = -1;
                         
@@ -1602,11 +1592,14 @@
         iter_stat  _tcpu ;
     
     /*------------------------------ push log-file header */
-        _dump.push (
+        if (_opts.verb() >= 0 )
+        {
+            _dump.push(
     "#------------------------------------------------------------\n"
     "#    |MOVE.|      |FLIP.|      |MERGE|      |SPLIT| \n"
     "#------------------------------------------------------------\n"
-            ) ;
+                    ) ;
+        }
        
     #   ifdef  __use_timers
         typename std ::chrono::
@@ -1678,19 +1671,13 @@
         
     /*------------------------------ do optimisation loop */
         iptr_type static constexpr
-            ITER_MIN_ = +  3 ;
+            ITER_MIN_ = +  4 ;
         iptr_type static constexpr
             ITER_MAX_ = +  8 ;
      
         bool_type static constexpr
             ITER_FLIP = true ;
         
-        real_type _TLIM = _opts.qlim() ;
-                
-      //real_type _DLIM = + 0.99250 ;
-        real_type _DLIM = 
-            std::pow(_TLIM, +1./8.) ;
-   
         for (auto _iter = +1 ; 
             _iter <= _opts.iter(); ++_iter)
         {
@@ -1726,7 +1713,18 @@
                 ITER_MAX_, _nsub) ;
             _nsub = std::max(
                 ITER_MIN_, _nsub) ;
-            
+      
+            real_type _TLIM = 
+           (real_type).800*_opts.qlim() + 
+           (real_type).075*_iter;
+   
+            _TLIM = std::min(
+            _opts.qlim() , _TLIM) ;
+             
+          //real_type _DLIM = + 0.99250 ;
+            real_type _DLIM = 
+                std::pow(_TLIM, +1./8.) ;
+      
     /*------------------------------ update mesh geometry */
     #       ifdef  __use_timers
             _ttic = _time.now() ;
@@ -1814,6 +1812,8 @@
     #       endif//__use_timers
          
     /*------------------------------ dump optim. progress */
+            if (_opts.verb() >= 0)
+            {
             std::stringstream _sstr ;
             _sstr << std::setw(11) << _nmov
                   << std::setw(13) << _nflp
@@ -1821,7 +1821,8 @@
                   << std::setw(13) << _ndiv
                   <<   "\n" ;
             _dump.push(_sstr.str()) ;
-                  
+            }             
+     
     /*------------------------------ has iter. converged? */
             if (_nset.count() == 0) break ; 
             if (_nmov == +0 &&

@@ -363,8 +363,17 @@
     /* index INTO 1-dim faces */
         if (_into == +1)
             {
-        faceind11(_fnod, _fpos);
+        faceind11(_fnod, _fpos); return ;
             }
+        else
+            {
+        _fnod[0] =   -1;
+        _fnod[1] =   -1; // suppress compiler warnings
+            }
+            }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
             }
     }
 
@@ -495,6 +504,12 @@
         _fnod[1] = 0 ; 
         _fnod[2] = 1 ; break ;
             }
+        default:
+            {            // suppress compiler warnings
+        _fnod[0] =-1 ;
+        _fnod[1] =-1 ; 
+        _fnod[2] =-1 ; break ;
+            }
             }
     }
     __static_call
@@ -511,13 +526,19 @@
     /* index INTO 2-dim faces */
         if (_into == +2)
             {
-        faceind22(_fnod, _fpos);
+        faceind22(_fnod, _fpos); return ;
             }
     /* index INTO 1-dim faces */
         else
         if (_into == +1)
             {
-        faceind21(_fnod, _fpos);
+        faceind21(_fnod, _fpos); return ;
+            }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[1] =   -1;
+        _fnod[2] =   -1;         return ;
             }
             }
     /* index FROM 1-dim faces */
@@ -527,8 +548,17 @@
     /* index INTO 1-dim faces */
         if (_into == +1)
             {
-        faceind11(_fnod, _fpos);
+        faceind11(_fnod, _fpos); return ;
             }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[1] =   -1;         return ;
+            }
+            }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
             }
     }
 
@@ -685,6 +715,13 @@
         _fnod[2] = 0 ; 
         _fnod[3] = 1 ; break ;
             }
+        default:
+            {            // suppress compiler warnings
+        _fnod[0] =-1 ;
+        _fnod[1] =-1 ;
+        _fnod[2] =-1 ; 
+        _fnod[3] =-1 ; break ;
+            }
             }
     }
     __static_call
@@ -725,6 +762,11 @@
         _fnod[0] = 2 ;
         _fnod[1] = 3 ; break ;
             }
+        default:
+            {            // suppress compiler warnings
+        _fnod[0] =-1 ;
+        _fnod[1] =-1 ; break ;
+            }
             }
     }
     __static_call
@@ -753,6 +795,12 @@
         _fnod[1] = 0 ; 
         _fnod[2] = 1 ; break ;
             }
+        default:
+            {            // suppress compiler warnings
+        _fnod[0] =-1 ;
+        _fnod[1] =-1 ; 
+        _fnod[2] =-1 ; break ;
+            }
             }
     }
 
@@ -770,19 +818,26 @@
     /* index INTO 3-dim faces */
         if (_into == +3)
             {
-        faceind33(_fnod, _fpos);
+        faceind33(_fnod, _fpos); return ;
             }
     /* index INTO 2-dim faces */
         else
         if (_into == +2)
             {
-        faceind32(_fnod, _fpos);
+        faceind32(_fnod, _fpos); return ;
             }
     /* index INTO 1-dim faces */
         else
         if (_into == +1)
             {
-        faceind31(_fnod, _fpos);
+        faceind31(_fnod, _fpos); return ;
+            }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[1] =   -1;
+        _fnod[2] =   -1;
+        _fnod[3] =   -1;         return ;
             }
             }
     /* index FROM 2-dim faces */
@@ -792,13 +847,19 @@
     /* index INTO 2-dim faces */
         if (_into == +2)
             {
-        faceind22(_fnod, _fpos);
+        faceind22(_fnod, _fpos); return ;
             }
     /* index INTO 1-dim faces */
         else
         if (_into == +1)
             {
-        faceind21(_fnod, _fpos);
+        faceind21(_fnod, _fpos); return ;
+            }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[1] =   -1;
+        _fnod[2] =   -1;         return ;
             }
             }
     /* index FROM 1-dim faces */
@@ -808,8 +869,17 @@
     /* index INTO 1-dim faces */
         if (_into == +1)
             {
-        faceind11(_fnod, _fpos);
+        faceind11(_fnod, _fpos); return ;
             }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[1] =   -1;         return ;
+            }
+            }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
             }
     }
 

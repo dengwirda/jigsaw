@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 August, 2018
+     * Last updated: 03 July, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -112,7 +112,7 @@
                 _nadj[2] == _tnod[2] )
                 _same += +1 ;
             
-            return  _same >=  +1  ;
+            return  _same >=  +2  ;
         }
         } ;
 
@@ -150,13 +150,25 @@
         {
             if ( *_iter == _tpos) continue;
 
+            real_type  _ball[3];
+            _ball[0] = _mesh.
+               _tria.tria(*_iter)->circ(0);
+            _ball[1] = _mesh.
+               _tria.tria(*_iter)->circ(1);
+      
+            real_type _dsqr = geometry
+                ::lensqr_2d(_tbal, _ball) ;
+
+            if (_dsqr    < _near   )
+            {
+    /*-------------------------------- sink must be in DT */
             iptr_type _nadj[ 3] ;
             _nadj[0] = _mesh.
             _tria.tria(*_iter)->node(0);
             _nadj[1] = _mesh.
             _tria.tria(*_iter)->node(1);
             _nadj[2] = _mesh.
-            _tria.tria(*_iter)->node(2);
+            _tria.tria(*_iter)->node(2);            
 
             typename mesh_type::
                      tria_data _tdat ;
@@ -177,12 +189,7 @@
             {   continue ;// not restricted
             }
 
-            real_type  _ball[3];
-            _ball[0] = _mesh.
-               _tria.tria(*_iter)->circ(0);
-            _ball[1] = _mesh.
-               _tria.tria(*_iter)->circ(1);
-      
+    /*-------------------------------- sink must inc ball */
             _ball[2] = (real_type)+0. ; 
             _ball[2]+= 
                 geometry::lensqr_2d (_ball, 
@@ -197,15 +204,12 @@
                    &_mesh._tria.node(
                         _nadj[2])->pval(0)) ;
                         
-            _ball[2]/= (real_type)+3. ;            
+            _ball[2]/= (real_type)+3. ;
 
-            real_type _dsqr = geometry
-                ::lensqr_2d(_tbal, _ball) ;
 
-            if (_dsqr    < _near   )
-            {
             if (_best    < _ball[2])
             {
+    /*-------------------------------- retain best so far */
                 _best    = _ball[2];
 
                 _kind    =  

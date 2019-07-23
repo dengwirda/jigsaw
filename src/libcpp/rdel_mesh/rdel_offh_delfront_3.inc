@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 February, 2019
+     * Last updated: 19 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -74,8 +74,11 @@
         real_type static const _dtol = 
             (real_type)+8.75E-01 ;
             
-        real_type static const _epsb = 
+        real_type static const _lgap = 
             (real_type)+9.50E-01 ;
+
+        real_type static const _ugap = 
+            (real_type)+1.05E+00 ;
      
         __unreferenced(_args) ;
      
@@ -153,21 +156,32 @@
             _nsiz[2] * (real_type)1./2.;
 
             real_type _dist = _hval ;
-            if (_dist >= _dvec[3] * _epsb)
+
+            if (_dist >= _dvec[3] * _lgap &&
+                _dist <  _dvec[3] * _ugap )
+            {                       // circumball cushion
+                _dist += _dvec[3] ;
+                _dist /= (real_type)2.;
+
+                _kind  = 
+                 rdel_opts::offH_kind ;
+            }
+            else
+            if (_dist >= _dvec[3] * _ugap ) 
             {                       // circumball limiter
-                _ppos[0]=_sbal[0];
-                _ppos[1]=_sbal[1];
-                _ppos[2]=_sbal[2];
+                _ppos[0]=_sbal[0] ;
+                _ppos[1]=_sbal[1] ;
+                _ppos[2]=_sbal[2] ;
                 
                 _kind = 
-                 rdel_opts::circ_kind  ;
+                 rdel_opts::circ_kind ;
                  
-                 return  _kind;
+                 return  _kind ;
             }
             else                    // adv.-front limiter
             {
                 _kind = 
-                 rdel_opts::offH_kind  ;
+                 rdel_opts::offH_kind ;
             }
 
             _dist -= _pert * _dist ;
@@ -242,8 +256,11 @@
         real_type static const _dtol = 
             (real_type)+8.75E-01 ;
             
-        real_type static const _epsb = 
+        real_type static const _lgap = 
             (real_type)+9.50E-01 ;
+
+        real_type static const _ugap = 
+            (real_type)+1.05E+00 ;
             
         real_type static const _alth = 
             (real_type)std::sqrt(3.)/2. ;
@@ -335,28 +352,40 @@
 
             if (_dist > _alth * _hval)
             {                       // adv.-front limiter
-                _dist = _alth * _hval;
+                _dist = _alth * _hval ;
                 _kind = 
-                 rdel_opts::offH_kind;
+                 rdel_opts::offH_kind ;
             }
+
             if (_dist >= _dvec[4])  // off-centre limiter 
             {
-                _dist =  _dvec[4];
+                _dist =  _dvec[4] ;
                 _kind = 
-                 rdel_opts::offC_kind;
+                 rdel_opts::offC_kind ;
             }
-            if (_dist >= _dvec[3] * _epsb) 
+
+            if (_dist >= _dvec[3] * _lgap &&
+                _dist <  _dvec[3] * _ugap )
+            {                       // circumball cushion
+                _dist += _dvec[3] ;
+                _dist /= (real_type)2.;
+
+                _kind  = 
+                 rdel_opts::offH_kind ;
+            }
+            else
+            if (_dist >= _dvec[3] * _ugap ) 
             {                       // circumball limiter
-                _ppos[0]=_sbal[0];
-                _ppos[1]=_sbal[1];
-                _ppos[2]=_sbal[2];
+                _ppos[0]=_sbal[0] ;
+                _ppos[1]=_sbal[1] ;
+                _ppos[2]=_sbal[2] ;
                 
                 _kind = 
-                 rdel_opts::circ_kind;
+                 rdel_opts::circ_kind ;
                  
-                 return  _kind;
+                 return  _kind ;
             }
-            
+ 
             _dist -= _pert * _dist ;
             
             iptr_type _dual = -1 ;
@@ -429,8 +458,11 @@
         real_type static const _rtol = 
             (real_type)+1.00E-03 ;
             
-        real_type static const _epsb = 
+        real_type static const _lgap = 
             (real_type)+9.50E-01 ;
+
+        real_type static const _ugap = 
+            (real_type)+1.05E+00 ;
             
         real_type static const _alth = 
             (real_type)std::sqrt(6.)/3. ;
@@ -505,26 +537,36 @@
             
             if (_dist > _alth * _hmid)  
             {                       // adv.-front limiter
-                _dist = _alth * _hmid;
+                _dist = _alth * _hmid ;
                 _kind = 
-                 rdel_opts::offH_kind;
+                 rdel_opts::offH_kind ;
             }
             
             if (_dist >= _dvec[4])  // off-centre limiter 
             {
                 _dist =  _dvec[4];
                 _kind = 
-                 rdel_opts::offC_kind;
+                 rdel_opts::offC_kind ;
             }
             
-            if (_dist >= _dvec[3] * _epsb) 
+            if (_dist >= _dvec[3] * _lgap &&
+                _dist <  _dvec[3] * _ugap )
+            {                       // circumball cushion
+                _dist += _dvec[3] ;
+                _dist /= (real_type)2.;
+
+                _kind  = 
+                 rdel_opts::offH_kind ;
+            }
+            else
+            if (_dist >= _dvec[3] * _ugap ) 
             {                       // circumball limiter
-                _ppos[0]=_tbal[0];
-                _ppos[1]=_tbal[1];
-                _ppos[2]=_tbal[2];
+                _ppos[0]=_tbal[0] ;
+                _ppos[1]=_tbal[1] ;
+                _ppos[2]=_tbal[2] ;
                 
                 _kind = 
-                 rdel_opts::circ_kind;
+                 rdel_opts::circ_kind ;
                  
                  return  _kind ;
             }
@@ -533,11 +575,11 @@
             
             real_type _proj[3] ;
             _proj[ 0] = 
-            _fbal[ 0] + _dist*_dvec[ 0];
+            _fbal[ 0] + _dist*_dvec[0];
             _proj[ 1] = 
-            _fbal[ 1] + _dist*_dvec[ 1];
+            _fbal[ 1] + _dist*_dvec[1];
             _proj[ 2] = 
-            _fbal[ 2] + _dist*_dvec[ 2];
+            _fbal[ 2] + _dist*_dvec[2];
 
             real_type _move = 
             geometry::length_3d(_ppos, _proj);

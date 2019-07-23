@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 February, 2019
+     * Last updated: 20 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -535,7 +535,7 @@
     /*--------------------------------- ellipsoid-mesh-3d */
             _geom._kind 
                 = jmsh_kind::ellipsoid_mesh ;
-            _geom._ndim = +3;
+            _geom._ndim = +2;
     
             if (_gmsh._radii._size==+3)
             {

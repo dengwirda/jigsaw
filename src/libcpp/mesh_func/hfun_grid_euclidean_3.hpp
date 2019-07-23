@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 July, 2018
+     * Last updated: 28 June, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -82,6 +82,9 @@
     
     containers::array <
         real_type, allocator>      _hmat; 
+
+    containers::array <
+        real_type, allocator>      _dhdx; 
         
     bool_type                      _xvar;
     bool_type                      _yvar;
@@ -96,6 +99,7 @@
         iptr_type&_indx
         )
     {
+    /*------------ helper: convert into "un-rolled" index */
         iptr_type _ynum = 
        (iptr_type)this->_ypos.count() ;
         
@@ -105,7 +109,7 @@
         _indx = _kpos * _xnum * _ynum
               + _jpos * _ynum + _ipos ;
     }
-    
+
     /*
     --------------------------------------------------------
      * INIT: init. size-fun. class.

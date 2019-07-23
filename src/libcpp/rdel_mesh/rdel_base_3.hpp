@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 January, 2019
+     * Last updated: 10 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -181,8 +181,8 @@
         _ab[0] * _mp[0] + 
         _ab[1] * _mp[1] + 
         _ab[2] * _mp[2] ;
-        
-        return ((double) _dp );
+
+        return ((double) _dp) ;
     }
 
     template <
@@ -344,6 +344,12 @@
             std::pow(std::numeric_limits
                 <real_type>::epsilon(),+.67);
 
+        real_type _blen = 
+        _geom._bmax[0]-_geom._bmin[0]
+      + _geom._bmax[1]-_geom._bmin[1]
+      + _geom._bmax[2]-_geom._bmin[2] ;
+        _blen   /= (real_type) +3. ;
+    
     /*--------------------------- assemble local indexing */
         iptr_type _enod[ +4] ;
         mesh_type::tria_type::tria_type::
@@ -477,22 +483,19 @@
         _flat._nvec[0] = _evec [0] ;
         _flat._nvec[1] = _evec [1] ;
         _flat._nvec[2] = _evec [2] ;
-        
-        real_type _btol = 
-        _rEPS* std::sqrt(_ebal [3]);
 
         _flat._rmin[0] = _RMIN [0] 
-                       - _btol ;
+              -  _rEPS * _blen ;
         _flat._rmin[1] = _RMIN [1] 
-                       - _btol ;
+              -  _rEPS * _blen ;
         _flat._rmin[2] = _RMIN [2] 
-                       - _btol ;
+              -  _rEPS * _blen ;
         _flat._rmax[0] = _RMAX [0] 
-                       + _btol ;
+              +  _rEPS * _blen ;
         _flat._rmax[1] = _RMAX [1] 
-                       + _btol ;
+              +  _rEPS * _blen ;
         _flat._rmax[2] = _RMAX [2] 
-                       + _btol ;
+              +  _rEPS * _blen ;
 
         mesh::keep_all_3d <
             real_type ,
@@ -570,18 +573,33 @@
                    &_iter->pval( 0), 
                     _safe, _RTOL) )
             {
+    /*--------------------------- prune near-degeneracies */
+                if(!_safe)
+                {
+                typename mesh_type::
+                         tria_type::
+                         tria_pred::
+                template circ_pred<
+                typename mesh_type::tria_type> 
+                    _pred (&_iter-> pval( 0));
+          
+                bool_type _okay = false ;
+                for (auto _tpos =_tset.head();
+                !_okay && _tpos!=_tset.tend();
+                        ++_tpos )
+                {
+                    _okay = _okay ||
+                _pred(_mesh._tria, *_tpos, 0);
+                }
+
+                if(!_okay)     continue ;
+                }
+
     /*--------------------------- dist to face circumball */
                 real_type _dsqr = 
                 geometry::lensqr_3d(
-                    _ebal , 
+                    _ebal, 
                    &_iter->pval( 0)) ;  
-
-                real_type _dtol = 
-               (real_type) 1./3. * _ebal[3] ;
-
-                if(!_safe && _dsqr > _dtol)
-    /*--------------------------- prune near-degeneracies */
-                    continue;
 
     /*--------------------------- keep furthest from ball */
                 if (_dsqr > _dmax )
@@ -684,6 +702,12 @@
             std::pow(std::numeric_limits
                 <real_type>::epsilon(),+.67);
 
+        real_type _blen = 
+        _geom._bmax[0]-_geom._bmin[0]
+      + _geom._bmax[1]-_geom._bmin[1]
+      + _geom._bmax[2]-_geom._bmin[2] ;
+        _blen   /= (real_type) +3. ;
+
     /*--------------------------- init. output balls = 0. */
         _fbal[0] = (real_type) +0. ;
         _fbal[1] = (real_type) +0. ;
@@ -708,6 +732,12 @@
             return ( false ) ;
 
     /*--------------------------- assemble local indexing */
+        if (_topp < _tadj)
+        {        
+        std::swap(_tadj, _topp) ;
+        std::swap(_fadj, _fopp) ;
+        }
+
         iptr_type _fnod[ +4] ;
         mesh_type::tria_type::tria_type::
         face_node(_fnod, _fadj, 3, 2);
@@ -732,86 +762,108 @@
         _onod[3] =_mesh._tria.
          tria(_topp)->node(_onod[ 3]);
 
-    /*------------------------------ bipolar voronoi edge */
-        if (_topp < _tadj)
-            std::swap(_tadj, _topp);
+    /*--------------------------- calc. faceted face-ball */
+        iptr_type  _FNOD[ 3] ;
+        _FNOD[0] = _fnod[ 0] ;
+        _FNOD[1] = _fnod[ 1] ;
+        _FNOD[2] = _fnod[ 2] ;
+
+        algorithms::isort(
+            &_FNOD[0], &_FNOD[3] , 
+                std::less<iptr_type>()) ;
+
+        geometry::
+            circ_ball_3d( _fbal, 
+            &_mesh._tria.
+        node(_FNOD[0])->pval(0),
+            &_mesh._tria.
+        node(_FNOD[1])->pval(0),
+            &_mesh._tria.
+        node(_FNOD[2])->pval(0)) ;
+
+    /*--------------------------- est. dual voronoi patch */
+        line_type _line;
+        _line._ipos[0] =  
+             _mesh._tria.
+        tria(_tadj   )->circ(0) ;
+        _line._ipos[1] =  
+             _mesh._tria.
+        tria(_tadj   )->circ(1) ;
+        _line._ipos[2] =  
+             _mesh._tria.
+        tria(_tadj   )->circ(2) ;
         
-        real_type  _ibal[ 3] = {
-        _mesh.
-        _tria.tria(_tadj)->circ( 0),
-        _mesh.
-        _tria.tria(_tadj)->circ( 1),
-        _mesh.
-        _tria.tria(_tadj)->circ( 2)
-            } ;
-        
-        real_type  _jbal[ 3] = {
-        _mesh.
-        _tria.tria(_topp)->circ( 0),
-        _mesh.
-        _tria.tria(_topp)->circ( 1),
-        _mesh.
-        _tria.tria(_topp)->circ( 2)
-            } ;
- 
-    /*--------------------------- calc. intersection halo */
-        geometry::circ_ball_3d(_fbal , 
+        _line._jpos[0] =  
+             _mesh._tria.
+        tria(_topp   )->circ(0) ;
+        _line._jpos[1] =  
+             _mesh._tria.
+        tria(_topp   )->circ(1) ;
+        _line._jpos[2] =  
+             _mesh._tria.
+        tria(_topp   )->circ(2) ;
+
+        real_type _nvec[4];
+        geometry::tria_norm_3d( 
             &_mesh._tria.
-        node(_fnod[0])->pval(0),
+        node(_fnod[0])->pval(0) ,
             &_mesh._tria.
-        node(_fnod[1])->pval(0),
+        node(_fnod[1])->pval(0) ,
             &_mesh._tria.
-        node(_fnod[2])->pval(0)) ;
-        
-        real_type  _nvec[3];
-        geometry::tria_norm_3d ( 
-            &_mesh._tria.
-        node(_fnod[0])->pval(0),
-            &_mesh._tria.
-        node(_fnod[1])->pval(0),
-            &_mesh._tria.
-        node(_fnod[2])->pval(0),
-                   _nvec)  ;
+        node(_fnod[2])->pval(0) ,
+             _nvec) ;
+          
+        _nvec[3] = 
+        geometry::length_3d(_nvec) ;
+        _nvec[0]/= _nvec[3] ;
+        _nvec[1]/= _nvec[3] ;
+        _nvec[2]/= _nvec[3] ;
 
         real_type  _ival, _jval;
-        geometry::proj_line_3d(_ibal ,
+        geometry::proj_line_3d(
+            _line. _ipos,
             _fbal, _nvec, _ival) ;
         
-        geometry::proj_line_3d(_jbal ,
+        geometry::proj_line_3d(
+            _line. _jpos,
             _fbal, _nvec, _jval) ;
 
         real_type _diff ;
         _diff =   _jval - _ival;
-        _ival-=   _rEPS * _diff;
-        
-        _ibal[0] = 
+
+        if (_diff > (real_type)0.)
+        {
+            _diff = 
+        std::max( _diff, +_blen) ;
+        }
+        else
+        {
+            _diff = 
+        std::min( _diff, -_blen) ;
+        }
+
+        _ival -=  _rEPS * _diff;
+      
+        _line._ipos[0] = 
         _fbal[0] + _ival*_nvec [0] ;
-        _ibal[1] = 
+        _line._ipos[1] = 
         _fbal[1] + _ival*_nvec [1] ;
-        _ibal[2] = 
+        _line._ipos[2] = 
         _fbal[2] + _ival*_nvec [2] ;
         
-        _jval+=   _rEPS * _diff;
-        
-        _jbal[0] = 
+        _jval +=  _rEPS * _diff;
+      
+        _line._jpos[0] = 
         _fbal[0] + _jval*_nvec [0] ;
-        _jbal[1] = 
+        _line._jpos[1] = 
         _fbal[1] + _jval*_nvec [1] ;
-        _jbal[2] = 
+        _line._jpos[2] = 
         _fbal[2] + _jval*_nvec [2] ;
-        
-    /*--------------------------- find loc. intersections */
-        line_type _line   ;
-        _line._ipos[0] = _ibal [0] ;
-        _line._ipos[1] = _ibal [1] ;
-        _line._ipos[2] = _ibal [2] ;
-        _line._jpos[0] = _jbal [0] ;
-        _line._jpos[1] = _jbal [1] ;
-        _line._jpos[2] = _jbal [2] ;
 
+    /*--------------------------- calc. intersection halo */
         mesh::keep_all_3d <
             real_type ,
-            iptr_type >  _pred ;
+            iptr_type > _pred ;
 
         if(!_geom.intersect (
             _line, _pred) )
@@ -860,18 +912,28 @@
                    &_iter->pval( 0), 
                     _safe, _RTOL) )
             {
+    /*--------------------------- prune near-degeneracies */
+                if (!_safe)
+                {                
+                typename mesh_type::
+                         tria_type::
+                         tria_pred::
+                template circ_pred<
+                typename mesh_type::tria_type> 
+                    _pred (&_iter-> pval( 0));
+          
+                bool_type _okay =
+                _pred(_mesh._tria, _tadj, 0)||
+                _pred(_mesh._tria, _topp, 0) ;
+
+                if (!_okay) continue ;
+                }
+
     /*--------------------------- dist to face circumball */
                 real_type _dsqr = 
                 geometry::lensqr_3d(
-                    _fbal , 
+                    _fbal, 
                    &_iter->pval( 0)) ;  
-
-                real_type _dtol = 
-               (real_type) 1./3. * _fbal[3] ;
-
-                if(!_safe && _dsqr > _dtol)
-    /*--------------------------- prune near-degeneracies */
-                    continue ;
 
     /*--------------------------- keep furthest from ball */
                 if (_dsqr > _dmax )
@@ -879,7 +941,7 @@
                     _dmax = _dsqr ;
                     _imax = _iter ;
                 }
-                if (_dsqr < _dful &&
+                if (_dsqr > _dful &&
                     _safe )
                 {
                     _dful = _dsqr ;
@@ -887,7 +949,7 @@
                 }
             }
         }
-
+        
         if (_iful !=
                 _pred._list.tend() )
         {

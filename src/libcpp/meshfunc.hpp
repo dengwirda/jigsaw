@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 18 April, 2019
+ * Last updated: 30 June, 2019
  *
  * Copyright 2013-2019
  * Darren Engwirda
@@ -49,12 +49,14 @@
 #   include "containers.hpp"
 #   include "algorithms.hpp"
 
+#   include "mathutil.hpp"
 #   include "geometry.hpp"
 
 #   include "aabbtree.hpp"
 #   include "meshtype.hpp"
 
 #   include "mesh_func/hfun_base_k.hpp"
+#   include "mesh_func/hfun_clip_k.hpp"
 
 #   include "mesh_func/hfun_constant_value_k.hpp"
 
@@ -67,6 +69,7 @@
 #   include "mesh_func/hfun_grid_euclidean_3.hpp"
 
 #   include "mesh_func/hfun_grid_ellipsoid_3.hpp"
+
 
 #   endif//__MESHFUNC__
 

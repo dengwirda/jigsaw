@@ -31,7 +31,7 @@
      *
      --------------------------------------------------------
      *
-     * Last updated: 24 January, 2019
+     * Last updated: 10 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -249,6 +249,11 @@
             std::pow(std::numeric_limits
                 <real_type>::epsilon(),+.67);
 
+        real_type _blen = 
+        _geom._bmax[0]-_geom._bmin[0]
+      + _geom._bmax[1]-_geom._bmin[1] ;
+        _blen   /= (real_type) +2. ;
+
     /*--------------------------- init. output balls = 0. */
         _ebal[0] = (real_type) +0. ;
         _ebal[1] = (real_type) +0. ;
@@ -271,6 +276,12 @@
             return ( false ) ;
     
     /*--------------------------- assemble local indexing */
+        if (_topp < _tadj)
+        {        
+        std::swap(_tadj, _topp) ;
+        std::swap(_eadj, _eopp) ;
+        }
+    
         iptr_type _enod[ +3] ;
         mesh_type::tria_type::tria_type::
         face_node(_enod, _eadj, 2, 1);
@@ -290,73 +301,93 @@
          tria(_topp)->node(_onod[ 1]);
         _onod[2] =_mesh._tria.
          tria(_topp)->node(_onod[ 2]);
+
+    /*--------------------------- calc. faceted face-ball */
+        iptr_type  _ENOD[ 2] ;
+        _ENOD[0] = _enod[ 0] ;
+        _ENOD[1] = _enod[ 1] ;
+
+        algorithms::isort(
+            &_ENOD[0], &_ENOD[2] , 
+                std::less<iptr_type>()) ;
+
+        geometry::
+            circ_ball_3d( _ebal, 
+            &_mesh._tria.
+        node(_ENOD[0])->pval(0),
+            &_mesh._tria.
+        node(_ENOD[1])->pval(0)) ;
     
-    /*------------------------------ bipolar voronoi edge */
-        if (_topp < _tadj)
-            std::swap(_tadj, _topp);
+    /*--------------------------- est. dual voronoi patch */
+        line_type _line;
+        _line._ipos[0] =  
+             _mesh._tria.
+        tria(_tadj   )->circ(0) ;
+        _line._ipos[1] =  
+             _mesh._tria.
+        tria(_tadj   )->circ(1) ;
         
-        real_type  _ibal[ 2] = {
-        _mesh.
-        _tria.tria(_tadj)->circ( 0),
-        _mesh.
-        _tria.tria(_tadj)->circ( 1)
-            } ;
-        
-        real_type  _jbal[ 2] = {
-        _mesh.
-        _tria.tria(_topp)->circ( 0),
-        _mesh.
-        _tria.tria(_topp)->circ( 1)
-            } ;
- 
-    /*--------------------------- calc. intersection halo */
-        geometry::circ_ball_2d(_ebal , 
+        _line._jpos[0] =  
+             _mesh._tria.
+        tria(_topp   )->circ(0) ;
+        _line._jpos[1] =  
+             _mesh._tria.
+        tria(_topp   )->circ(1) ;
+
+        real_type _nvec[3];
+        geometry::line_norm_2d( 
             &_mesh._tria.
-        node(_enod[0])->pval(0),
+        node(_enod[0])->pval(0) ,
             &_mesh._tria.
-        node(_enod[1])->pval(0)) ;
-        
-        real_type  _nvec[2];
-        geometry::line_norm_2d ( 
-            &_mesh._tria.
-        node(_enod[0])->pval(0),
-            &_mesh._tria.
-        node(_enod[1])->pval(0),
-                   _nvec)  ;
+        node(_enod[1])->pval(0) ,
+             _nvec) ;
+          
+        _nvec[2] = 
+        geometry::length_2d(_nvec) ;
+        _nvec[0]/= _nvec[2] ;
+        _nvec[1]/= _nvec[2] ;
 
         real_type  _ival, _jval;
-        geometry::proj_line_2d(_ibal ,
+        geometry::proj_line_2d(
+            _line. _ipos,
             _ebal, _nvec, _ival) ;
         
-        geometry::proj_line_2d(_jbal ,
+        geometry::proj_line_2d(
+            _line. _jpos,
             _ebal, _nvec, _jval) ;
 
         real_type _diff ;
         _diff =   _jval - _ival;
-        _ival-=   _rEPS * _diff;
-        
-        _ibal[0] = 
+
+        if (_diff > (real_type)0.)
+        {
+            _diff = 
+        std::max( _diff, +_blen) ;
+        }
+        else
+        {
+            _diff = 
+        std::min( _diff, -_blen) ;
+        }
+
+        _ival -=  _rEPS * _diff;
+      
+        _line._ipos[0] = 
         _ebal[0] + _ival*_nvec [0] ;
-        _ibal[1] = 
+        _line._ipos[1] = 
         _ebal[1] + _ival*_nvec [1] ;
         
-        _jval+=   _rEPS * _diff;
-        
-        _jbal[0] = 
+        _jval +=  _rEPS * _diff;
+      
+        _line._jpos[0] = 
         _ebal[0] + _jval*_nvec [0] ;
-        _jbal[1] = 
+        _line._jpos[1] = 
         _ebal[1] + _jval*_nvec [1] ;
         
     /*--------------------------- find loc. intersections */
-        line_type _line   ;
-        _line._ipos[0] = _ibal [0] ;
-        _line._ipos[1] = _ibal [1] ;
-        _line._jpos[0] = _jbal [0] ;
-        _line._jpos[1] = _jbal [1] ;
-        
         mesh::keep_all_2d <
             real_type ,
-            iptr_type >  _pred ;
+            iptr_type > _pred ;
 
         if(!_geom.intersect (
             _line, _pred) )
@@ -378,19 +409,19 @@
         _hset[3][1] = _enod[1] ;
         
     /*--------------------------- test loc. intersections */
-        auto _imin = _pred._list.tend() ;
+        auto _iful = _pred._list.tend() ;
         auto _imax = _pred._list.tend() ;
-
-        real_type _RTOL  = _rEPS*_ebal[2] ;
+        
+        real_type _RTOL = _rEPS*_ebal[2];
 
         real_type _dmax  =
             -std::numeric_limits
                 <real_type>::infinity() ;
-        real_type _dmin  =
-            +std::numeric_limits
+        real_type _dful  =
+            -std::numeric_limits
                 <real_type>::infinity() ;
         
-        bool_type _safe, _have  = false ;
+        bool_type _safe  ;
         for (auto _iter  = 
                   _pred._list.head() ;
                   _iter != 
@@ -401,36 +432,73 @@
                    &_iter->pval( 0), 
                     _safe, _RTOL) )
             {
+    /*--------------------------- prune near-degeneracies */
+                if (!_safe)
+                {                
+                typename mesh_type::
+                         tria_type::
+                         tria_pred::
+                template circ_pred<
+                typename mesh_type::tria_type> 
+                    _pred (&_iter-> pval( 0));
+          
+                bool_type _okay =
+                _pred(_mesh._tria, _tadj, 0)||
+                _pred(_mesh._tria, _topp, 0) ;
+
+                if (!_okay) continue ;   
+                }
+
     /*--------------------------- dist to face circumball */
                 real_type _dsqr = 
                 geometry::lensqr_2d(
-                    _ebal , 
+                    _ebal, 
                    &_iter->pval( 0)) ;  
-
-                real_type _dtol = 
-               (real_type) 1./3. * _ebal[2] ;
-
-                if(!_safe && _dsqr > _dtol)
-    /*--------------------------- prune near-degeneracies */
-                    continue ;
 
     /*--------------------------- keep furthest from ball */
                 if (_dsqr > _dmax )
                 {
-                    _have =  true ;
                     _dmax = _dsqr ;
                     _imax = _iter ;
                 }
-                if (_dsqr < _dmin )
+                if (_dsqr > _dful &&
+                    _safe )
                 {
-                    _have =  true ;
-                    _dmin = _dsqr ;
-                    _imin = _iter ;
+                    _dful = _dsqr ;
+                    _iful = _iter ;
                 }
             }
         }
-
-        if ( _have )
+        
+        if (_iful !=
+                _pred._list.tend() )
+        {
+    /*--------------------------- keep best intersections */
+        _sbal[ 0] = _iful->pval(0);
+        _sbal[ 1] = _iful->pval(1);
+            
+        _part     = _iful->itag ();
+        _feat     = _iful->feat ();
+        _topo     = _iful->topo ();
+        
+    /*--------------------------- eval. surf. ball radius */
+        _sbal[ 2]+= 
+        geometry::lensqr_2d(_sbal , 
+       &_mesh._tria.
+            node(_enod[0])->pval(0)) ;
+        _sbal[ 2]+= 
+        geometry::lensqr_2d(_sbal , 
+       &_mesh._tria.
+            node(_enod[1])->pval(0)) ;
+             
+        _sbal[ 2]/= (real_type) +2.;   
+    
+    /*--------------------------- return restricted state */
+        return (  true ) ;
+        }
+        else
+        if (_imax !=
+                _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _imax->pval(0);

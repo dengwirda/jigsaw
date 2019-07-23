@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 June, 2019
+     * Last updated: 28 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -487,6 +487,41 @@
                 _ival< this->_nval; ++_ival)
             {
                 this->_jmsh->_value.
+            _data[_ipos*(_ival+1)] = _vdat[_ival];
+            }
+            
+            }
+            else
+            {
+                this->_errv =  __invalid_argument;
+            }
+        }
+
+    /*-------------------------------- open SLOPE section */
+        __normal_call void_type open_slope (
+            std:: size_t  _nrow,
+            std:: size_t  _nval
+            ) 
+        { 
+            this->_nval = _nval;
+
+            jigsaw_alloc_reals (
+                &this->
+            _jmsh->_slope , _nrow * _nval ) ;
+        }
+    /*-------------------------------- push SLOPE section */
+        __normal_call void_type push_slope (
+            std:: size_t  _ipos,
+            double      * _vdat
+            ) 
+        { 
+            if (_ipos < this->_jmsh->_slope._size)
+            {
+            
+            for (auto _ival = +0u ; 
+                _ival< this->_nval; ++_ival)
+            {
+                this->_jmsh->_slope.
             _data[_ipos*(_ival+1)] = _vdat[_ival];
             }
             

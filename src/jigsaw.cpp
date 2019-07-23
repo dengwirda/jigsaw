@@ -3,17 +3,20 @@
     // for cmd-jigsaw:
     //
     // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto 
-    // -D NDEBUG -D __cmd_jigsaw jigsaw.cpp -o ../bin/jigsaw
+    // -DNDEBUG -D__cmd_jigsaw jigsaw.cpp -o../bin/jigsaw
     //
     // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto 
-    // -D NDEBUG -D __cmd_tripod jigsaw.cpp -o ../bin/tripod
+    // -DNDEBUG -D__cmd_tripod jigsaw.cpp -o../bin/tripod
+    //
+    // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto 
+    // -DNDEBUG -D__cmd_marche jigsaw.cpp -o../bin/marche
     //
     //
     // for lib-jigsaw:
     //
     // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto 
-    // -fPIC -D NDEBUG -D __lib_jigsaw jigsaw.cpp -shared 
-    // -o ../lib/libjigsaw.so
+    // -fPIC -DNDEBUG -D__lib_jigsaw jigsaw.cpp -shared 
+    // -o../lib/libjigsaw.so
     //
 
     /*
@@ -31,8 +34,8 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * JIGSAW release 0.9.10.x
-     * Last updated: 18 April, 2019
+     * JIGSAW release 0.9.12.x
+     * Last updated: 14 July, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -198,7 +201,7 @@
 
 #   endif
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.10"
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.12"
 
     /*---------------------------------- for i/o on files */
    
@@ -391,15 +394,17 @@
             )
         {
             this->_euclidean_mesh_2d.
-                _tria.make_ptrs() ;
+                _tria.make_link() ;
             this->_euclidean_mesh_2d.
                 init_geom(_jcfg._rdel_opts) ;
                 
             this->_euclidean_mesh_3d.
-                _tria.make_ptrs() ;
+                _tria.make_link() ;
             this->_euclidean_mesh_3d.
                 init_geom(_jcfg._rdel_opts) ;
                 
+            this->_ellipsoid_mesh_3d.
+                _mesh.make_link() ;
             this->_ellipsoid_mesh_3d.
                 init_geom(_jcfg._rdel_opts) ;
         }
@@ -467,14 +472,25 @@
     /*------------------------- helper: init. everything! */
     
         __normal_call void_type init_hfun (
-            jcfg_data &_jcfg
+            jcfg_data &_jcfg,
+            bool_type  _link = false
             )
         {
             __unreferenced(_jcfg) ;
         
+            if (_link)
+            {        
+            this->
+           _euclidean_mesh_2d._mesh.make_link () ;
+            this->
+           _euclidean_mesh_3d._mesh.make_link () ;
+            this->
+           _ellipsoid_mesh_3d._mesh.make_link () ;
+            }
+
             this->
            _constant_value_kd.init() ;
-        
+
             this->
            _euclidean_mesh_2d.init() ;
             this->
@@ -488,6 +504,32 @@
            _euclidean_grid_3d.init() ;
             this->
            _ellipsoid_grid_3d.init() ;
+        }
+
+    /*------------------------- helper: limit everything! */
+    
+        __normal_call void_type clip_hfun (
+            jcfg_data &_jcfg
+            )
+        {
+            __unreferenced(_jcfg) ;
+        
+            this->
+           _constant_value_kd.clip() ;
+        
+            this->
+           _euclidean_mesh_2d.clip() ;
+            this->
+           _euclidean_mesh_3d.clip() ;
+            this->
+           _ellipsoid_mesh_3d.clip() ;
+            
+            this->
+           _euclidean_grid_2d.clip() ;
+            this->
+           _euclidean_grid_3d.clip() ;
+            this->
+           _ellipsoid_grid_3d.clip() ;
         }
         
         } ;
@@ -563,7 +605,9 @@
         {
         public  :
     /*-------------------------- a "real" log-file writer */
-            std::ofstream    _file ;   
+            std::ofstream   _file ;  
+
+            iptr_type  _verbosity ; 
         
         public  :
         
@@ -584,6 +628,9 @@
                 _jcfg._file_name + ".log",
         std::ofstream::out|std::ofstream::trunc) ;
             }
+        
+            this->_verbosity = 
+                _jcfg._verbosity ;
         }
         
         __inline_call ~jlog_text (
@@ -690,17 +737,6 @@
 
     /*
     --------------------------------------------------------
-     * CALC-MESH: call mesh generator.
-    --------------------------------------------------------
-     */
-    
-    #   include "run_mesh.hpp"
-    #   include "run_iter.hpp"
-    #   include "run_tria.hpp"
-
-
-    /*
-    --------------------------------------------------------
      * TIME-SPAN: elapsed sec. between markers.
     --------------------------------------------------------
      */
@@ -758,7 +794,7 @@
      * Jumping-off points for CMD + LIB JIGSAW!
     --------------------------------------------------------
      */
- 
+
     #   include "jigsaw.hpp"
     #   include "tripod.hpp"
     

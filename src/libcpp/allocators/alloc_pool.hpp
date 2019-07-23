@@ -229,7 +229,7 @@
         return ( _size ) ;
     }
 
-    __inline_call size_type nslab (
+    __normal_call size_type nslab (
         ) const
     {
     /*------------------------------- traverse block list */
@@ -241,6 +241,21 @@
             _size +=  +1 ;
         }
         return ( _size ) ;
+    }
+
+    __inline_call size_type count (
+        ) const
+    {
+    /*------------------------------- total items alloc'd */
+        return nslab()*this->_slab_size ;
+    }
+
+    __inline_call size_type bytes (
+        ) const
+    {
+    /*------------------------------- total bytes alloc'd */
+        return nslab()*this->_slab_size *
+                       this->_item_size ;
     }
 
     /*

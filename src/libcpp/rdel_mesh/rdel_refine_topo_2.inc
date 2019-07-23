@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 February, 2019
+     * Last updated: 03 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -64,9 +64,9 @@
         typename mesh_type::edge_pred(), 
             .8, _mesh._eset.get_alloc()) ;
         
-        _edup._lptr.set_count (
+        _edup.set_slots (
             _tset.count() * +3 , 
-        containers::loose_alloc, nullptr);
+                containers::tight_alloc) ;
         
         iptr_type _feat = 
         _mesh._tria.node(_npos)->feat() ;

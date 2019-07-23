@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2019
+     * Last updated: 27 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -71,27 +71,14 @@
     typedef typename  hfun_base_kd  <
             iptr_type , 
             real_type >::hint_type  hint_type ;
+
+    typedef containers::array   <
+            real_type , 
+            allocator >             real_list ; 
             
 
-    class node_type: public tria_complex_node_3<I,R>
-        {
-    /*------------------------------------ loc. node type */
-        public  :       
-        real_type                     _hval ;
-        
-        public  :
-    /*------------------------------------ "write" access */
-        __inline_call real_type&       hval (
-            )
-        {   return  this->_hval ;
-        }
-    /*------------------------------------ "const" access */
-        __inline_call real_type const& hval (
-            ) const
-        {   return  this->_hval ;
-        }
-        
-        } ;
+    typedef tria_complex_node_3<I, R>
+                                    node_type ;
         
     typedef tria_complex_edge_2<I>  edge_type ;
     typedef tria_complex_tria_3<I>  tri3_type ;
@@ -106,7 +93,7 @@
                                     tree_node ;
 
     typedef geom_tree::aabb_item_rect_k <
-                real_type,
+                    float,
                 iptr_type,
                 + 3             >   tree_item ;
                 
@@ -117,16 +104,16 @@
                 allocator       >   tree_type ; 
                 
     typedef geom_tree::aabb_pred_node_3 <
-                real_type, 
+                    float, 
                 iptr_type       >   tree_pred ;
               
     public  :              
     
     /*--------------- (x/a)**2 + (y/b)**2 + (z/c)**2 = 1. */
         
-    real_type                      _radA ;
-    real_type                      _radB ;
-    real_type                      _radC ;
+    real_type                      _radA = 1. ;
+    real_type                      _radB = 1. ;
+    real_type                      _radC = 1. ;
 
     containers::
         fixed_array<real_type,3>   _bmin ;
@@ -136,7 +123,52 @@
     mesh_type                      _mesh ;
     tree_type                      _tree ;
 
+    containers::array<
+        real_type, allocator >     _hval ;
+
+    containers::array<
+        real_type, allocator >     _dhdx ;
+
     public  :
+
+    __inline_call void_type toR3 (
+      __const_ptr(real_type) _apos ,
+      __write_ptr(real_type) _ppos        
+        ) const
+    {
+    /*------------ helper: convert from S^2 to R^3 coord. */
+        _ppos[0] = this->_radA *
+            std::cos( _apos[0] ) * 
+            std::cos( _apos[1] ) ;
+
+        _ppos[1] = this->_radB *
+            std::sin( _apos[0] ) * 
+            std::cos( _apos[1] ) ;
+        
+        _ppos[2] = this->_radC *
+            std::sin( _apos[1] ) ;
+    }
+
+    __inline_call void_type toS2 (
+      __const_ptr(real_type) _ppos ,
+      __write_ptr(real_type) _apos        
+        ) const
+    {
+    /*------------ helper: convert from R^3 to S^2 coord. */
+        real_type _xmul = 
+            _ppos[0] * this->_radB ;
+        real_type _ymul = 
+            _ppos[1] * this->_radA ;
+        real_type _zrat = 
+            _ppos[2] / this->_radC ;
+
+        _zrat = std::min(+1.,_zrat);
+        _zrat = std::max(-1.,_zrat);
+
+        _apos[0]= std::atan2(_ymul, 
+                             _xmul);
+        _apos[1]= std::asin (_zrat);
+    }
 
     /*
     --------------------------------------------------------
@@ -180,21 +212,17 @@
         {
             if (_iter->mark() >= +0)
             {
-            real_type _alon, _alat ;
-            _alon = _iter->pval(0) ;
-            _alat = _iter->pval(1) ;
-            
-            _iter->pval(0) = 
-                this->   _radA*
-                std::cos(_alon) * 
-                std::cos(_alat) ;
-            _iter->pval(1) = 
-                this->   _radB*
-                std::sin(_alon) * 
-                std::cos(_alat) ;
-            _iter->pval(2) = 
-                this->   _radC*
-                std::sin(_alat) ;
+                real_type _apos[2];
+                real_type _ppos[3];
+
+                _apos[0] = _iter->pval(0);
+                _apos[1] = _iter->pval(1);
+
+                toR3(_apos, _ppos);
+
+                _iter->pval(0) = _ppos[0];
+                _iter->pval(1) = _ppos[1];
+                _iter->pval(2) = _ppos[2];
             }
         }
 
@@ -231,8 +259,8 @@
   
         real_type static const _RTOL = 
             std::pow (
-        std::numeric_limits<real_type>
-            ::epsilon(),(real_type).8) ;
+            std::numeric_limits<float>
+            ::epsilon(),(real_type).9) ;
             
         iptr_type static
         constexpr _NBOX=(iptr_type)+4  ;
@@ -256,6 +284,180 @@
                   _NBOX , tria_pred()) ;
     }
     
+    /*
+    --------------------------------------------------------
+     * CLIP-HFUN: impose |dh/dx| limits.
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type clip (
+        )
+    {
+        class  less_than
+        {
+    /*-------------------- "LESS-THAN" operator for queue */
+        public  :
+            typename            
+            real_list::_write_it _hptr;
+ 
+        public  :
+        __inline_call less_than  (
+            typename
+            real_list::_write_it _hsrc
+            ) : _hptr(_hsrc) {}
+
+        __inline_call 
+            bool_type operator() (
+            iptr_type _ipos,
+            iptr_type _jpos
+            )
+        {   return *(this->_hptr+_ipos) <
+                   *(this->_hptr+_jpos) ;
+        }
+        } ;
+
+        typedef typename
+            allocator:: size_type   uint_type ;
+
+        uint_type static constexpr 
+            _null = 
+        std::numeric_limits<uint_type>::max() ;
+
+        containers::prioritymap <
+            iptr_type ,
+            less_than ,
+            allocator > 
+        _sort((less_than(this->_hval.head())));
+
+        containers:: array      <
+            typename
+            allocator:: size_type,
+            allocator >     _keys;
+
+        containers:: array      <
+            iptr_type ,
+            allocator >     _tset;
+        
+    /*-------------------- push nodes onto priority queue */
+        _keys.set_count (
+            _mesh._set1.count(),
+        containers::tight_alloc, _null) ;
+
+        iptr_type _inum  = +0;
+        for (auto _iter  = 
+             this->_mesh._set1.head() ;
+                  _iter != 
+             this->_mesh._set1.tend() ;
+                ++_iter , ++_inum)
+        {
+            if (_iter->mark() >= +0 )
+            {
+                _keys[_inum] = 
+                    _sort.push(_inum) ;
+            }
+        }
+
+    /*-------------------- compute h(x) via fast-marching */
+        for ( ; !_sort.empty() ; )
+        {
+            iptr_type _base ;
+            _sort._pop_root(_base) ;
+
+            _keys[_base] = _null ;
+
+            _tset.set_count( +0) ;
+             this->
+            _mesh.node_tri3(_base, _tset);
+
+            for (auto _next  = _tset.head();
+                      _next != _tset.tend();
+                    ++_next )
+            {
+                 auto _inod = this->
+                _mesh._set3[*_next].node(0);
+                 auto _jnod = this->
+                _mesh._set3[*_next].node(1);
+                 auto _knod = this->
+                _mesh._set3[*_next].node(2);
+
+    /*-------------------- skip any cells with null nodes */
+                if (_keys[_inod] == _null &&
+                    _inod != _base) continue ;
+                if (_keys[_jnod] == _null &&
+                    _jnod != _base) continue ;
+                if (_keys[_knod] == _null &&
+                    _knod != _base) continue ;
+                
+                if (this->_dhdx.count() >1)
+                {
+    /*-------------------- update adj. set, g = g(x) case */
+                if (eikonal_tria_3d (
+                   &this->
+                _mesh._set1[ _inod].pval(0),
+                   &this->
+                _mesh._set1[ _jnod].pval(0),
+                   &this->
+                _mesh._set1[ _knod].pval(0),
+                    this->_hval[_inod],
+                    this->_hval[_jnod],
+                    this->_hval[_knod],
+                    this->_dhdx[_inod],
+                    this->_dhdx[_jnod],
+                    this->_dhdx[_knod]) )
+                {
+
+                if (_keys[_inod] != _null)
+                    _sort.update(
+                    _keys[_inod] ,  _inod) ;
+
+                if (_keys[_jnod] != _null)
+                    _sort.update(
+                    _keys[_jnod] ,  _jnod) ;
+
+                if (_keys[_knod] != _null)
+                    _sort.update(
+                    _keys[_knod] ,  _knod) ;
+
+                }
+                }
+                else
+                if (this->_dhdx.count()==1)
+                {
+    /*-------------------- update adj. set, const. g case */
+                if (eikonal_tria_3d (
+                   &this->
+                _mesh._set1[ _inod].pval(0),
+                   &this->
+                _mesh._set1[ _jnod].pval(0),
+                   &this->
+                _mesh._set1[ _knod].pval(0),
+                    this->_hval[_inod],
+                    this->_hval[_jnod],
+                    this->_hval[_knod],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ]) )
+                {
+
+                if (_keys[_inod] != _null)
+                    _sort.update(
+                    _keys[_inod] ,  _inod) ;
+
+                if (_keys[_jnod] != _null)
+                    _sort.update(
+                    _keys[_jnod] ,  _jnod) ;
+
+                if (_keys[_knod] != _null)
+                    _sort.update(
+                    _keys[_knod] ,  _knod) ;
+
+                }
+                }
+            }
+        }
+
+    }
+
     /*
     --------------------------------------------------------
      * FIND-TRIA: scan for nearest tria.
@@ -463,10 +665,15 @@
         )
     /*------------------------ find tria + linear interp. */
     {
-        real_type _QPOS[ 3] ;
+        real_type  _QPOS[3] ;
         _QPOS[0] = _ppos[0] ;
         _QPOS[1] = _ppos[1] ;
-        _QPOS[2] = _ppos[2] ;        
+        _QPOS[2] = _ppos[2] ;
+
+        float      _PPOS[3] ;
+        _PPOS[0] = _ppos[0] ;
+        _PPOS[1] = _ppos[1] ;
+        _PPOS[2] = _ppos[2] ;    
 
         real_type _hval = 
     +std::numeric_limits<real_type>::infinity() ;
@@ -494,7 +701,7 @@
                       _QPOS,&_mesh) ;
         
             this->
-           _tree.near(_ppos, _func) ;
+           _tree.near(_PPOS, _func) ;
         
            _hint =  _func._tpos ;
         }
@@ -526,8 +733,8 @@
                _set1[_fnod[1]].pval(0) ,
                _QPOS) ;
 
-            _hsum += _tvol * this-> 
-            _mesh._set1[_fnod[2]].hval() ;
+            _hsum += _tvol * 
+                    this->_hval[_fnod[2]] ;
             
             _vsum += _tvol ;
         }

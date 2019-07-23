@@ -43,9 +43,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 03 July, 2019
  *
- * Copyright 2013-2017
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -96,10 +96,9 @@
                 leaf_type ,
                 allocator >             root_type ;
 
-    size_type static const _sizt = sizeof(data_type) ;
-    size_type static const _sizb = (64*1024)/_sizt;    
-    size_type static const _size = (_sizb>4)?_sizb:4 ;
-
+    size_type static constexpr _pwr2 =       + 14 ;
+    size_type static constexpr _size =  +1<<_pwr2 ;    
+    
     private :
 
     root_type           _block ;
@@ -719,7 +718,7 @@
         )
     {/* _def construct object and increment count */
         size_type result = count();
-        size_type offset = count()/_size ;  
+        size_type offset = count()>>_pwr2; 
 
         if (result == alloc()) 
         inc_alloc(result + 1);
@@ -735,7 +734,7 @@
         )
     {/* copy data onto object and increment count */
         size_type result = count();
-        size_type offset = count()/_size ;
+        size_type offset = count()>>_pwr2;
 
         if (result == alloc()) 
         inc_alloc(result + 1);
@@ -752,7 +751,7 @@
         )
     {/* copy data onto object and increment count */
         size_type result = count();
-        size_type offset = count()/_size ;  
+        size_type offset = count()>>_pwr2;  
 
         if (result == alloc()) 
         inc_alloc(result + 1);
@@ -812,8 +811,8 @@
                    _pos < count() &&
         "::block_array[]: out of range!" );
         
-        return this->_block[_pos / _size]
-                           [_pos % _size] ;
+        return this->_block[_pos >>_pwr2]
+                           [_pos &(_size-1)] ;
     }
     
     __inline_call data_type const&operator[] (  // const
@@ -824,8 +823,8 @@
                    _pos < count() &&
         "::block_array[]: out of range!" );
         
-        return this->_block[_pos / _size]
-                           [_pos % _size] ;
+        return this->_block[_pos >>_pwr2]
+                           [_pos &(_size-1)] ;
     }
 
     } ;

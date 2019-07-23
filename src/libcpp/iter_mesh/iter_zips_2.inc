@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 March, 2019
+     * Last updated: 18 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -74,7 +74,7 @@
         real_type  _TLIM ,
         real_type  _DLIM ,
         real_type  _lmax 
-            = (real_type) +8.00E-01 ,
+            = (real_type) +8.25E-01 ,
         real_type  _qinc 
             = (real_type) +1.00E-02
         )
@@ -158,10 +158,39 @@
         if (_iset.count() >= +6 &&
             _jset.count() >= +6 )
             return  ;
-        if (_iset.count() +
-            _jset.count() > +12 )
+        if (_iset.count()  +
+            _jset.count() >= 12 )
             return  ;
         
+    /*--------------------------------- calc. local topo. */
+        auto _ideg = _iset.count() ;
+        auto _jdeg = _jset.count() ;
+
+        auto _ndeg = _iset.count()
+                   + _jset.count()
+                   - 4   ;
+
+        auto _ierr = std::abs(
+            (iptr_type)(+6-_ideg)) ;
+        auto _jerr = std::abs(
+            (iptr_type)(+6-_jdeg)) ;
+        
+        auto _nerr = std::abs(
+            (iptr_type)(+6-_ndeg)) ;
+        
+    //  bail-out early if the topological defect would be
+    //  made worse if the zip is done
+
+        if (_nerr   > 
+            std::max(_ierr,_jerr))
+            return  ;
+
+    //  if more regular topo. is constructed via the edge 
+    //  zip, make it easier to do so!
+
+        if (2*_nerr < _ierr+_jerr)
+        _qinc = std::min(0.,_qinc) ;
+
     /*--------------------------------- get disjoint face */
         for (auto _tria  = _iset.head();
                   _tria != _iset.tend();

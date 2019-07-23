@@ -7,15 +7,15 @@
   <img src = "../master/img/bunny-TRIA4-3.png">
 </p>
 
-`JIGSAW` is a computational library for unstructured mesh generation and tessellation; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes refinement-based algorithms for the construction of new meshes, optimisation-driven techniques for the improvement of existing grids, as well as routines to assemble (restricted) Delaunay tessellations, Voronoi complexes and Power diagrams.
+`JIGSAW` is an unstructured mesh generator and tessellation library; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes refinement-based algorithms for the construction of new meshes, optimisation-driven techniques for the improvement of existing grids, as well as routines to assemble (restricted) Delaunay tessellations, Voronoi complexes and Power diagrams. 
 
-This package provides the underlying `C++` source for `JIGSAW`; defining a basic command-line interface and a `C`-format `API`. Higher-level scripting interfaces, supporting a range of additional facilities for file I/O, mesh visualisation and post-processing operations are also available, including for <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> <a href="https://github.com/dengwirda/jigsaw-matlab">here</a> and for <a href="https://www.python.org/">`PYTHON`</a> <a href="https://github.com/dengwirda/jigsaw-python">here</a>.
+This package provides the underlying `c++` source for `JIGSAW`; defining a basic command-line interface and a `c`-format `API`. Higher-level scripting interfaces, supporting a range of additional facilities for file I/O, mesh visualisation and post-processing operations are also available, including for <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> <a href="https://github.com/dengwirda/jigsaw-matlab">here</a> and for <a href="https://www.python.org/">`PYTHON`</a> <a href="https://github.com/dengwirda/jigsaw-python">here</a>.
 
 `JIGSAW` has been compiled and tested on various `64-bit` `Linux`, `Windows` and `MacOS` based platforms. 
 
 ### `Code Structure`
 
-`JIGSAW` is written as a `header-only` library in `C++`. Both a basic command-line interface and a `C`-format `API` are defined:
+`JIGSAW` is written as a `header-only` library in `c++`. Both a basic command-line interface and a `c`-format `API` are defined:
 
       JIGSAW::
       ├── src -- JIGSAW src code
@@ -32,26 +32,25 @@ The first step is to compile and configure the code! `JIGSAW` can either be buil
 
 ### `Building from src`
 
-The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>. It has been built using various `C++11` conforming versions of the `g++`, `clang++` and `msvc` compilers.
+The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>. It has been built using various `c++11` conforming versions of the `g++`, `clang++` and `msvc` compilers.
 
 `JIGSAW` is a `header-only` package - the single main `jigsaw.cpp` file simply `#include`'s the rest of the library directly. `JIGSAW` does not currently dependent on any external packages or libraries.
 
-`JIGSAW` consists of several pieces: `(a)` a set of command-line utilities that read and write mesh data from/to file, and `(b)` a shared library, accessible via a `C`-format `API`.
+`JIGSAW` consists of several pieces: `(a)` a set of command-line utilities that read and write mesh data from/to file, and `(b)` a shared library, accessible via a `c`-format `API`.
 
 ### `Using cmake`
 
 `JIGSAW` can be built using the <a href="https://cmake.org/">`cmake`</a> utility. To build, follow the steps below:
 
-    * Ensure you have the cmake utility installed.
     * Clone or download this repository.
     * Navigate to the root `../jigsaw/` directory.
     * Make a new temporary directory BUILD.
     * cd build
-    * cmake .. -D CMAKE_BUILD_TYPE=BUILD_MODE
+    * cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
     * cmake --build . --config BUILD_MODE --target install
     * Delete the temporary BUILD directory.
 
-This process will build a series of executables and shared libraries: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, as well as `libjigsaw` - `JIGSAW`'s shared `API`. `BUILD_MODE` can be used to select different compiler configurations and should generally either be `Release` or `Debug`. 
+This process will build a series of executables and shared libraries: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, `marche` - a fast-marching solver designed to optimise mesh-spacing configurations, as well as `libjigsaw` - `JIGSAW`'s shared `API`. `BUILD_MODE` can be used to select different compiler configurations and should generally either be `Release` or `Debug`. 
 
 See `example.jig` for documentation on calling the command-line executables, and the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
@@ -92,7 +91,7 @@ The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> u
     * Navigate to the `../jigsaw/uni/` directory.
     * Make a new temporary directory BUILD.
     * cd build
-    * cmake .. -D CMAKE_BUILD_TYPE=BUILD_MODE
+    * cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
     * cmake --build . --config BUILD_MODE --target install
     * Delete the temporary BUILD directory.
 

@@ -282,7 +282,7 @@
         {
 /*------------------------------ face indexing hash-value */
         public  :
-        __inline_call iptr_type operator() (
+        __inline_call uint32_t  operator() (
             face_ptrs const&_ff
             ) const
         {

@@ -274,7 +274,7 @@
         
         if (_eptr->self()>=+1) return ;
       
-        _mesh.edge_tri3(_enod, _told) ;
+        _mesh.edge_tri3(_epos, _told) ;
     
         if (_told.count()!=+2) return ;
     

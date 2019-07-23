@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 December, 2018
+     * Last updated: 10 July, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -95,10 +95,15 @@
 
         _edat._cost =    _pmax[2] ;
 
-        _edat._imax =    _enod[0] ;
-        _edat._imax = std::max(
-            _edat._imax, _enod[1]);
+    //  scaling via node numbering seems to make slightly
+    //  better (more topologically regular) meshes
+    //  this implicitly boosts the refinement priority of 
+    //  "old" cells, which typically produces meshes with
+    //  fewer "seams"...
 
+        _edat._cost/=    _enod[0]+1  ;
+        _edat._cost/=    _enod[1]+1  ;
+        
     /*------------------------- eval. size func. at _tbal */
         real_type _esiz = (real_type)+0.;
         _esiz   += _hfun.eval(
@@ -208,7 +213,12 @@
         }
     
     /*------------------------- calc. refinement priority */
-        _tdat._mark  = +0 ;
+        iptr_type _ebnd=_emin ;
+        real_type _best;
+        _best  =  _llen[_emax];
+        _best += (real_type)1.;
+        
+        _tdat._mark =  +0 ;
 
     #   ifdef __bias_BNDS     
         for(_enum = +3; _enum-- != +0; )
@@ -234,6 +244,12 @@
                  item_type *_eptr = nullptr ;
             if (_mesh.find_edge(_edat,_eptr))
             {
+                if (_best > _llen[_enum])
+                {
+                    _ebnd = _enum ;
+                    _best = _llen[_enum];
+                }
+
                 _tdat._mark -= +1 ;
             }       
         }
@@ -246,11 +262,20 @@
     /*------------------------- calc. refinement priority */
         _tdat._cost = _erat * _tbal[2] ;
 
-        _tdat._imax =    _tnod[0] ;
-        _tdat._imax = std::max(
-            _tdat._imax, _tnod[1]);
-        _tdat._imax = std::max(
-            _tdat._imax, _tnod[2]);
+    //  scaling via node numbering seems to make slightly
+    //  better (more topologically regular) meshes
+    //  this implicitly boosts the refinement priority of 
+    //  "old" cells, which typically produces meshes with
+    //  fewer "seams"...
+
+        iptr_type  _enod[ +3];
+        mesh_type::tria_type::tria_type::
+        face_node(_enod, _ebnd, 2, 1);
+        _enod[ +0] = _tnod[_enod[+0]];
+        _enod[ +1] = _tnod[_enod[+1]];
+
+        _tdat._cost/=     _enod[0] + 1 ;
+        _tdat._cost/=     _enod[1] + 1 ;
 
     /*------------------------- refinement classification */
         if (_erat >= _args.rad2() *

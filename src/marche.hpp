@@ -11,10 +11,10 @@
      * \_8"       Y8""8D                                
      *
     --------------------------------------------------------
-     * MARCHE: "fast-marching" eikonal eqn. solver.
+     * MARCHE: "fast-marching" eikonal equation solver.
     --------------------------------------------------------
      *
-     * Last updated: 22 January, 2019
+     * Last updated: 28 June, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -51,15 +51,9 @@
     --------------------------------------------------------
      */
      
-    template <
-        typename  jlog_data
-             >
-    __normal_call void_type marche_banner (
-        jlog_data &_jlog
-        )
-    {
-    /*-- NB: silliness re. escape sequences */
-        _jlog.push (
+    namespace MARCHE {
+
+    std::string asciibanner = 
     " \n"
     "#------------------------------------------------------------\n"
     "#\n"
@@ -72,13 +66,13 @@
     "# \\_8\"       Y8\"\"8D                             \n"
     "#\n"
     "#------------------------------------------------------------\n"
-    "# MARCHE: \"fast-marching\" eikonal eqn. solver.  \n"
+    "# MARCHE: \"fast-marching\" eikonal equation solver.  \n"
     "#------------------------------------------------------------\n"
     " \n"
-    "  " __JGSWVSTR "\n\n"
-        ) ;
-    }
+    "  " __JGSWVSTR "\n\n"  ;
     
+    }
+
 #   ifdef __lib_jigsaw
 
 #   include "liblib/init_jig_t.hpp"
@@ -120,8 +114,9 @@
         {
             _jcfg._verbosity = _jjig->_verbosity ;
         }
-        jlog_null _jlog(_jcfg) ;
-        marche_banner  (_jlog) ;
+         jlog_null _jlog(_jcfg) ;
+        _jlog.push(MARCHE::
+                   asciibanner) ;
         
     /*--------------------------------- parse *.JCFG data */
         if (_jjig != nullptr )
@@ -161,6 +156,114 @@
 #           endif//__use_timers
         }
      
+        if (_fmsh != nullptr )
+        {
+    /*--------------------------------- parse *.HFUN data */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Reading FFUN data...\n\n" ) ;
+        
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            if ((_retv = copy_hfun (
+                 _jcfg, _jlog , 
+                 _ffun,*_fmsh)) != __no_error)
+            {
+                return  _retv ;
+            }
+            
+            if ((_retv = test_hfun (
+                 _jcfg, 
+                 _jlog, _ffun)) != __no_error)
+            {
+                return  _retv ;
+            }
+            
+#           ifdef  __use_timers             
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+        
+        if (_fmsh != nullptr )
+        {
+    /*--------------------------------- assemble size-fun */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Forming FFUN data...\n\n" ) ;
+        
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            _ffun.init_hfun(_jcfg, true) ;
+
+            if (_jcfg._verbosity > 0 )
+            {
+
+            _jlog.push (
+                "  FFUN data summary...\n\n" ) ;
+            
+            if ((_retv = echo_hfun (
+                 _jcfg, 
+                 _jlog, _ffun)) != __no_error)
+            {
+                return  _retv ;
+            } 
+                       
+            }
+
+#           ifdef  __use_timers
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+
+        if (_fmsh != nullptr )
+        {
+    /*--------------------------------- call h-jac solver */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Fast-march solver...\n\n" ) ;
+
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+            
+            _ffun.clip_hfun(_jcfg) ;
+
+#           ifdef  __use_timers         
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+
+        if (_fmsh != nullptr )
+        {
+    /*--------------------------------- dump mesh to file */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Writing FFUN data...\n\n" ) ;
+
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            if ((_retv = save_hfun (
+                 _jcfg, _jlog, 
+                 _ffun,*_fmsh)) != __no_error)
+            {
+                return  _retv ;
+            }
+
+#           ifdef  __use_timers         
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+
     /*-------------------------- success, if we got here! */
 
         return ( _retv ) ;
@@ -197,13 +300,24 @@
         {
             std::string _ssrc(_argv[_argc]) ;
             
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
-            file_part ( _ssrc ,
-                _path , _name , _fext)  ;
+            if (_ssrc.find("-h") == 0 ||
+                _ssrc.find(
+                       "--help") == 0 )
+            {
+                _retv = -2 ;
+                
+                std::cout << 
+                "run marche jigname.jig";
+                std::cout <<  std::endl ;
+                
+                break ;
+            }
 
-            if (_ssrc.find("-whoami") == 0)
+            if (_ssrc.find("-v") == 0 ||
+                _ssrc.find(
+                    "--version") == 0 ||
+                _ssrc.find(
+                      "-whoami") == 0 )
             {
                 _retv = -2 ;
                 
@@ -212,6 +326,12 @@
                 
                 break ;
             }
+
+            std::string _path ;
+            std::string _name ;
+            std::string _fext ;
+            file_part ( _ssrc ,
+                _path , _name , _fext ) ;
 
             if (_fext.find("jig") == 0)
             {
@@ -228,8 +348,9 @@
         if (_retv != +0) return ( _retv ) ;
 
     /*--------------------------------- setup *.JLOG file */
-        jlog_text _jlog(_jcfg) ;
-        marche_banner  (_jlog) ;
+         jlog_text _jlog(_jcfg) ;
+        _jlog.push(MARCHE::
+                   asciibanner) ;
       
         if(!_jcfg._jcfg_file.empty())
         {
@@ -268,7 +389,115 @@
 #           endif//__use_timers
         }
         
-/*-------------------------- success, if we got here! */
+        if(!_jcfg._hfun_file.empty())
+        {
+    /*--------------------------------- parse *.HFUN file */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Reading FFUN file...\n\n" ) ;
+        
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            if ((_retv = read_hfun (
+                 _jcfg, 
+                 _jlog, _ffun)) != __no_error)
+            {
+                return  _retv ;
+            }
+            
+            if ((_retv = test_hfun (
+                 _jcfg, 
+                 _jlog, _ffun)) != __no_error)
+            {
+                return  _retv ;
+            }
+             
+#           ifdef  __use_timers
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+
+        if(!_jcfg._hfun_file.empty())
+        {
+    /*--------------------------------- assemble size-fun */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Forming FFUN data...\n\n" ) ;
+        
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            _ffun.init_hfun(_jcfg, true) ;
+
+            if (_jcfg._verbosity > 0 )
+            {
+
+            _jlog.push (
+                "  FFUN data summary...\n\n" ) ;
+            
+            if ((_retv = echo_hfun (
+                 _jcfg, 
+                 _jlog, _ffun)) != __no_error)
+            {
+                return  _retv ;
+            } 
+                       
+            }
+
+#           ifdef  __use_timers
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+
+        if(!_jcfg._hfun_file.empty())
+        {
+    /*--------------------------------- call h-jac solver */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Fast-march solver...\n\n" ) ;
+
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+            
+            _ffun.clip_hfun(_jcfg) ;
+
+#           ifdef  __use_timers         
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+
+        if(!_jcfg._hfun_file.empty())
+        {
+    /*--------------------------------- dump mesh to file */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Writing MESH file...\n\n" ) ;
+
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            if ((_retv = save_hfun (
+                 _jcfg, 
+                 _jlog, _ffun)) != __no_error)
+            {
+                return  _retv ;
+            }
+
+#           ifdef  __use_timers         
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+
+    /*-------------------------- success, if we got here! */
 
         return ( _retv ) ;        
     }

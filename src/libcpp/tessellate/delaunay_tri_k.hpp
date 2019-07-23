@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 February, 2019
+     * Last updated: 03 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -407,7 +407,7 @@
 
             _fset(face_hash(), 
                   face_same(), 
-            +.9, (pool_wrap(&_fpol))) ,
+            +.8, (pool_wrap(&_fpol))) ,
 
             _nset( _asrc),
             _tset( _asrc),
@@ -417,6 +417,28 @@
     {   tria_pred::exactinit() ;    // init. predicates
     }
     
+    /*
+    --------------------------------------------------------
+     * CLEAR: clear/dealloc internal data-structures.
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type clear (
+        containers::alloc_types _alloc = 
+        containers::loose_alloc
+        )
+    {
+        this->_nset.clear(_alloc) ;
+        this->_tset.clear(_alloc) ;
+
+        this->_fnod.clear(_alloc) ;
+        this->_ftri.clear(_alloc) ;
+
+        this->_work.clear(_alloc) ;
+
+        this->_fset.clear(_alloc) ;
+    }
+
     /*
     --------------------------------------------------------
      * PUSH-ROOT: push the bounding "super" triangle.

@@ -48,8 +48,7 @@
 
 #   include "libbasic.hpp"
 #   include "mpfloats.hpp"
-
-#   include "geom_base/matrix_util.hpp"
+#   include "mathutil.hpp"
 
 #   include "geom_base/vect_base_k.hpp"
 
@@ -60,8 +59,7 @@
 #   include "geom_base/tria_ball_k.hpp"
 #   include "geom_base/tria_elem_k.hpp"
 
-#   undef __ij
-
+#
 #   endif   //__GEOMETRY__ 
 
 

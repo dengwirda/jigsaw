@@ -89,7 +89,7 @@
             return  ;
                
     /*------------------------- calc. refinement priority */
-        _edat._cost = _pmax[ +2] ;
+        _edat._cost =    _pmax[2] ;
 
     /*------------------------- eval. size func. at _tbal */
         real_type _esiz = (real_type)0.;

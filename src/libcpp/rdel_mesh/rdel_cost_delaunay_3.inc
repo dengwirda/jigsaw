@@ -91,7 +91,7 @@
             return  ;
                
     /*------------------------- calc. refinement priority */
-        _edat._cost = _pmax[ +3] ;
+        _edat._cost =    _pmax[3] ;
 
     /*------------------------- eval. size func. at _tbal */
         real_type _esiz = (real_type)+0.;        
@@ -218,7 +218,7 @@
         __unreferenced(_erat);
 
     /*------------------------- calc. refinement priority */
-        _fdat._cost  = _prat ;
+        _fdat._cost =  _prat ;
 
     /*------------------------- refinement classification */
         if (_prat >= _args.rad2() *

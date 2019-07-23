@@ -101,6 +101,8 @@
         iptr_type _fdim
         )
     {
+        __unreferenced(_fdim) ;
+
         return ( false ) ;
     }
 

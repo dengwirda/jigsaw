@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 April, 2019
+     * Last updated: 03 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -218,8 +218,17 @@
         char_type &_mode
         )
     {
-        bool_type _bnds = false;
+        real_type static const _pert = 
+            std::pow(
+        std::numeric_limits<real_type>
+        ::epsilon(),(real_type)+.80) ;
     
+        bool_type _bnds = false;
+            
+        __unreferenced( _told );
+
+        if  (_mode > +0)
+        {
     /*------------------------- init. for local hash obj. */
         typename 
             mesh_type::edge_list _eset (
@@ -228,19 +237,11 @@
            +.8, _mesh._eset.get_alloc()) ;
         
     /*------------------------- push alloc. for hash obj. */
-        _eset._lptr.set_count (
+        _eset.set_slots (
             _enew.count() * +2 , 
-        containers::loose_alloc, nullptr);
-            
-        __unreferenced( _told );
+                containers::tight_alloc) ;
 
-        real_type static const _pert = 
-            std::pow(
-        std::numeric_limits<real_type>
-        ::epsilon(),(real_type)+.80) ;
-    
-        if  (_mode > +0)
-        {
+    /*---------------------------------------- test edges */
         for ( auto _epos  = _enew.head();
                    _epos != _enew.tend();
                  ++_epos  )
@@ -343,9 +344,9 @@
            +.8, _mesh._eset.get_alloc()) ;
         
     /*------------------------- push alloc. for hash obj. */
-        _eset._lptr.set_count (
+        _eset.set_slots (
             _enew.count() * +2 , 
-        containers::loose_alloc,nullptr) ;
+                containers::tight_alloc) ;
         
         for ( auto _epos  = _enew.head();
                    _epos != _enew.tend();

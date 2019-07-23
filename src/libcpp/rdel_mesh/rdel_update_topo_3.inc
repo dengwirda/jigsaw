@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 January, 2019
+     * Last updated: 03 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -118,9 +118,9 @@
                +.8, _mesh._eset.get_alloc()) ;
            
         /*------------------------- push alloc. for hash obj. */
-            _eset._lptr.set_count (
+            _eset.set_slots (
                 _enew.count() * 2 , 
-            containers::loose_alloc, nullptr);
+                    containers::tight_alloc) ;
 
         /*------------------------- add "old" absent in "new" */
             node_data _ndat ;
@@ -174,9 +174,9 @@
                +.8, _mesh._eset.get_alloc()) ;
            
         /*------------------------- push alloc. for hash obj. */
-            _eset._lptr.set_count (
+            _eset.set_slots (
                 _eold.count() * 2 , 
-            containers::loose_alloc, nullptr);
+                    containers::tight_alloc) ;
 
         /*------------------------- add "new" absent in "old" */
             node_data _ndat ;
@@ -286,9 +286,9 @@
                +.8, _mesh._fset.get_alloc()) ;
            
         /*------------------------- push alloc. for hash obj. */
-            _fset._lptr.set_count (
+            _fset.set_slots (
                 _fnew.count() * 2 , 
-            containers::loose_alloc, nullptr);
+                    containers::tight_alloc) ;
 
         /*------------------------- add "old" absent in "new" */
             node_data _ndat ;
@@ -352,9 +352,9 @@
                +.8, _mesh._fset.get_alloc()) ;
            
         /*------------------------- push alloc. for hash obj. */
-            _fset._lptr.set_count (
+            _fset.set_slots (
                 _fold.count() * 2 , 
-            containers::loose_alloc, nullptr);
+                    containers::tight_alloc) ;
 
         /*------------------------- add "new" absent in "old" */
             node_data _ndat ;

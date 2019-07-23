@@ -37,9 +37,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 05 July, 2019
  *
- * Copyright 2013-2017
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -99,21 +99,102 @@
                     pred_type   , 
                     allocator   >       self_type ;
 
-    size_type static const _mini_count = +8 ;
+    size_type static constexpr _mini_count = +8 ;
 
     public  :
     
-    hash_type           _hash;
-    pred_type           _pred;
+    hash_type const     _hash;
+    pred_type const     _pred;
 
     double              _load;
     
     public  :
     
 /*------------------------ update table count and re-hash */
+    __inline_call size_type hash_mask (
+        ) const
+    {   return this->_lptr.count() -  1 ;
+    }  
+
+    __static_call 
+    __inline_call bool_type   is_pwr2 (
+        size_type _xval
+        )
+    {   return (_xval & (_xval-1)) == 0 ;
+    }
+    
+    __static_call
+    __inline_call size_type next_pwr2 (
+        size_type _xval        
+        )
+    {
+        if (_xval<= 1) return 1 ;
+        int _pwr2 = 2;
+        _xval--;
+        while (_xval >>= 1) _pwr2 <<= 1 ;
+        return _pwr2 ;
+    }
+
+    __static_call
+    __inline_call size_type prev_pwr2 (
+        size_type _xval        
+        )
+    {
+        int _pwr2 = 1;
+        while (_xval >>= 1) _pwr2 <<= 1 ;
+        return _pwr2 ;
+    }
+
+    __normal_call void_type set_slots (
+        size_type _slots,
+        __cont::alloc_types _alloc =
+        __cont::loose_alloc 
+        )
+    {
+    /*------------------------------- round to next 2^pwr */
+        _slots = next_pwr2 (_slots);
+
+    /*------------------------------- inc/dec. table size */
+        if (_slots < 
+                this->_mini_count )
+            this->_lptr.set_count (
+            this->_mini_count , 
+                       _alloc ,  nullptr) ;
+        else
+            this->_lptr.set_count (
+               _slots, _alloc ,  nullptr) ;
+
+    /*------------------------------- re-hash all objects */
+        redo_hash() ;
+    }
+
+    __normal_call void_type grow_hash (
+        )
+    {
+    /*------------------------------- increase table size */
+        if (this->_lptr.count() < 
+                this->_mini_count )
+            this->_lptr.set_count (
+            this->_mini_count , 
+        containers::tight_alloc, nullptr) ;
+        else
+            this->_lptr.set_count (
+            this->_lptr.count()*+2, 
+        containers::tight_alloc, nullptr) ;
+
+    /*------------------------------- re-hash all objects */
+        redo_hash() ;
+    }
+
     __normal_call void_type redo_hash (
         )
-    {      
+    {   
+        if (this->_size == +0) return ;
+ 
+        __assert ( 
+            is_pwr2(this->_lptr.count() ) &&
+        "hashtable: count must be 2^n!" ) ;
+  
         item_type*_head = nullptr ;
         item_type*_tail = nullptr ;
         item_type*_next = nullptr ;
@@ -149,17 +230,6 @@
                *_iter = nullptr ;
             }
         }
-        
-    /*------------------------------- increase table size */
-        if (this->_lptr.count() < this->_mini_count)
-            this->_lptr.set_count (
-            this->_mini_count , 
-        containers::loose_alloc, nullptr) ;
-        else
-            this->_lptr.set_count (
-            this->_lptr.count()*+2, 
-        containers::loose_alloc, nullptr) ;
-        
     /*------------------ re-hash all items onto new table */
         for ( ; _head != nullptr; _head = _next)
         {
@@ -167,7 +237,7 @@
         /*--------------------------- calc new hash value */
             size_type _hpos = 
                 this->_hash(_head->_data) 
-                    % this->_lptr.count() ;
+                    & this-> hash_mask () ;
         /*--------------------------- push onto new table */
             base_type::push_item(
                 this->_lptr[_hpos],_head) ;
@@ -177,17 +247,22 @@
     public  :
 
 /*--------------------------- default c'tor - do nothing! */
-    __normal_call  hash_table (
+    __inline_call  hash_table (
         hash_type const&_hsrc = hash_type(),
         pred_type const&_psrc = pred_type(),
-        double    const&_lsrc = double(+.9),
-        allocator const&_asrc = allocator()
+        double    const&_lsrc = double(+.8),
+        allocator const&_asrc = allocator(),
+        size_type const&_nsrc = size_t(+ 0)
     /*----------------------------- c'tor alloc from obj. */
         ) : base_type(  _asrc),
     /*----------------------------- c'tor other from obj. */
             _hash(_hsrc) ,
             _pred(_psrc) ,
-            _load(_lsrc) {}
+            _load(_lsrc) 
+    {
+        set_slots(_nsrc, 
+                containers::tight_alloc) ;
+    }
             
 /*--------------------------- default d'tor/copy/move ops */
     __inline_call~hash_table ()  = default ;
@@ -217,31 +292,33 @@
     }
 
 /*----------------------------- push data onto hash table */
-    __normal_call _write_it push ( // copy construct
+    __inline_call _write_it push ( // copy construct
         data_type const&_data
         )
     {
     /*------------- re-size table if load factor exceeded */
         if (load_fact(1)> this->_load)
-            redo_hash() ;
+            grow_hash() ;
     /*------------------------------- evaluate hash value */
         size_type _hpos = this->_hash(_data ) 
-                        % this->_lptr.count() ;
+                        & this-> hash_mask () ;
+
     /*------------------------------- push data onto list */
         return base_type::push( _data,_hpos ) ;
     }
     
 /*----------------------------- push data onto hash table */
-    __normal_call _write_it push ( // move construct
+    __inline_call _write_it push ( // move construct
         data_type &&    _data
         )
     {
     /*------------- re-size table if load factor exceeded */
         if (load_fact(1)> this->_load)
-            redo_hash() ;
+            grow_hash() ;
     /*------------------------------- evaluate hash value */
         size_type _hpos = this->_hash(_data ) 
-                        % this->_lptr.count() ;
+                        & this-> hash_mask () ;
+
     /*------------------------------- push data onto list */
         return base_type::push( _data,_hpos ) ;
     }
@@ -256,7 +333,7 @@
         
     /*------------------------------- evaluate hash value */
         size_type _hpos = this->_hash(_data ) 
-                        % this->_lptr.count();
+                        & this-> hash_mask ();
                         
     /*------------------------------- scan list from head */
         _same = this->_lptr[_hpos];
@@ -283,7 +360,7 @@
         
     /*------------------------------- evaluate hash value */
         size_type _hpos = this->_hash(_data ) 
-                        % this->_lptr.count();
+                        & this-> hash_mask ();
                         
     /*------------------------------- scan list from head */
         item_type*_spos = this->_lptr[_hpos] ;
@@ -317,7 +394,7 @@
         
     /*------------------------------- evaluate hash value */
         size_type _hpos = this->_hash(_data ) 
-                        % this->_lptr.count();
+                        & this-> hash_mask ();
                         
     /*------------------------------- scan list from head */
         item_type*_same = this->_lptr[_hpos] ;
@@ -345,7 +422,7 @@
         
     /*------------------------------- evaluate hash value */
         size_type _hpos = this->_hash(_data ) 
-                        % this->_lptr.count();
+                        & this-> hash_mask ();
                         
     /*------------------------------- scan list from head */
         item_type*_prev = nullptr;
@@ -371,6 +448,39 @@
         return false ;
     }
     
+/*--------------------- _pop any exact matches from table */
+    __normal_call bool_type _pop (
+        data_type const&_data
+        )
+    {
+        if (this->_lptr.empty()) return false;
+        
+    /*------------------------------- evaluate hash value */
+        size_type _hpos = this->_hash(_data ) 
+                        & this-> hash_mask () ;
+                        
+    /*------------------------------- scan list from head */
+        item_type*_prev = nullptr;
+        item_type*_item = this->_lptr[_hpos] ;
+    /*------------------------------- check exact matches */
+        for( ; _item != nullptr; 
+               _prev  = _item, _item = _item->_next)
+        {
+            if (this->_pred(_item->_data,_data))
+            {
+            /*------------------- _pop and _destruct item */
+                base_type::_pop(
+                    _write_it(_prev,this),
+                        _write_it(_item,this),_hpos) ;
+            /*------------------------- exact match found */
+                return true ;
+            }
+        }
+        
+    /*--------------------------------- couldnt find data */
+        return false ;
+    }
+
 /*------------------- _pop any pointer matches from table */
     __normal_call bool_type _pop (
         item_type *_iptr
@@ -381,7 +491,7 @@
     /*------------------------------- evaluate hash value */
         size_type _hpos = this->_hash(_iptr->
                                       _data ) 
-                        % this->_lptr.count();
+                        & this-> hash_mask ();
                         
     /*------------------------------- scan list from head */
         item_type*_prev = nullptr;

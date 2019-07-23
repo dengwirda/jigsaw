@@ -234,10 +234,16 @@
         _fnod[1] = 0 ; 
         _fnod[2] = 1 ; break ;
             }
+        default:
+            {            // suppress compiler warnings
+        _fnod[0] =-1 ;
+        _fnod[1] =-1 ; 
+        _fnod[2] =-1 ; break ;
+            }
             }
     }
     __static_call
-    __inline_call void_type face_node  (
+    __inline_call void_type face_node (
         iptr_type *_fnod,
         iptr_type  _fpos,
         iptr_type  _from,
@@ -250,13 +256,19 @@
     /* index INTO 2-dim faces */
         if (_into == +2)
             {
-        faceind22(_fnod, _fpos);
+        faceind22(_fnod, _fpos); return ;
             }
     /* index INTO 1-dim faces */
         else
         if (_into == +1)
             {
-        faceind21(_fnod, _fpos);
+        faceind21(_fnod, _fpos); return ;
+            }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[1] =   -1;
+        _fnod[2] =   -1;         return ;
             }
             }
     /* index FROM 1-dim faces */
@@ -266,8 +278,17 @@
     /* index INTO 1-dim faces */
         if (_into == +1)
             {
-        faceind11(_fnod, _fpos);
+        faceind11(_fnod, _fpos); return ;
             }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[1] =   -1;         return ;
+            }
+            }
+        else
+            {
+        _fnod[0] =   -1; // suppress compiler warnings
             }
     }
 

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 June, 2019
+     * Last updated: 30 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -50,9 +50,6 @@
     --------------------------------------------------------
      */
 
-    template <
-    typename      init_type
-             >
     __static_call
     __normal_call void_type init_sort (
         init_type &_init,
@@ -365,9 +362,6 @@
     --------------------------------------------------------
      */
 
-    template <
-    typename      init_type
-             >
     __static_call
     __normal_call void_type init_init (
         init_type &_init,

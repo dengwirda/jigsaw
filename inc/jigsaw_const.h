@@ -35,8 +35,8 @@
      *
      * Copyright 2013-2018
      * Darren Engwirda
-     * de2363@columbia.edu
-     * https://github.com/dengwirda/
+     * darren.engwirda@columbia.edu
+     * https://github.com/dengwirda
      *
     --------------------------------------------------------
      */

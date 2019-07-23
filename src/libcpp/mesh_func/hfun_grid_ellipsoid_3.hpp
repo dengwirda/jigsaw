@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 July, 2018
+     * Last updated: 28 June, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -71,14 +71,18 @@
     typedef typename  hfun_base_kd  <
             iptr_type , 
             real_type >::hint_type  hint_type ;
+
+    typedef containers::array   <
+            real_type , 
+            allocator >             real_list ; 
         
     public  :
     
     /*--------------- (x/a)**2 + (y/b)**2 + (z/c)**2 = 1. */
         
-    real_type                      _radA ;
-    real_type                      _radB ;
-    real_type                      _radC ;
+    real_type                      _radA = 1. ;
+    real_type                      _radB = 1. ;
+    real_type                      _radC = 1. ;
 
     containers::array <
         real_type, allocator>      _xpos ;
@@ -87,9 +91,14 @@
     
     containers::array <
         real_type, allocator>      _hmat ; 
+
+    containers::array <
+        real_type, allocator>      _dhdx ; 
         
     bool_type                      _xvar ;
     bool_type                      _yvar ;
+
+    bool_type                      _wrap ;
                
     public  :
 
@@ -97,14 +106,68 @@
         iptr_type _ipos,
         iptr_type _jpos,
         iptr_type&_indx
-        )
+        ) const
     {
+    /*------------ helper: convert into "un-rolled" index */
         iptr_type _ynum = 
        (iptr_type)this->_ypos.count() ;
 
         _indx = _jpos * _ynum + _ipos ;
     }
+
+    __inline_call void_type subs_from_indx (
+        iptr_type  _indx,
+        iptr_type &_ipos,
+        iptr_type &_jpos        
+        ) const
+    {
+    /*------------ helper: convert from "un-rolled" index */
+        iptr_type _ynum = 
+       (iptr_type)this->_ypos.count() ;
+
+        _ipos = _indx % _ynum ;
+        _jpos =(_indx - _ipos )/_ynum ;
+    }
     
+    __inline_call void_type toR3 (
+      __const_ptr(real_type) _apos ,
+      __write_ptr(real_type) _ppos        
+        ) const
+    {
+    /*------------ helper: convert from S^2 to R^3 coord. */
+        _ppos[0] = this->_radA *
+            std::cos( _apos[0] ) * 
+            std::cos( _apos[1] ) ;
+
+        _ppos[1] = this->_radB *
+            std::sin( _apos[0] ) * 
+            std::cos( _apos[1] ) ;
+        
+        _ppos[2] = this->_radC *
+            std::sin( _apos[1] ) ;
+    }
+
+    __inline_call void_type toS2 (
+      __const_ptr(real_type) _ppos ,
+      __write_ptr(real_type) _apos        
+        ) const
+    {
+    /*------------ helper: convert from R^3 to S^2 coord. */
+        real_type _xmul = 
+            _ppos[0] * this->_radB ;
+        real_type _ymul = 
+            _ppos[1] * this->_radA ;
+        real_type _zrat = 
+            _ppos[2] / this->_radC ;
+
+        _zrat = std::min(+1.,_zrat);
+        _zrat = std::max(-1.,_zrat);
+
+        _apos[0]= std::atan2(_ymul, 
+                             _xmul);
+        _apos[1]= std::asin (_zrat);
+    }
+
     /*
     --------------------------------------------------------
      * INIT: init. size-fun. class.
@@ -120,10 +183,11 @@
     
         this->_xvar = false ;
         this->_yvar = false ;
-    
+        this->_wrap = false ;    
+
         if (this->_xpos.empty()) return ;
         if (this->_ypos.empty()) return ;
-   
+
         real_type _xbar, _xmin, _xmax ;
         _xbar = *this->_xpos.tail() - 
                 *this->_xpos.head() ;
@@ -171,7 +235,419 @@
                 _yvar =  true ; break ;
             }
         }
+
+        real_type _xdel = 
+        std::cos(*this->_xpos.tail()) - 
+        std::cos(*this->_xpos.head()) ;
      
+        this->_wrap = 
+            std::abs(_xdel) < _FTOL ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * CLIP-HFUN: impose |dh/dx| limits.
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type clip (
+        )
+    {
+        class  less_than
+        {
+    /*-------------------- "LESS-THAN" operator for queue */
+        public  :
+            typename            
+            real_list::_write_it _hptr;
+ 
+        public  :
+        __inline_call less_than  (
+            typename
+            real_list::_write_it _hsrc
+            ) : _hptr(_hsrc) {}
+
+        __inline_call 
+            bool_type operator() (
+            iptr_type _ipos,
+            iptr_type _jpos
+            )
+        {   return *(this->_hptr+_ipos) <
+                   *(this->_hptr+_jpos) ;
+        }
+        } ;
+
+        typedef typename
+            allocator:: size_type   uint_type ;
+
+        uint_type static constexpr 
+            _null = 
+        std::numeric_limits<uint_type>::max() ;
+
+        containers::prioritymap <
+            iptr_type ,
+            less_than ,
+            allocator > 
+        _sort((less_than(this->_hmat.head())));
+
+        containers:: array      <
+            typename
+            allocator:: size_type,
+            allocator >     _keys;
+  
+    /*-------------------- init. values for periodic bc's */
+        iptr_type IBEG = +0;
+        iptr_type IEND = this->_ypos.count()-1;
+        
+        iptr_type JBEG = +0;
+        iptr_type JEND = this->_xpos.count()-1;
+
+        if (this->_wrap)
+        {
+        iptr_type _inum  = +0;
+        for (auto _iter  = 
+                   this->_ypos.head() ;
+                  _iter !=
+                   this->_ypos.tend() ;
+                ++_iter , ++_inum)
+        {
+            iptr_type  _left, _pair ;
+            indx_from_subs(
+                _inum,  JBEG, _left);
+            indx_from_subs(
+                _inum,  JEND, _pair);
+
+            real_type _hmin = std::min(
+                this->_hmat[_left],
+                this->_hmat[_pair]) ;
+
+            this->_hmat[_left] = _hmin;
+            this->_hmat[_pair] = _hmin;
+        }
+        }
+
+    /*-------------------- push nodes onto priority queue */
+        _keys.set_count (
+            _hmat.count(),
+        containers::tight_alloc, _null) ;
+        
+        iptr_type _inum  = +0;
+        for (auto _iter  = 
+                   this->_hmat.head() ;
+                  _iter != 
+                   this->_hmat.tend() ;
+                ++_iter , ++_inum)
+        {
+            {
+                _keys[_inum] = 
+                    _sort.push(_inum) ;
+            }
+        }
+
+    /*-------------------- compute h(x) via fast-marching */
+        for ( ; !_sort.empty() ; )
+        {
+            iptr_type _base ;
+            _sort._pop_root(_base) ;
+
+            _keys[_base] = _null ;
+
+            iptr_type  _ipos, _jpos ;
+            subs_from_indx(
+                _base, _ipos, _jpos);
+ 
+            for (auto _IPOS = _ipos - 1 ;
+                      _IPOS < _ipos + 1 ;
+                    ++_IPOS )
+            for (auto _JPOS = _jpos - 1 ;
+                      _JPOS < _jpos + 1 ;
+                    ++_JPOS )
+            {
+                if (_IPOS >= IBEG && _IPOS < IEND)
+                if (_JPOS >= JBEG && _JPOS < JEND)
+                {
+    /*-------------------- un-pack implicit cell indexing */
+                 auto _ipii = _IPOS + 0 ;
+                 auto _ipjj = _JPOS + 0 ;
+
+                iptr_type  _inod;
+                indx_from_subs(
+                    _ipii, _ipjj, _inod);
+
+                 auto _jpii = _IPOS + 1 ;
+                 auto _jpjj = _JPOS + 0 ;
+
+                iptr_type  _jnod;
+                indx_from_subs(
+                    _jpii, _jpjj, _jnod);
+
+                 auto _kpii = _IPOS + 1 ;
+                 auto _kpjj = _JPOS + 1 ;
+
+                iptr_type  _knod;
+                indx_from_subs(
+                    _kpii, _kpjj, _knod);
+
+                 auto _lpii = _IPOS + 0 ;
+                 auto _lpjj = _JPOS + 1 ;
+
+                iptr_type  _lnod;
+                indx_from_subs(
+                    _lpii, _lpjj, _lnod);
+
+    /*-------------------- skip any cells with null nodes */
+                if (_keys[_inod] == _null &&
+                    _inod != _base) continue ;
+                if (_keys[_jnod] == _null &&
+                    _jnod != _base) continue ;
+                if (_keys[_knod] == _null &&
+                    _knod != _base) continue ;
+                if (_keys[_lnod] == _null &&
+                    _lnod != _base) continue ;
+
+    /*-------------------- set-up cell vertex coordinates */
+                real_type  _alon, _alat ;
+                real_type  _IXYZ[3] ;
+                _alon = this->_xpos[_ipjj];
+                _alat = this->_ypos[_ipii];
+                _IXYZ[0] =  this->_radA *
+                    std::cos(_alon) * 
+                    std::cos(_alat) ;
+                _IXYZ[1] =  this->_radB *
+                    std::sin(_alon) * 
+                    std::cos(_alat) ;
+                _IXYZ[2] =  this->_radC *
+                    std::sin(_alat) ;
+
+                real_type  _JXYZ[3] ;
+                _alon = this->_xpos[_jpjj];
+                _alat = this->_ypos[_jpii];
+                _JXYZ[0] =  this->_radA *
+                    std::cos(_alon) * 
+                    std::cos(_alat) ;
+                _JXYZ[1] =  this->_radB *
+                    std::sin(_alon) * 
+                    std::cos(_alat) ;
+                _JXYZ[2] =  this->_radC *
+                    std::sin(_alat) ;
+
+                real_type  _KXYZ[3] ;
+                _alon = this->_xpos[_kpjj];
+                _alat = this->_ypos[_kpii];
+                _KXYZ[0] =  this->_radA *
+                    std::cos(_alon) * 
+                    std::cos(_alat) ;
+                _KXYZ[1] =  this->_radB *
+                    std::sin(_alon) * 
+                    std::cos(_alat) ;
+                _KXYZ[2] =  this->_radC *
+                    std::sin(_alat) ;
+
+                real_type  _LXYZ[3] ;
+                _alon = this->_xpos[_lpjj];
+                _alat = this->_ypos[_lpii];
+                _LXYZ[0] =  this->_radA *
+                    std::cos(_alon) * 
+                    std::cos(_alat) ;
+                _LXYZ[1] =  this->_radB *
+                    std::sin(_alon) * 
+                    std::cos(_alat) ;
+                _LXYZ[2] =  this->_radC *
+                    std::sin(_alat) ;
+
+                if (this->_dhdx.count() >1)
+                {
+    /*-------------------- update adj. set, g = g(x) case */
+                if (eikonal_quad_3d (
+                   _IXYZ , _JXYZ ,
+                   _KXYZ , _LXYZ ,
+                    this->_hmat[_inod],
+                    this->_hmat[_jnod],
+                    this->_hmat[_knod],
+                    this->_hmat[_lnod],
+                    this->_dhdx[_inod],
+                    this->_dhdx[_jnod],
+                    this->_dhdx[_knod],
+                    this->_dhdx[_lnod])  )
+                {
+
+                if (_keys[_inod] != _null)
+                    _sort.update(
+                    _keys[_inod] ,  _inod) ;
+
+                if (_keys[_jnod] != _null)
+                    _sort.update(
+                    _keys[_jnod] ,  _jnod) ;
+
+                if (_keys[_knod] != _null)
+                    _sort.update(
+                    _keys[_knod] ,  _knod) ;
+
+                if (_keys[_lnod] != _null)
+                    _sort.update(
+                    _keys[_lnod] ,  _lnod) ;
+
+                if (this->_wrap)
+                {
+    /*-------------------- update adj. set, periodic bc's */
+                if (_ipjj==JBEG)
+                {
+                iptr_type _pair;
+                indx_from_subs(
+                    _ipii, JEND  ,  _pair) ;
+
+                this->_hmat [_pair] = 
+                    this->_hmat [_inod] ;
+
+                if (_keys[_pair] != _null)
+                    _sort.update(
+                    _keys[_pair] ,  _pair) ;
+                }
+
+                if (_jpjj==JEND)
+                {
+                iptr_type _pair;
+                indx_from_subs(
+                    _jpii, JBEG  ,  _pair) ;
+
+                this->_hmat [_pair] = 
+                    this->_hmat [_jnod] ;
+
+                if (_keys[_pair] != _null)
+                    _sort.update(
+                    _keys[_pair] ,  _pair) ;
+                }
+
+                if (_kpjj==JEND)
+                {
+                iptr_type _pair;
+                indx_from_subs(
+                    _kpii, JBEG  ,  _pair) ;
+
+                this->_hmat [_pair] = 
+                    this->_hmat [_knod] ;
+
+                if (_keys[_pair] != _null)
+                    _sort.update(
+                    _keys[_pair] ,  _pair) ;
+                }
+
+                if (_lpjj==JBEG)
+                {
+                iptr_type _pair;
+                indx_from_subs(
+                    _lpii, JEND  ,  _pair) ;
+
+                this->_hmat [_pair] = 
+                    this->_hmat [_lnod] ;
+
+                if (_keys[_pair] != _null)
+                    _sort.update(
+                    _keys[_pair] ,  _pair) ;
+                }
+                }
+
+                }
+                }
+                else
+                if (this->_dhdx.count()==1)
+                {
+    /*-------------------- update adj. set, const. g case */
+                if (eikonal_quad_3d (
+                   _IXYZ , _JXYZ ,
+                   _KXYZ , _LXYZ ,
+                    this->_hmat[_inod],
+                    this->_hmat[_jnod],
+                    this->_hmat[_knod],
+                    this->_hmat[_lnod],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ])  )
+                {
+
+                if (_keys[_inod] != _null)
+                    _sort.update(
+                    _keys[_inod] ,  _inod) ;
+
+                if (_keys[_jnod] != _null)
+                    _sort.update(
+                    _keys[_jnod] ,  _jnod) ;
+
+                if (_keys[_knod] != _null)
+                    _sort.update(
+                    _keys[_knod] ,  _knod) ;
+
+                if (_keys[_lnod] != _null)
+                    _sort.update(
+                    _keys[_lnod] ,  _lnod) ;
+
+                if (this->_wrap)
+                {
+    /*-------------------- update adj. set, periodic bc's */
+                if (_ipjj==JBEG)
+                {
+                iptr_type _pair;
+                indx_from_subs(
+                    _ipii, JEND  ,  _pair) ;
+
+                this->_hmat [_pair] = 
+                    this->_hmat [_inod] ;
+
+                if (_keys[_pair] != _null)
+                    _sort.update(
+                    _keys[_pair] ,  _pair) ;
+                }
+
+                if (_jpjj==JEND)
+                {
+                iptr_type _pair;
+                indx_from_subs(
+                    _jpii, JBEG  ,  _pair) ;
+
+                this->_hmat [_pair] = 
+                    this->_hmat [_jnod] ;
+
+                if (_keys[_pair] != _null)
+                    _sort.update(
+                    _keys[_pair] ,  _pair) ;
+                }
+
+                if (_kpjj==JEND)
+                {
+                iptr_type _pair;
+                indx_from_subs(
+                    _kpii, JBEG  ,  _pair) ;
+
+                this->_hmat [_pair] = 
+                    this->_hmat [_knod] ;
+
+                if (_keys[_pair] != _null)
+                    _sort.update(
+                    _keys[_pair] ,  _pair) ;
+                }
+
+                if (_lpjj==JBEG)
+                {
+                iptr_type _pair;
+                indx_from_subs(
+                    _lpii, JEND  ,  _pair) ;
+
+                this->_hmat [_pair] = 
+                    this->_hmat [_lnod] ;
+
+                if (_keys[_pair] != _null)
+                    _sort.update(
+                    _keys[_pair] ,  _pair) ;
+                }
+                }
+
+                }
+                }
+
+                }
+            }
+        }
+
     }
 
     /*
@@ -203,19 +679,34 @@
             return _hval ;
     
     /*---------------------------- compute xyz to lat-lon */
+        real_type _apos[2] ;
+        if (this->_radA == +1. &&
+            this->_radB == +1. &&
+            this->_radC == +1.)
+        {
+    /*---------------------------- "historical" workflow! */
         real_type _radius = std::sqrt (
             _ppos[0]*_ppos[0] + 
             _ppos[1]*_ppos[1] + 
             _ppos[2]*_ppos[2] ) ; 
          
         if (_radius < FT)
-        _radius = _radius + FT;
+        _radius  = _radius + FT ;
          
-        real_type _alat = 
+        _apos[1] = 
         std::asin (_ppos[2]/ _radius ) ;
         
-        real_type _alon = 
+        _apos[0] = 
         std::atan2(_ppos[1], _ppos[0]) ;
+        }
+        else
+        {
+    /*---------------------------- for a "full" ellipsoid */
+            toS2(_ppos, _apos);
+        }
+
+        real_type _alon = _apos[ 0] ;
+        real_type _alat = _apos[ 1] ;
 
         real_type static const PI =
        (real_type)std::atan(+1.0) * 4. ;

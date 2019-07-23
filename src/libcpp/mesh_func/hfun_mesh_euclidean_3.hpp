@@ -11,7 +11,7 @@
      * research, and institutional use is free.  You may 
      * distribute modified versions of this code UNDER THE 
      * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
+     * TO IT IN THE SAME FILE REMAengIN UNDER COPYRIGHT OF THE 
      * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
      * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
      * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2019
+     * Last updated: 27 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -75,50 +75,42 @@
             iptr_type , 
             real_type >::hint_type  hint_type ;
 
-    class node_type: public tria_complex_node_3<I,R>
-        {
-    /*------------------------------------ loc. node type */
-        public  :       
-        real_type                     _hval ;
-        
-        public  :
-    /*------------------------------------ "write" access */
-        __inline_call real_type&       hval (
-            )
-        {   return  this->_hval ;
-        }
-    /*------------------------------------ "const" access */
-        __inline_call real_type const& hval (
-            ) const
-        {   return  this->_hval ;
-        }
-        
-        } ;
-        
+    typedef containers::array   <
+            real_type , 
+            allocator >             real_list ; 
+
+
+    typedef tria_complex_node_3<I, R>
+                                    node_type ;
+
     typedef tria_complex_edge_2<I>  edge_type ;
     typedef tria_complex_tria_3<I>  tri3_type ;
     typedef tria_complex_tria_4<I>  tri4_type ;
        
     typedef mesh::tria_complex_3<
-                node_type,
-                edge_type,
-                tri3_type,
-                tri4_type,
-                allocator       >   mesh_type ;
+            node_type,
+            edge_type,
+            tri3_type,
+            tri4_type,
+            allocator           >   mesh_type ;
 
     typedef geom_tree::aabb_node_base_k
                                     tree_node ;
 
     typedef geom_tree::aabb_item_rect_k <
-                real_type,
-                iptr_type,
-                + 3             >   tree_item ;
+                float,
+            iptr_type,
+            + 3                 >   tree_item ;
                 
     typedef geom_tree::aabb_tree<
-                tree_item,
-                + 3 ,
-                tree_node,
-                allocator       >   tree_type ; 
+            tree_item,
+            + 3 ,
+            tree_node,
+            allocator           >   tree_type ; 
+
+    typedef geom_tree::aabb_pred_node_3 <
+                float, 
+            iptr_type           >   tree_pred ;
               
     public  :              
     
@@ -128,8 +120,13 @@
         fixed_array<real_type,3>   _bmax ;
    
     mesh_type                      _mesh ;
-
     tree_type                      _tree ;
+
+    containers::array<
+        real_type, allocator >     _hval ;
+
+    containers::array<
+        real_type, allocator >     _dhdx ;
   
     public  :
 
@@ -199,8 +196,8 @@
   
         real_type static const _RTOL = 
             std::pow (
-        std::numeric_limits<real_type>
-            ::epsilon(),(real_type).8) ;
+            std::numeric_limits<float>
+            ::epsilon(),(real_type).9) ;
             
         iptr_type static
         constexpr _NBOX=(iptr_type)+8  ;
@@ -223,12 +220,259 @@
                    this->_tree,_BTOL ,
                   _NBOX , tria_pred()) ;
     }
+
+    /*
+    --------------------------------------------------------
+     * CLIP-HFUN: impose |dh/dx| limits.
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type clip (
+        )
+    {
+        class  less_than
+        {
+    /*-------------------- "LESS-THAN" operator for queue */
+        public  :
+            typename            
+            real_list::_write_it _hptr;
+ 
+        public  :
+        __inline_call less_than  (
+            typename
+            real_list::_write_it _hsrc
+            ) : _hptr(_hsrc) {}
+
+        __inline_call 
+            bool_type operator() (
+            iptr_type _ipos,
+            iptr_type _jpos
+            )
+        {   return *(this->_hptr+_ipos) <
+                   *(this->_hptr+_jpos) ;
+        }
+        } ;
+
+        typedef typename
+            allocator:: size_type   uint_type ;
+
+        uint_type static constexpr 
+            _null = 
+        std::numeric_limits<uint_type>::max() ;
+
+        containers::prioritymap <
+            iptr_type ,
+            less_than ,
+            allocator > 
+        _sort((less_than(this->_hval.head())));
+
+        containers:: array      <
+            typename
+            allocator:: size_type,
+            allocator >     _keys;
+
+        containers:: array      <
+            iptr_type ,
+            allocator >     _tset;
+        
+    /*-------------------- push nodes onto priority queue */
+        _keys.set_count (
+            _mesh._set1.count(),
+        containers::tight_alloc, _null) ;
+
+        iptr_type _inum  = +0;
+        for (auto _iter  = 
+             this->_mesh._set1.head() ;
+                  _iter != 
+             this->_mesh._set1.tend() ;
+                ++_iter , ++_inum)
+        {
+            if (_iter->mark() >= +0 )
+            {
+                _keys[_inum] = 
+                    _sort.push(_inum) ;
+            }
+        }
+
+    /*-------------------- compute h(x) via fast-marching */
+        for ( ; !_sort.empty() ; )
+        {
+            iptr_type _base ;
+            _sort._pop_root(_base) ;
+
+            _keys[_base] = _null ;
+
+            _tset.set_count( +0) ;
+             this->
+            _mesh.node_tri4(_base, _tset);
+
+            for (auto _next  = _tset.head();
+                      _next != _tset.tend();
+                    ++_next )
+            {
+                 auto _inod = this->
+                _mesh._set4[*_next].node(0);
+                 auto _jnod = this->
+                _mesh._set4[*_next].node(1);
+                 auto _knod = this->
+                _mesh._set4[*_next].node(2);
+                 auto _lnod = this->
+                _mesh._set4[*_next].node(3);
+
+    /*-------------------- skip any cells with null nodes */
+                if (_keys[_inod] == _null &&
+                    _inod != _base) continue ;
+                if (_keys[_jnod] == _null &&
+                    _jnod != _base) continue ;
+                if (_keys[_knod] == _null &&
+                    _knod != _base) continue ;
+                if (_keys[_lnod] == _null &&
+                    _lnod != _base) continue ;
+
+                if (this->_dhdx.count() >1)
+                {
+    /*-------------------- update adj. set, g = g(x) case */
+                if (eikonal_tria_3d (
+                   &this->
+                _mesh._set1[ _inod].pval(0),
+                   &this->
+                _mesh._set1[ _jnod].pval(0),
+                   &this->
+                _mesh._set1[ _knod].pval(0),
+                   &this->
+                _mesh._set1[ _lnod].pval(0),
+                    this->_hval[_inod],
+                    this->_hval[_jnod],
+                    this->_hval[_knod],
+                    this->_hval[_lnod],
+                    this->_dhdx[_inod],
+                    this->_dhdx[_jnod],
+                    this->_dhdx[_knod],
+                    this->_dhdx[_lnod]) )
+                {
+
+                if (_keys[_inod] != _null)
+                    _sort.update(
+                    _keys[_inod] ,  _inod) ;
+
+                if (_keys[_jnod] != _null)
+                    _sort.update(
+                    _keys[_jnod] ,  _jnod) ;
+
+                if (_keys[_knod] != _null)
+                    _sort.update(
+                    _keys[_knod] ,  _knod) ;
+
+                if (_keys[_lnod] != _null)
+                    _sort.update(
+                    _keys[_lnod] ,  _lnod) ;
+
+                }
+                }
+                else
+                if (this->_dhdx.count()==1)
+                {
+    /*-------------------- update adj. set, const. g case */
+                if (eikonal_tria_3d (
+                   &this->
+                _mesh._set1[ _inod].pval(0),
+                   &this->
+                _mesh._set1[ _jnod].pval(0),
+                   &this->
+                _mesh._set1[ _knod].pval(0),
+                   &this->
+                _mesh._set1[ _lnod].pval(0),
+                    this->_hval[_inod],
+                    this->_hval[_jnod],
+                    this->_hval[_knod],
+                    this->_hval[_lnod],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ],
+                    this->_dhdx[  +0 ]) )
+                {
+
+                if (_keys[_inod] != _null)
+                    _sort.update(
+                    _keys[_inod] ,  _inod) ;
+
+                if (_keys[_jnod] != _null)
+                    _sort.update(
+                    _keys[_jnod] ,  _jnod) ;
+
+                if (_keys[_knod] != _null)
+                    _sort.update(
+                    _keys[_knod] ,  _knod) ;
+
+                if (_keys[_lnod] != _null)
+                    _sort.update(
+                    _keys[_lnod] ,  _lnod) ;
+
+                }
+                }
+            }
+        }
+
+    }
     
     /*
     --------------------------------------------------------
-     * NEAR-TRIA: scan for nearest tria.
+     * FIND-TRIA: scan for nearest tria.
     --------------------------------------------------------
      */  
+    
+    class find_tria
+        {
+        public  :
+        real_type              *_ppos ;
+        
+        mesh_type              *_mesh ;
+        
+        bool_type               _find ;
+        iptr_type               _tpos ;
+        
+        public  :
+    
+    /*------------------------ make a tree-tria predicate */
+        __inline_call find_tria (
+            real_type*_psrc = nullptr ,
+            mesh_type*_msrc = nullptr
+            ) : _ppos(_psrc) ,
+                _mesh(_msrc) ,
+                _find(false) ,
+                _tpos(   -1)   {}
+
+    /*------------------------ call pred. on tree matches */
+        __inline_call 
+            void_type operator () (
+                typename  
+            tree_type::item_data  *_iptr
+            )
+        {
+            if (this->_find) return ;
+        
+            for ( ; _iptr != nullptr; 
+                    _iptr = _iptr->_next)
+            {
+                real_type  _qtmp[+3];
+                iptr_type  _tpos = 
+                    _iptr->_data.ipos() ;
+                
+                if (near_pred ( _ppos ,
+                        _qtmp ,*_mesh , 
+                        _tpos ) )
+                {
+    /*------------------------ is fully inside: finished! */
+                this->_find =  true ;
+                this->_tpos = _tpos ;
+                
+                break ;
+
+                }
+            }
+        }
+        
+        } ;  
      
     class near_tria
         {
@@ -381,7 +625,16 @@
         )
     /*------------------------ find tria + linear interp. */
     {
-        real_type _QPOS[ 3] ;
+        real_type  _QPOS[3] ;
+        _QPOS[0] = _ppos[0] ;
+        _QPOS[1] = _ppos[1] ;
+        _QPOS[2] = _ppos[2] ;
+
+        float      _PPOS[3] ;
+        _PPOS[0] = _ppos[0] ;
+        _PPOS[1] = _ppos[1] ;
+        _PPOS[2] = _ppos[2] ;
+
         real_type _hval = 
     +std::numeric_limits<real_type>::infinity() ;
     
@@ -404,19 +657,28 @@
         if (_hint == this->null_hint())
         {
     /*------------------------ scan to find bounding tria */
-            near_tria _proj (_ppos,
+            tree_pred _pred (_PPOS) ;
+            find_tria _func (_ppos,
+                            &_mesh) ;
+        
+            this->
+           _tree.find(_pred, _func) ;
+        
+           _hint  = _func._find ? 
+                    _func._tpos : 
+            hfun_type::null_hint () ;
+        }
+
+        if (_hint == this->null_hint())
+        {
+    /*------------------------ outside: find nearest tria */
+            near_tria _func (_ppos,
                       _QPOS,&_mesh) ;
         
-            this->_tree.near(_ppos, 
-                             _proj) ;
+            this->
+           _tree.near(_PPOS, _func) ;
         
-            _hint = _proj._tpos ;
-        }
-        else
-        {
-            _QPOS[0] = _ppos[0] ;
-            _QPOS[1] = _ppos[1] ;
-            _QPOS[2] = _ppos[2] ;
+           _hint =  _func._tpos ;
         }
     
         if (_hint != this->null_hint())
@@ -450,8 +712,8 @@
                _set1[_fnod[2]].pval(0) ,
                _QPOS) ;
 
-            _hsum += _tvol * this-> 
-            _mesh._set1[_fnod[3]].hval()  ; 
+            _hsum += _tvol * 
+                    this->_hval[_fnod[3]] ;
             
             _vsum += _tvol ;
         }

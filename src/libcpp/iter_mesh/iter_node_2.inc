@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 November, 2018
+     * Last updated: 10 July, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -272,9 +272,9 @@
             real_type _krho = (real_type)+1. 
                             / _hval[_tnod[2]] ;
    
-            _irho = _irho * _irho  ;
-            _jrho = _jrho * _jrho  ;
-            _krho = _krho * _krho  ;
+            _irho = std::pow(_irho, 3) ;
+            _jrho = std::pow(_jrho, 3) ;
+            _krho = std::pow(_krho, 3) ;
            
             real_type _rbar = 
                (_irho+_jrho+_krho) / (real_type)+3. ;

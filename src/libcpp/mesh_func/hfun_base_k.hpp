@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 September, 2017
+     * Last updated: 30 June, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -75,10 +75,13 @@
     
     __normal_call void_type init (
         )  {}
+
+    __normal_call void_type clip (
+        )  {}
         
     __normal_call void_type eval (
-        real_type *_ppos ,
-        hint_type &_hint
+        real_type/*_ppos*/ ,
+        hint_type/*_hint*/
         )  {}
         
     __inline_call real_type eval (

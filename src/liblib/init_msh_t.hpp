@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 June, 2019
+     * Last updated: 28 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -100,6 +100,9 @@
         
         _mesh->_value._size = +0 ;
         _mesh->_value._data = nullptr ;
+
+        _mesh->_slope._size = +0 ;
+        _mesh->_slope._data = nullptr ;
         
         _mesh->_xgrid._size = +0 ;
         _mesh->_xgrid._data = nullptr ;
@@ -171,6 +174,8 @@
         
         jigsaw_free_reals(
                 &_mesh->_value) ;
+        jigsaw_free_reals(
+                &_mesh->_slope) ;
         }    
     }
     

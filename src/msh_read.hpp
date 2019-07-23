@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 June, 2019
+     * Last updated: 28 June, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -137,6 +137,14 @@
         std:: size_t  /*_nval*/
         ) { }
     __normal_call void_type push_value (
+        std:: size_t  /*_irow*/,
+        double      * /*_vdat*/
+        ) { }
+    __normal_call void_type open_slope (
+        std:: size_t  /*_nrow*/,
+        std:: size_t  /*_nval*/
+        ) { }
+    __normal_call void_type push_slope (
         std:: size_t  /*_irow*/,
         double      * /*_vdat*/
         ) { }
@@ -351,6 +359,9 @@
         dest_type    &_dest
         )
     {
+        containers::
+            array< std::string > _tstr ;
+
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -370,11 +381,10 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
+            _tstr.clear();            
+
             try
             {
-            containers::
-                array<std::string> _tstr ;
-                
             find_toks (_line, ";", _tstr);
        
             if (_tstr.count() == this->_ndim+1)
@@ -396,82 +406,6 @@
                 
                 _dest.push_point (
                    _irow, _pval, _itag);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
-            
-            }
-            catch (...)
-            {
-                this->_errs.push_tail(_line);
-            }
-    
-            _irow += +1 ;
-            
-            if (--_nrow == +0) break ;
-        }        
-    }
-    
-    /*
-    --------------------------------------------------------
-     * READ-POWER: read POWER data section
-    --------------------------------------------------------
-     */
-    
-    template <
-        typename  dest_type
-             >
-    __normal_call void_type read_power (
-        std::ifstream&_ffid ,
-        string_tokens&_stok ,
-        dest_type    &_dest
-        )
-    {
-    /*----------------------------------------- read head */
-        std:: size_t _nrow = +0;
-        std:: size_t _npwr = +0;
-        std:: size_t _irow = +0;
-        if (_stok.count() == +3)
-        {
-            _nrow = std::stol(_stok[1]);
-            _npwr = std::stol(_stok[2]);
-        }
-        else
-        {
-            this->_errs.
-            push_tail("Invalid POWER!");
-        }
-        
-        _dest.open_power(_nrow , _npwr);
-   
-    /*----------------------------------------- read data */
-        std::string _line;
-        while (std::getline(_ffid, _line))
-        {
-            try
-            {
-            containers::
-                array<std::string> _tstr ;
-                
-            find_toks (_line, ";", _tstr);
-       
-            if (_npwr == _tstr.count ())
-            {
-                std:: size_t static 
-                    constexpr _VMAX = +16;
-            
-                double _vpwr[_VMAX];
-                for (auto _ipos = _npwr;
-                          _ipos-- != +0; )
-                {
-                    _vpwr[_ipos] = 
-                     std::stod(_tstr[_ipos]);
-                }
-                
-                _dest.
-                 push_power(_irow, _vpwr);
             }
             else
             {
@@ -528,8 +462,86 @@
         {
             try
             {
-                _dest.push_coord ( _idim ,
+                _dest.push_coord ( _idim,
                     _irow, std::stod(_line));
+            }
+            catch (...)
+            {
+                this->_errs.push_tail(_line);
+            }
+    
+            _irow += +1 ;
+            
+            if (--_nrow == +0) break ;
+        }        
+    }
+
+    /*
+    --------------------------------------------------------
+     * READ-POWER: read POWER data section
+    --------------------------------------------------------
+     */
+    
+    template <
+        typename  dest_type
+             >
+    __normal_call void_type read_power (
+        std::ifstream&_ffid ,
+        string_tokens&_stok ,
+        dest_type    &_dest
+        )
+    {
+        containers::
+            array< std::string > _tstr ;
+
+    /*----------------------------------------- read head */
+        std:: size_t _nrow = +0;
+        std:: size_t _npwr = +0;
+        std:: size_t _irow = +0;
+        if (_stok.count() == +3)
+        {
+            _nrow = std::stol(_stok[1]);
+            _npwr = std::stol(_stok[2]);
+        }
+        else
+        {
+            this->_errs.
+            push_tail("Invalid POWER!");
+        }
+        
+        _dest.open_power(_nrow , _npwr);
+   
+    /*----------------------------------------- read data */
+        std::string _line;
+        while (std::getline(_ffid, _line))
+        {
+            _tstr.clear();
+
+            try
+            {
+            find_toks (_line, ";", _tstr);
+       
+            if (_npwr == _tstr.count ())
+            {
+                std:: size_t static 
+                    constexpr _VMAX = +16;
+            
+                double _vpwr[_VMAX];
+                for (auto _ipos = _npwr;
+                          _ipos-- != +0; )
+                {
+                    _vpwr[_ipos] = 
+                     std::stod(_tstr[_ipos]);
+                }
+                
+                _dest.
+                 push_power(_irow, _vpwr);
+            }
+            else
+            {
+                this->_errs.push_tail(_line);
+            }
+            
             }
             catch (...)
             {
@@ -557,6 +569,9 @@
         dest_type    &_dest
         )
     {
+        containers::
+            array< std::string > _tstr ;
+
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _nval = +0;
@@ -572,17 +587,16 @@
             push_tail("Invalid VALUE!");
         }
         
-        _dest.open_value(_nrow, _nval) ;
+        _dest.open_value (_nrow, _nval);
    
     /*----------------------------------------- read data */
         std::string _line;
         while (std::getline(_ffid, _line))
         {
+            _tstr.clear();
+
             try
             {
-            containers::
-                array<std::string> _tstr ;
-                
             find_toks (_line, ";", _tstr);
        
             if (_nval == _tstr.count ())
@@ -620,6 +634,84 @@
 
     /*
     --------------------------------------------------------
+     * READ-SLOPE: read SLOPE data section
+    --------------------------------------------------------
+     */
+    
+    template <
+        typename  dest_type
+             >
+    __normal_call void_type read_slope (
+        std::ifstream&_ffid ,
+        string_tokens&_stok ,
+        dest_type    &_dest
+        )
+    {
+        containers::
+            array< std::string > _tstr ;
+
+    /*----------------------------------------- read head */
+        std:: size_t _nrow = +0;
+        std:: size_t _nval = +0;
+        std:: size_t _irow = +0;
+        if (_stok.count() == +3)
+        {
+            _nrow = std::stol(_stok[1]);
+            _nval = std::stol(_stok[2]);
+        }
+        else
+        {
+            this->_errs.
+            push_tail("Invalid SLOPE!");
+        }
+        
+        _dest.open_slope (_nrow, _nval);
+   
+    /*----------------------------------------- read data */
+        std::string _line;
+        while (std::getline(_ffid, _line))
+        {
+            _tstr.clear();            
+
+            try
+            {
+            find_toks (_line, ";", _tstr);
+       
+            if (_nval == _tstr.count ())
+            {
+                std:: size_t static 
+                    constexpr _VMAX = +16;
+            
+                double _vals[_VMAX];
+                for (auto _ipos = _nval;
+                          _ipos-- != +0; )
+                {
+                    _vals[_ipos] = 
+                     std::stod(_tstr[_ipos]);
+                }
+                
+                _dest.
+                 push_slope(_irow, _vals);
+            }
+            else
+            {
+                this->_errs.push_tail(_line);
+            }
+            
+            }
+            catch (...)
+            {
+                this->_errs.push_tail(_line);
+            }
+    
+            _irow += +1 ;
+            
+            if (--_nrow == +0) break ;
+        }        
+    }
+
+    /*
+    --------------------------------------------------------
      * READ-EDGE2: read EDGE2 data section
     --------------------------------------------------------
      */
@@ -633,6 +725,9 @@
         dest_type    &_dest
         )
     {
+        containers::
+            array< std::string > _tstr ;
+
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -652,11 +747,10 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
+            _tstr.clear();
+
             try
-            {
-            containers::
-                array<std::string> _tstr ;
-                
+            {    
             find_toks (_line, ";", _tstr);
        
             if (_tstr.count() == +3)
@@ -705,6 +799,9 @@
         dest_type    &_dest
         )
     {
+        containers::
+            array< std::string > _tstr ;
+
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -724,11 +821,10 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
+            _tstr.clear();
+
             try
             {
-            containers::
-                array<std::string> _tstr ;
-                
             find_toks (_line, ";", _tstr);
        
             if (_tstr.count() == +4)
@@ -779,6 +875,9 @@
         dest_type    &_dest
         )
     {
+        containers::
+            array< std::string > _tstr ;
+
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -798,11 +897,10 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
+            _tstr.clear();
+
             try
             {
-            containers::
-                array<std::string> _tstr ;
-                
             find_toks (_line, ";", _tstr);
        
             if (_tstr.count() == +5)
@@ -855,6 +953,9 @@
         dest_type    &_dest
         )
     {
+        containers::
+            array< std::string > _tstr ;
+
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -874,11 +975,10 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
+            _tstr.clear();
+
             try
             {
-            containers::
-                array<std::string> _tstr ;
-                
             find_toks (_line, ";", _tstr);
        
             if (_tstr.count() == +5)
@@ -931,6 +1031,9 @@
         dest_type    &_dest
         )
     {
+        containers::
+            array< std::string > _tstr ;
+
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -950,11 +1053,10 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
+            _tstr.clear();
+
             try
             {
-            containers::
-                array<std::string> _tstr ;
-                
             find_toks (_line, ";", _tstr);
        
             if (_tstr.count() == +9)
@@ -1015,6 +1117,9 @@
         dest_type    &_dest
         )
     {
+        containers::
+            array< std::string > _tstr ;
+
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -1034,11 +1139,10 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
+            _tstr.clear();            
+
             try
             {
-            containers::
-                array<std::string> _tstr ;
-                
             find_toks (_line, ";", _tstr);
        
             if (_tstr.count() == +7)
@@ -1095,6 +1199,9 @@
         dest_type    &_dest
         )
     {
+        containers::
+            array< std::string > _tstr ;
+
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -1114,11 +1221,10 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
+            _tstr.clear();            
+
             try
             {
-            containers::
-                array<std::string> _tstr ;
-                
             find_toks (_line, ";", _tstr);
        
             if (_tstr.count() == +6)
@@ -1173,6 +1279,9 @@
         dest_type    &_dest
         )
     {
+        containers::
+            array< std::string > _tstr ;
+
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -1192,11 +1301,10 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
+            _tstr.clear();
+
             try
             {
-            containers::
-                array<std::string> _tstr ;
-                
             find_toks (_line, ";", _tstr);
        
             if (_tstr.count() == +3)
@@ -1298,21 +1406,27 @@
                            _dest) ; 
                 }
             else
-            if (_stok[0] == "POWER")
-                {
-                read_power(_ffid, _stok, 
-                           _dest) ; 
-                }
-            else
             if (_stok[0] == "COORD")
                 {
                 read_coord(_ffid, _stok, 
                            _dest) ; 
                 }
             else
+            if (_stok[0] == "POWER")
+                {
+                read_power(_ffid, _stok, 
+                           _dest) ; 
+                }            
+            else
             if (_stok[0] == "VALUE")
                 {
                 read_value(_ffid, _stok, 
+                           _dest) ; 
+                }
+            else
+            if (_stok[0] == "SLOPE")
+                {
+                read_slope(_ffid, _stok, 
                            _dest) ; 
                 }
             else

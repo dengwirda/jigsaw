@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 February, 2019
+     * Last updated: 06 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -72,12 +72,12 @@
                 &_tnod[0], &_tnod[2], 
                     std::less<iptr_type>());
 
-            edge_data _edat, _same ;
+            edge_data _edat;
             _edat._node[0] = _tnod[0];
             _edat._node[1] = _tnod[1];
 
     /*--------------------------------- remove if present */
-            _mesh._pop_edge(_edat, _same)  ;
+            _mesh._pop_edge(_edat);
         }
     }
     
@@ -111,13 +111,13 @@
                 &_tnod[0], &_tnod[3], 
                     std::less<iptr_type>());
 
-            face_data _fdat, _same ;
+            face_data _fdat;
             _fdat._node[0] = _tnod[0];
             _fdat._node[1] = _tnod[1];
             _fdat._node[2] = _tnod[2];
 
     /*--------------------------------- remove if present */
-            _mesh._pop_face(_fdat, _same)  ;
+            _mesh._pop_face(_fdat);
         }
     }
     
@@ -135,7 +135,7 @@
     {
         {
     /*--------------------------------- get tria indexing */
-            tria_data _tdat, _same;
+            tria_data _tdat;
             _tdat._node[0] = _mesh.
                 _tria.tria(_tpos)->node(0);
             _tdat._node[1] = _mesh.
@@ -146,7 +146,7 @@
                 _tria.tria(_tpos)->node(3);
 
     /*--------------------------------- remove if present */
-            _mesh._pop_tria(_tdat, _same) ;
+            _mesh._pop_tria(_tdat);
         }
     }
     
@@ -473,15 +473,15 @@
         iptr_type &_sign ,
         tdat_list &_tset ,
         tscr_list &_tscr ,
-        typename 
-    mesh_type::tria_list & _tria_test ,
+        /* typename 
+    mesh_type::tria_list & _tria_test , */
         iptr_type &_ntri ,
         iptr_type  _pass ,
         rdel_opts &_opts
         )
     {
         {
-            if(!_geom.have_feat(2)) return;
+            if(!_geom.have_feat(2)) return ;
         
         /*---------------------------- check "restricted" */
             iptr_type  _tnod[ +4] ;
@@ -503,7 +503,7 @@
                 _tnod[2])->fdim() > 3 ||
                 _mesh._tria.node(
                 _tnod[3])->fdim() > 3 )
-                return ;
+                return  ;
                 
             tria_data _tdat;
             _tdat._node[0] = _tnod[ 0] ;
@@ -519,18 +519,9 @@
             _cdat._node[2] = _tnod[ 2] ;
             _cdat._node[3] = _tnod[ 3] ;
 
-            typename mesh_type::
-                     tria_list::
-                item_type *_mptr = nullptr;
-            if(_tria_test.
-                find(_tdat , _mptr) )
-            { 
-        /*--------------------------- don't test repeats! */
-                return ;
-            }
 
         //!!_tria_test.push( _tdat) ; won't have repeats!
-
+           
         /*--------------------------- calc tria cost/kind */
             _tdat._part =  _sign ;
 
@@ -640,34 +631,6 @@
         rdel_opts &_opts
         )
     {
-    /*------------------------- init. for local hash obj. */
-        typename 
-            mesh_type::edge_list _eset (
-        typename mesh_type::edge_hash(),
-        typename mesh_type::edge_pred(), 
-           +.8, _mesh._eset.get_alloc()) ;
-        typename 
-            mesh_type::face_list _fset (
-        typename mesh_type::face_hash(),
-        typename mesh_type::face_pred(), 
-           +.8, _mesh._fset.get_alloc()) ;
-        typename 
-            mesh_type::tria_list _tset (
-        typename mesh_type::tria_hash(),
-        typename mesh_type::tria_pred(), 
-           +.8, _mesh._tset.get_alloc()) ;
-
-    /*------------------------- push alloc. for hash obj. */
-        _eset._lptr.set_count (
-            _tnew.count() * +6 , 
-        containers::loose_alloc, nullptr);
-        _fset._lptr.set_count (
-            _tnew.count() * +4 , 
-        containers::loose_alloc, nullptr);
-        _tset._lptr.set_count (
-            _tnew.count() * +1 , 
-        containers::loose_alloc, nullptr);
-
     /*------------------------- no. "restricted" subfaces */
         iptr_type _nedg = +0 ;
         iptr_type _nfac = +0 ;
@@ -676,8 +639,8 @@
         iptr_type _ndup = +0 ;
 
     /*------------------------- flag if we're not testing */
-        bool_type _safe ;
-       _safe = (_dim0>=3) ? false : true ;
+        bool_type _safe = 
+            _dim0 >= +3 ? false : true ;
 
     /*------------------------- calc. voronoi-dual points */
         for( auto _iter  = _tnew.head(); 
@@ -709,6 +672,13 @@
         if (_dim0 <= edge_mode &&
             _dim1 >= edge_mode )
         {
+        typename 
+            mesh_type::edge_list _eset (
+        typename mesh_type::edge_hash(),
+        typename mesh_type::edge_pred(), 
+           +.8, _mesh._eset.get_alloc(),
+           _tnew.count() * +6) ;
+
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter  )
@@ -724,6 +694,13 @@
         if (_dim0 <= face_mode &&
             _dim1 >= face_mode )
         {
+        typename 
+            mesh_type::face_list _fset (
+        typename mesh_type::face_hash(),
+        typename mesh_type::face_pred(), 
+           +.8, _mesh._fset.get_alloc(),
+           _tnew.count() * +4) ;
+
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter  )
@@ -740,22 +717,26 @@
         if (_dim0 <= tria_mode && 
             _dim1 >= tria_mode )
         {
-        
+      //typename 
+      //    mesh_type::tria_list _tset (
+      //typename mesh_type::tria_hash(),
+      //typename mesh_type::tria_pred(), 
+      //   +.8, _mesh._tset.get_alloc(),
+      //   _tnew.count() * +1) ;
+         
       //if (_nfac >= +1) _safe = false ;
         if (_ndup >= +1) _safe = false ;
         
-    /*-------------------------- compute cavity tria cost */
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter )
         {
-           _sign =  (!_safe) ? -1 : _sign ;
+           _sign = !_safe ? -1 : _sign ;
 
             push_tria(_mesh, _geom ,
                       _hfun,*_iter , 
                       _sign, _tdat , 
-                      _tscr, _tset , 
-                      _ntri,
+                      _tscr, _ntri,
                       _pass, _opts) ;
         }
         }

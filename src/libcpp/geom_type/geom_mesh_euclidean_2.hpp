@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 March, 2019
+     * Last updated: 10 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -281,7 +281,7 @@
                                     tree_node ;
 
     typedef geom_tree::aabb_item_rect_k <
-                real_type ,
+                    float ,
                 iptr_type ,
                 node_type::_dims>   tree_item ;
                 
@@ -816,8 +816,8 @@
   
         real_type static const _RTOL = 
             std::pow (
-        std::numeric_limits<real_type>
-            ::epsilon(),(real_type).8) ;
+            std::numeric_limits<float>
+            ::epsilon(),(real_type).9) ;
   
         real_type  _BTOL[2] ;
         _BTOL[0] =( this->_bmax[ 0] - 
@@ -1291,7 +1291,7 @@
     /*------------------ tree-circ intersection predicate */
         typedef 
         geom_tree::aabb_pred_ball_2 <
-             real_type, 
+                 float , 
              iptr_type >  tree_pred ; 
             
     /*------------------ ball-line intersection predicate */
@@ -1299,9 +1299,15 @@
         ball_line_pred <
              hits_func >  hits_pred ;
 
+        float           _PMID[2] ;
+        _PMID[0] =      _ball. _pmid[0] ;
+        _PMID[1] =      _ball. _pmid[1] ;
+
+        float           _RRAD;
+        _RRAD    =      _ball. _rrad;
+
     /*------------------ call actual intersection testing */      
-        tree_pred _pred(_ball. _pmid, 
-                        _ball. _rrad) ;
+        tree_pred _pred(_PMID, _RRAD) ;
         hits_pred _func(_ball. _pmid, 
                         _ball. _rrad,
                         *this, _hfun) ;
@@ -1329,7 +1335,7 @@
     /*------------------ tree-line intersection predicate */
         typedef 
         geom_tree::aabb_pred_line_2 <
-             real_type, 
+                 float , 
              iptr_type >  tree_pred ; 
 
     /*------------------ tria-line intersection predicate */
@@ -1337,9 +1343,16 @@
         line_line_pred <
              hits_func >  hits_pred ; 
 
+        float           _IPOS[2] ;
+        _IPOS[0] =      _line. _ipos[0] ;
+        _IPOS[1] =      _line. _ipos[1] ;
+
+        float           _JPOS[2] ;
+        _JPOS[0] =      _line. _jpos[0] ;
+        _JPOS[1] =      _line. _jpos[1] ;
+
     /*------------------ call actual intersection testing */ 
-        tree_pred _pred(_line. _ipos, 
-                        _line. _jpos) ;
+        tree_pred _pred(_IPOS, _JPOS) ;
         hits_pred _func(_line. _ipos, 
                         _line. _jpos, 
                         *this, _hfun) ;
@@ -1478,7 +1491,7 @@
         /*-------------- tree-line intersection predicate */
             typedef 
             geom_tree::aabb_pred_line_2 <
-                 real_type, 
+                     float , 
                  iptr_type >  tree_pred ; 
 
         /*-------------- tria-line intersection predicate */
@@ -1486,7 +1499,15 @@
             line_line_pred <
                  null_pred >  hits_pred ;
 
-            tree_pred _pred(_ppos, _rpos) ;
+            float           _PPOS[2];
+            _PPOS[0] =      _ppos[0];
+            _PPOS[1] =      _ppos[1];
+
+            float           _RPOS[2];
+            _RPOS[0] =      _rpos[0];
+            _RPOS[1] =      _rpos[1];
+
+            tree_pred _pred(_PPOS, _RPOS) ;
             
             null_pred _hfun;
             hits_pred _func(_ppos, _rpos, 
@@ -1561,7 +1582,7 @@
         /*-------------- tree-line intersection predicate */
             typedef 
             geom_tree::aabb_pred_line_2 <
-                 real_type, 
+                     float , 
                  iptr_type >  tree_pred ; 
 
         /*-------------- tria-line intersection predicate */
@@ -1569,7 +1590,15 @@
             line_line_pred <
                  null_pred >  hits_pred ;
 
-            tree_pred _pred(_ppos, _rpos) ;
+            float           _PPOS[2];
+            _PPOS[0] =      _ppos[0];
+            _PPOS[1] =      _ppos[1];
+
+            float           _RPOS[2];
+            _RPOS[0] =      _rpos[0];
+            _RPOS[1] =      _rpos[1];
+
+            tree_pred _pred(_PPOS, _RPOS) ;
             
             null_pred _hfun;
             hits_pred _func(_ppos, _rpos, 

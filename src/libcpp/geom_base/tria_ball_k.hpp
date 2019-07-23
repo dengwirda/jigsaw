@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 December, 2017
+     * Last updated: 10 July, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -256,8 +256,9 @@
         _xm[__ij(1,1,2)] *
         _xm[__ij(1,1,2)] ) ;
 
-        real_type  _dd;
-        inv_2x2(2, _xm, 2, _xi, _dd) ;
+        real_type _dd ;
+        math::inv_2x2 (
+            +2, _xm, +2, _xi, _dd )  ;
         _bb[0] = (
         _xi[__ij(0,0,2)] * _xr[0] +
         _xi[__ij(0,1,2)] * _xr[1] )  ;
@@ -265,6 +266,18 @@
         _bb[1] = (
         _xi[__ij(1,0,2)] * _xr[0] +
         _xi[__ij(1,1,2)] * _xr[1] )  ;
+
+        double   _P1[2];
+        copy_node_2d (_P1, _p1) ;
+
+        double   _P2[2];
+        copy_node_2d (_P2, _p2) ;
+
+        double   _P3[2];
+        copy_node_2d (_P3, _p3) ;
+
+        _dd = +geompred::orient2d (
+            _P1, _P2, _P3) ;
 
         _bb[0] /= _dd ;
         _bb[1] /= _dd ;
@@ -353,8 +366,9 @@
         
         _xr[2] = (real_type)+.0 ;
 
-        real_type  _dd;
-        inv_3x3(3, _xm, 3, _xi, _dd) ;
+        real_type _dd ;
+        math::inv_3x3 (
+            +3, _xm, +3, _xi, _dd )  ;
         _bb[0] = (
         _xi[__ij(0,0,3)] * _xr[0] +
         _xi[__ij(0,1,3)] * _xr[1] +
@@ -478,8 +492,9 @@
         _xm[__ij(2,2,3)] *
         _xm[__ij(2,2,3)] ) ;
 
-        real_type  _dd;
-        inv_3x3(3, _xm, 3, _xi, _dd) ;
+        real_type _dd ;
+        math::inv_3x3 (
+            +3, _xm, +3, _xi, _dd )  ;
         _bb[0] = (
         _xi[__ij(0,0,3)] * _xr[0] +
         _xi[__ij(0,1,3)] * _xr[1] +
@@ -494,6 +509,21 @@
         _xi[__ij(2,0,3)] * _xr[0] +
         _xi[__ij(2,1,3)] * _xr[1] +
         _xi[__ij(2,2,3)] * _xr[2] )  ;
+
+        double   _P1[3];
+        copy_node_3d (_P1, _p1) ;
+
+        double   _P2[3];
+        copy_node_3d (_P2, _p2) ;
+
+        double   _P3[3];
+        copy_node_3d (_P3, _p3) ;
+
+        double   _P4[3];
+        copy_node_3d (_P4, _p4) ;
+
+        _dd = -geompred::orient3d (
+            _P1, _P2, _P3, _P4) ;
 
         _bb[0] /= _dd ;
         _bb[1] /= _dd ;
@@ -813,8 +843,9 @@
         _xr[0]-= (real_type)+.5 * _w21 ;
         _xr[1]-= (real_type)+.5 * _w31 ;   
         
-        real_type  _dd;
-        inv_2x2(2, _xm, 2, _xi, _dd) ;
+        real_type _dd ;
+        math::inv_2x2 (
+            +2, _xm, +2, _xi, _dd )  ;
         _bb[0] = (
         _xi[__ij(0,0,2)] * _xr[0] +
         _xi[__ij(0,1,2)] * _xr[1] )  ;
@@ -822,6 +853,18 @@
         _bb[1] = (
         _xi[__ij(1,0,2)] * _xr[0] +
         _xi[__ij(1,1,2)] * _xr[1] )  ;
+
+        double   _P1[2];
+        copy_node_2d (_P1, _p1) ;
+
+        double   _P2[2];
+        copy_node_2d (_P2, _p2) ;
+
+        double   _P3[2];
+        copy_node_2d (_P3, _p3) ;
+
+        _dd = +geompred::orient2d (
+            _P1, _P2, _P3) ;
 
         _bb[0] /= _dd ;
         _bb[1] /= _dd ;
@@ -864,7 +907,8 @@
         _r2     -= _p2[2]  ;
         _r3     -= _p3[2]  ;
     
-        _bb[2] = (_r1+_r2+_r3) / (real_type)3. ;
+        _bb[2] = 
+        (_r1+_r2+_r3) / (real_type)3. ;
         
         if (!_in)  return  ;
     
@@ -927,8 +971,9 @@
 
         _xr[2] = (real_type)+.0 ;
 
-        real_type  _dd;
-        inv_3x3(3, _xm, 3, _xi, _dd) ;
+        real_type _dd ;
+        math::inv_3x3 (
+            +3, _xm, +3, _xi, _dd )  ;
         _bb[0] = (
         _xi[__ij(0,0,3)] * _xr[0] +
         _xi[__ij(0,1,3)] * _xr[1] +
@@ -1002,7 +1047,8 @@
         _r2     -= _p2[3]  ;
         _r3     -= _p3[3]  ;
     
-        _bb[3] = (_r1+_r2+_r3) / (real_type)3. ;
+        _bb[3] = 
+        (_r1+_r2+_r3) / (real_type)3. ;
         
         if (!_in)  return  ;
     
@@ -1063,8 +1109,9 @@
         _xm[__ij(2,2,3)] *
         _xm[__ij(2,2,3)] ) ;
 
-        real_type  _dd;
-        inv_3x3(3, _xm, 3, _xi, _dd) ;
+        real_type _dd ;
+        math::inv_3x3 (
+            +3, _xm, +3, _xi, _dd )  ;
         _bb[0] = (
         _xi[__ij(0,0,3)] * _xr[0] +
         _xi[__ij(0,1,3)] * _xr[1] +
@@ -1080,10 +1127,24 @@
         _xi[__ij(2,1,3)] * _xr[1] +
         _xi[__ij(2,2,3)] * _xr[2] )  ;
 
+        double   _P1[3];
+        copy_node_3d (_P1, _p1) ;
+
+        double   _P2[3];
+        copy_node_3d (_P2, _p2) ;
+
+        double   _P3[3];
+        copy_node_3d (_P3, _p3) ;
+
+        double   _P4[3];
+        copy_node_3d (_P4, _p4) ;
+
+        _dd = -geompred::orient3d (
+            _P1, _P2, _P3, _P4) ;
+
         _bb[0] /= _dd ;
         _bb[1] /= _dd ;
         _bb[2] /= _dd ;
-
 
         real_type _ee[3*1];
         real_type _db[3*1];
@@ -1142,7 +1203,8 @@
         _r3     -= _p3[3]  ;
         _r4     -= _p4[3]  ;
     
-        _bb[3] = (_r1+_r2+_r3+_r4)/(real_type)4. ;
+        _bb[3] = 
+        (_r1+_r2+_r3+_r4)/(real_type)4. ;
         
         if (!_in) return   ;
         
