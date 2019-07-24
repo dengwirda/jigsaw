@@ -1585,10 +1585,10 @@
         ) const
     {
     /*-------------------------- find current 0-node pos. */
-        size_type _node =*_nptr;
+        iptr_type _node = *_nptr ;
         
-        if (_node >= +0 &&
-            _node < this->_set1.count() &&
+        if (_node >= +0 && _node < 
+            (iptr_type)this->_set1.count() &&
             _set1 [_node].mark() >= +0)
         {
     /*------------------------------- found matching node */

@@ -296,10 +296,12 @@
   
     /*-------------------- init. values for periodic bc's */
         iptr_type IBEG = +0;
-        iptr_type IEND = this->_ypos.count()-1;
+        iptr_type IEND = 
+       (iptr_type)this->_ypos.count() - 1 ;
         
         iptr_type JBEG = +0;
-        iptr_type JEND = this->_xpos.count()-1;
+        iptr_type JEND = 
+       (iptr_type)this->_xpos.count() - 1 ;
 
         if (this->_wrap)
         {

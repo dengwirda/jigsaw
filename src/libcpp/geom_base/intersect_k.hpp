@@ -418,8 +418,8 @@
     __const_ptr  (data_two_) _pb    
         )
     {
-        _pa [0] = _pb [0] ;
-        _pa [1] = _pb [1] ;
+        _pa[0] = (data_one_) _pb[0] ;
+        _pa[1] = (data_one_) _pb[1] ;
     }
 
     template <
@@ -431,9 +431,9 @@
     __const_ptr  (data_two_) _pb    
         )
     {
-        _pa [0] = _pb [0] ;
-        _pa [1] = _pb [1] ;
-        _pa [2] = _pb [2] ;
+        _pa[0] = (data_one_) _pb[0] ;
+        _pa[1] = (data_one_) _pb[1] ;
+        _pa[2] = (data_one_) _pb[2] ;
     }
 
     template <
@@ -445,8 +445,8 @@
     __const_ptr  (data_two_) _pb    
         )
     {
-        _pa [0] = _pb [0] ;
-        _pa [1] = _pb [1] ;
+        _pa[0] = (data_one_) _pb[0] ;
+        _pa[1] = (data_one_) _pb[1] ;
     }
 
     template <
@@ -458,8 +458,8 @@
     __const_ptr  (data_two_) _pb    
         )
     {
-        _pa [0] = _pb [1] ;
-        _pa [1] = _pb [2] ;
+        _pa[0] = (data_one_) _pb[1] ;
+        _pa[1] = (data_one_) _pb[2] ;
     }
 
     template <
@@ -471,8 +471,8 @@
     __const_ptr  (data_two_) _pb    
         )
     {
-        _pa [0] = _pb [0] ;
-        _pa [1] = _pb [2] ;
+        _pa[0] = (data_one_) _pb[0] ;
+        _pa[1] = (data_one_) _pb[2] ;
     }
 
     /*
