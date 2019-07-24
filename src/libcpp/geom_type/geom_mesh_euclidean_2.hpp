@@ -814,16 +814,18 @@
             }
         }
   
-        real_type static const _RTOL = 
+        float     static const _RTOL = 
             std::pow (
             std::numeric_limits<float>
-            ::epsilon(),(real_type).9) ;
+            ::epsilon(), (float) +.9);
   
-        real_type  _BTOL[2] ;
-        _BTOL[0] =( this->_bmax[ 0] - 
+        float      _BTOL[2] ;
+        _BTOL[0] =
+       (float)    ( this->_bmax[ 0] - 
                     this->_bmin[ 0] )
                  * _RTOL ;
-        _BTOL[1] =( this->_bmax[ 1] - 
+        _BTOL[1] =
+       (float)    ( this->_bmax[ 1] - 
                     this->_bmin[ 1] ) 
                  * _RTOL ;
     
@@ -1299,12 +1301,13 @@
         ball_line_pred <
              hits_func >  hits_pred ;
 
-        float           _PMID[2] ;
-        _PMID[0] =      _ball. _pmid[0] ;
-        _PMID[1] =      _ball. _pmid[1] ;
+        float           _PMID[2] = {
+                (float) _ball. _pmid[0] ,
+                (float) _ball. _pmid[1] ,
+                } ;
 
-        float           _RRAD;
-        _RRAD    =      _ball. _rrad;
+        float           _RRAD  =
+                (float) _ball. _rrad;
 
     /*------------------ call actual intersection testing */      
         tree_pred _pred(_PMID, _RRAD) ;
@@ -1343,13 +1346,15 @@
         line_line_pred <
              hits_func >  hits_pred ; 
 
-        float           _IPOS[2] ;
-        _IPOS[0] =      _line. _ipos[0] ;
-        _IPOS[1] =      _line. _ipos[1] ;
+        float           _IPOS[2] = {
+                (float) _line. _ipos[0] ,
+                (float) _line. _ipos[1] ,
+                } ;
 
-        float           _JPOS[2] ;
-        _JPOS[0] =      _line. _jpos[0] ;
-        _JPOS[1] =      _line. _jpos[1] ;
+        float           _JPOS[2] = {
+                (float) _line. _jpos[0] ,
+                (float) _line. _jpos[1] ,
+                } ;
 
     /*------------------ call actual intersection testing */ 
         tree_pred _pred(_IPOS, _JPOS) ;
@@ -1499,13 +1504,15 @@
             line_line_pred <
                  null_pred >  hits_pred ;
 
-            float           _PPOS[2];
-            _PPOS[0] =      _ppos[0];
-            _PPOS[1] =      _ppos[1];
+            float           _PPOS[2] = {
+                    (float) _ppos[0] ,
+                    (float) _ppos[1] ,
+                    } ;
 
-            float           _RPOS[2];
-            _RPOS[0] =      _rpos[0];
-            _RPOS[1] =      _rpos[1];
+            float           _RPOS[2] = {
+                    (float) _rpos[0] ,
+                    (float) _rpos[1] ,
+                    } ;
 
             tree_pred _pred(_PPOS, _RPOS) ;
             
@@ -1590,13 +1597,15 @@
             line_line_pred <
                  null_pred >  hits_pred ;
 
-            float           _PPOS[2];
-            _PPOS[0] =      _ppos[0];
-            _PPOS[1] =      _ppos[1];
+            float           _PPOS[2] = {
+                    (float) _ppos[0] ,
+                    (float) _ppos[1] ,
+                    } ;
 
-            float           _RPOS[2];
-            _RPOS[0] =      _rpos[0];
-            _RPOS[1] =      _rpos[1];
+            float           _RPOS[2] = {
+                    (float) _rpos[0] ,
+                    (float) _rpos[1] ,
+                    } ;
 
             tree_pred _pred(_PPOS, _RPOS) ;
             

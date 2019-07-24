@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 June, 2019
+     * Last updated: 22 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -1600,11 +1600,45 @@
              jmsh_kind::ellipsoid_mesh)
         {
     /*--------------------------------- ellipsoid-mesh-3d */
+            if (_hfun._ellipsoid_mesh_3d.
+                _radA <= (real_type)  +0. ||
+                _hfun._ellipsoid_mesh_3d.
+                _radB <= (real_type)  +0. ||
+                _hfun._ellipsoid_mesh_3d.
+                _radC <= (real_type)  +0. )
+            {
+                _jlog.push (
+    "**input error: HFUN. RADII entries are incorrect.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
             real_type _hmin = 
             std::numeric_limits<real_type>::max() ;
             real_type _smin = 
             std::numeric_limits<real_type>::max() ;
             
+            real_type static const _PI   =
+           (real_type)std::atan(+1.0) * 4. ;
+
+        //  careful with the way PI truncations onto float
+        //  expanded range so that we don't throw warnings
+        //  due to rounding issues...
+
+            real_type static const _XMIN = 
+                    (real_type) -2.1 * _PI ;
+            real_type static const _XMAX = 
+                    (real_type) +2.1 * _PI ;
+            real_type static const _YMIN = 
+                    (real_type) -1.1 * _PI ;
+            real_type static const _YMAX = 
+                    (real_type) +1.1 * _PI ;
+
+            real_type _xmin =  _XMAX;
+            real_type _xmax =  _XMIN;
+            real_type _ymin =  _YMAX;
+            real_type _ymax =  _YMIN;
+
             iptr_type _imin = 
             std::numeric_limits<iptr_type>::max() ;
             iptr_type _imax = 
@@ -1638,6 +1672,16 @@
             {
                 if (_iter->mark() < 0) continue ;
 
+                _xmin = std::min(
+                    _xmin, _iter->pval(0)) ;
+                _xmax = std::max(
+                    _xmax, _iter->pval(0)) ;
+
+                _ymin = std::min(
+                    _ymin, _iter->pval(1)) ;
+                _ymax = std::max(
+                    _ymax, _iter->pval(1)) ;
+
                 _nmax += +1  ;                
             }
 
@@ -1669,6 +1713,24 @@
 
             auto _gnum = _hfun.
                 _ellipsoid_mesh_3d._dhdx.count();
+
+            if (_xmin <  _XMIN || 
+                _xmax >  _XMAX )
+            {
+                _jlog.push (
+    "**input error: XPOS. must be in [-1.*pi, +1.*pi].\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
+            if (_ymin <  _YMIN || 
+                _ymax >  _YMAX )
+            {
+                _jlog.push (
+    "**input error: YPOS. must be in [-.5*pi, +.5*pi].\n") ;
+        
+                _errv = __invalid_argument ;
+            }
 
             if (_gnum > +0 && 
                     _gnum != 1 && 
@@ -1709,11 +1771,45 @@
              jmsh_kind::ellipsoid_grid)
         {
     /*--------------------------------- ellipsoid-grid-3d */
+            if (_hfun._ellipsoid_grid_3d.
+                _radA <= (real_type)  +0. ||
+                _hfun._ellipsoid_grid_3d.
+                _radB <= (real_type)  +0. ||
+                _hfun._ellipsoid_grid_3d.
+                _radC <= (real_type)  +0. )
+            {
+                _jlog.push (
+    "**input error: HFUN. RADII entries are incorrect.\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
             real_type _hmin = 
             std::numeric_limits<real_type>::infinity();
             real_type _smin = 
             std::numeric_limits<real_type>::infinity();
   
+            real_type static const _PI   =
+           (real_type)std::atan(+1.0) * 4. ;
+
+        //  careful with the way PI truncations onto float
+        //  expanded range so that we don't throw warnings
+        //  due to rounding issues...
+
+            real_type static const _XMIN = 
+                    (real_type) -2.1 * _PI ;
+            real_type static const _XMAX = 
+                    (real_type) +2.1 * _PI ;
+            real_type static const _YMIN = 
+                    (real_type) -1.1 * _PI ;
+            real_type static const _YMAX = 
+                    (real_type) +1.1 * _PI ;
+
+            real_type _xmin =  _XMAX;
+            real_type _xmax =  _XMIN;
+            real_type _ymin =  _YMAX;
+            real_type _ymax =  _YMIN;
+
             for (auto _iter  = _hfun.
             _ellipsoid_grid_3d._hmat.head();
                       _iter != _hfun.
@@ -1745,6 +1841,11 @@
                 {
                     _mono = false; break;
                 }
+
+                _xmin = std::min(
+                        _xmin , *_iter) ;
+                _xmax = std::max(
+                        _xmax , *_iter) ;
             }
             
             if(!_hfun._ellipsoid_grid_3d._ypos.empty())      
@@ -1758,6 +1859,11 @@
                 {
                     _mono = false; break;
                 }
+
+                _ymin = std::min(
+                        _ymin , *_iter) ;
+                _ymax = std::max(
+                        _ymax , *_iter) ;
             }
  
             auto _xnum = _hfun.
@@ -1772,6 +1878,24 @@
             auto _gnum = _hfun.
                 _ellipsoid_grid_3d._dhdx.count();
  
+            if (_xmin <  _XMIN || 
+                _xmax >  _XMAX )
+            {
+                _jlog.push (
+    "**input error: XPOS. must be in [-1.*pi, +1.*pi].\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
+            if (_ymin <  _YMIN || 
+                _ymax >  _YMAX )
+            {
+                _jlog.push (
+    "**input error: YPOS. must be in [-.5*pi, +.5*pi].\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
             if (_hnum != _xnum * _ynum)
             {
                 _jlog.push (

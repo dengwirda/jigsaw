@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 July, 2019
+     * Last updated: 22 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -914,6 +914,27 @@
                 _errv = __invalid_argument ;
             }
             
+            real_type static const _PI   =
+           (real_type)std::atan(+1.0) * 4. ;
+
+        //  careful with the way PI truncations onto float
+        //  expanded range so that we don't throw warnings
+        //  due to rounding issues...
+
+            real_type static const _XMIN = 
+                    (real_type) -2.1 * _PI ;
+            real_type static const _XMAX = 
+                    (real_type) +2.1 * _PI ;
+            real_type static const _YMIN = 
+                    (real_type) -1.1 * _PI ;
+            real_type static const _YMAX = 
+                    (real_type) +1.1 * _PI ;
+
+            real_type _xmin =  _XMAX;
+            real_type _xmax =  _XMIN;
+            real_type _ymin =  _YMAX;
+            real_type _ymax =  _YMIN;
+
             iptr_type _imin = 
             std::numeric_limits<iptr_type>::max() ;
             iptr_type _imax = 
@@ -930,7 +951,35 @@
             {
                 if (_iter->mark() < 0) continue;
                 
+                _xmin = std::min(
+                    _xmin, _iter->pval(0)) ;
+                _xmax = std::max(
+                    _xmax, _iter->pval(0)) ;
+
+                _ymin = std::min(
+                    _ymin, _iter->pval(1)) ;
+                _ymax = std::max(
+                    _ymax, _iter->pval(1)) ;
+
                 _nnPT += +1  ;
+            }
+
+            if (_xmin <  _XMIN || 
+                _xmax >  _XMAX )
+            {
+                _jlog.push (
+    "**input error: XPOS. must be in [-1.*pi, +1.*pi].\n") ;
+        
+                _errv = __invalid_argument ;
+            }
+
+            if (_ymin <  _YMIN || 
+                _ymax >  _YMAX )
+            {
+                _jlog.push (
+    "**input error: YPOS. must be in [-.5*pi, +.5*pi].\n") ;
+        
+                _errv = __invalid_argument ;
             }
 
             for (auto _iter  = _geom.

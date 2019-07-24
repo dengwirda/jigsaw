@@ -53,9 +53,9 @@
      * AABB-MESH: setup AABB-tree for k-dim. faces.
     --------------------------------------------------------
      */
-     
-#   define REAL_TYPE typename node_list \
-                            ::data_type \
+
+#   define REAL_TYPE typename tree_type \
+                            ::item_type \
                             ::real_type
                             
 #   define IPTR_TYPE typename face_list \
@@ -146,16 +146,16 @@
             {
                 IPTR_TYPE _node = _iter->node(_inod) ;
             
-                if (_xmin[_idim] > 
+                if (_xmin[_idim] > (REAL_TYPE)
                     _nset[_node] .pval (_idim))
                 {
-                    _xmin[_idim] = 
+                    _xmin[_idim] = (REAL_TYPE)
                     _nset[_node] .pval (_idim);
                 }
-                if (_xmax[_idim] < 
+                if (_xmax[_idim] < (REAL_TYPE)
                     _nset[_node] .pval (_idim))
                 {
-                    _xmax[_idim] = 
+                    _xmax[_idim] = (REAL_TYPE)
                     _nset[_node] .pval (_idim);
                 }
             }

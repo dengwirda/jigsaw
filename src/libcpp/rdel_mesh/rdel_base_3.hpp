@@ -581,7 +581,7 @@
                          tria_pred::
                 template circ_pred<
                 typename mesh_type::tria_type> 
-                    _pred (&_iter-> pval( 0));
+                    _isDT (&_iter-> pval( 0));
           
                 bool_type _okay = false ;
                 for (auto _tpos =_tset.head();
@@ -589,7 +589,7 @@
                         ++_tpos )
                 {
                     _okay = _okay ||
-                _pred(_mesh._tria, *_tpos, 0);
+                _isDT(_mesh._tria, *_tpos, 0);
                 }
 
                 if(!_okay)     continue ;
@@ -920,11 +920,11 @@
                          tria_pred::
                 template circ_pred<
                 typename mesh_type::tria_type> 
-                    _pred (&_iter-> pval( 0));
+                    _isDT (&_iter-> pval( 0));
           
                 bool_type _okay =
-                _pred(_mesh._tria, _tadj, 0)||
-                _pred(_mesh._tria, _topp, 0) ;
+                _isDT(_mesh._tria, _tadj, 0)||
+                _isDT(_mesh._tria, _topp, 0) ;
 
                 if (!_okay) continue ;
                 }

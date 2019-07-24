@@ -91,10 +91,10 @@
             return  ;
                
     /*------------------------- calc. refinement priority */
-        _edat._cost =    _pmax[3] ;
+        _edat._cost = (float) _pmax[3] ;
 
     /*------------------------- eval. size func. at _tbal */
-        real_type _esiz = (real_type)+0.;        
+        real_type _esiz = (real_type)0.;        
         _esiz   += _hfun.eval(
            &_mesh._tria.
              node(_enod[0])->pval(0) , 
@@ -218,7 +218,7 @@
         __unreferenced(_erat);
 
     /*------------------------- calc. refinement priority */
-        _fdat._cost =  _prat ;
+        _fdat._cost = (float) _prat;
 
     /*------------------------- refinement classification */
         if (_prat >= _args.rad2() *
@@ -350,7 +350,7 @@
                           _llen[_emin] ;
         
     /*------------------------- calc. refinement priority */
-        _tdat._cost = _erat;
+        _tdat._cost = (float) _erat;
 
     /*------------------------- refinement classification */
         if (_erat >= _args.rad3() *

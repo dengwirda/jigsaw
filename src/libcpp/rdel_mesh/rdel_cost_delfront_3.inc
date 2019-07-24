@@ -95,7 +95,8 @@
         _mesh._tria.node(_enod[0])->fdim() +
         _mesh._tria.node(_enod[1])->fdim() ;
         
-        _edat._cost =    _pmax[3] ;
+        _edat._cost = 
+                (float)  _pmax[3] ;
         
     //  scaling via node numbering seems to make slightly
     //  better (more topologically regular) meshes
@@ -273,7 +274,8 @@
         __unreferenced(_erat) ;
 
     /*------------------------- calc. refinement priority */
-        _fdat._cost = _prat * _pmax[3] ;
+        _fdat._cost = 
+            (float) (_prat * _pmax[3]) ;
       
     //  scaling via node numbering seems to make slightly
     //  better (more topologically regular) meshes
@@ -512,12 +514,11 @@
         real_type _frat = _tbal[   +3] / 
                           _frad[_fmin] ;
                           
-        __unreferenced(   _erat) ;
-        __unreferenced(   _frat) ;
+        real_type _trat = _erat*_frat;
         
     /*------------------------- calc. refinement priority */        
         _tdat._cost = 
-            _erat * _frat * _tbal[3] ;
+            (float) (_trat * _tbal[3]) ;
 
     //  scaling via node numbering seems to make slightly
     //  better (more topologically regular) meshes

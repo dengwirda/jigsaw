@@ -93,7 +93,8 @@
         _mesh._tria.node(_enod[0])->fdim() +
         _mesh._tria.node(_enod[1])->fdim() ;
 
-        _edat._cost =    _pmax[2] ;
+        _edat._cost = 
+                (float)  _pmax[2] ;
 
     //  scaling via node numbering seems to make slightly
     //  better (more topologically regular) meshes
@@ -260,7 +261,8 @@
                           _llen[_emin] ;
         
     /*------------------------- calc. refinement priority */
-        _tdat._cost = _erat * _tbal[2] ;
+        _tdat._cost = 
+            (float) (_erat * _tbal[2]) ;
 
     //  scaling via node numbering seems to make slightly
     //  better (more topologically regular) meshes

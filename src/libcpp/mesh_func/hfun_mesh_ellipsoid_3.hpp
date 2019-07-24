@@ -257,25 +257,27 @@
             }
         }
   
-        real_type static const _RTOL = 
+        float     static const _RTOL = 
             std::pow (
             std::numeric_limits<float>
-            ::epsilon(),(real_type).9) ;
+            ::epsilon(), (float) +0.9) ;
             
         iptr_type static
-        constexpr _NBOX=(iptr_type)+4  ;
+        constexpr _NBOX=(iptr_type)+8  ;
 
-        real_type _BTOL[3] ;
-        _BTOL[0] = this->_bmax [ 0 ] - 
-                   this->_bmin [ 0 ] ;
-        _BTOL[1] = this->_bmax [ 1 ] - 
-                   this->_bmin [ 1 ] ;
-        _BTOL[2] = this->_bmax [ 2 ] - 
-                   this->_bmin [ 2 ] ;
-  
-        _BTOL[0]*=_RTOL ;
-        _BTOL[1]*=_RTOL ;
-        _BTOL[2]*=_RTOL ;
+        float      _BTOL[3] ;
+        _BTOL[0] =
+       (float)    ( this->_bmax[ 0] - 
+                    this->_bmin[ 0] )
+                 * _RTOL ;
+        _BTOL[1] =
+       (float)    ( this->_bmax[ 1] - 
+                    this->_bmin[ 1] ) 
+                 * _RTOL ;
+        _BTOL[2] =
+       (float)    ( this->_bmax[ 2] - 
+                    this->_bmin[ 2] ) 
+                 * _RTOL ;
 
     /*-------------------- make aabb-tree and init. bbox. */
         aabb_mesh( this->_mesh._set1 , 
@@ -546,8 +548,7 @@
                 _tpos(   -1)   {}
 
     /*------------------------ call pred. on tree matches */
-        __inline_call 
-            real_type operator () (
+        __inline_call float operator () (
                 typename  
             tree_type::item_data  *_iptr
             )
@@ -594,7 +595,7 @@
                 }
             }
 
-            return ( this->_dsqr )  ;
+            return (float) this->_dsqr ;
         }
         
         } ;
@@ -665,15 +666,15 @@
         )
     /*------------------------ find tria + linear interp. */
     {
-        real_type  _QPOS[3] ;
-        _QPOS[0] = _ppos[0] ;
-        _QPOS[1] = _ppos[1] ;
-        _QPOS[2] = _ppos[2] ;
+        real_type  _QPOS[3] = {
+       (real_type) _ppos[0] ,
+       (real_type) _ppos[1] ,
+       (real_type) _ppos[2] } ;
 
-        float      _PPOS[3] ;
-        _PPOS[0] = _ppos[0] ;
-        _PPOS[1] = _ppos[1] ;
-        _PPOS[2] = _ppos[2] ;    
+        float      _PPOS[3] = {
+       (float)     _ppos[0] ,
+       (float)     _ppos[1] ,
+       (float)     _ppos[2] } ;    
 
         real_type _hval = 
     +std::numeric_limits<real_type>::infinity() ;

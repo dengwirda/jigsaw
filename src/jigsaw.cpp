@@ -18,6 +18,9 @@
     // -fPIC -DNDEBUG -D__lib_jigsaw jigsaw.cpp -shared 
     // -o../lib/libjigsaw.so
     //
+    //
+    // -Wfloat-conversion -Wsign-conversion -Wshadow
+    //
 
     /*
     --------------------------------------------------------

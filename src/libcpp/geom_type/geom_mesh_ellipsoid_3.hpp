@@ -654,18 +654,18 @@
     /*- build an AABB that encloses a spheroidal arc-seg. */
         real_type _rEPS = this->_rEPS ;
     
-        _rmin[0] = std::min(
+        _rmin[0] = (float)std::min(
             _apos[0], _bpos[0]) ;
-        _rmin[1] = std::min(
+        _rmin[1] = (float)std::min(
             _apos[1], _bpos[1]) ;
-        _rmin[2] = std::min(
+        _rmin[2] = (float)std::min(
             _apos[2], _bpos[2]) ;
             
-        _rmax[0] = std::max(
+        _rmax[0] = (float)std::max(
             _apos[0], _bpos[0]) ;
-        _rmax[1] = std::max(
+        _rmax[1] = (float)std::max(
             _apos[1], _bpos[1]) ;
-        _rmax[2] = std::max(
+        _rmax[2] = (float)std::max(
             _apos[2], _bpos[2]) ;
             
         float     _rmid[3] = {
@@ -686,7 +686,7 @@
         _rlen , _rmax[2]-_rmin[2]);
     
         _rlen*= (float)     +.5 ;
-        _rlen+= _rEPS ;
+        _rlen+= (float)   _rEPS ;
     
         _rmin[0] = std::min(
         _rmin[0], _rmid[0]-_rlen) ;
@@ -1451,25 +1451,29 @@
         flat_intersect <
              hits_func >    hits_pred ;
              
-        float           _PPOS[3] ;
-        _PPOS[0] =      _flat. _ppos[0] ;
-        _PPOS[1] =      _flat. _ppos[1] ;
-        _PPOS[2] =      _flat. _ppos[2] ;
+        float           _PPOS[3] = {
+                (float) _flat. _ppos[0] ,
+                (float) _flat. _ppos[1] ,
+                (float) _flat. _ppos[2] ,
+                } ;
 
-        float           _NVEC[3] ;
-        _NVEC[0] =      _flat. _nvec[0] ;
-        _NVEC[1] =      _flat. _nvec[1] ;
-        _NVEC[2] =      _flat. _nvec[2] ;
+        float           _NVEC[3] = {
+                (float) _flat. _nvec[0] ,
+                (float) _flat. _nvec[1] ,
+                (float) _flat. _nvec[2] ,
+                } ;
 
-        float           _RMIN[3] ;
-        _RMIN[0] =      _flat. _rmin[0] ;
-        _RMIN[1] =      _flat. _rmin[1] ;
-        _RMIN[2] =      _flat. _rmin[2] ;
+        float           _RMIN[3] = {
+                (float) _flat. _rmin[0] ,
+                (float) _flat. _rmin[1] ,
+                (float) _flat. _rmin[2] ,
+                } ;
 
-        float           _RMAX[3] ;
-        _RMAX[0] =      _flat. _rmax[0] ;
-        _RMAX[1] =      _flat. _rmax[1] ;
-        _RMAX[2] =      _flat. _rmax[2] ;
+        float           _RMAX[3] = {
+                (float) _flat. _rmax[0] ,
+                (float) _flat. _rmax[1] ,
+                (float) _flat. _rmax[2] ,
+                } ;
 
     /*------------------ call actual intersection testing */
         tree_pred _pred(_PPOS, _NVEC,
@@ -1508,13 +1512,14 @@
         ball_intersect <
              hits_func >    hits_pred ;
 
-        float           _PMID[3] ;
-        _PMID[0] =      _ball. _pmid[0] ;
-        _PMID[1] =      _ball. _pmid[1] ;
-        _PMID[2] =      _ball. _pmid[2] ;
+        float           _PMID[3] = {
+                (float) _ball. _pmid[0] ,
+                (float) _ball. _pmid[1] ,
+                (float) _ball. _pmid[2] ,
+                } ;
 
-        float           _RRAD;
-        _RRAD    =      _ball. _rrad;
+        float           _RRAD  =
+                (float) _ball. _rrad;
 
     /*------------------ call actual intersection testing */      
         real_type _rmin[3] = {

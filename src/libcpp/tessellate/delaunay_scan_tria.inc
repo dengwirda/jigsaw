@@ -55,7 +55,7 @@
              >
     __normal_call void_type scan_tria_list (
         iptr_type  _elem,
-        fptr_type  _flag,
+        char_type  _flag,
         func_type &_pred,
         iptr_list &_list
         )
