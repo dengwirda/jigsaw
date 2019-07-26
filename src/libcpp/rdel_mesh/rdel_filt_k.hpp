@@ -599,7 +599,7 @@
     __inline_call keep_minmax_cosine_2d (
     __const_ptr ( real_type) _psrc,
     __const_ptr ( real_type) _vsrc,
-        real_type const&_cmin = real_type(+.50)
+        real_type const&_csrc = real_type(+.50)
         ) 
     {
         this->_find     = false;
@@ -611,8 +611,8 @@
         this->_dvec[ 0] = _vsrc[ 0];
         this->_dvec[ 1] = _vsrc[ 1];
         
-        this->_cmin     = _cmin;
-        this->_best     = _cmin;
+        this->_cmin     = _csrc;
+        this->_best     = _csrc;
     }
 
 /*------------------------------ process intersection */
@@ -701,7 +701,7 @@
     __inline_call keep_minmax_cosine_3d (
     __const_ptr ( real_type) _psrc,
     __const_ptr ( real_type) _vsrc,
-        real_type const&_cmin = real_type(+.50)
+        real_type const&_csrc = real_type(+.50)
         ) 
     {
         this->_find     = false;
@@ -715,8 +715,8 @@
         this->_dvec[ 1] = _vsrc[ 1];
         this->_dvec[ 2] = _vsrc[ 2];
         
-        this->_cmin     = _cmin;
-        this->_best     = _cmin;
+        this->_cmin     = _csrc;
+        this->_best     = _csrc;
     }
 
 /*------------------------------ process intersection */

@@ -171,8 +171,8 @@
     node_list                     _nset ;
     tria_list                     _tset ;
     
-    iptr_list                     _ftri ;
-    iptr_list                     _fnod ;
+    iptr_list                     _tpop ;
+    iptr_list                     _npop ;
 
     iptr_list                     _work ;
 
@@ -220,7 +220,7 @@
         iptr_type _ipos
         )
     {
-        this->_fnod.push_tail(_ipos);
+        this->_npop.push_tail(_ipos);
         this->_nset[_ipos].mark()=-1;
     }
     
@@ -234,7 +234,7 @@
         iptr_type _ipos
         )
     {
-        this->_ftri.push_tail(_ipos);
+        this->_tpop.push_tail(_ipos);
         this->_tset[_ipos].mark()=-1;
     }
 
@@ -248,11 +248,11 @@
         )
     {
         iptr_type _ipos = -1;
-        if (this->_fnod.count() != +0 )
+        if (this->_npop.count() != +0 )
         {
     /*------------------------ recycle from free list */
             this->
-           _fnod._pop_tail(_ipos) ;
+           _npop._pop_tail(_ipos) ;
         }
         else
         {
@@ -277,11 +277,11 @@
         )
     {
         iptr_type _ipos = -1;
-        if (this->_ftri.count() != +0 )
+        if (this->_tpop.count() != +0 )
         {
     /*------------------------ recycle from free list */
             this->
-           _ftri._pop_tail(_ipos) ;
+           _tpop._pop_tail(_ipos) ;
         }
         else
         {
@@ -411,8 +411,8 @@
 
             _nset( _asrc),
             _tset( _asrc),
-            _ftri( _asrc),
-            _fnod( _asrc), 
+            _tpop( _asrc),
+            _npop( _asrc), 
             _work( _asrc)
     {   tria_pred::exactinit() ;    // init. predicates
     }
@@ -431,8 +431,8 @@
         this->_nset.clear(_alloc) ;
         this->_tset.clear(_alloc) ;
 
-        this->_fnod.clear(_alloc) ;
-        this->_ftri.clear(_alloc) ;
+        this->_npop.clear(_alloc) ;
+        this->_tpop.clear(_alloc) ;
 
         this->_work.clear(_alloc) ;
 

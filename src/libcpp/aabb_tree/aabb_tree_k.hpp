@@ -246,6 +246,7 @@
     __inline_call  aabb_tree  (
         allocator const&_asrc = allocator()
         ) : _root(nullptr) , 
+            _size(     +0) ,
             _work(  _asrc) ,
     /*-------------------------------------- "base" pools */
            _node_base (
@@ -372,10 +373,10 @@
         {  
             iptr_type _axis ;
             _axis = _rect[_idim]._axis ;
-            real_type _long ; 
-            _long = _rect[_idim]._alen ;
+            real_type _llen ; 
+            _llen = _rect[_idim]._alen ;
             
-            _long *= this->_long ;
+            _llen *= this->_long ;
             
             iptr_type _pnum = +0 ;
             iptr_type _cnum = +0 ;
@@ -386,7 +387,7 @@
                           _iptr  = _iptr->_next)
             {
                 if (_iptr->
-                    _data.plen(_axis) >= +_long)
+                    _data.plen(_axis) >= +_llen)
                 {
                     _pnum  += +1 ;
                 }
@@ -401,7 +402,7 @@
             {
                 _best = _cnum ;
                 _bdim = _axis ;
-                _blen = _long ;
+                _blen = _llen ;
                 
             if (_pnum == +0) break ;
             }                   
@@ -415,19 +416,21 @@
     __normal_call void_type load (
         iter_type _head ,
         iter_type _tend ,
-        iptr_type _imax = + 32 ,
-        real_type _long = +.75 ,
-        real_type _vtol = +.50
+        iptr_type _IMAX = + 32 ,
+        real_type _LONG = +.75 ,
+        real_type _VTOL = +.50
         )
     {
+        if (_tend <= _head) return ;
+
         this->_root = &this->_rdat ;
 
         this->_size = +1 ;
 
     /*------------------------------ set node fill params */
-        this->_imax = _imax ;
-        this->_long = _long ;
-        this->_vtol = _vtol ;
+        this->_imax = _IMAX ;
+        this->_long = _LONG ;
+        this->_vtol = _VTOL ;
 
     /*------------------------------ set null "tree" ptrs */
         this->_root->_pptr = nullptr;
@@ -616,8 +619,11 @@
         iptr_list &_iset
         )
     {
-        containers::array<item_data*> _next ;
-    
+        containers::array<item_data*> _next;
+
+        if (this->_root 
+                == nullptr) return ;
+
         this->_work.set_count( +0) ;
         this->_work.
             push_tail(this->_root) ;
@@ -668,8 +674,8 @@
        
     /*---------------------------- build order from lists */
         bool_type _push  = true ;
-        for (auto _imax  = +2 ; 
-                _push; _imax *= 4 )
+        for (auto _ilim  = +2 ; 
+                _push; _ilim *= 4 )
         {
             _push = false;
         for (auto _iter  = _next.head() ;
@@ -688,7 +694,7 @@
                     
                *_iter  = _ipos->_next ;
                
-                if (++_inum>_imax) break;
+                if (++_inum>_ilim) break;
             }
         }
         }

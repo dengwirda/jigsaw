@@ -63,9 +63,6 @@
     typedef R                       real_type ;
     typedef I                       iptr_type ;
     typedef A                       allocator ;
-    
-    typedef typename
-            allocator::size_type    uint_type ;
 
     typedef hfun_mesh_euclidean_3d  <
             real_type ,
@@ -457,19 +454,18 @@
                     _iptr = _iptr->_next)
             {
                 real_type  _qtmp[+3];
-                iptr_type  _tpos = 
+                iptr_type  _TPOS = 
                     _iptr->_data.ipos() ;
                 
                 if (near_pred ( _ppos ,
                         _qtmp ,*_mesh , 
-                        _tpos ) )
+                        _TPOS ) )
                 {
     /*------------------------ is fully inside: finished! */
                 this->_find =  true ;
-                this->_tpos = _tpos ;
+                this->_tpos = _TPOS ;
                 
                 break ;
-
                 }
             }
         }
@@ -516,19 +512,19 @@
                     _iptr = _iptr->_next)
             {
                 real_type  _qtmp[+3];
-                iptr_type  _tpos = 
+                iptr_type  _TPOS = 
                     _iptr->_data.ipos() ;
                 
                 if (near_pred ( _ppos ,
                         _qtmp ,*_mesh , 
-                        _tpos ) )
+                        _TPOS ) )
                 {
     /*------------------------ is fully inside: finished! */
                 this->_dsqr = 
                     (real_type) +0. ;
 
                 this->_find =  true ;
-                this->_tpos = _tpos ;
+                this->_tpos = _TPOS ;
                 
                 break ;
 
@@ -546,7 +542,7 @@
                 _qpos[2] = _qtmp[2] ;
 
                 this->_dsqr = _dtmp ;
-                this->_tpos = _tpos ;
+                this->_tpos = _TPOS ;
                 }
 
                 }
@@ -636,7 +632,7 @@
        (float)     _ppos[1] ,
        (float)     _ppos[2] } ;
 
-        real_type _hval = 
+        real_type _hOUT = 
     +std::numeric_limits<real_type>::infinity() ;
     
         if (hint_okay(_hint))
@@ -720,12 +716,12 @@
         }
 
 
-        _hval = _hsum / _vsum ;
+        _hOUT = _hsum / _vsum ;
 
         }
 
     /*------------------------- size-fun interp. to ppos. */
-        return  _hval ;  
+        return  _hOUT ;  
     }
     
     } ;

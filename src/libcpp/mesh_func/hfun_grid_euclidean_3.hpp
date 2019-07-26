@@ -216,40 +216,40 @@
         hint_type &_hint
         )
     {
-        real_type _hval = 
+        real_type _hOUT = 
     +std::numeric_limits<real_type>::infinity();
     
         __unreferenced (_hint) ;
     
         if (this->_xpos.count() == +0)
-            return _hval ;
+            return _hOUT ;
         
-        real_type _xpos = _ppos[0] ;
+        real_type _XPOS = _ppos[0] ;
         
-        if (_xpos < *this->_xpos.head() )
-            _xpos = *this->_xpos.head() ;
-        if (_xpos > *this->_xpos.tail() )
-            _xpos = *this->_xpos.tail() ;
+        if (_XPOS < *this->_xpos.head() )
+            _XPOS = *this->_xpos.head() ;
+        if (_XPOS > *this->_xpos.tail() )
+            _XPOS = *this->_xpos.tail() ;
         
         if (this->_ypos.count() == +0)
-            return _hval ;
+            return _hOUT ;
             
-        real_type _ypos = _ppos[1] ;
+        real_type _YPOS = _ppos[1] ;
             
-        if (_ypos < *this->_ypos.head() )
-            _ypos = *this->_ypos.head() ;
-        if (_ypos > *this->_ypos.tail() )
-            _ypos = *this->_ypos.tail() ;
+        if (_YPOS < *this->_ypos.head() )
+            _YPOS = *this->_ypos.head() ;
+        if (_YPOS > *this->_ypos.tail() )
+            _YPOS = *this->_ypos.tail() ;
             
         if (this->_zpos.count() == +0)
-            return _hval ;
+            return _hOUT ;
             
-        real_type _zpos = _ppos[2] ;
+        real_type _ZPOS = _ppos[2] ;
             
-        if (_zpos < *this->_zpos.head() )
-            _zpos = *this->_zpos.head() ;
-        if (_zpos > *this->_zpos.tail() )
-            _zpos = *this->_zpos.tail() ;
+        if (_ZPOS < *this->_zpos.head() )
+            _ZPOS = *this->_zpos.head() ;
+        if (_ZPOS > *this->_zpos.tail() )
+            _ZPOS = *this->_zpos.tail() ;
             
     /*---------------------------- find enclosing x-range */
         iptr_type _ipos = (iptr_type)-1 ;
@@ -262,7 +262,7 @@
             algorithms::upper_bound (
                 this->_xpos.head(), 
                 this->_xpos.tend(), 
-            _xpos,std::less<real_type>());
+            _XPOS,std::less<real_type>());
            
             _jpos = (iptr_type) (
             _joff-this->_xpos.head() - 1);
@@ -277,7 +277,7 @@
                 (this->_xpos.count() - 1);
             
             _jpos = (iptr_type)
-              ( (_xpos - _xmin) / _xdel );
+              ( (_XPOS - _xmin) / _xdel );
         }
         
     /*---------------------------- find enclosing y-range */
@@ -287,7 +287,7 @@
             algorithms::upper_bound (
                 this->_ypos.head(), 
                 this->_ypos.tend(), 
-            _ypos,std::less<real_type>());
+            _YPOS,std::less<real_type>());
            
             _ipos = (iptr_type) (
             _ioff-this->_ypos.head() - 1);
@@ -302,7 +302,7 @@
                 (this->_ypos.count() - 1);
             
             _ipos = (iptr_type)
-              ( (_ypos - _ymin) / _ydel );
+              ( (_YPOS - _ymin) / _ydel );
         }
         
     /*---------------------------- find enclosing z-range */
@@ -312,7 +312,7 @@
             algorithms::upper_bound (
                 this->_zpos.head(), 
                 this->_zpos.tend(), 
-            _zpos,std::less<real_type>());
+            _ZPOS,std::less<real_type>());
            
             _kpos = (iptr_type) (
             _koff-this->_zpos.head() - 1);
@@ -327,7 +327,7 @@
                 (this->_zpos.count() - 1);
             
             _kpos = (iptr_type)
-              ( (_zpos - _zmin) / _zdel );
+              ( (_ZPOS - _zmin) / _zdel );
         }
         
         if (_ipos == 
@@ -358,44 +358,46 @@
         real_type _zz22 = 
             this->_zpos[_kpos + 1] ;
 
-        real_type _v222 =(_zpos-_zz11) *
-           (_ypos-_yy11)*(_xpos-_xx11) ;
-        real_type _v221 =(_zz22-_zpos) *
-           (_ypos-_yy11)*(_xpos-_xx11) ;
-        real_type _v212 =(_zpos-_zz11) *
-           (_ypos-_yy11)*(_xx22-_xpos) ;       
-        real_type _v122 =(_zpos-_zz11) *
-           (_yy22-_ypos)*(_xpos-_xx11) ;
-        real_type _v211 =(_zz22-_zpos) *
-           (_ypos-_yy11)*(_xx22-_xpos) ;
-        real_type _v121 =(_zz22-_zpos) *
-           (_yy22-_ypos)*(_xpos-_xpos) ;
-        real_type _v112 =(_zpos-_zz11) *
-           (_yy22-_ypos)*(_xx22-_xpos) ;   
-        real_type _v111 =(_zz22-_zpos) *
-           (_yy22-_ypos)*(_xx22-_xpos) ;
-        
+        real_type _v222 =(_ZPOS-_zz11) *
+           (_YPOS-_yy11)*(_XPOS-_xx11) ;
+        real_type _v212 =(_ZPOS-_zz11) *
+           (_YPOS-_yy11)*(_xx22-_XPOS) ;
+        real_type _v122 =(_ZPOS-_zz11) *
+           (_yy22-_YPOS)*(_XPOS-_xx11) ;
+        real_type _v112 =(_ZPOS-_zz11) *
+           (_yy22-_YPOS)*(_xx22-_XPOS) ;
+
+        real_type _v221 =(_zz22-_ZPOS) *
+           (_YPOS-_yy11)*(_XPOS-_xx11) ;
+        real_type _v211 =(_zz22-_ZPOS) *
+           (_YPOS-_yy11)*(_xx22-_XPOS) ;
+        real_type _v121 =(_zz22-_ZPOS) *
+           (_yy22-_YPOS)*(_XPOS-_xx11) ;
+        real_type _v111 =(_zz22-_ZPOS) *
+           (_yy22-_YPOS)*(_xx22-_XPOS) ;
+
         iptr_type _k111, _k112, _k121, 
                   _k211, _k122, _k212, 
                   _k221, _k222 ;
         indx_from_subs(
         _ipos+0, _jpos+0, _kpos+0, _k111);
         indx_from_subs(
-        _ipos+0, _jpos+0, _kpos+1, _k112);
+        _ipos+1, _jpos+0, _kpos+0, _k211);        
         indx_from_subs(
         _ipos+0, _jpos+1, _kpos+0, _k121);
         indx_from_subs(
-        _ipos+1, _jpos+0, _kpos+0, _k211);
+        _ipos+1, _jpos+1, _kpos+0, _k221);
+        
+        indx_from_subs(
+        _ipos+0, _jpos+0, _kpos+1, _k112);
+        indx_from_subs(
+        _ipos+1, _jpos+0, _kpos+1, _k212);        
         indx_from_subs(
         _ipos+0, _jpos+1, _kpos+1, _k122);
         indx_from_subs(
-        _ipos+1, _jpos+0, _kpos+1, _k212);
-        indx_from_subs(
-        _ipos+1, _jpos+1, _kpos+0, _k221);
-        indx_from_subs(
         _ipos+1, _jpos+1, _kpos+1, _k222);
 
-        real_type _hbar = 
+        real_type _hBAR = 
           ( _v111*this->_hmat[_k111]
           + _v112*this->_hmat[_k112]
           + _v121*this->_hmat[_k121]
@@ -407,7 +409,7 @@
         / ( _v111+_v112+_v121+_v211+
             _v122+_v212+_v221+_v222) ;
 
-        return (  _hbar ) ;
+        return (  _hBAR ) ;
     }    
     
     

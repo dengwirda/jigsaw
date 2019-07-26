@@ -249,12 +249,12 @@
         {
         public  :
         __inline_call uint32_t  operator() (
-            node_data const&_node
+            node_data const&_ndat
             ) const
         {
     /*----------------------- hash node indexing for node */
             return hash::hashword (
-                (uint32_t*)&_node._node[0], 
+                (uint32_t*)&_ndat._node[0], 
                     +1 * __hashscal, +137);
         }
         } ;
@@ -263,11 +263,11 @@
     /*----------------------- hash node indexing for ball */
         public  :
         __inline_call uint32_t  operator() (
-            ball_data const&_ball
+            ball_data const&_bdat
             ) const
         {
             return hash::hashword (
-                (uint32_t*)&_ball._node[0], 
+                (uint32_t*)&_bdat._node[0], 
                     +1 * __hashscal, +137);
         }
         } ;
@@ -275,12 +275,12 @@
         {
         public  :
         __inline_call uint32_t  operator() (
-            edge_data const&_edge
+            edge_data const&_edat
             ) const
         {
     /*----------------------- hash node indexing for edge */
             return hash::hashword (
-                (uint32_t*)&_edge._node[0], 
+                (uint32_t*)&_edat._node[0], 
                     +2 * __hashscal, +137);
         }
         } ;
@@ -288,12 +288,12 @@
         {
         public  :
         __inline_call uint32_t  operator() (
-            face_data const&_face
+            face_data const&_fdat
             ) const
         {   
     /*----------------------- hash node indexing for face */ 
             return hash::hashword (
-                (uint32_t*)&_face._node[0], 
+                (uint32_t*)&_fdat._node[0], 
                     +3 * __hashscal, +137);
         }
         } ;
@@ -301,12 +301,12 @@
         {
         public  :
         __inline_call uint32_t  operator() (
-            tria_data const&_tria
+            tria_data const&_tdat
             ) const
         {
     /*----------------------- hash node indexing for tria */ 
             return hash::hashword (
-                (uint32_t*)&_tria._node[0], 
+                (uint32_t*)&_tdat._node[0], 
                     +4 * __hashscal, +137);
         }
         } ;

@@ -1719,12 +1719,16 @@
            (real_type).075*_iter;
    
             _TLIM = std::min(
-            _opts.qlim() , _TLIM) ;
+                _opts.qlim(), _TLIM) ;
              
-          //real_type _DLIM = + 0.99250 ;
+          //real_type _DLIM = 
+          //    std::pow(_TLIM, +1./8.) ;
+          
+          //real_type _DLIM =_TLIM;
             real_type _DLIM = 
-                std::pow(_TLIM, +1./8.) ;
-      
+                (real_type)(1. - 
+            1.25*std::pow(1.-_TLIM, 2)) ;
+
     /*------------------------------ update mesh geometry */
     #       ifdef  __use_timers
             _ttic = _time.now() ;

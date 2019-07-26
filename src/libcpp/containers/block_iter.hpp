@@ -165,33 +165,33 @@
     }
 
     __inline_call iter_type& operator+= (
-        size_type _off
+        size_type _val
         )
     { /*--------------------- increment */
-        this->_off += _off;
+        this->_off += _val;
         return *(iter_type*)this;
     }
     __inline_call iter_type& operator-= (
-        size_type _off
+        size_type _val
         )
     { /*--------------------- decrement */
-        this->_off -= _off;
+        this->_off -= _val;
         return *(iter_type*)this;
     }
 
     __inline_call iter_type operator + (
-        size_type _off
+        size_type _val
         )
     { /*-------------------- add offset */
         iter_type _tmp(*(iter_type*)this);
-        return _tmp += _off;
+        return _tmp += _val;
     }
     __inline_call iter_type operator - (
-        size_type _off
+        size_type _val
         )
     { /*-------------------- sub offset */
         iter_type _tmp(*(iter_type*)this);
-        return _tmp -= _off;
+        return _tmp -= _val;
     }
 
     __inline_call diff_type operator - (

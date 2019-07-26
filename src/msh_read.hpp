@@ -1315,11 +1315,11 @@
                 std::int32_t _inum =
                     std::stol(_tstr[1]);
                 
-                std::int32_t _kind =
+                std::int32_t _KIND =
                     std::stol(_tstr[2]);
                 
                 _dest.push_bound (
-                _irow, _itag , _inum, _kind);
+                _irow,  _itag, _inum, _KIND);
             }
             else
             {

@@ -862,6 +862,8 @@
                
                 _irDT  = true;   // init. new face in rDT
                
+                if(_geom.have_feat(+1))
+                {
                 init_ball( _geom, _hfun,
                     _mesh, _epro, _pass, 
                     _mode, _args) ; 
@@ -873,6 +875,7 @@
                     _tdat, _tscr,
                     _bdat, _bscr, _pass, 
                     _mode, _args) ;
+                }
 
     #           ifdef  __use_timers
                 _ttoc = _time.now() ;           
@@ -902,6 +905,8 @@
                 
                 _mode  = tria_mode;
         
+                if(_geom.have_feat(+1))
+                {
                 _irDT  = true;   // init. new face in rDT
         
                 init_rdel( _geom, _hfun, 
@@ -911,7 +916,8 @@
                     _tdat, _tscr,
                     _bdat, _bscr, _pass, 
                     _mode, _args) ;
-    
+                }
+
     #           ifdef  __use_timers
                 _ttoc = _time.now() ;           
                 _tcpu._tria_init += 

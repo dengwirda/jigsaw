@@ -81,14 +81,14 @@
     public  :
 /*---------------------------------------- "write" access */
     __inline_call real_type& pmin (
-        iptr_type _ipos
+        iptr_type _ppos
         )
-    {   return this->_pmin[ _ipos] ;
+    {   return this->_pmin[ _ppos] ;
     }
     __inline_call real_type& pmax (
-        iptr_type _ipos
+        iptr_type _ppos
         )
-    {   return this->_pmax[ _ipos] ;
+    {   return this->_pmax[ _ppos] ;
     }
     __inline_call iptr_type& ipos (
         )
@@ -96,14 +96,14 @@
     }
 /*---------------------------------------- "const" access */
     __inline_call real_type const& pmin (
-        iptr_type _ipos
+        iptr_type _ppos
         ) const
-    {   return this->_pmin[ _ipos] ;
+    {   return this->_pmin[ _ppos] ;
     }
     __inline_call real_type const& pmax (
-        iptr_type _ipos
+        iptr_type _ppos
         ) const
-    {   return this->_pmax[ _ipos] ;
+    {   return this->_pmax[ _ppos] ;
     }
     __inline_call iptr_type const& ipos (
         ) const
@@ -111,17 +111,17 @@
     }
 /*--------------------------- calc. centroid, length, etc */
     __inline_call real_type  pmid (
-        iptr_type _ipos
+        iptr_type _ppos
         ) const
-    {   return(this->_pmin[ _ipos] + 
-               this->_pmax[ _ipos])*
+    {   return(this->_pmin[ _ppos] + 
+               this->_pmax[ _ppos])*
               (real_type) +.5 ;
     }
     __inline_call real_type  plen (
-        iptr_type _ipos
+        iptr_type _ppos
         ) const
-    {   return this->_pmax[ _ipos] -
-               this->_pmin[ _ipos] ;
+    {   return this->_pmax[ _ppos] -
+               this->_pmin[ _ppos] ;
     }
     
     } ;
@@ -151,19 +151,19 @@
     public  :
 /*---------------------------------------- "write" access */
     __inline_call real_type& pval (
-        iptr_type _ipos
+        iptr_type _ppos
         )
-    {   return this->_pval[ _ipos] ;
+    {   return this->_pval[ _ppos] ;
     }
     __inline_call real_type& pmin (
-        iptr_type _ipos
+        iptr_type _ppos
         )
-    {   return this->_pval[ _ipos] ;
+    {   return this->_pval[ _ppos] ;
     }
     __inline_call real_type& pmax (
-        iptr_type _ipos
+        iptr_type _ppos
         )
-    {   return this->_pval[ _ipos] ;
+    {   return this->_pval[ _ppos] ;
     }
     __inline_call iptr_type& ipos (
         )
@@ -171,19 +171,19 @@
     }
 /*---------------------------------------- "const" access */
     __inline_call real_type const& pval (
-        iptr_type _ipos
+        iptr_type _ppos
         ) const
-    {   return this->_pval[ _ipos] ;
+    {   return this->_pval[ _ppos] ;
     }
     __inline_call real_type const& pmin (
-        iptr_type _ipos
+        iptr_type _ppos
         ) const
-    {   return this->_pval[ _ipos] ;
+    {   return this->_pval[ _ppos] ;
     }
     __inline_call real_type const& pmax (
-        iptr_type _ipos
+        iptr_type _ppos
         ) const
-    {   return this->_pval[ _ipos] ;
+    {   return this->_pval[ _ppos] ;
     }
     __inline_call iptr_type const& ipos (
         ) const
@@ -191,9 +191,9 @@
     }
 /*--------------------------- calc. centroid, length, etc */
     __inline_call real_type const& pmid (
-        iptr_type _ipos
+        iptr_type _ppos
         ) const
-    {   return this->_pval[ _ipos] ;
+    {   return this->_pval[ _ppos] ;
     }
     __inline_call real_type  plen (
         iptr_type

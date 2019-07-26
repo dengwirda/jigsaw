@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 January, 2019
+     * Last updated: 24 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -390,47 +390,20 @@
         data_type _rb =             // chara.-length
        (_r1+_r2+_r3) / (data_type)+3. ;
               
-        data_type _qb ;
-        if (_rb > (data_type)+0. )
-            _qb = (data_type)+1. 
-                - _lb / _rb ;
-        else
-            _qb = (data_type)+0. ;
-       
-        data_type _q1 ;
-        if (_r1 > (data_type)+0. )
-            _q1 = (data_type)+1. 
-                - _l1 / _r1 ;
-        else
-            _q1 = (data_type)+0. ;
-        data_type _q2 ;
-        if (_r2 > (data_type)+0. )
-            _q2 = (data_type)+1. 
-                - _l2 / _r2 ;
-        else
-            _q2 = (data_type)+0. ;
-        data_type _q3 ;
-        if (_r3 > (data_type)+0. )
-            _q3 = (data_type)+1. 
-                - _l3 / _r3 ;
-        else
-            _q3 = (data_type)+0. ;
-       
+        data_type _qb = _lb / _rb ;
+        
+        data_type _q1 = _l1 / _r1 ;
+        data_type _q2 = _l2 / _r2 ;
+        data_type _q3 = _l3 / _r3 ;
+        
         data_type _qe =             // straight mean
        (_q1+_q2+_q3) / (data_type)+3. ;
-         
-        /*
-        data_type _qe =             // harmonic mean
-            (data_type)+1. / _q1 + 
-            (data_type)+1. / _q2 + 
-            (data_type)+1. / _q3 ;
-        _qe = 
-            (data_type)+3. / _qe ;
-         */
         
         data_type _qq = 
       ((data_type)+1.-.33) * _qb + 
       ((data_type)+0.+.33) * _qe ;
+
+        _qq = (data_type)1.- _qq ;
 
         return    _qq ;
     }
@@ -490,47 +463,20 @@
         data_type _rb =             // chara.-length
        (_r1+_r2+_r3) / (data_type)+3. ;
               
-        data_type _qb ;
-        if (_rb > (data_type)+0. )
-            _qb = (data_type)+1. 
-                - _lb / _rb ;
-        else
-            _qb = (data_type)+0. ;
-       
-        data_type _q1 ;
-        if (_r1 > (data_type)+0. )
-            _q1 = (data_type)+1. 
-                - _l1 / _r1 ;
-        else
-            _q1 = (data_type)+0. ;
-        data_type _q2 ;
-        if (_r2 > (data_type)+0. )
-            _q2 = (data_type)+1. 
-                - _l2 / _r2 ;
-        else
-            _q2 = (data_type)+0. ;
-        data_type _q3 ;
-        if (_r3 > (data_type)+0. )
-            _q3 = (data_type)+1. 
-                - _l3 / _r3 ;
-        else
-            _q3 = (data_type)+0. ;
+        data_type _qb = _lb / _rb ;
+        
+        data_type _q1 = _l1 / _r1 ;
+        data_type _q2 = _l2 / _r2 ;
+        data_type _q3 = _l3 / _r3 ;
        
         data_type _qe =             // straight mean
        (_q1+_q2+_q3) / (data_type)+3. ;
-         
-        /*
-        data_type _qe =             // harmonic mean
-            (data_type)+1. / _q1 + 
-            (data_type)+1. / _q2 + 
-            (data_type)+1. / _q3 ;
-        _qe = 
-            (data_type)+3. / _qe ;
-         */
-         
+        
         data_type _qq = 
       ((data_type)+1.-.33) * _qb + 
       ((data_type)+0.+.33) * _qe ;
+
+        _qq = (data_type)1.- _qq ;
 
         return    _qq ;
     }

@@ -378,7 +378,7 @@
         typename  geom_opts
              >
     __normal_call void_type seed_feat (
-        mesh_type &_mesh ,
+        mesh_type &_rdel ,
         geom_opts &_opts
         )
     {   
@@ -389,13 +389,13 @@
         _ppos[0] = (real_type) +0.0E+0;
         _ppos[1] = (real_type) +0.0E+0;
         _ppos[2] = (real_type) +0.0E+0;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +4;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +0;     
     }       
         
@@ -410,7 +410,7 @@
         typename  geom_opts
              >
     __normal_call void_type seed_mesh (
-        mesh_type &_mesh ,
+        mesh_type &_rdel ,
         geom_opts &_opts
         )
     {   
@@ -424,7 +424,7 @@
         
         real_type  _lo = 2.*_pi / 10. ; 
         
-        if (_mesh._tria.
+        if (_rdel._tria.
                 _nset.count() <= +8 )
         {
     /*--------------------------- init. reg.-icosahedron */
@@ -438,13 +438,13 @@
         std::cos(_pi*(real_type)+0.5) ;
         _ppos[2] = this->_radC * 
         std::sin(_pi*(real_type)+0.5) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;
         
         _ppos[0] = this->_radA * 
@@ -455,13 +455,13 @@
         std::cos(_pi*(real_type)-0.5) ;
         _ppos[2] = this->_radC * 
         std::sin(_pi*(real_type)-0.5) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;
         
         _ppos[0] = this->_radA * 
@@ -472,13 +472,13 @@
         std::cos(_la*(real_type)+1.0) ;
         _ppos[2] = this->_radC * 
         std::sin(_la*(real_type)+1.0) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;
         
         _ppos[0] = this->_radA * 
@@ -489,13 +489,13 @@
         std::cos(_la*(real_type)-1.0) ;
         _ppos[2] = this->_radC * 
         std::sin(_la*(real_type)-1.0) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;
         
         _ppos[0] = this->_radA * 
@@ -506,13 +506,13 @@
         std::cos(_la*(real_type)+1.0) ;
         _ppos[2] = this->_radC * 
         std::sin(_la*(real_type)+1.0) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;
      
         _ppos[0] = this->_radA * 
@@ -523,13 +523,13 @@
         std::cos(_la*(real_type)-1.0) ;
         _ppos[2] = this->_radC * 
         std::sin(_la*(real_type)-1.0) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;
      
         _ppos[0] = this->_radA * 
@@ -540,13 +540,13 @@
         std::cos(_la*(real_type)+1.0) ;
         _ppos[2] = this->_radC * 
         std::sin(_la*(real_type)+1.0) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;
      
         _ppos[0] = this->_radA * 
@@ -557,13 +557,13 @@
         std::cos(_la*(real_type)-1.0) ;
         _ppos[2] = this->_radC * 
         std::sin(_la*(real_type)-1.0) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;   
         
         _ppos[0] = this->_radA * 
@@ -574,13 +574,13 @@
         std::cos(_la*(real_type)+1.0) ;
         _ppos[2] = this->_radC * 
         std::sin(_la*(real_type)+1.0) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;     
         
         _ppos[0] = this->_radA * 
@@ -591,13 +591,13 @@
         std::cos(_la*(real_type)-1.0) ;
         _ppos[2] = this->_radC * 
         std::sin(_la*(real_type)-1.0) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;
         
         _ppos[0] = this->_radA * 
@@ -608,13 +608,13 @@
         std::cos(_la*(real_type)+1.0) ;
         _ppos[2] = this->_radC * 
         std::sin(_la*(real_type)+1.0) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;
    
         _ppos[0] = this->_radA * 
@@ -625,13 +625,13 @@
         std::cos(_la*(real_type)-1.0) ;
         _ppos[2] = this->_radC * 
         std::sin(_la*(real_type)-1.0) ;
-        _mesh.
+        _rdel.
         _tria.push_node(_ppos, _inod) ;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->fdim() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->feat() = +0;
-        _mesh.
+        _rdel.
         _tria.node(_inod)->topo() = +2;
          
         }
@@ -652,7 +652,7 @@
         )
     {
     /*- build an AABB that encloses a spheroidal arc-seg. */
-        real_type _rEPS = this->_rEPS ;
+        real_type _rTOL = this->_rEPS ;
     
         _rmin[0] = (float)std::min(
             _apos[0], _bpos[0]) ;
@@ -686,7 +686,7 @@
         _rlen , _rmax[2]-_rmin[2]);
     
         _rlen*= (float)     +.5 ;
-        _rlen+= (float)   _rEPS ;
+        _rlen+= (float)   _rTOL ;
     
         _rmin[0] = std::min(
         _rmin[0], _rmid[0]-_rlen) ;

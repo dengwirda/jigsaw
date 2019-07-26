@@ -1104,7 +1104,7 @@
                         _iptr = _iptr->_next )
             {
                 geometry::hits_type 
-                    _hits = geometry::null_hits;
+                    _HITS = geometry::null_hits;
             
             /*--------------- line-line intersection test */
                 iptr_type  _epos = 
@@ -1121,7 +1121,7 @@
                     _tria._set2[_epos].node(1) ;
                 
                 real_type  _xpos[2];
-                _hits = 
+                _HITS = 
                      geometry::line_line_2d (
                    & this->_ipos[0], 
                    & this->_jpos[0],
@@ -1131,10 +1131,10 @@
                     _set1 [_enod[1]].pval(0),
                     _xpos, true, 2 ) ;
 
-                if(_hits != geometry::null_hits)
+                if(_HITS != geometry::null_hits)
                 {
             /*--------------- call output function on hit */
-                    this->_hfun (_xpos, _hits ,
+                    this->_hfun (_xpos, _HITS ,
                     _geom._tria .
                     _set2[_epos].feat() ,
                     _geom._tria .
@@ -1145,9 +1145,9 @@
                     this->_hnum+= +1 ;
                     
                     this->_find = true ;
-                    this->_hits =_hits ;
+                    this->_hits =_HITS ;
                     
-                if (_hits != geometry::edge_hits)
+                if (_HITS != geometry::edge_hits)
                     this->_exct = true ;
                 }
             }
@@ -1187,7 +1187,7 @@
     /*------------------------------ construct from _src. */
         __normal_call ball_line_pred  (
             real_type *_cmid ,
-            real_type  _rsiz ,
+            real_type  _rsrc ,
             geom_type &_gsrc ,
             hits_func &_hsrc
             ) : _geom( _gsrc), 
@@ -1202,7 +1202,7 @@
             this->_find    = false ;
             this->_hnum    = + 0   ;
         
-            this->_rsiz    = _rsiz ;
+            this->_rsiz    = _rsrc ;
         }
     /*----------------------- all intersection about node */
         __normal_call  void_type operator()  (
@@ -1213,7 +1213,7 @@
             for ( ; _iptr != nullptr; 
                         _iptr = _iptr->_next )
             {
-                geometry::hits_type _hits = 
+                geometry::hits_type _HITS = 
                     geometry::face_hits ;
                 
             /*--------------- ball_line intersection test */
@@ -1243,7 +1243,7 @@
                 case +2 :
                     {
             /*--------------- call output function on hit */
-                this->_hfun (_jpos, _hits ,
+                this->_hfun (_jpos, _HITS ,
                     _geom._tria .
                     _set2[_epos].feat() ,
                     _geom._tria .
@@ -1257,7 +1257,7 @@
                 case +1 :
                     {
             /*--------------- call output function on hit */
-                this->_hfun (_ipos, _hits ,
+                this->_hfun (_ipos, _HITS ,
                     _geom._tria .
                     _set2[_epos].feat() ,
                     _geom._tria .
@@ -1268,7 +1268,7 @@
                 this->_hnum += +1;
                 
                 this->_find = true ;
-                this->_hits =_hits ;
+                this->_hits =_HITS ;
                     }      // falls through
                 }
             }

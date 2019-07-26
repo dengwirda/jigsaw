@@ -153,12 +153,12 @@
     }
 
     __inline_call void_type copy_iter (
-        size_type _size,
+        size_type _SIZE,
         data_type const& _dsrc,
     __cont::null_iterator_kind
         )
     { /* copy _data onto object */
-        set_count(_size, 
+        set_count(_SIZE, 
             __cont::tight_alloc, _dsrc) ;
     }
 
@@ -180,7 +180,7 @@
     }
 
     __inline_call block_array (
-        size_type _size,
+        size_type _SIZE,
         data_type const&_dsrc = data_type(),
         allocator const&_asrc = allocator()
         ) : _block( _asrc)
@@ -188,7 +188,7 @@
     /*----------------------- default c'tor - initialisor */
         this->_count = +0;
         this->_alloc = +0;
-        copy_iter(_size,_dsrc,
+        copy_iter(_SIZE,_dsrc,
         __cont::null_iterator_kind ()) ;
     }
 

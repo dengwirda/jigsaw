@@ -82,41 +82,41 @@
                 _errv(  +0 ) {}            
     /*-------------------------------- read MSHID section */
         __normal_call void_type push_mshid (
-            std::int32_t  _ftag ,
-            jmsh_kind::enum_data _kind
+            std::int32_t  _FTAG ,
+            jmsh_kind::enum_data _KIND
             )
         {   
-            this->_ftag = _ftag ;
-            this->_kind = _kind ;
+            this->_ftag = _FTAG ;
+            this->_kind = _KIND ;
             
             this->_jmsh->_flags  = JIGSAW_NULL_FLAG;
             
-            if (_kind == 
+            if (_KIND == 
                  jmsh_kind::euclidean_mesh)
             this->_jmsh->_flags  = 
                 JIGSAW_EUCLIDEAN_MESH ;
             else
-            if (_kind == 
+            if (_KIND == 
                  jmsh_kind::euclidean_grid)
             this->_jmsh->_flags  = 
                 JIGSAW_EUCLIDEAN_GRID ;
             else
-            if (_kind == 
+            if (_KIND == 
                  jmsh_kind::ellipsoid_mesh)
             this->_jmsh->_flags  = 
                 JIGSAW_ELLIPSOID_MESH ;
             else
-            if (_kind == 
+            if (_KIND == 
                  jmsh_kind::ellipsoid_grid)
             this->_jmsh->_flags  = 
                 JIGSAW_ELLIPSOID_GRID ;
         }
     /*-------------------------------- read NDIMS section */
         __normal_call void_type push_ndims (
-            std:: size_t  _ndim
+            std:: size_t  _NDIM
             )
         {   
-            this->_ndim = _ndim ;
+            this->_ndim = _NDIM ;
         }
     /*-------------------------------- read RADII section */
         __normal_call void_type push_radii (
@@ -443,7 +443,7 @@
             std:: size_t  _ipos,
             std::int32_t  _itag,
             std::int32_t  _inum,
-            std::int32_t  _kind
+            std::int32_t  _KIND
             )
         {
             if (_ipos < this->_jmsh->_bound._size)
@@ -453,7 +453,7 @@
             this->_jmsh->_bound.
                 _data[_ipos]._indx =  _inum ;
             this->_jmsh->_bound.
-                _data[_ipos]._kind =  _kind ;
+                _data[_ipos]._kind =  _KIND ;
                       
             }
             else
@@ -465,14 +465,14 @@
     /*-------------------------------- open VALUE section */
         __normal_call void_type open_value (
             std:: size_t  _nrow,
-            std:: size_t  _nval
+            std:: size_t  _NVAL
             ) 
         { 
-            this->_nval = _nval;
+            this->_nval = _NVAL;
 
             jigsaw_alloc_reals (
                 &this->
-            _jmsh->_value , _nrow * _nval ) ;
+            _jmsh->_value , _nrow * _NVAL ) ;
         }
     /*-------------------------------- push VALUE section */
         __normal_call void_type push_value (
@@ -500,14 +500,14 @@
     /*-------------------------------- open SLOPE section */
         __normal_call void_type open_slope (
             std:: size_t  _nrow,
-            std:: size_t  _nval
+            std:: size_t  _NVAL
             ) 
         { 
-            this->_nval = _nval;
+            this->_nval = _NVAL;
 
             jigsaw_alloc_reals (
                 &this->
-            _jmsh->_slope , _nrow * _nval ) ;
+            _jmsh->_slope , _nrow * _NVAL ) ;
         }
     /*-------------------------------- push SLOPE section */
         __normal_call void_type push_slope (

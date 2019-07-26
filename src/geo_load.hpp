@@ -79,14 +79,14 @@
             ) : _geom(_gsrc) {}
     /*---------------------------------- parse MSHID data */
         __normal_call void_type push_mshid (
-            std::int32_t  _ftag ,
-            jmsh_kind::enum_data _kind
+            std::int32_t  _FTAG ,
+            jmsh_kind::enum_data _KIND
             )
         {   
-            this->_ftag = _ftag ;
-            this->_kind = _kind ;
+            this->_ftag = _FTAG ;
+            this->_kind = _KIND ;
             this->
-           _geom->_kind = _kind ;
+           _geom->_kind = _KIND ;
         }
     /*---------------------------------- parse RADII data */
         __normal_call void_type push_radii (
@@ -102,12 +102,12 @@
         }
     /*---------------------------------- parse NDIMS data */
         __normal_call void_type push_ndims (
-            std:: size_t  _ndim
+            std:: size_t  _NDIM
             )
         {   
-            this->_ndim = _ndim ;
+            this->_ndim = _NDIM ;
             this->
-           _geom->_ndim = _ndim ;
+           _geom->_ndim = _NDIM ;
         }
     /*---------------------------------- parse POINT data */
         __normal_call void_type push_point (
@@ -267,7 +267,7 @@
             std:: size_t  _ipos ,
             std::int32_t  _itag ,
             std::int32_t  _inum ,
-            std::int32_t  _kind
+            std::int32_t  _KIND
             )
         {
             __unreferenced(_ipos) ;
@@ -280,7 +280,7 @@
                     ::part_data _pdat ;
                 _pdat.itag () = _itag ;
                 _pdat.indx () = _inum ;
-                _pdat.kind () = _kind ;
+                _pdat.kind () = _KIND ;
                 
                 this->_geom->
                    _euclidean_mesh_2d.
@@ -296,7 +296,7 @@
                     ::part_data _pdat ;
                 _pdat.itag () = _itag ;
                 _pdat.indx () = _inum ;
-                _pdat.kind () = _kind ;
+                _pdat.kind () = _KIND ;
                 
                 this->_geom->
                    _euclidean_mesh_3d.

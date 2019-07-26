@@ -54,7 +54,7 @@
     typename      list_type 
              >
     __normal_call void_type star_tria_void (
-        iptr_list &_tset ,
+        iptr_list &_vset ,
         iptr_type  _npos ,
         char_type  _flag ,
         list_type *_tnew = nullptr ,
@@ -62,8 +62,8 @@
         )
     {
     /*---------------------- mark list of trias in cavity */
-        for(auto _iter  = _tset.head(); 
-                 _iter != _tset.tend(); 
+        for(auto _iter  = _vset.head(); 
+                 _iter != _vset.tend(); 
                ++_iter  )
         {
             __mark(*_iter) += _flag ;
@@ -74,14 +74,14 @@
             FACE_SIZE = tria_pred::_dims+1;
         
         this->_fset.set_slots (
-            _tset.count()* tria_dims ) ;
+            _vset.count()* tria_dims ) ;
 
         __assert ( 
             this->_fset.count() == +0 &&
         "star-tria-void: hashtable non-empty!" ) ;
 
-        for(auto _iter  = _tset.head() ; 
-                    _iter != _tset.tend() ; 
+        for(auto _iter  = _vset.head() ; 
+                    _iter != _vset.tend() ; 
                         ++_iter  )
         {
             if (__mark(*_iter)<_flag) continue ;
@@ -181,8 +181,8 @@
         }
 
     /*------------------------------ un-mark cavity trias */
-        for(auto _iter  = _tset.head() ; 
-                 _iter != _tset.tend() ; 
+        for(auto _iter  = _vset.head() ; 
+                 _iter != _vset.tend() ; 
                ++_iter  )
         {
             if (__mark(*_iter) >= _flag)

@@ -80,23 +80,23 @@
             ) : _hfun(_hsrc) {}            
     /*-------------------------------- read MSHID section */
         __normal_call void_type push_mshid (
-            std::int32_t  _ftag ,
-            jmsh_kind::enum_data _kind
+            std::int32_t  _FTAG ,
+            jmsh_kind::enum_data _KIND
             )
         {   
-            this->_ftag = _ftag ;
-            this->_kind = _kind ;
+            this->_ftag = _FTAG ;
+            this->_kind = _KIND ;
             this->
-           _hfun->_kind = _kind ;
+           _hfun->_kind = _KIND ;
         }
     /*-------------------------------- read NDIMS section */
         __normal_call void_type push_ndims (
-            std:: size_t  _ndim
+            std:: size_t  _NDIM
             )
         {   
-            this->_ndim = _ndim ;
+            this->_ndim = _NDIM ;
             this->
-           _hfun->_ndim = _ndim ;
+           _hfun->_ndim = _NDIM ;
         }
     /*-------------------------------- read POINT section */
         __normal_call void_type push_point (

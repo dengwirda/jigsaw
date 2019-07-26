@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 September, 2017
+     * Last updated: 24 July, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -88,13 +88,13 @@
         typename  pred_type
              >
     __inline_call void_type sort_2 ( // sort 2-tuple
-        iter_type _ll,
-        iter_type _rr,
+        iter_type _aa,
+        iter_type _bb,
         pred_type const&_less
         )
     {
-        if (_less(*_rr, *_ll))
-        std::swap(*_ll, *_rr);
+        if (_less(*_bb, *_aa))
+        std::swap(*_aa, *_bb);
     }
     
     template <
@@ -102,20 +102,50 @@
         typename  pred_type
              >
     __inline_call void_type sort_3 ( // sort 3-tuple
-        iter_type _ll,
-        iter_type _mm,
-        iter_type _rr,
+        iter_type _aa,
+        iter_type _bb,
+        iter_type _cc,
         pred_type const&_less
         )
     {
-        if (_less(*_mm, *_ll))
-        std::swap(*_ll, *_mm);
-        if (_less(*_rr, *_mm))
+        if (_less(*_bb, *_aa))
+        std::swap(*_aa, *_bb);
+        
+        if (_less(*_cc, *_bb))
         {
-        std::swap(*_mm, *_rr);
-        if (_less(*_mm, *_ll))
-        std::swap(*_ll, *_mm);
+        std::swap(*_bb, *_cc);
+
+        if (_less(*_bb, *_aa))
+        std::swap(*_aa, *_bb);
         }
+    }
+
+    template <
+        typename  iter_type ,     
+        typename  pred_type
+             >
+    __inline_call void_type sort_4 ( // sort 4-tuple
+        iter_type _aa,
+        iter_type _bb,
+        iter_type _cc,
+        iter_type _dd,
+        pred_type const&_less
+        )
+    {
+        if (_less(*_bb, *_aa))
+        std::swap(*_aa, *_bb);
+        
+        if (_less(*_dd, *_cc))
+        std::swap(*_cc, *_dd);
+
+        if (_less(*_cc, *_aa))
+        std::swap(*_aa, *_cc);
+
+        if (_less(*_dd, *_bb))
+        std::swap(*_bb, *_dd);
+
+        if (_less(*_cc, *_bb))
+        std::swap(*_bb, *_cc);
     }
     
     /*
@@ -151,6 +181,13 @@
             { 
             sort_3(_head+0, 
                    _head+1, _head+2, _less);       
+            return ; 
+            }
+        case 4: 
+        /*-------------------------------- length = 4 */
+            { 
+            sort_4(_head+0, _head+1, 
+                   _head+2, _head+3, _less);       
             return ; 
             }
         }
@@ -212,23 +249,6 @@
         pred_type _less
         )
     {
-    /* Niels Pardons, A154393: "Empirically good sequence of 
-     * increments for the shell sort algorithm", 2009, OEIS.
-     */ 
-        typename containers::
-            iterator_traits<iter_type>::
-                size_type _finc = _tend - _head;
-        typename containers::
-            iterator_traits<iter_type>::
-                size_type _incn = +12 ;
-        typename containers::
-            iterator_traits<iter_type>::
-            size_type static constexpr _incv[12] 
-            = {   1,        9,        34,      
-                182,      836,      4025,   
-              19001,    90358,    428481, 
-            2034035,  9651787,  45806244}  ;
-    
     /*--------------------------- sort small input ranges */
         switch (_tend - _head)
         {
@@ -248,8 +268,32 @@
                    _head+1, _head+2, _less);       
             return ; 
             }
+        case 4: 
+        /*-------------------------------- length = 4 */
+            { 
+            sort_4(_head+0, _head+1, 
+                   _head+2, _head+3, _less);       
+            return ; 
+            }
         }
-        
+    
+    /* Niels Pardons, A154393: "Empirically good sequence of 
+     * increments for the shell sort algorithm", 2009, OEIS.
+     */ 
+        typename containers::
+            iterator_traits<iter_type>::
+                size_type _finc = _tend - _head;
+        typename containers::
+            iterator_traits<iter_type>::
+                size_type _incn = +12 ;
+        typename containers::
+            iterator_traits<iter_type>::
+            size_type static constexpr _incv[12] 
+            = {   1,        9,        34,      
+                182,      836,      4025,   
+              19001,    90358,    428481, 
+            2034035,  9651787,  45806244}  ;
+    
     /* insertion sort: sift down toward head until sorted */    
         for ( ; _incn != 0 ;  --_incn)
         {

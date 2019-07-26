@@ -66,7 +66,6 @@ namespace hash {
 
 #define hashsize(n) ((uint32_t)1<<(n))
 #define hashmask(n) (hashsize(n)-1)
-#define rot(x,k) (((x)<<(k)) | ((x)>>(32-(k))))
 
 /*
 -------------------------------------------------------------------------------
@@ -112,14 +111,16 @@ on, and rotates are much kinder to the top and bottom bits, so I used
 rotates.
 -------------------------------------------------------------------------------
 */
-#define mix(a,b,c) \
+#define ROT(x,k) (((x)<<(k)) | ((x)>>(32-(k))))
+
+#define MIX(a,b,c) \
 { \
-  a -= c;  a ^= rot(c, 4);  c += b; \
-  b -= a;  b ^= rot(a, 6);  a += c; \
-  c -= b;  c ^= rot(b, 8);  b += a; \
-  a -= c;  a ^= rot(c,16);  c += b; \
-  b -= a;  b ^= rot(a,19);  a += c; \
-  c -= b;  c ^= rot(b, 4);  b += a; \
+  a -= c;  a ^= ROT(c, 4);  c += b; \
+  b -= a;  b ^= ROT(a, 6);  a += c; \
+  c -= b;  c ^= ROT(b, 8);  b += a; \
+  a -= c;  a ^= ROT(c,16);  c += b; \
+  b -= a;  b ^= ROT(a,19);  a += c; \
+  c -= b;  c ^= ROT(b, 4);  b += a; \
 }
 
 /*
@@ -147,15 +148,15 @@ and these came close:
  11  8 15 26 3 22 24
 -------------------------------------------------------------------------------
 */
-#define final(a,b,c) \
+#define FINAL(a,b,c) \
 { \
-  c ^= b; c -= rot(b,14); \
-  a ^= c; a -= rot(c,11); \
-  b ^= a; b -= rot(a,25); \
-  c ^= b; c -= rot(b,16); \
-  a ^= c; a -= rot(c,4);  \
-  b ^= a; b -= rot(a,14); \
-  c ^= b; c -= rot(b,24); \
+  c ^= b; c -= ROT(b,14); \
+  a ^= c; a -= ROT(c,11); \
+  b ^= a; b -= ROT(a,25); \
+  c ^= b; c -= ROT(b,16); \
+  a ^= c; a -= ROT(c,4);  \
+  b ^= a; b -= ROT(a,14); \
+  c ^= b; c -= ROT(b,24); \
 }
 
 /*
@@ -187,7 +188,7 @@ uint32_t        initval)         /* the previous hash, or an arbitrary value */
     a += k[0];
     b += k[1];
     c += k[2];
-    mix(a,b,c);
+    MIX(a,b,c);
     length -= 3;
     k += 3;
   }
@@ -198,7 +199,7 @@ uint32_t        initval)         /* the previous hash, or an arbitrary value */
   case 3 : c+=k[2];   /* fall through */
   case 2 : b+=k[1];   /* fall through */
   case 1 : a+=k[0];   /* fall through */
-    final(a,b,c);
+    FINAL(a,b,c);
   case 0:     /* case 0: nothing left to add */
     break;
   }
@@ -233,7 +234,7 @@ __write_ptr(uint32_t) pb)         /* IN: more seed OUT: secondary hash value */
     a += k[0];
     b += k[1];
     c += k[2];
-    mix(a,b,c);
+    MIX(a,b,c);
     length -= 3;
     k += 3;
   }
@@ -244,7 +245,7 @@ __write_ptr(uint32_t) pb)         /* IN: more seed OUT: secondary hash value */
   case 3 : c+=k[2];   /* fall through */
   case 2 : b+=k[1];   /* fall through */
   case 1 : a+=k[0];   /* fall through */
-    final(a,b,c);
+    FINAL(a,b,c);
   case 0:     /* case 0: nothing left to add */
     break;
   }
@@ -301,7 +302,7 @@ uint32_t hashlittle( const void *key, size_t length, uint32_t initval)
       a += k[0];
       b += k[1];
       c += k[2];
-      mix(a,b,c);
+      MIX(a,b,c);
       length -= 12;
       k += 3;
     }
@@ -369,7 +370,7 @@ uint32_t hashlittle( const void *key, size_t length, uint32_t initval)
       a += k[0] + (((uint32_t)k[1])<<16);
       b += k[2] + (((uint32_t)k[3])<<16);
       c += k[4] + (((uint32_t)k[5])<<16);
-      mix(a,b,c);
+      MIX(a,b,c);
       length -= 12;
       k += 6;
     }
@@ -424,7 +425,7 @@ uint32_t hashlittle( const void *key, size_t length, uint32_t initval)
       c += ((uint32_t)k[9])<<8;
       c += ((uint32_t)k[10])<<16;
       c += ((uint32_t)k[11])<<24;
-      mix(a,b,c);
+      MIX(a,b,c);
       length -= 12;
       k += 12;
     }
@@ -449,7 +450,7 @@ uint32_t hashlittle( const void *key, size_t length, uint32_t initval)
     }
   }
 
-  final(a,b,c);
+  FINAL(a,b,c);
   return c;
 }
 
@@ -490,7 +491,7 @@ void hashlittle2(
       a += k[0];
       b += k[1];
       c += k[2];
-      mix(a,b,c);
+      MIX(a,b,c);
       length -= 12;
       k += 3;
     }
@@ -558,7 +559,7 @@ void hashlittle2(
       a += k[0] + (((uint32_t)k[1])<<16);
       b += k[2] + (((uint32_t)k[3])<<16);
       c += k[4] + (((uint32_t)k[5])<<16);
-      mix(a,b,c);
+      MIX(a,b,c);
       length -= 12;
       k += 6;
     }
@@ -613,7 +614,7 @@ void hashlittle2(
       c += ((uint32_t)k[9])<<8;
       c += ((uint32_t)k[10])<<16;
       c += ((uint32_t)k[11])<<24;
-      mix(a,b,c);
+      MIX(a,b,c);
       length -= 12;
       k += 12;
     }
@@ -638,7 +639,7 @@ void hashlittle2(
     }
   }
 
-  final(a,b,c);
+  FINAL(a,b,c);
   *pc=c; *pb=b;
 }
 
@@ -671,7 +672,7 @@ uint32_t hashbig( const void *key, size_t length, uint32_t initval)
       a += k[0];
       b += k[1];
       c += k[2];
-      mix(a,b,c);
+      MIX(a,b,c);
       length -= 12;
       k += 3;
     }
@@ -745,7 +746,7 @@ uint32_t hashbig( const void *key, size_t length, uint32_t initval)
       c += ((uint32_t)k[9])<<16;
       c += ((uint32_t)k[10])<<8;
       c += ((uint32_t)k[11]);
-      mix(a,b,c);
+      MIX(a,b,c);
       length -= 12;
       k += 12;
     }
@@ -770,7 +771,7 @@ uint32_t hashbig( const void *key, size_t length, uint32_t initval)
     }
   }
 
-  final(a,b,c);
+  FINAL(a,b,c);
   return c;
 }
 

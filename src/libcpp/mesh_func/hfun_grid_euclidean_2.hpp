@@ -430,30 +430,30 @@
         hint_type &_hint
         )
     {
-        real_type _hval = 
+        real_type _hOUT = 
     +std::numeric_limits<real_type>::infinity();
     
         __unreferenced (_hint) ;
     
         if (this->_xpos.count() == +0)
-            return _hval ;
+            return _hOUT ;
         
-        real_type _xpos = _ppos[0] ;
+        real_type _XPOS = _ppos[0] ;
         
-        if (_xpos < *this->_xpos.head() )
-            _xpos = *this->_xpos.head() ;
-        if (_xpos > *this->_xpos.tail() )
-            _xpos = *this->_xpos.tail() ;
+        if (_XPOS < *this->_xpos.head() )
+            _XPOS = *this->_xpos.head() ;
+        if (_XPOS > *this->_xpos.tail() )
+            _XPOS = *this->_xpos.tail() ;
         
         if (this->_ypos.count() == +0)
-            return _hval ;
+            return _hOUT ;
             
-        real_type _ypos = _ppos[1] ;
+        real_type _YPOS = _ppos[1] ;
             
-        if (_ypos < *this->_ypos.head() )
-            _ypos = *this->_ypos.head() ;
-        if (_ypos > *this->_ypos.tail() )
-            _ypos = *this->_ypos.tail() ;
+        if (_YPOS < *this->_ypos.head() )
+            _YPOS = *this->_ypos.head() ;
+        if (_YPOS > *this->_ypos.tail() )
+            _YPOS = *this->_ypos.tail() ;
     
     /*---------------------------- find enclosing x-range */
         iptr_type _ipos = (iptr_type)-1 ;
@@ -465,7 +465,7 @@
             algorithms::upper_bound (
                 this->_xpos.head(), 
                 this->_xpos.tend(), 
-            _xpos,std::less<real_type>());
+            _XPOS,std::less<real_type>());
            
             _jpos = (iptr_type) (
             _joff-this->_xpos.head() - 1);
@@ -480,7 +480,7 @@
                 (this->_xpos.count() - 1);
             
             _jpos = (iptr_type)
-              ( (_xpos - _xmin) / _xdel );
+              ( (_XPOS - _xmin) / _xdel );
         }
         
     /*---------------------------- find enclosing y-range */
@@ -490,7 +490,7 @@
             algorithms::upper_bound (
                 this->_ypos.head(), 
                 this->_ypos.tend(), 
-            _ypos,std::less<real_type>());
+            _YPOS,std::less<real_type>());
            
             _ipos = (iptr_type) (
             _ioff-this->_ypos.head() - 1);
@@ -505,7 +505,7 @@
                 (this->_ypos.count() - 1);
             
             _ipos = (iptr_type)
-              ( (_ypos - _ymin) / _ydel );
+              ( (_YPOS - _ymin) / _ydel );
         }
         
         if (_ipos == 
@@ -528,13 +528,13 @@
             this->_ypos[_ipos + 1] ;
 
         real_type _aa22 = 
-           (_ypos-_yy11) * (_xpos-_xx11) ;
+           (_YPOS-_yy11) * (_XPOS-_xx11) ;
         real_type _aa21 = 
-           (_ypos-_yy11) * (_xx22-_xpos) ;
+           (_YPOS-_yy11) * (_xx22-_XPOS) ;
         real_type _aa12 = 
-           (_yy22-_ypos) * (_xpos-_xx11) ;
+           (_yy22-_YPOS) * (_XPOS-_xx11) ;
         real_type _aa11 = 
-           (_yy22-_ypos) * (_xx22-_xpos) ;
+           (_yy22-_YPOS) * (_xx22-_XPOS) ;
     
         iptr_type _kk11, _kk12 ,
                   _kk21, _kk22 ;
@@ -547,14 +547,14 @@
         indx_from_subs(
             _ipos + 1, _jpos + 1, _kk22) ;
         
-        real_type _hbar = 
+        real_type _hBAR = 
           ( _aa11*this->_hmat[_kk11]
           + _aa12*this->_hmat[_kk12]
           + _aa21*this->_hmat[_kk21]
           + _aa22*this->_hmat[_kk22] )
         / ( _aa11+_aa12+_aa21+_aa22) ;
 
-        return (  _hbar ) ;    
+        return (  _hBAR ) ;    
     }
     
     } ;

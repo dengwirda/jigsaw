@@ -90,13 +90,13 @@
     
 /*-------------------------------- helper - copy sequence */
     __normal_call void_type copy_data (
-        size_type _size,
+        size_type _SIZE,
         data_type const& _dsrc
         )
     {
         for (auto _item  =  head() ; 
-                  _size != +0 ; 
-                --_size, ++_item ) 
+                  _SIZE != +0 ; 
+                --_SIZE, ++_item ) 
         {
             *_item = _dsrc ;
         }
@@ -120,11 +120,11 @@
         }
     }
     __inline_call void_type copy_iter (
-        size_type _size,
+        size_type _SIZE,
         data_type const& _dsrc ,
     __cont::null_iterator_kind
         )
-    {   copy_data(_size, _dsrc);
+    {   copy_data(_SIZE, _dsrc);
     }
 
     public  :
@@ -135,10 +135,10 @@
         
 /*--------------------------- default c'tor - initialisor */
     __inline_call fixed_array (
-        size_type _size,
+        size_type _SIZE,
         data_type const&_dsrc = data_type ()
         )
-    {   copy_data(_size, _dsrc) ;
+    {   copy_data(_SIZE, _dsrc) ;
     }
     
 /*--------------------------- default c'tor - initialisor */

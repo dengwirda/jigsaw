@@ -57,8 +57,7 @@
 
 #   if   defined(_MSC_VER)
 #   pragma warning(disable:4127) // constant conditionals
-#   pragma warning(disable:4503) // decorated name length 
-#   pragma warning(disable:4458) // shadowing
+#   pragma warning(disable:4503) // decorated name length
 
 #   elif defined(__LLVM__)
 
