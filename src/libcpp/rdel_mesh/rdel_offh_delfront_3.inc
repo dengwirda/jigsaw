@@ -147,7 +147,7 @@
         _pert  +=   + 1 ;
         _pert  *= _seps ;
         
-        for(iptr_type _iter = +0; _iter++ != +4 ; )
+        for (auto _iter = +0; _iter++ != +4 ; )
         {
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
 
@@ -315,7 +315,7 @@
         _pert  +=   + 1 ;
         _pert  *= _seps ;
         
-        for(iptr_type _iter = +0; _iter++ != +4 ; )
+        for (auto _iter = +0; _iter++ != +4 ; )
         {
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
 
@@ -505,7 +505,7 @@
         _pert  +=   + 1 ;
         _pert  *= _seps ;
       
-        for(iptr_type _iter = +0; _iter++ != +4 ; )
+        for (auto _iter = +0; _iter++ != +4 ; )
         {
             _nsiz[3] = _hfun.eval(_ppos, _hint) ;
 
@@ -522,7 +522,7 @@
                 _hmid*_hmid - _fbal[ 3] ;
 
             real_type _near = 
-            _fbal[3] * (real_type)1./3. ;
+            _fbal[3] * (real_type)1./1. ;
 
             if (_dsqr < _near)
             {                       // min.-space limiter  

@@ -595,43 +595,6 @@
         if (_llen[_emin] > _llen[_enum]) 
             _emin = _enum ;
         }
-               
-    /*--------------------------------- hop to constraint */
-        real_type _best = 
-            std::numeric_limits
-                <real_type>::infinity () ;
-        
-        for(_enum = +3; _enum-- != +0; )
-        {
-            iptr_type  _enod[ +3];
-            mesh_type::tria_type::
-                tria_type::
-            face_node(_enod, _enum, 2, 1) ;
-            _enod[0] = _fnod[_enod[ 0]] ;
-            _enod[1] = _fnod[_enod[ 1]] ;
-            
-            algorithms::isort(
-                &_enod[0], &_enod[2],
-                    std::less<iptr_type>()) ;
-                    
-            typename mesh_type::
-                     edge_data _edat ;
-            _edat._node[0] = _enod[0];
-            _edat._node[1] = _enod[1];
-                
-            typename mesh_type::
-                     edge_list::
-                 item_type *_eptr = nullptr ;
-            if (_mesh.find_edge(_edat,_eptr))
-            {
-                if (_best > _llen[_enum])
-                {
-                    _emin = _enum;
-                
-                    _best = _llen[_enum];
-                }
-            }
-        }
         
     /*--------------------------------- pop edge indexing */
         iptr_type  _enod[ +3];
@@ -766,9 +729,9 @@
             _kind == rdel_opts::circ_kind )
         {
     /*----------------------- resort to circumball centre */
-            _ppos[0] = _pmax[0] ;
-            _ppos[1] = _pmax[1] ;
-            _ppos[2] = _pmax[2] ;
+            _ppos[ 0] = _pmax[ 0] ;
+            _ppos[ 1] = _pmax[ 1] ;
+            _ppos[ 2] = _pmax[ 2] ;
 
             _kind  = rdel_opts::circ_kind ;
         }
@@ -893,18 +856,15 @@
              tria(_tpos)->node(_fnod[ 2]);
 
             real_type _fbal [ +4];
-            geometry::circ_ball_3d(_fbal,
-               &_mesh._tria.
-                 node(_fnod[0])->pval(0),
-               &_mesh._tria.
-                 node(_fnod[1])->pval(0),
-               &_mesh._tria.
-                 node(_fnod[2])->pval(0));
+            geometry::circ_ball_3d(_fbal ,
+           &_mesh._tria.
+             node(_fnod[0])->pval(0),
+           &_mesh._tria.
+             node(_fnod[1])->pval(0),
+           &_mesh._tria.
+             node(_fnod[2])->pval(0)) ;
 
-            real_type _blen = geometry::
-                lensqr_3d(_fbal, _tbal);
- 
-            _frad[_fpos] = _fbal[3] / _blen ;
+            _frad[_fpos] =  _fbal[3];
         }
     
     /*--------------------------------- find min/max face */
@@ -916,48 +876,6 @@
             _fmax = _fpos ;
         if (_frad[_fmin] > _frad[_fpos]) 
             _fmin = _fpos ;
-        }
-        
-    /*--------------------------------- hop to constraint */  
-        real_type _best = 
-            std::numeric_limits
-                <real_type>::infinity () ;
-        
-        for(_fpos = +4; _fpos-- != +0; )
-        {
-            iptr_type  _fnod[ +4];
-            mesh_type::tria_type::
-                tria_type::
-            face_node(_fnod, _fpos, 3, 2);
-            _fnod[ +0] = _mesh._tria.
-             tria(_tpos)->node(_fnod[ 0]);
-            _fnod[ +1] = _mesh._tria.
-             tria(_tpos)->node(_fnod[ 1]);
-            _fnod[ +2] = _mesh._tria.
-             tria(_tpos)->node(_fnod[ 2]);
-            
-            algorithms::isort(
-                &_fnod[0], &_fnod[3],
-                    std::less<iptr_type>()) ;
-                    
-            typename mesh_type::
-                     face_data _fdat;
-            _fdat._node[0] = _fnod[0] ;
-            _fdat._node[1] = _fnod[1] ;
-            _fdat._node[2] = _fnod[2] ;
-                
-            typename mesh_type::
-                     face_list::
-                 item_type *_fptr = nullptr ;
-            if (_mesh.find_face(_fdat,_fptr))
-            {
-                if (_best > _frad[_fpos])
-                {
-                    _fmin = _fpos ;
-                    
-                    _best = _frad[_fpos];
-                }
-            }       
         }
     
     /*-------------------------- ask for "frontal" status */   
@@ -1076,11 +994,26 @@
             _kind == rdel_opts::circ_kind )
         {
     /*----------------------- resort to circumball centre */
+            if (_tdat._mark <= +8 )
+            {
+        /*---------------------- reject as "void" element */
+            uint32_t _hash = 
+            hash_ball(_tbal) % +8u;
+                
+            _tdat._mark += 
+                std::max(1u, _hash) ;
+
+            _kind =  rdel_opts::null_kind ;
+            }
+            else
+            {
+        /*---------------------- take circumcentre direct */
             _ppos[ 0] = _tbal[ 0] ;
             _ppos[ 1] = _tbal[ 1] ;
             _ppos[ 2] = _tbal[ 2] ;
 
-            _kind  = rdel_opts::circ_kind ;
+            _kind =  rdel_opts::circ_kind ;
+            }
         }
 
     /*----------------------- report point-placement kind */

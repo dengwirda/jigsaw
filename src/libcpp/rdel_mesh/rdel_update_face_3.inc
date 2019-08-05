@@ -566,13 +566,13 @@
         )
     {
         iptr_type _tnod[4] = {
-        _mesh.
+            _mesh.
         _tria.tria( _tpos)->node(0) ,
-        _mesh.
+            _mesh.
         _tria.tria( _tpos)->node(1) ,
-        _mesh.
+            _mesh.
         _tria.tria( _tpos)->node(2) ,
-        _mesh.
+            _mesh.
         _tria.tria( _tpos)->node(3)
             } ;
 
@@ -637,10 +637,6 @@
         iptr_type _ntri = +0 ;
         
         iptr_type _ndup = +0 ;
-
-    /*------------------------- flag if we're not testing */
-        bool_type _safe = 
-            _dim0 >= +3 ? false : true ;
 
     /*------------------------- calc. voronoi-dual points */
         for( auto _iter  = _tnew.head(); 
@@ -723,7 +719,11 @@
       //typename mesh_type::tria_pred(), 
       //   +.8, _mesh._tset.get_alloc(),
       //   _tnew.count() * +1) ;
-         
+        
+        bool_type _safe = true ;
+
+        if (_dim0 >  +0) _safe = false ;
+
       //if (_nfac >= +1) _safe = false ;
         if (_ndup >= +1) _safe = false ;
         
@@ -731,7 +731,7 @@
                   _iter != _tnew.tend(); 
                 ++_iter )
         {
-           _sign = !_safe ? -1 : _sign ;
+           _sign =  (!_safe) ? -1 : _sign ;
 
             push_tria(_mesh, _geom ,
                       _hfun,*_iter , 

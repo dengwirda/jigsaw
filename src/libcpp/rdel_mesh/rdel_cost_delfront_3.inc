@@ -498,7 +498,7 @@
             {
                 if (_best > _frad[_fnum])
                 {
-                    _fbnd = _enum ;
+                    _fbnd = _fnum ;
                     _best = _frad[_fnum];
                 }
 
@@ -580,6 +580,8 @@
         {
             _kind = mesh::ring_item; return ;
         }
+    
+        _tdat._mark += +4 ;
 
     /*------------------------- eval. vol.--length metric */
         real_type _vlen = 

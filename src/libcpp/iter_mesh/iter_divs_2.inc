@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 March, 2019
+     * Last updated: 30 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -349,7 +349,20 @@
                 _dtmp, _ddst, 
                 _minC, _TLIM,
                 _minD, _DLIM ) ;
-               
+            
+            if (_move <= +0)
+            {
+            move_node( _geom, _mesh ,
+                _hfun, _pred, _hval , 
+                _opts, _nptr, 
+                   dQdx_kind, 
+                _move, _tnew, 
+                _ttmp, _tdst,
+                _dtmp, _ddst, 
+                _minC, _TLIM,
+                _minD, _DLIM ) ;
+            }            
+
             if (_move <= +0) break  ;
         }
         

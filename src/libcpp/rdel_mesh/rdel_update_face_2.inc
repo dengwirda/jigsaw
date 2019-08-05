@@ -390,11 +390,11 @@
         )
     {
         iptr_type _tnod[3] = {
-        _mesh.
+            _mesh.
         _tria.tria( _tpos)->node(0) ,
-        _mesh.
+            _mesh.
         _tria.tria( _tpos)->node(1) ,
-        _mesh.
+            _mesh.
         _tria.tria( _tpos)->node(2)
             } ;
 
@@ -452,10 +452,6 @@
         iptr_type _ntri = +0 ;
         
         iptr_type _ndup = +0 ;
-
-    /*------------------------- flag if we're not testing */
-        bool_type _safe = 
-            _dim0 >= +2 ? false : true ;
 
     /*------------------------- calc. voronoi-dual points */
         for( auto _iter  = _tnew.head(); 
@@ -517,10 +513,13 @@
       //   +.8, _mesh._tset.get_alloc(),
       //   _tnew.count() * +1) ;
          
+        bool_type _safe = true ;
+
+        if (_dim0 >  +0) _safe = false ;
+
       //if (_nedg >= +1) _safe = false ;
         if (_ndup >= +1) _safe = false ;
         
-    /*-------------------------- compute cavity tria cost */
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter )

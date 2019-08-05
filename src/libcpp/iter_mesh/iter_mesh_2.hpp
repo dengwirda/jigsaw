@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 July, 2019
+     * Last updated: 30 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -705,7 +705,7 @@
             _wadj * _xtol) return;
         
         real_type _scal =           // overrelaxation
-            _llen * (real_type)5./3. ;
+            _llen * (real_type)4./3. ;
       
         _line /= _llen  ;
         
@@ -771,7 +771,7 @@
             public  :
     /*------------------------ tuple for node re-ordering */
             iptr_type           _node ;
-            real_type           _cost ;
+            float               _cost ;
             } ;
        
         class cost_less
@@ -877,7 +877,7 @@
         {
     /*------------------------ assign min.-cost for nodes */
             _iter->_cost = 
-                _qscr[_iter->_node];
+            (float)_qscr[_iter->_node];
         }
         
         algorithms::qsort( _sset.head() , 
@@ -992,64 +992,6 @@
             _amrk, _nmrk, _iout, _isub, 
             _opts, _TLIM, _DLIM ) ;
     
-    /*-------------------- GAUSS-SEIDEL iteration on DUAL */
-        if (_opts .dual())
-        {
-        for (auto _apos  = _aset.head() ;
-                  _apos != _aset.tend() ;
-                ++_apos  )
-        {
-             auto _node  = 
-            _mesh._set1.head() + *_apos ;
-            
-            _tset.set_count( +0);
-            
-        /*---------------- assemble a local tria. stencil */
-            _mesh.node_tri3(
-                &_node->node(+0), _tset);
-
-            if (_tset.empty()) continue ;
-            
-        /*---------------- attempt to optimise DUAL geom. */    
-            _dold.set_count( +0);
-            _dnew.set_count( +0);
-            
-            real_type _DMIN = 
-                loop_dscr( _mesh, 
-                    _pred, _tset, _dold);
-            
-            bool_type _okay = false;
-            
-            if(!_okay)
-            {
-        /*---------------- attempt a GRAD-based smoothing */
-                move_dual( _geom, _mesh ,
-                    _hfun, _pred, _hval , 
-                    _opts, _node,
-                    _okay, _tset, 
-                    _dold, _dnew, 
-                    _DMIN, _DLIM ) ;
-            }  
-                     
-            if (_okay) 
-            {
-        /*---------------- update when state is improving */
-            if (std::abs(
-               _nmrk[*_apos]) != _iout)
-            {
-                if (_nmrk[*_apos] >= 0)
-                _nmrk[*_apos] = +_iout;
-                else
-                _nmrk[*_apos] = -_iout;
-                
-                _nset.push_tail(*_apos) ;
-            }
-            
-            _nmov += +1 ;
-            }
-        }
-        }
-    
     /*-------------------- GAUSS-SEIDEL iteration on TRIA */
         if (_opts .tria())
         {
@@ -1133,6 +1075,64 @@
             }
             }
         }     
+        }
+
+    /*-------------------- GAUSS-SEIDEL iteration on DUAL */
+        if (_opts .dual())
+        {
+        for (auto _apos  = _aset.head() ;
+                  _apos != _aset.tend() ;
+                ++_apos  )
+        {
+             auto _node  = 
+            _mesh._set1.head() + *_apos ;
+            
+            _tset.set_count( +0);
+            
+        /*---------------- assemble a local tria. stencil */
+            _mesh.node_tri3(
+                &_node->node(+0), _tset);
+
+            if (_tset.empty()) continue ;
+            
+        /*---------------- attempt to optimise DUAL geom. */    
+            _dold.set_count( +0);
+            _dnew.set_count( +0);
+            
+            real_type _DMIN = 
+                loop_dscr( _mesh, 
+                    _pred, _tset, _dold);
+            
+            bool_type _okay = false;
+            
+            if(!_okay)
+            {
+        /*---------------- attempt a GRAD-based smoothing */
+                move_dual( _geom, _mesh ,
+                    _hfun, _pred, _hval , 
+                    _opts, _node,
+                    _okay, _tset, 
+                    _dold, _dnew, 
+                    _DMIN, _DLIM ) ;
+            }  
+                     
+            if (_okay) 
+            {
+        /*---------------- update when state is improving */
+            if (std::abs(
+               _nmrk[*_apos]) != _iout)
+            {
+                if (_nmrk[*_apos] >= 0)
+                _nmrk[*_apos] = +_iout;
+                else
+                _nmrk[*_apos] = -_iout;
+                
+                _nset.push_tail(*_apos) ;
+            }
+            
+            _nmov += +1 ;
+            }
+        }
         }
         
     }
@@ -1266,7 +1266,8 @@
                   _iter != _nset.tend();
                 ++_iter  )
         {
-            if (_mesh._set1[*_iter].mark()>=+0)
+            if (  _mesh.
+                _set1[*_iter].mark() >= +0)
             {           
                 _tnew.set_count(+0);
                 
@@ -1285,7 +1286,7 @@
                 }
             }
         }
- 
+
     /*--------------------- exhaustive, incremental flips */       
         _nflp = +0 ;
         
@@ -1295,7 +1296,8 @@
                   _tria != _tset.tend();
                 ++_tria  )
         {
-            if (_mesh._set3[*_tria].mark()>=+0)
+            if (  _mesh.
+                _set3[*_tria].mark() >= +0)
             {           
                 bool_type  _flip = false ;
                 flip_tria( _geom, _mesh, 
@@ -1346,14 +1348,31 @@
         iptr_type &_ndiv
         )
     {
-        iptr_type static
-            constexpr _DEG_MIN = (iptr_type) +5 ;          
-        iptr_type static
-            constexpr _DEG_MAX = (iptr_type) +8 ;
-            
+        class sort_pair
+            {
+            public  :
+    /*------------------------ tuple for edge re-ordering */
+            iptr_type           _edge ;
+            real_type           _cost ;
+            } ;
+       
+        class sort_less
+            {
+            public  :
+    /*------------------------ less-than op. for cost-tup */
+            __inline_call 
+                bool_type operator () (
+                sort_pair const&_idat ,
+                sort_pair const&_jdat
+                ) const 
+            {    return    
+            _idat._cost < _jdat._cost ;
+            }
+            } ;        
+    
     #   define __marknode                   \
             init_mark( _mesh, _nmrk, _emrk, \
-                _tmrk, std::max(_imrk - 0, +0) ) ;  \
+                _tmrk, std::max(_imrk-0, +0)) ; \
             if (std::abs(               \
                 _nmrk[_nnew])!= _imrk)  \
             {                           \
@@ -1367,16 +1386,25 @@
             }                           \
                 _nset.push_tail(_nnew) ;    \
             }                           \
-            
-            
+        
+        iptr_type static
+            constexpr _DEG_MIN = (iptr_type) +5 ;          
+        iptr_type static
+            constexpr _DEG_MAX = (iptr_type) +8 ;
+
+        typedef containers::
+            array<sort_pair>sort_list ;
+
         _nzip = +0 ; _ndiv = +0 ;
-    
+ 
+        sort_list _sort;
+   
         iptr_list _aset, _bset, _cset ;
         iptr_list _eset, _done;
         iptr_list _iset, _jset;
         real_list _told, _tnew, _ttmp ;
-        real_list _dold, _dnew;
-       
+        real_list _dold, _dnew;     
+        
         for (auto _node = 
             _mesh._set1.count() ; _node-- != +0; )
         {
@@ -1385,46 +1413,60 @@
                 _set1[_node].mark () >= +0 && 
                    std::abs (
                 _nmrk[_node]) >= _imrk - 2 )
-            {
-                typename 
-                iptr_list::_write_it _head ;
-                typename
-                iptr_list::_write_it _tend ;
-                typename
-                iptr_list::diff_type _einc ;
-        
+            {      
                 _eset.set_count(+0) ;
+                _sort.set_count(+0) ;                
                 _mesh.node_edge(
-                    (iptr_type)_node, _eset) ;
+                (iptr_type) _node, _eset) ;
         
-            /*------------------- "weak" stochastic order */
-                if (std::rand() % +2 == +0 )
-                {
-                    _head = _eset.head() ;
-                    _tend = _eset.tend() ;
-                    _einc = +1 ;
-                }
-                else
-                {
-                    _head = _eset.tail() ;
-                    _tend = _eset.hend() ;
-                    _einc = -1 ;
-                }
-        
-            /*------------------- scan list of adj. edges */
-                for (auto _eadj  = _head ;
-                          _eadj != _tend ;
-                          _eadj += _einc )
+                for (auto _eadj  = _eset.head();
+                          _eadj != _eset.tend();
+                        ++_eadj  )
                 {      
-                     auto _eptr  = 
+                     auto _eptr = 
                     _mesh._set2.head() + *_eadj;
    
-                    iptr_type _enod[2] ;
-                    _enod[0] = _eptr->node(0);
-                    _enod[1] = _eptr->node(1);
-                    
-                    bool_type _move = false;
-                     
+                     auto _iptr = _mesh.
+                    _set1.head()+ _eptr->node(0) ;        
+                     auto _jptr = _mesh.
+                    _set1.head()+ _eptr->node(1) ;
+
+                    real_type _line[_dims] ;
+                    iptr_type _idim=_dims;                   
+
+                    for ( ; _idim-- != +0; )
+                    {
+                        _line[_idim] = 
+                            _jptr->pval(_idim) -
+                            _iptr->pval(_idim) ;
+                    }
+
+                     auto _lsqr  = 
+                    _pred.length_sq(_line) ;
+
+                    sort_pair _pair;
+                    _pair._cost = _lsqr ;
+                    _pair._edge =*_eadj ;
+
+                    _sort.push_tail(_pair) ;
+                }
+
+            /*------------------- scan local edges by len */
+                algorithms::isort (
+                    _sort.head(), 
+                    _sort.tend(), sort_less()) ;
+            
+                bool_type _move = false ;
+
+                for (auto _iter  = _sort.tail();
+                          _iter != _sort.hend();
+                        --_iter  )
+                {      
+                     auto _eadj  = _iter->_edge;
+
+                     auto _eptr  = 
+                    _mesh._set2.head()  + _eadj;
+   
             /*------------------- try to "div" local edge */
                     if (_eptr->self() == +0) 
                     {
@@ -1440,7 +1482,7 @@
                         if (_opts.div_())
                         _div_edge( _geom, _mesh, 
                             _hfun, _pred, 
-                            _hval, _opts,*_eadj, 
+                            _hval, _opts, _eadj, 
                             _move, _nnew, 
                             _iset, _jset,
                             _told, _tnew, _ttmp,
@@ -1460,7 +1502,7 @@
                         if (_opts.div_())
                         _div_edge( _geom, _mesh, 
                             _hfun, _pred, 
-                            _hval, _opts,*_eadj, 
+                            _hval, _opts, _eadj, 
                             _move, _nnew, 
                             _iset, _jset,
                             _told, _tnew, _ttmp,
@@ -1473,7 +1515,24 @@
                         }
                     }
                     }
-                    
+                }
+
+                if (_move) continue ;
+
+            /*------------------- scan local edges by len */
+                for (auto _iter  = _sort.head();
+                          _iter != _sort.tend();
+                        ++_iter  )
+                {      
+                     auto _eadj  = _iter->_edge;
+
+                     auto _eptr  = 
+                    _mesh._set2.head()  + _eadj;
+   
+                    iptr_type  _enod[2] ;
+                    _enod[0] = _eptr->node(0);
+                    _enod[1] = _eptr->node(1);
+
             /*------------------- try to "zip" local edge */
                     if (_nmrk[_enod[0]] >= 0 &&
                         _nmrk[_enod[1]] >= 0 )
@@ -1490,7 +1549,7 @@
                         if (_opts.zip_())
                         _zip_edge( _geom, _mesh, 
                             _hfun, _pred, 
-                            _hval, _opts,*_eadj,
+                            _hval, _opts, _eadj,
                             _move, _nnew, 
                             _iset, _jset,
                             _aset, _bset, _cset,
@@ -1511,7 +1570,7 @@
                         if (_opts.zip_())
                         _zip_edge( _geom, _mesh, 
                             _hfun, _pred, 
-                            _hval, _opts,*_eadj,
+                            _hval, _opts, _eadj,
                             _move, _nnew, 
                             _iset, _jset,
                             _aset, _bset, _cset,
@@ -1525,9 +1584,10 @@
                         }
                     } 
                     }
-                 
                 }
-            
+
+                if (_move) continue ;
+
             }
         }
     

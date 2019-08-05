@@ -139,7 +139,7 @@
         _pert  +=   + 1 ;
         _pert  *= _seps ;
         
-        for(iptr_type _iter = +0; _iter++ != +4 ; )
+        for (auto _iter = +0; _iter++ != +4 ; )
         {
             _nsiz[ 2] = _hfun.eval (_ppos, _hint) ;
 
@@ -283,7 +283,7 @@
         _pert  +=   + 1 ;
         _pert  *= _seps ;
         
-        for(iptr_type _iter = +0; _iter++ != +4 ; )
+        for (auto _iter = +0; _iter++ != +4 ; )
         {
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
        

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 July, 2019
+     * Last updated: 30 July, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -188,8 +188,8 @@
     //  if more regular topo. is constructed via the edge 
     //  zip, make it easier to do so!
 
-        if (2*_nerr < _ierr+_jerr)
-        _qinc = std::min(0.,_qinc) ;
+      //if (2*_nerr < _ierr+_jerr)
+      //_qinc = std::min(0.,_qinc) ;
 
     /*--------------------------------- get disjoint face */
         for (auto _tria  = _iset.head();
@@ -482,6 +482,19 @@
                 _minC, _TLIM,
                 _minD, _DLIM ) ;
                
+            if (_move <= +0)
+            {
+            move_node( _geom, _mesh ,
+                _hfun, _pred, _hval , 
+                _opts, _nptr, 
+                   dQdx_kind, 
+                _move, _cset, 
+                _ttmp, _tdst,
+                _dtmp, _ddst, 
+                _minC, _TLIM,
+                _minD, _DLIM ) ;
+            }             
+  
             if (_move <= +0) break  ;
         }
     

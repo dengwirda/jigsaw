@@ -479,45 +479,6 @@
             _emin = _enum ;
         }
  
-    /*--------------------------------- hop to constraint */  
-        real_type _best = 
-            std::numeric_limits
-                <real_type>::infinity () ;
-        
-        for(_enum = +3; _enum-- != +0; )
-        {
-            iptr_type  _enod[ +3];
-            mesh_type::tria_type::
-                tria_type::
-            face_node(_enod, _enum, 2, 1);
-            _enod[ +0] = _mesh._tria.
-             tria(_tpos)->node(_enod[ 0]);
-            _enod[ +1] = _mesh._tria.
-             tria(_tpos)->node(_enod[ 1]);
-            
-            algorithms::isort(
-                &_enod[0] , &_enod[2] ,
-                    std::less<iptr_type>()) ;
-                    
-            typename mesh_type::
-                     edge_data _edat;
-            _edat._node[0] = _enod[0] ;
-            _edat._node[1] = _enod[1] ;
-                
-            typename mesh_type::
-                     edge_list::
-                 item_type *_eptr = nullptr ;
-            if (_mesh.find_edge(_edat,_eptr))
-            {
-                if (_best > _llen[_enum])
-                {
-                    _emin = _enum;
-                
-                    _best = _llen[_enum];
-                }
-            }       
-        }
-    
     /*-------------------------- ask for "frontal" status */ 
         if(!base_edge(_mesh,_tpos,_emin))
         {
