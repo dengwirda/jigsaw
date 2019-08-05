@@ -312,7 +312,7 @@
                 std::less<iptr_type>()) ;
 
         geometry::
-            circ_ball_3d( _ebal, 
+            circ_ball_2d( _ebal, 
             &_mesh._tria.
         node(_ENOD[0])->pval(0),
             &_mesh._tria.
