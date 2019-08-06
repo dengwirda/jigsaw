@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 July, 2019
+     * Last updated: 05 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -2453,6 +2453,9 @@
     {
         iptr_type _errv  = __no_error  ;
 
+    //  NB. this routine handles output for MARCHE --- this 
+    //  will *overwrite* the hfun-file input...
+
         __unreferenced(_jlog) ;
 
         try
@@ -2463,11 +2466,11 @@
             std::string _name ;
             std::string _fext ; 
             file_part(
-                _jcfg._mesh_file, 
+                _jcfg._hfun_file, 
                     _path, _name, _fext);
 
             _file.open(
-                _jcfg._mesh_file, 
+                _jcfg._hfun_file, 
                     std::ofstream::out );
                      
             if (_file.is_open())

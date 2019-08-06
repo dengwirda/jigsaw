@@ -478,7 +478,7 @@
     /*--------------------------------- dump mesh to file */
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
-                "  Writing MESH file...\n\n" ) ;
+                "  Writing FFUN file...\n\n" ) ;
 
 #           ifdef  __use_timers
             _ttic   = _time.now();

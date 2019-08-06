@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 July, 2019
+     * Last updated: 05 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -400,8 +400,8 @@
        (_q1+_q2+_q3) / (data_type)+3. ;
         
         data_type _qq = 
-      ((data_type)+1.-.33) * _qb + 
-      ((data_type)+0.+.33) * _qe ;
+      ((data_type)+1.-.40) * _qb + 
+      ((data_type)+0.+.40) * _qe ;
 
         _qq = (data_type)1.- _qq ;
 
@@ -473,8 +473,8 @@
        (_q1+_q2+_q3) / (data_type)+3. ;
         
         data_type _qq = 
-      ((data_type)+1.-.33) * _qb + 
-      ((data_type)+0.+.33) * _qe ;
+      ((data_type)+1.-.40) * _qb + 
+      ((data_type)+0.+.40) * _qe ;
 
         _qq = (data_type)1.- _qq ;
 
