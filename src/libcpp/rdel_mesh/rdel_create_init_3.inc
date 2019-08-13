@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 June, 2019
+     * Last updated: 09 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -364,8 +364,9 @@
 
     __static_call
     __normal_call void_type init_init (
-        init_type &_init,
-        mesh_type &_mesh,
+        init_type &_init ,
+        geom_type &_geom ,
+        mesh_type &_mesh ,
         typename 
     mesh_type::edge_list & _epro,
         typename 
@@ -445,6 +446,12 @@
             iptr_type _npos = -1 ;
             iptr_type _near = -1 ;
             
+            if (_node->itag () >= +0 )
+                _geom.projector(
+               &_node->pval(0) , 
+                _node->itag () ,
+               &_node->pval(0) ) ;
+
             if (_mesh._tria.find_node(
                &_node->pval(0) ,
                 _near, _hint ) )
@@ -512,6 +519,12 @@
             iptr_type _near = -1 ;
             iptr_type _npos = -1 ;
         
+            if (_node->itag () >= +0 )
+                _geom.projector(
+               &_node->pval(0) , 
+                _node->itag () ,
+               &_node->pval(0) ) ;
+
             if (_mesh._tria.find_node(
                &_node->pval(0) ,
                 _near, _hint ) )

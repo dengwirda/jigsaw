@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 June, 2019
+     * Last updated: 12 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -520,6 +520,10 @@
                         _TPOS ) )
                 {
     /*------------------------ is fully inside: finished! */
+                _qpos[0] = _qtmp[0] ;
+                _qpos[1] = _qtmp[1] ;
+                _qpos[2] = _qtmp[2] ;                
+
                 this->_dsqr = 
                     (real_type) +0. ;
 

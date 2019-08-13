@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 January, 2019
+     * Last updated: 09 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -256,6 +256,22 @@
         return (iptr_type) -1 ;
     }
 
+    /*
+    --------------------------------------------------------
+     * PROJECTOR: project a point to the geometry.
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type projector (
+        real_type *_ppos,
+        iptr_type  _idim,
+        real_type *_proj
+        )
+    {
+        __unreferenced(_ppos) ;
+        __unreferenced(_idim) ;
+        __unreferenced(_proj) ;
+    }
 
     } ;
 

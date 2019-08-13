@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 June, 2019
+     * Last updated: 12 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -565,14 +565,19 @@
                         _qtmp ,*_mesh , 
                         _TPOS ) )
                 {
-    /*------------------------ is fully inside: finished! */
-                this->_dsqr = 
-                    (real_type) +0. ;
+    /*------------------------ projected match: keep best */
+                real_type _dtmp = 
+            geometry::lensqr_3d(_ppos, _qtmp);
 
-                this->_find =  true ;
+                if (_dtmp<_dsqr )   // n.b. proj. on tria
+                {
+                _qpos[0] = _qtmp[0] ;
+                _qpos[1] = _qtmp[1] ;
+                _qpos[2] = _qtmp[2] ;
+
+                this->_dsqr = _dtmp ;
                 this->_tpos = _TPOS ;
-                
-                break ;
+                }
 
                 }
                 else
@@ -581,7 +586,7 @@
                 real_type _dtmp = 
             geometry::lensqr_3d(_ppos, _qtmp);
 
-                if (_dtmp<_dsqr )
+                if (_dtmp<_dsqr )   // n.b. proj. to rest
                 {
                 _qpos[0] = _qtmp[0] ;
                 _qpos[1] = _qtmp[1] ;

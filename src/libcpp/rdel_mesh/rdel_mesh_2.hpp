@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 June, 2019
+     * Last updated: 09 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -630,7 +630,8 @@
             _scal *_opts.near() * 
             _scal *_opts.near() ;         
 
-         init_init(_init, _mesh ,
+         init_init(_init, _geom , 
+                   _mesh,
                    _epro, _ebad ,
                    _NEAR) ;
         

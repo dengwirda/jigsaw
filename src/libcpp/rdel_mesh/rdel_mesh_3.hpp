@@ -750,7 +750,8 @@
             _scal *_opts.near() * 
             _scal *_opts.near() ;
 
-         init_init(_init, _mesh ,
+         init_init(_init, _geom , 
+                   _mesh,
                    _epro, _ebad , 
                    _fpro, _fbad ,
                    _NEAR) ;

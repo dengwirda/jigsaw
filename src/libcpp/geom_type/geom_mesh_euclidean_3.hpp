@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 July, 2019
+     * Last updated: 09 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -2013,6 +2013,202 @@
         
         } ;
 
+    class near_edge_pred
+        {
+    /*------------------ node-edge "projection" predicate */
+        public  :
+        real_type              *_ppos ;
+        real_type              *_qpos ;
+
+        real_type               _dsqr ;
+        real_type               _dtol ;
+        
+        mesh_type              *_mesh ;
+        
+        bool_type               _find ;
+        iptr_type               _epos ;
+        
+        public  :
+    
+    /*------------------------ make a tree-edge predicate */
+        __inline_call near_edge_pred(
+            real_type*_psrc = nullptr ,
+            real_type*_qsrc = nullptr ,
+            mesh_type*_msrc = nullptr ,
+            real_type _near = 
+                (real_type) +0.
+            ) : _ppos(_psrc) ,
+                _qpos(_qsrc) ,
+           _dsqr(+std::numeric_limits
+           <real_type>::infinity () ) ,
+                _dtol(_near) ,
+                _mesh(_msrc) ,
+                _find(false) ,
+                _epos(   -1) { }
+
+    /*------------------------ call pred. on tree matches */
+        __inline_call float operator () (
+                typename  
+            tree_type::item_data *_iptr
+            )
+        {
+            if (this->_find) return +0. ;
+        
+            for ( ; _iptr != nullptr; 
+                        _iptr = _iptr->_next )
+            {
+                geometry::hits_type 
+                    _HITS = geometry::null_hits;
+
+                real_type  _qtmp[+3] ;
+                iptr_type  _EPOS = 
+                    _iptr->_data.ipos() ;
+
+                iptr_type  _enod[+2] = {
+                     this->_mesh->
+                    _set2 [_EPOS   ].node(0) ,
+                     this->_mesh->
+                    _set2 [_EPOS   ].node(1) ,
+                    } ;
+                
+                if (geometry::proj_line_3d (
+                           _ppos,
+                    &this->_mesh->
+                    _set1 [_enod[0]].pval(0) ,
+                    &this->_mesh->
+                    _set1 [_enod[1]].pval(0) , 
+                    _qtmp, _HITS) )
+                {
+                    if (_HITS != 
+                        geometry::null_hits)
+                    {
+        /*-------------------- projected match: keep best */
+                    real_type _dtmp = 
+                geometry::lensqr_3d(_ppos,_qtmp) ;
+
+                    if (_dtmp<_dsqr )
+                    {
+                    _qpos[0] = _qtmp[0] ;
+                    _qpos[1] = _qtmp[1] ;
+                    _qpos[2] = _qtmp[2] ;
+
+                    this->_find =
+                    this->_dtol * 
+                    this->_dtol > _dtmp ;
+
+                    this->_dsqr = _dtmp ;
+                    this->_epos = _EPOS ;
+                    }
+
+                    }
+                }
+            }
+
+            return ( (float)this->_dsqr )  ;
+        }
+        
+        } ;
+
+    class near_tria_pred
+        {
+    /*------------------ node-tria "projection" predicate */
+        public  :
+        real_type              *_ppos ;
+        real_type              *_qpos ;
+
+        real_type               _dsqr ;
+        real_type               _dtol ;
+        
+        mesh_type              *_mesh ;
+        
+        bool_type               _find ;
+        iptr_type               _tpos ;
+        
+        public  :
+    
+    /*------------------------ make a tree-edge predicate */
+        __inline_call near_tria_pred(
+            real_type*_psrc = nullptr ,
+            real_type*_qsrc = nullptr ,
+            mesh_type*_msrc = nullptr ,
+            real_type _near = 
+                (real_type) +0.
+            ) : _ppos(_psrc) ,
+                _qpos(_qsrc) ,
+           _dsqr(+std::numeric_limits
+           <real_type>::infinity () ) ,
+                _dtol(_near) ,
+                _mesh(_msrc) ,
+                _find(false) ,
+                _tpos(   -1) { }
+
+    /*------------------------ call pred. on tree matches */
+        __inline_call float operator () (
+                typename  
+            tree_type::item_data *_iptr
+            )
+        {
+            if (this->_find) return +0. ;
+        
+            for ( ; _iptr != nullptr; 
+                        _iptr = _iptr->_next )
+            {
+                geometry::hits_type 
+                    _HITS = geometry::null_hits;
+
+                real_type  _qtmp[+3] ;
+                iptr_type  _TPOS = 
+                    _iptr->_data.ipos() ;
+
+                iptr_type  _tnod[+3] = {
+                     this->_mesh->
+                    _set3 [_TPOS   ].node(0) ,
+                     this->_mesh->
+                    _set3 [_TPOS   ].node(1) ,
+                     this->_mesh->
+                    _set3 [_TPOS   ].node(2) ,
+                    } ;
+                
+                if (geometry::proj_tria_3d (
+                           _ppos,
+                    &this->_mesh->
+                    _set1 [_tnod[0]].pval(0) ,
+                    &this->_mesh->
+                    _set1 [_tnod[1]].pval(0) ,
+                    &this->_mesh->
+                    _set1 [_tnod[2]].pval(0) , 
+                    _qtmp, _HITS) )
+                {
+                    if (_HITS != 
+                        geometry::null_hits)
+                    {
+        /*-------------------- projected match: keep best */
+                    real_type _dtmp = 
+                geometry::lensqr_3d(_ppos,_qtmp) ;
+
+                    if (_dtmp<_dsqr )
+                    {
+                    _qpos[0] = _qtmp[0] ;
+                    _qpos[1] = _qtmp[1] ;
+                    _qpos[2] = _qtmp[2] ;
+
+                    this->_find =
+                    this->_dtol * 
+                    this->_dtol > _dtmp ;
+
+                    this->_dsqr = _dtmp ;
+                    this->_tpos = _TPOS ;
+                    }
+
+                    }
+                }
+            }
+
+            return ( (float)this->_dsqr )  ;
+        }
+        
+        } ;
+
     
     /*
     --------------------------------------------------------
@@ -2506,6 +2702,100 @@
         return ( (iptr_type) -1) ;
     }
     
+    /*
+    --------------------------------------------------------
+     * PROJECTOR: project a point on to the geometry.
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type projector (
+        real_type *_ppos ,
+        iptr_type  _idim ,
+        real_type *_proj
+        )
+    {
+        if (_idim == +1)
+        {
+    /*------------------ project to closest 1-dim feature */
+            real_type  _PROJ[3] = {
+           (real_type) _ppos[0] ,
+           (real_type) _ppos[1] ,
+           (real_type) _ppos[2] } ;
+
+            float      _PPOS[3] = {
+           (float)     _ppos[0] ,
+           (float)     _ppos[1] ,
+           (float)     _ppos[2] } ;
+
+            real_type static const  _RTOL= 
+                std::pow (
+            std::numeric_limits<real_type>
+            ::epsilon(), (real_type) +.8);
+      
+            real_type  _BTOL =  (
+                 this->_bmax[0] - 
+                 this->_bmin[0] + 
+                 this->_bmax[1] - 
+                 this->_bmin[1] + 
+                 this->_bmax[2] - 
+                 this->_bmin[2] ) * _RTOL; 
+            
+            near_edge_pred  _func ( _ppos,
+                     _PROJ, &this-> _tria,
+                     _BTOL) ;
+        
+            this->_ebox.near(_PPOS, _func) ;
+
+            _proj[0] = _PROJ[0] ;
+            _proj[1] = _PROJ[1] ;
+            _proj[2] = _PROJ[2] ;
+        }
+        else
+        if (_idim == +2)
+        {
+    /*------------------ project to closest 2-dim feature */
+            real_type  _PROJ[3] = {
+           (real_type) _ppos[0] ,
+           (real_type) _ppos[1] ,
+           (real_type) _ppos[2] } ;
+
+            float      _PPOS[3] = {
+           (float)     _ppos[0] ,
+           (float)     _ppos[1] ,
+           (float)     _ppos[2] } ;
+
+            real_type static const  _RTOL= 
+                std::pow (
+            std::numeric_limits<real_type>
+            ::epsilon(), (real_type) +.8);
+      
+            real_type  _BTOL =  (
+                 this->_bmax[0] - 
+                 this->_bmin[0] +
+                 this->_bmax[1] - 
+                 this->_bmin[1] + 
+                 this->_bmax[2] - 
+                 this->_bmin[2] ) * _RTOL; 
+            
+            near_tria_pred  _func ( _ppos,
+                     _PROJ, &this-> _tria,
+                     _BTOL) ;
+        
+            this->_tbox.near(_PPOS, _func) ;
+
+            _proj[0] = _PROJ[0] ;
+            _proj[1] = _PROJ[1] ;
+            _proj[2] = _PROJ[2] ;
+        }
+        else
+        {
+    /*------------------ NULL projection -- return inputs */
+            _proj[0] = _ppos[0] ;
+            _proj[1] = _ppos[1] ;
+            _proj[2] = _ppos[2] ;
+        }
+    }
+
     } ;
     
     

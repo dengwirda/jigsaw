@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 July, 2019
+     * Last updated: 09 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -408,6 +408,7 @@
     __static_call
     __normal_call void_type init_init (
         init_type &_init,
+        geom_type &_geom,
         mesh_type &_mesh
         )
     {
@@ -456,6 +457,7 @@
             if (_dsqr < _dmin)
             {
                 _dmin = _dsqr ;
+ 
                 _imid =*_iter ;
             }
         }
@@ -466,6 +468,12 @@
              auto _node = 
            &_init._mesh._set1 [ _imid] ;
         
+            if (_node->itag () >= +0 )
+                _geom.projector(
+               &_node->pval(0) , 
+                _node->itag () ,
+               &_node->pval(0) ) ;
+
             iptr_type _npos = -1 ;
             if (_mesh._tria.push_node(
                &_node->pval(0) , 
@@ -498,6 +506,12 @@
              auto _node = 
            &_init._mesh._set1 [*_iter] ;
         
+            if (_node->itag () >= +0 )
+                _geom.projector(
+               &_node->pval(0) , 
+                _node->itag () ,
+               &_node->pval(0) ) ;
+
             iptr_type _npos = -1 ;
             if (_mesh._tria.push_node(
                &_node->pval(0) , 
@@ -597,7 +611,7 @@
         _tria.node(+2)->topo() = +0 ;
 
     /*------------------------------ seed mesh from init. */
-        init_init(_init, _mesh);
+        init_init(_init, _geom, _mesh);
     }
     
     /*

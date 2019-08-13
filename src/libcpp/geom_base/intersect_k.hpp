@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2019
+     * Last updated: 12 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -1006,7 +1006,7 @@
             copy_node_xy(_TC, _pc) ;
 
             double _TP[2] ;
-            copy_node_xy(_TP, _pp) ;
+            copy_node_xy(_TP, _pt) ;
 
             _s1[0] = 
                 geompred::orient2d (
@@ -1039,7 +1039,7 @@
             copy_node_xz(_TC, _pc) ;
 
             double _TP[2] ;
-            copy_node_xz(_TP, _pp) ;
+            copy_node_xz(_TP, _pt) ;
 
             _s1[1] = 
                 geompred::orient2d (
@@ -1072,7 +1072,7 @@
             copy_node_yz(_TC, _pc) ;
 
             double _TP[2] ;
-            copy_node_yz(_TP, _pp) ;
+            copy_node_yz(_TP, _pt) ;
 
             _s1[2] = 
                 geompred::orient2d (
@@ -1126,7 +1126,7 @@
 
             _ht =  face_hits ;
 
-            copy_node_3d(_qq, _pp) ;
+            copy_node_3d(_qq, _pt) ;
 
             return ( true )  ;
             }

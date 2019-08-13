@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 July, 2019
+     * Last updated: 09 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -1755,7 +1755,33 @@
                + _zz * _zz 
               <= (real_type) +1. ) ;
     }
-                  
+       
+    /*
+    --------------------------------------------------------
+     * PROJECTOR: project a point on to the geometry.
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type projector (
+        real_type *_ppos ,
+        iptr_type  _idim ,
+        real_type *_proj
+        )
+    {
+        if (_idim == +2)
+        {
+    /*------------------ project to closest 2-dim feature */
+            proj_surf(_ppos, _proj) ;
+        }
+        else
+        {
+    /*------------------ NULL projection -- return inputs */
+            _proj[0] = _ppos[0] ;
+            _proj[1] = _ppos[1] ;
+            _proj[2] = _ppos[2] ;
+        }
+    }
+           
     } ;
     
     
