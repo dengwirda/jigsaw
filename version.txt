@@ -32,6 +32,10 @@
     throughout. 0.9.12.x should use less memory and 
     be slightly faster overall.
 
+  - rDT//ODT meshing kernels will more aggressively 
+    respond to user-defined mesh-spacing functions 
+    that incorporate non-uniform spatial structure.
+
 
   * Version 0.9.11:
     --------------

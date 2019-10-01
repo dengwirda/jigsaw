@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 June, 2019
+     * Last updated: 1 October, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -205,7 +205,7 @@
             if (this->_ndim == +3 )
             {
             
-            if (_ipos < this->_jmsh->_vert2._size)
+            if (_ipos < this->_jmsh->_vert3._size)// fix #28
             {
             this->_jmsh->_vert3._data[_ipos].
                 _ppos[0] = _pval[0] ;

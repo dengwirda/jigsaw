@@ -802,8 +802,6 @@
     #   include "tripod.hpp"
     
     #   include "marche.hpp"
-
-//  #   include "stitch.hpp"
     
 
     

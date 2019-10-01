@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 August, 2019
+     * Last updated: 1 October, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -515,7 +515,7 @@
             }
             else
             {
-                _errv = __file_not_located ;
+                _errv = __file_not_created ;
             }
             
             _file.close();
@@ -1228,7 +1228,7 @@
             }
             else
             {
-                _errv = __file_not_located ;
+                _errv = __file_not_created ;
             }
             
             _file.close();
@@ -1942,7 +1942,7 @@
             }
             else
             {
-                _errv = __file_not_located  ;
+                _errv = __file_not_created ;
             }
             
             _file.close();
@@ -3066,7 +3066,7 @@
             }
             else
             {
-                _errv = __file_not_located  ;
+                _errv = __file_not_created ;
             }
             
             _file.close();
