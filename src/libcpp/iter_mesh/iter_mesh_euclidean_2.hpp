@@ -61,13 +61,13 @@
     typedef R                       real_type ;
     typedef I                       iptr_type ;
     
-    typedef mesh::tria_complex_edge_2 <
+    typedef mesh::mesh_complex_edge_2 <
             iptr_type >             edge_base ;
                 
-    typedef mesh::tria_complex_tria_3 <
+    typedef mesh::mesh_complex_tria_3 <
             iptr_type >             tria_base ;
     
-    typedef mesh::tria_complex_node_3 <
+    typedef mesh::mesh_complex_node_3 <
             iptr_type , 
             real_type >             node_base ;
     

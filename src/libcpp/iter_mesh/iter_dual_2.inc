@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 November, 2018
+     * Last updated: 27 October, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -46,7 +46,7 @@
     
     /*
     --------------------------------------------------------
-     * GRAD-DUAL: "local-ascent" weight movement vector. 
+     * DQDW-MOVE: "local-ascent" weight movement vector. 
     --------------------------------------------------------
      */
     
@@ -54,7 +54,7 @@
         typename  node_iter
              >
     __static_call
-    __normal_call void_type grad_dual_2 (
+    __normal_call void_type dqdw_move_2 (
         geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
@@ -85,7 +85,7 @@
         real_type _qmin =
             +std::numeric_limits
                 <real_type>::infinity();
-        
+
         iptr_type _tnum = +0 ;
         
         _step = (real_type)0.;
@@ -97,14 +97,23 @@
                 ++_tria, ++_tnum)
         {     
              auto _tptr  = 
-            _mesh._set3.head()+*_tria ;
+            _mesh._set3.head()+*_tria;
          
-             auto _inod = _mesh.
-            _set1 .head()+_tptr->node(0) ;
-             auto _jnod = _mesh.
-            _set1 .head()+_tptr->node(1) ;
-             auto _knod = _mesh.
-            _set1 .head()+_tptr->node(2) ;
+             iptr_type _tnod[3] ;
+            _tnod[ 0] = _tptr->node( 0) ;
+            _tnod[ 1] = _tptr->node( 1) ;
+            _tnod[ 2] = _tptr->node( 2) ;
+
+            algorithms::isort(
+                &_tnod[0], &_tnod[3], 
+                    std::less<iptr_type>()) ;
+            
+             auto _inod = 
+            _mesh._set1.head()+_tnod[0] ;
+             auto _jnod = 
+            _mesh._set1.head()+_tnod[1] ;
+             auto _knod = 
+            _mesh._set1.head()+_tnod[2] ;
          
             _qmin = std::min(
                 _qmin, _cost[_tnum]) ;
@@ -113,7 +122,7 @@
             _pred.circ_ball(_ball,
                 &_inod->pval(0),
                 &_jnod->pval(0),
-                &_knod->pval(0));
+                &_knod->pval(0) ) ;
                 
             _wadj += _ball[_dims] ; // ball-rad.^2
         }
@@ -127,7 +136,7 @@
         _dqdw = (real_type) +0. ;
         
         iptr_type _lnum   = +0  ;
-        iptr_type _hnum   = +1  ;
+      //iptr_type _hnum   = +1  ;
         
         real_type _save = 
             _node->pval  (_dims);
@@ -159,7 +168,7 @@
                 real_type _sbar = (real_type)0.;
         
             /*---------- local iter. on finite-diff. step */        
-                for (auto _iter = +0; _iter++ != +8; )
+                for (auto _iter = +0; _iter++ != +4; )
                 {
                 
                 /*------ centred finite-diff. for dQ / dw */
@@ -236,7 +245,8 @@
             else
             {
             /*---------- accumulate metrics in 'good' set */
-                _qbar += _qtri; _hnum += 1 ;
+                _qbar  = 
+                    std::min(_qbar, _qtri) ;
             }
         }
     
@@ -245,11 +255,7 @@
             _dqdw /=  _lnum ;
             _qlow /=  _lnum ;  
         }
-        if (_hnum > +0)
-        {
-            _qbar /=  _hnum ;
-        }
-    
+        
     /*------------------ 1st ord. Taylor-series step est. */
         real_type _scal = std::abs (_dqdw) ;
         
@@ -260,6 +266,18 @@
         else
         {    
             _step = (_qbar-_qlow) / _dqdw  ;
+        }
+
+        if (_step > (real_type) +0. )
+        {
+            _step = std::min(
+            _step , (real_type)+.5 *_wadj) ;
+        }
+        else
+        if (_step < (real_type) +0. )
+        {
+            _step = std::max(
+            _step , (real_type)-.5 *_wadj) ;
         }
    
     }

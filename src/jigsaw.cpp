@@ -38,7 +38,7 @@
     --------------------------------------------------------
      *
      * JIGSAW release 0.9.12.x
-     * Last updated: 14 July, 2019
+     * Last updated: 25 November, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -231,10 +231,14 @@
 
     /*---------------------------------- JIGSAW's backend */
 
+
 #   include "libcpp/libbasic.hpp"
 #   include "libcpp/libparse.hpp"
 
+#   include "libcpp/useropts.hpp"
+
 #   include "libcpp/rdelmesh.hpp"
+#   include "libcpp/treemesh.hpp"
 #   include "libcpp/itermesh.hpp"
 
     extern  "C" 
@@ -316,13 +320,25 @@
             enum enum_data {
             nullkern ,    
             delfront = JIGSAW_KERN_DELFRONT,
-            delaunay = JIGSAW_KERN_DELAUNAY
+            delaunay = JIGSAW_KERN_DELAUNAY,
+            bisector = JIGSAW_KERN_BISECTOR
             } ;
             } ;
 
         mesh_pred::enum_data    
             _mesh_pred = mesh_pred::delfront ;
         
+        struct iter_pred {
+            enum enum_data {
+            nullkern ,    
+            odt_dqdx = JIGSAW_KERN_ODT_DQDX,
+            cvt_dqdx = JIGSAW_KERN_CVT_DQDX
+            } ;
+            } ;
+
+        iter_pred::enum_data    
+            _iter_pred = iter_pred::odt_dqdx ;
+
     /*--------------------------------- H(x) fun. scaling */
         struct hfun_scal { 
             enum enum_data {
@@ -341,11 +357,11 @@
             (real_type) +0.00E+00 ;
 
     /*------------------------------- "low-level" config. */        
-        typedef mesh::rdel_params <
+        typedef mesh::mesh_params <
                 real_type ,
-                iptr_type >      rdel_opts ;
+                iptr_type >      mesh_opts ;
         
-        rdel_opts               _rdel_opts ;
+        mesh_opts               _mesh_opts ;
         
         typedef mesh::iter_params <
                 real_type ,
@@ -399,17 +415,17 @@
             this->_euclidean_mesh_2d.
                 _tria.make_link() ;
             this->_euclidean_mesh_2d.
-                init_geom(_jcfg._rdel_opts) ;
+                init_geom(_jcfg._mesh_opts) ;
                 
             this->_euclidean_mesh_3d.
                 _tria.make_link() ;
             this->_euclidean_mesh_3d.
-                init_geom(_jcfg._rdel_opts) ;
+                init_geom(_jcfg._mesh_opts) ;
                 
             this->_ellipsoid_mesh_3d.
                 _mesh.make_link() ;
             this->_ellipsoid_mesh_3d.
-                init_geom(_jcfg._rdel_opts) ;
+                init_geom(_jcfg._mesh_opts) ;
         }
         
         } ;

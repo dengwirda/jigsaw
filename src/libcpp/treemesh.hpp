@@ -1,7 +1,7 @@
 
 /* 
 ------------------------------------------------------------
- * restricted delaunay mesh generation in R^d. 
+ * methods for "tree-like" mesh refinement
 ------------------------------------------------------------
  *
  * This program may be freely redistributed under the 
@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 20 February, 2019
+ * Last updated: 25 November, 2019
  *
  * Copyright 2013-2019
  * Darren Engwirda
@@ -43,20 +43,8 @@
 
 #   pragma once
 
-#   ifndef __RDELMESH__
-#   define __RDELMESH__
- 
-    namespace mesh
-    {
-/*-------------------------- classification of mesh items */
-    char_type constexpr null_item = 0 ;
-    char_type constexpr void_item = 1 ;
-    char_type constexpr ring_item = 2 ;
-    char_type constexpr good_item = 3 ; 
-    
-    char_type constexpr null_ball = 0 ;
-    char_type constexpr feat_ball = 1 ;
-    }
+#   ifndef __TREEMESH__
+#   define __TREEMESH__
  
 #   include "containers.hpp"
 #   include "algorithms.hpp"
@@ -64,38 +52,25 @@
 #   include "geometry.hpp"
 #   include "hashfunc.hpp"
 
-#   include "tessellate.hpp"
-
 #   include "geomtype.hpp"
 #   include "meshfunc.hpp"
 #   include "meshtype.hpp"
 
-#   include "rdel_mesh/rdel_complex_2.hpp"
-#   include "rdel_mesh/rdel_complex_3.hpp"
+#   include "tree_mesh/tree_complex_2.hpp"
+#   include "tree_mesh/tree_complex_3.hpp"
 
-#   include "rdel_mesh/rdel_timers.hpp"
+#   include "tree_mesh/tree_timers.hpp"
 
-#   include "rdel_mesh/rdel_filt_k.hpp"
+#   include "tree_mesh/tree_base_2.hpp"
+#   include "tree_mesh/tree_base_3.hpp"
 
-#   include "rdel_mesh/rdel_base_2.hpp"
-#   include "rdel_mesh/rdel_base_3.hpp"
+#   include "tree_mesh/tree_pred_2.hpp"
+#   include "tree_mesh/tree_pred_3.hpp"
 
-#   include "rdel_mesh/rdel_pred_delaunay_2.hpp"
-#   include "rdel_mesh/rdel_pred_delaunay_3.hpp"
+#   include "tree_mesh/tree_mesh_2.hpp"
+#   include "tree_mesh/tree_mesh_3.hpp"
 
-#   include "rdel_mesh/rdel_pred_delfront_2.hpp"
-#   include "rdel_mesh/rdel_pred_delfront_3.hpp"
-
-#   include "rdel_mesh/rdel_mesh_2.hpp"
-#   include "rdel_mesh/rdel_mesh_3.hpp"
-
-#   include "rdel_mesh/rdel_make_2.hpp"
-#   include "rdel_mesh/rdel_make_3.hpp"
-
-//  include "rdel_mesh/rvor_mesh_2.hpp"
-//  include "rdel_mesh/rvor_mesh_3.hpp"
-
-#   endif//__RDELMESH__
+#   endif//__TREEMESH__
 
 
 

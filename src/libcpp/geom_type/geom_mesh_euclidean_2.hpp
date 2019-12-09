@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 August, 2019
+     * Last updated: 08 December, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -79,7 +79,7 @@
             base_type::ball_type    ball_type ;
     
     
-    class node_type: public tria_complex_node_2<I,R>
+    class node_type: public mesh_complex_node_2<I,R>
         {
     /*------------------------------------ loc. node type */
         public  :       
@@ -127,7 +127,7 @@
         
         } ;
         
-    class edge_type: public tria_complex_edge_2<I>
+    class edge_type: public mesh_complex_edge_2<I>
         {
     /*------------------------------------ loc. edge type */
         public  :
@@ -1317,13 +1317,14 @@
         {
             if (this->_find) return +0. ;
         
+            real_type  _qtmp[+2] = {+0.};
+
             for ( ; _iptr != nullptr; 
                         _iptr = _iptr->_next )
             {
                 geometry::hits_type 
                     _HITS = geometry::null_hits;
 
-                real_type  _qtmp[+2] ;
                 iptr_type  _EPOS = 
                     _iptr->_data.ipos() ;
 

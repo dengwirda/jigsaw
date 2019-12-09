@@ -99,10 +99,10 @@
                 init_type >         rdel_func ;
 
             typedef 
-            jcfg_data::rdel_opts    rdel_opts ;
+            jcfg_data::mesh_opts    rdel_opts ;
 
             rdel_opts  *_opts =  
-               &_args._rdel_opts ;
+               &_args._mesh_opts ;
 
             rdel_func::rdel_make ( 
                 _geom,  _init ,
@@ -138,10 +138,10 @@
                 init_type >         rdel_func ;
 
             typedef 
-            jcfg_data::rdel_opts    rdel_opts ;
+            jcfg_data::mesh_opts    rdel_opts ;
 
             rdel_opts  *_opts =  
-               &_args._rdel_opts ;
+               &_args._mesh_opts ;
 
             rdel_func::rdel_make ( 
                 _geom,  _init ,
@@ -488,7 +488,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            if (_jcfg._rdel_opts.dims() >= +1)
+            if (_jcfg._mesh_opts.dims() >= +1)
             {
 
             if ((_retv = save_rdel (
@@ -839,7 +839,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            if (_jcfg._rdel_opts.dims() >= +1)
+            if (_jcfg._mesh_opts.dims() >= +1)
             {
 
             if ((_retv = save_rdel (

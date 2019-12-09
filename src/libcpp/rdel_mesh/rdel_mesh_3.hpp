@@ -182,7 +182,7 @@
     typedef typename 
             mesh_type::tria_data        tria_data ;
 
-    typedef mesh::rdel_params       <
+    typedef mesh::mesh_params       <
                 real_type, 
                 iptr_type           >   rdel_opts ;
 

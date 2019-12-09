@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 April, 2019
+     * Last updated: 29 October, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -114,6 +114,8 @@
         _jcfg->_mesh_vol3 = (real_t) +0.00 ;
         
     /*------------------------------------- OPTM keywords */
+        _jcfg->_optm_kern = JIGSAW_KERN_ODT_DQDX ;
+
         _jcfg->_optm_iter = (indx_t) +16;
         
         _jcfg->_optm_qtol = (real_t) +1.E-04 ;

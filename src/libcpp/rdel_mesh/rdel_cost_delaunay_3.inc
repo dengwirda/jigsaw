@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 December, 2018
+     * Last updated: 30 August, 2019
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -94,19 +94,25 @@
         _edat._cost = (float) _pmax[3] ;
 
     /*------------------------- eval. size func. at _tbal */
-        real_type _esiz = (real_type)0.;        
-        _esiz   += _hfun.eval(
+        real_type _esiz = (real_type)+0.;
+        _esiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
              node(_enod[0])->pval(0) , 
             _mesh._tria.
-             node(_enod[0])->idxh()) ;     
-        _esiz   += _hfun.eval(
+             node(_enod[0])->idxh()) ;
+        _esiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
              node(_enod[1])->pval(0) , 
             _mesh._tria.
              node(_enod[1])->idxh()) ;
-             
-        _esiz /= (real_type)+2.0 ;
+
+         auto _hint = 
+        _mesh._tria.node(_enod[ 1])->idxh() ;
+
+        _esiz += (real_type)+1.0 * 
+                 _hfun.eval(  _pmax, _hint) ;        
+        
+        _esiz /= (real_type)+3.0 ;
 
         real_type _eave =_pmax [ +3] ;
         _eave /= _esiz * _esiz ;
@@ -228,24 +234,30 @@
         }
     
     /*------------------------- eval. size func. at _tbal */
-        real_type _tsiz = (real_type)+0. ;
-        _tsiz   += _hfun.eval(
+        real_type _tsiz = (real_type)+0.;
+        _tsiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
              node(_fnod[0])->pval(0) , 
             _mesh._tria.
              node(_fnod[0])->idxh()) ;
-        _tsiz   += _hfun.eval(
+        _tsiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
              node(_fnod[1])->pval(0) , 
             _mesh._tria.
              node(_fnod[1])->idxh()) ;
-        _tsiz   += _hfun.eval(
+        _tsiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
              node(_fnod[2])->pval(0) , 
             _mesh._tria.
              node(_fnod[2])->idxh()) ;
-         
-        _tsiz /= (real_type)+3.0 ;
+
+         auto _hint = 
+        _mesh._tria.node(_fnod[ 2])->idxh() ;
+
+        _tsiz += (real_type)+1.0 * 
+                 _hfun.eval(  _pmax, _hint) ;
+
+        _tsiz /= (real_type)+4.0 ;
 
         real_type _eave =_pmax [ +3] ;
         _eave /= _tsiz * _tsiz;
@@ -361,28 +373,34 @@
 
     /*------------------------- eval. size func. at _tbal */
         real_type _tsiz = (real_type)+0.;
-        _tsiz   += _hfun.eval(
+        _tsiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
              node(_tnod[0])->pval(0) , 
             _mesh._tria.
              node(_tnod[0])->idxh()) ;
-        _tsiz   += _hfun.eval(
+        _tsiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
              node(_tnod[1])->pval(0) , 
             _mesh._tria.
              node(_tnod[1])->idxh()) ;
-        _tsiz   += _hfun.eval(
+        _tsiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
              node(_tnod[2])->pval(0) , 
             _mesh._tria.
              node(_tnod[2])->idxh()) ;
-        _tsiz   += _hfun.eval(
+        _tsiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
              node(_tnod[3])->pval(0) , 
             _mesh._tria.
              node(_tnod[3])->idxh()) ;
+
+         auto _hint = 
+        _mesh._tria.node(_tnod[ 3])->idxh() ;
+
+        _tsiz += (real_type)+1.0 * 
+                 _hfun.eval(  _tbal, _hint) ;
         
-        _tsiz /= (real_type)+4.0 ;
+        _tsiz /= (real_type)+5.0 ;
 
         real_type _eave = _tbal[ +3] ;
         _eave /= (_tsiz*_tsiz) ;

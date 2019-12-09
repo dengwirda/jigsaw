@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 April, 2019
+     * Last updated: 29 October, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -81,7 +81,7 @@
         {
             this->_jjig->_verbosity = _verb ;
             this->_jjig->
-           _rdel_opts.verb() = _verb;
+           _mesh_opts.verb() = _verb;
             this->_jjig->
            _iter_opts.verb() = _verb;       
         }          
@@ -99,42 +99,42 @@
             ) 
         {
             this->_jjig->
-           _rdel_opts.seed() = _seed; 
+           _mesh_opts.seed() = _seed; 
         }
         __normal_call void_type push_geom_feat (
             bool          _feat
             ) 
         {
             this->_jjig->
-           _rdel_opts.feat() = _feat; 
+           _mesh_opts.feat() = _feat; 
         }
         __normal_call void_type push_geom_phi1 (
             double        _phi1
             ) 
         {
             this->_jjig->
-           _rdel_opts.phi1() = _phi1; 
+           _mesh_opts.phi1() = _phi1; 
         }
         __normal_call void_type push_geom_phi2 (
             double        _phi2
             ) 
         {
             this->_jjig->
-           _rdel_opts.phi2() = _phi2; 
+           _mesh_opts.phi2() = _phi2; 
         }
         __normal_call void_type push_geom_eta1 (
             double        _eta1
             ) 
         {
             this->_jjig->
-           _rdel_opts.eta1() = _eta1; 
+           _mesh_opts.eta1() = _eta1; 
         }
         __normal_call void_type push_geom_eta2 (
             double        _eta2
             ) 
         {
             this->_jjig->
-           _rdel_opts.eta2() = _eta2; 
+           _mesh_opts.eta2() = _eta2; 
         }
  
     /*------------------------------------- INIT keywords */
@@ -143,7 +143,7 @@
             ) 
         {
             this->_jjig->
-           _rdel_opts.near() = _near; 
+           _mesh_opts.near() = _near; 
         }
        
     /*------------------------------------- HFUN keywords */
@@ -186,7 +186,7 @@
            _jjig->_init_file = _file;
         }
         
-    /*------------------------------------- KERN keywords */
+    /*------------------------------------- BNDS keywords */
         __normal_call void_type push_bnds_kern (
             std::int32_t  _kern
             ) 
@@ -195,6 +195,7 @@
         (jcfg_data::bnds_pred::enum_data)_kern ;
         }
         
+    /*------------------------------------- MESH keywords */
         __normal_call void_type push_mesh_kern (
             std::int32_t  _kern
             ) 
@@ -202,8 +203,7 @@
             this->_jjig->_mesh_pred = 
         (jcfg_data::mesh_pred::enum_data)_kern ;
         }
-        
-    /*------------------------------------- MESH keywords */
+
         __normal_call void_type push_mesh_file (
             std::string   _file
             ) 
@@ -231,122 +231,130 @@
             ) 
         { 
             this->_jjig->
-           _rdel_opts.dims() = _dims;
+           _mesh_opts.dims() = _dims;
         }
         __normal_call void_type push_mesh_iter (
             std::int32_t  _iter
             ) 
         { 
             this->_jjig->
-           _rdel_opts.iter() = _iter;
+           _mesh_opts.iter() = _iter;
         }
         __normal_call void_type push_mesh_rule (
             std::int32_t  _rule
             ) 
         { 
             this->_jjig->
-           _rdel_opts.rule() = _rule;
+           _mesh_opts.rule() = _rule;
         }
         __normal_call void_type push_mesh_siz1 (
             double        _siz1
             ) 
         { 
             this->_jjig->
-           _rdel_opts.siz1() = _siz1;
+           _mesh_opts.siz1() = _siz1;
         }
         __normal_call void_type push_mesh_siz2 (
             double        _siz2
             ) 
         { 
             this->_jjig->
-           _rdel_opts.siz2() = _siz2;
+           _mesh_opts.siz2() = _siz2;
         }
         __normal_call void_type push_mesh_siz3 (
             double        _siz3
             ) 
         {
             this->_jjig->
-           _rdel_opts.siz3() = _siz3; 
+           _mesh_opts.siz3() = _siz3; 
         }      
         __normal_call void_type push_mesh_top1 (
             bool          _top1
             ) 
         { 
             this->_jjig->
-           _rdel_opts.top1() = _top1;
+           _mesh_opts.top1() = _top1;
         }
         __normal_call void_type push_mesh_top2 (
             bool          _top2
             ) 
         {
             this->_jjig->
-           _rdel_opts.top2() = _top2; 
+           _mesh_opts.top2() = _top2; 
         }
         __normal_call void_type push_mesh_rad2 (
             double        _rad2
             ) 
         {
             this->_jjig->
-           _rdel_opts.rad2() = _rad2; 
+           _mesh_opts.rad2() = _rad2; 
         }
         __normal_call void_type push_mesh_rad3 (
             double        _rad3
             ) 
         {
             this->_jjig->
-           _rdel_opts.rad3() = _rad3; 
+           _mesh_opts.rad3() = _rad3; 
         }
         __normal_call void_type push_mesh_off2 (
             double        _off2
             ) 
         { 
             this->_jjig->
-           _rdel_opts.off2() = _off2;
+           _mesh_opts.off2() = _off2;
         }
         __normal_call void_type push_mesh_off3 (
             double        _off3
             ) 
         {
             this->_jjig->
-           _rdel_opts.off3() = _off3; 
+           _mesh_opts.off3() = _off3; 
         }
         __normal_call void_type push_mesh_snk2 (
             double        _snk2
             ) 
         {
             this->_jjig->
-           _rdel_opts.snk2() = _snk2; 
+           _mesh_opts.snk2() = _snk2; 
         }
         __normal_call void_type push_mesh_snk3 (
             double        _snk3
             ) 
         {
             this->_jjig->
-           _rdel_opts.snk3() = _snk3; 
+           _mesh_opts.snk3() = _snk3; 
         }
         __normal_call void_type push_mesh_eps1 (
             double        _eps1
             ) 
         {
             this->_jjig->
-           _rdel_opts.eps1() = _eps1; 
+           _mesh_opts.eps1() = _eps1; 
         }
         __normal_call void_type push_mesh_eps2 (
             double        _eps2
             ) 
         {
             this->_jjig->
-           _rdel_opts.eps2() = _eps2; 
+           _mesh_opts.eps2() = _eps2; 
         }
         __normal_call void_type push_mesh_vol3 (
             double        _vol3
             ) 
         {
             this->_jjig->
-           _rdel_opts.vol3() = _vol3; 
+           _mesh_opts.vol3() = _vol3; 
         }
         
     /*------------------------------------- OPTM keywords */
+        __normal_call void_type push_optm_kern (
+            std::int32_t  _kern
+            ) 
+        {
+            this->_jjig->_iter_pred = 
+        (jcfg_data::iter_pred::enum_data)_kern ;
+        }
+
         __normal_call void_type push_optm_iter (
             std::int32_t  _iter
             ) 
@@ -465,7 +473,7 @@
     /*------------------------------------- MISC keywords */
             _jcfg._verbosity = 
                          _jjig._verbosity ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 verb() = _jjig._verbosity ;
             _jcfg._iter_opts.
                 verb() = _jjig._verbosity ;
@@ -482,17 +490,17 @@
                 jcfg_data::bnds_pred::bnd_dual ;
     
     /*------------------------------------- GEOM keywords */
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 seed() = _jjig._geom_seed ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 feat() = _jjig._geom_feat ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 eta1() = _jjig._geom_eta1 ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 eta2() = _jjig._geom_eta2 ;
 
     /*------------------------------------- INIT keywords */
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 near() = _jjig._init_near ;
             
     /*------------------------------------- HFUN keywords */
@@ -521,39 +529,54 @@
                     JIGSAW_KERN_DELAUNAY)
             _jcfg._mesh_pred = 
                 jcfg_data::mesh_pred::delaunay ;
+            else
+            if (_jjig._mesh_kern ==
+                    JIGSAW_KERN_BISECTOR)
+            _jcfg._mesh_pred = 
+                jcfg_data::mesh_pred::bisector ;
             
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 dims() = _jjig._mesh_dims ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 iter() = _jjig._mesh_iter ;
                 
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 top1() = _jjig._mesh_top1 ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 top2() = _jjig._mesh_top2 ;
             
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 rad2() = _jjig._mesh_rad2 ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 rad3() = _jjig._mesh_rad3 ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 off2() = _jjig._mesh_off2 ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 off3() = _jjig._mesh_off3 ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 snk2() = _jjig._mesh_snk2 ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 snk3() = _jjig._mesh_snk3 ;
             
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 eps1() = _jjig._mesh_eps1 ;
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 eps2() = _jjig._mesh_eps2 ;
             
-            _jcfg._rdel_opts.
+            _jcfg._mesh_opts.
                 vol3() = _jjig._mesh_vol3 ;
                 
     /*------------------------------------- ITER keywords */
+            if (_jjig._optm_kern == 
+                    JIGSAW_KERN_ODT_DQDX)
+            _jcfg._iter_pred = 
+                jcfg_data::iter_pred::odt_dqdx ;
+            else
+            if (_jjig._optm_kern ==
+                    JIGSAW_KERN_CVT_DQDX)
+            _jcfg._iter_pred = 
+                jcfg_data::iter_pred::cvt_dqdx ;
+
             _jcfg._iter_opts.
                 iter() = _jjig._optm_iter ;
             
@@ -648,31 +671,31 @@
 
     /*---------------------------- test GEOM keywords */
         __testINTS("GEOM-SEED", 
-            _jcfg._rdel_opts.seed(), 
+            _jcfg._mesh_opts.seed(), 
             (iptr_type) + 0, 
         std::numeric_limits<iptr_type>::     max())
 
         __testREAL("GEOM-PHI1", 
-            _jcfg._rdel_opts.phi1(), 
+            _jcfg._mesh_opts.phi1(), 
             (real_type)  0., 
             (real_type)180.)
         __testREAL("GEOM-PHI2", 
-            _jcfg._rdel_opts.phi2(), 
+            _jcfg._mesh_opts.phi2(), 
             (real_type)  0., 
             (real_type)180.)
             
         __testREAL("GEOM-ETA1", 
-            _jcfg._rdel_opts.eta1(), 
+            _jcfg._mesh_opts.eta1(), 
             (real_type)  0., 
             (real_type)180.)
         __testREAL("GEOM-ETA2", 
-            _jcfg._rdel_opts.eta2(), 
+            _jcfg._mesh_opts.eta2(), 
             (real_type)  0., 
             (real_type)180.)
 
     /*---------------------------- test INIT keywords */
         __testREAL("INIT-NEAR", 
-            _jcfg._rdel_opts.near(), 
+            _jcfg._mesh_opts.near(), 
             (real_type)  0., 
             (real_type)  1.)
 
@@ -688,79 +711,79 @@
         
     /*---------------------------- test MESH keywords */
         __testINTS("MESH-ITER", 
-            _jcfg._rdel_opts.iter(), 
+            _jcfg._mesh_opts.iter(), 
             (iptr_type) + 0,
         std::numeric_limits<iptr_type>::     max())
 
         __testINTS("MESH-DIMS", 
-            _jcfg._rdel_opts.dims(), 
+            _jcfg._mesh_opts.dims(), 
             (iptr_type) + 1,
             (iptr_type) + 3)
 
         __testREAL("MESH-SIZ1", 
-            _jcfg._rdel_opts.siz1(), 
+            _jcfg._mesh_opts.siz1(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
         __testREAL("MESH-SIZ2", 
-            _jcfg._rdel_opts.siz2(), 
+            _jcfg._mesh_opts.siz2(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
         __testREAL("MESH-SIZ3", 
-            _jcfg._rdel_opts.siz3(), 
+            _jcfg._mesh_opts.siz3(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
 
         __testREAL("MESH-EPS1", 
-            _jcfg._rdel_opts.eps1(), 
+            _jcfg._mesh_opts.eps1(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
         __testREAL("MESH-EPS2", 
-            _jcfg._rdel_opts.eps2(), 
+            _jcfg._mesh_opts.eps2(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
 
         __testREAL("MESH-RAD2", 
-            _jcfg._rdel_opts.rad2(), 
+            _jcfg._mesh_opts.rad2(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
         __testREAL("MESH-RAD3", 
-            _jcfg._rdel_opts.rad3(), 
+            _jcfg._mesh_opts.rad3(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
         
         __warnREAL("MESH-RAD2", 
-            _jcfg._rdel_opts.rad2(), 
+            _jcfg._mesh_opts.rad2(), 
             (real_type)  1., 
         std::numeric_limits<real_type>::infinity())
         __warnREAL("MESH-RAD3", 
-            _jcfg._rdel_opts.rad3(), 
+            _jcfg._mesh_opts.rad3(), 
             (real_type)  2., 
         std::numeric_limits<real_type>::infinity())
 
         __testREAL("MESH-OFF2", 
-            _jcfg._rdel_opts.off2(), 
+            _jcfg._mesh_opts.off2(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
         __testREAL("MESH-OFF3", 
-            _jcfg._rdel_opts.off3(), 
+            _jcfg._mesh_opts.off3(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
 
         __testREAL("MESH-SNK2", 
-            _jcfg._rdel_opts.snk2(),
+            _jcfg._mesh_opts.snk2(),
             (real_type)  0., 
             (real_type)  1.)
         __testREAL("MESH-SNK3", 
-            _jcfg._rdel_opts.snk3(),
+            _jcfg._mesh_opts.snk3(),
             (real_type)  0., 
             (real_type)  1.)
 
         __testREAL("MESH-VOL3", 
-            _jcfg._rdel_opts.vol3(),
+            _jcfg._mesh_opts.vol3(),
             (real_type)  0., 
             (real_type)  1.)            
         __warnREAL("MESH-VOL3", 
-            _jcfg._rdel_opts.vol3(),
+            _jcfg._mesh_opts.vol3(),
             (real_type)  0., 
             (real_type)  .3)
 
@@ -868,26 +891,26 @@
         {
     /*---------------------------- push GEOM keywords */
         __dumpINTS("GEOM-SEED", 
-            _jcfg._rdel_opts.seed())
+            _jcfg._mesh_opts.seed())
         
         __dumpREAL("GEOM-PHI1", 
-            _jcfg._rdel_opts.phi1())
+            _jcfg._mesh_opts.phi1())
         __dumpREAL("GEOM-PHI2", 
-            _jcfg._rdel_opts.phi2())
+            _jcfg._mesh_opts.phi2())
         
         __dumpREAL("GEOM-ETA1", 
-            _jcfg._rdel_opts.eta1())
+            _jcfg._mesh_opts.eta1())
         __dumpREAL("GEOM-ETA2", 
-            _jcfg._rdel_opts.eta2())
+            _jcfg._mesh_opts.eta2())
         
         __dumpBOOL("GEOM-FEAT", 
-            _jcfg._rdel_opts.feat())
+            _jcfg._mesh_opts.feat())
 
         _jlog.push("\n") ;
 
     /*---------------------------- push INIT keywords */
         __dumpREAL("INIT-NEAR", 
-            _jcfg._rdel_opts.near())
+            _jcfg._mesh_opts.near())
 
         _jlog.push("\n") ;
 
@@ -908,7 +931,18 @@
             "HFUN-HMIN", _jcfg._hfun_hmin)
 
         _jlog.push("\n") ;
-        
+    
+    /*---------------------------- push BNDS keywords */
+        if(_jcfg._bnds_pred ==
+         jcfg_data::bnds_pred::bnd_tria)
+        _jlog.push (
+            "  BNDS-KERN = BND-TRIA \n") ;
+        else
+        if(_jcfg._bnds_pred ==
+         jcfg_data::bnds_pred::bnd_dual)
+        _jlog.push (
+            "  BNDS-KERN = BND-DUAL \n") ;    
+
     /*---------------------------- push MESH keywords */
         if(_jcfg._mesh_pred ==
          jcfg_data::mesh_pred::delaunay)
@@ -919,61 +953,66 @@
          jcfg_data::mesh_pred::delfront)
         _jlog.push (
             "  MESH-KERN = DELFRONT \n") ;
-            
-        if(_jcfg._bnds_pred ==
-         jcfg_data::bnds_pred::bnd_tria)
-        _jlog.push (
-            "  BNDS-KERN = BND-TRIA \n") ;
         else
-        if(_jcfg._bnds_pred ==
-         jcfg_data::bnds_pred::bnd_dual)
+        if(_jcfg._mesh_pred ==
+         jcfg_data::mesh_pred::bisector)
         _jlog.push (
-            "  BNDS-KERN = BND-DUAL \n") ;
-
+            "  MESH-KERN = BISECTOR \n") ;
+        
         __dumpBOOL("MESH-TOP1", 
-            _jcfg._rdel_opts.top1())
+            _jcfg._mesh_opts.top1())
         __dumpBOOL("MESH-TOP2", 
-            _jcfg._rdel_opts.top2())
+            _jcfg._mesh_opts.top2())
 
         __dumpINTS("MESH-ITER", 
-            _jcfg._rdel_opts.iter())
+            _jcfg._mesh_opts.iter())
 
         __dumpINTS("MESH-DIMS", 
-            _jcfg._rdel_opts.dims())
+            _jcfg._mesh_opts.dims())
 
         __dumpREAL("MESH-SIZ1", 
-            _jcfg._rdel_opts.siz1())
+            _jcfg._mesh_opts.siz1())
         __dumpREAL("MESH-SIZ2", 
-            _jcfg._rdel_opts.siz2())
+            _jcfg._mesh_opts.siz2())
         __dumpREAL("MESH-SIZ3", 
-            _jcfg._rdel_opts.siz3())
+            _jcfg._mesh_opts.siz3())
 
         __dumpREAL("MESH-EPS1", 
-            _jcfg._rdel_opts.eps1())
+            _jcfg._mesh_opts.eps1())
         __dumpREAL("MESH-EPS2", 
-            _jcfg._rdel_opts.eps2())
+            _jcfg._mesh_opts.eps2())
 
         __dumpREAL("MESH-RAD2", 
-            _jcfg._rdel_opts.rad2())
+            _jcfg._mesh_opts.rad2())
         __dumpREAL("MESH-RAD3", 
-            _jcfg._rdel_opts.rad3())
+            _jcfg._mesh_opts.rad3())
 
         __dumpREAL("MESH-OFF2", 
-            _jcfg._rdel_opts.off2())
+            _jcfg._mesh_opts.off2())
         __dumpREAL("MESH-OFF3", 
-            _jcfg._rdel_opts.off3())
+            _jcfg._mesh_opts.off3())
 
         __dumpREAL("MESH-SNK2", 
-            _jcfg._rdel_opts.snk2())
+            _jcfg._mesh_opts.snk2())
         __dumpREAL("MESH-SNK3", 
-            _jcfg._rdel_opts.snk3())
+            _jcfg._mesh_opts.snk3())
 
         __dumpREAL("MESH-VOL3", 
-            _jcfg._rdel_opts.vol3())
+            _jcfg._mesh_opts.vol3())
 
         _jlog.push("\n") ;
         
     /*---------------------------- push OPTM keywords */
+        if(_jcfg._iter_pred ==
+         jcfg_data::iter_pred::odt_dqdx)
+        _jlog.push (
+            "  OPTM-KERN = ODT+DQDX \n") ;
+        else
+        if(_jcfg._iter_pred ==
+         jcfg_data::iter_pred::cvt_dqdx)
+        _jlog.push (
+            "  OPTM-KERN = CVT+DQDX \n") ;
+
         __dumpINTS("OPTM-ITER", 
             _jcfg._iter_opts.iter())
 

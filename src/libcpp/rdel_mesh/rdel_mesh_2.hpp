@@ -176,7 +176,7 @@
     typedef typename 
             mesh_type::tria_list        tria_hash ;
 
-    typedef mesh::rdel_params       <
+    typedef mesh::mesh_params       <
                 real_type, 
                 iptr_type           >   rdel_opts ;
 

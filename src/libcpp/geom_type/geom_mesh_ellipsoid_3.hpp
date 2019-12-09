@@ -83,7 +83,7 @@
             base_type::ball_type    ball_type ;
             
             
-    class node_type: public tria_complex_node_3<I,R>
+    class node_type: public mesh_complex_node_3<I,R>
         {
     /*------------------------------------ loc. node type */
         public  :       
@@ -131,7 +131,7 @@
         
         } ;
         
-    class edge_type: public tria_complex_edge_2<I>
+    class edge_type: public mesh_complex_edge_2<I>
         {
     /*------------------------------------ loc. edge type */
         public  :

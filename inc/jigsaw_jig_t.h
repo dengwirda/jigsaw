@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 April, 2019
+     * Last updated: 29 October, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -355,6 +355,20 @@
      */
         
         real_t                  _mesh_vol3 ;
+
+    /* 
+    --------------------------------------------------------
+     * OPTM_KERN - {default = 'odt+dqdx'} mesh optimisation 
+     * kernel, choice of an Optimal Delaunay Tessellation 
+     * strategy (KERN='odt+dqdx') or a Centroidal Voronoi
+     * Tessellation method (KERN='cvt+dqdx'). In both cases
+     * a hybrid formulation is employed, using a "blend" of 
+     * ODT/CVT updates, and gradients of a "fall-back" mesh
+     * quality function Q.
+    --------------------------------------------------------
+     */
+        
+        indx_t                  _optm_kern ;
        
     /* 
     --------------------------------------------------------

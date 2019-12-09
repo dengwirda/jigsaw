@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 April, 2019
+     * Last updated: 29 October, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -144,7 +144,7 @@
            _jjig->_hfun_hmin = _hmin; 
         }
     
-    /*------------------------------------- KERN keywords */
+    /*------------------------------------- BNDS keywords */
         __normal_call void_type push_bnds_kern (
             std::int32_t  _kern
             ) 
@@ -153,15 +153,15 @@
            _jjig->_bnds_kern = _kern;
         }
         
+    /*------------------------------------- MESH keywords */
         __normal_call void_type push_mesh_kern (
             std::int32_t  _kern
             ) 
         {
             this->
            _jjig->_mesh_kern = _kern;
-        }
-        
-    /*------------------------------------- MESH keywords */
+        }        
+
         __normal_call void_type push_mesh_dims (
             std::int32_t  _dims
             ) 
@@ -276,6 +276,14 @@
         }
         
     /*------------------------------------- OPTM keywords */
+        __normal_call void_type push_optm_kern (
+            std::int32_t  _kern
+            ) 
+        {
+            this->
+           _jjig->_optm_kern = _kern;
+        }
+
         __normal_call void_type push_optm_iter (
             std::int32_t  _iter
             ) 

@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 19 January, 2019
+ * Last updated: 08 December, 2019
  *
  * Copyright 2013-2019
  * Darren Engwirda
@@ -64,7 +64,7 @@
 
 #   include "hashfunc.hpp"
 
-#   include "mesh_type/tria_complex_type_k.hpp"
+#   include "mesh_type/mesh_complex_type_k.hpp"
 
 #   include "mesh_type/tria_complex_1.hpp"
 #   include "mesh_type/tria_complex_2.hpp"

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 August, 2019
+     * Last updated: 30 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -215,19 +215,11 @@
         data_type _area = 
         tria_area_2d(_p1, _p2, _p3);
 
-        data_type _scrA ;
-        if (_barA > (data_type)+0. )
-            _scrA =  
+        data_type _scrA =  
             _mulA * _area / _barA ;
-        else
-            _scrA = (data_type)+0. ;
         
-        data_type _scrB ;
-        if (_barB > (data_type)+0. )
-            _scrB =  
+        data_type _scrB =  
             _mulB * _area / _barB ;
-        else
-            _scrB = (data_type)+0. ;
 
         return 
       ((data_type)+1.0-.33)*_scrA +
@@ -276,20 +268,12 @@
         data_type _area = 
         tria_area_3d(_p1, _p2, _p3);
         
-        data_type _scrA ;
-        if (_barA > (data_type)+0. )
-            _scrA =  
+        data_type _scrA =  
             _mulA * _area / _barA ;
-        else
-            _scrA = (data_type)+0. ;
         
-        data_type _scrB ;
-        if (_barB > (data_type)+0. )
-            _scrB =  
+        data_type _scrB =  
             _mulB * _area / _barB ;
-        else
-            _scrB = (data_type)+0. ;
-
+        
         return 
       ((data_type)+1.0-.33)*_scrA +
       ((data_type)+0.0+.33)*_scrB ;
@@ -400,8 +384,8 @@
        (_q1+_q2+_q3) / (data_type)+3. ;
         
         data_type _qq = 
-      ((data_type)+1.-.40) * _qb + 
-      ((data_type)+0.+.40) * _qe ;
+      ((data_type)+1.-.50) * _qb + 
+      ((data_type)+0.+.50) * _qe ;
 
         _qq = (data_type)1.- _qq ;
 
@@ -473,8 +457,8 @@
        (_q1+_q2+_q3) / (data_type)+3. ;
         
         data_type _qq = 
-      ((data_type)+1.-.40) * _qb + 
-      ((data_type)+0.+.40) * _qe ;
+      ((data_type)+1.-.50) * _qb + 
+      ((data_type)+0.+.50) * _qe ;
 
         _qq = (data_type)1.- _qq ;
 

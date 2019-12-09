@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * Constants for the JIGSAW meshing library.
+     * TREE-TIMERS: CPU timers for TREE-MESH-K.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -35,64 +35,76 @@
      *
      * Copyright 2013-2019
      * Darren Engwirda
-     * darren.engwirda@columbia.edu
-     * https://github.com/dengwirda
+     * de2363@columbia.edu
+     * https://github.com/dengwirda/
      *
     --------------------------------------------------------
      */
-     
-    /* 
+
+#   pragma once
+
+#   ifndef __TREE_TIMERS__
+#   define __TREE_TIMERS__
+
+    namespace mesh {
+
+    /*
     --------------------------------------------------------
-     * return codes for JIGSAW.
+     * TREE-TIMERS: cpu timers for TREE-MESH-K
     --------------------------------------------------------
-     */ 
-
-#       define JIGSAW_UNKNOWN_ERROR    -1
-
-#       define JIGSAW_NO_ERROR         +0
-
-#       define JIGSAW_FILE_NOT_LOCATED +2
-#       define JIGSAW_FILE_NOT_CREATED +3
-
-#       define JIGSAW_INVALID_ARGUMENT +4
-
-    /* 
-    --------------------------------------------------------
-     * constants for JIGSAW.
-    --------------------------------------------------------
-     */ 
-
-#       define JIGSAW_NULL_FLAG      -100
-
-#       define JIGSAW_EUCLIDEAN_MESH +100
-#       define JIGSAW_EUCLIDEAN_GRID +101
-#       define JIGSAW_EUCLIDEAN_DUAL +102
+     */
     
-#       define JIGSAW_ELLIPSOID_MESH +200
-#       define JIGSAW_ELLIPSOID_GRID +201
-#       define JIGSAW_ELLIPSOID_DUAL +202
-
-#       define JIGSAW_POINT_TAG      +10
-#       define JIGSAW_EDGE2_TAG      +20
-#       define JIGSAW_TRIA3_TAG      +30
-#       define JIGSAW_QUAD4_TAG      +40
-#       define JIGSAW_TRIA4_TAG      +50
-#       define JIGSAW_HEXA8_TAG      +60
-#       define JIGSAW_WEDG6_TAG      +70
-#       define JIGSAW_PYRA5_TAG      +80
-
-#       define JIGSAW_HFUN_RELATIVE  +300
-#       define JIGSAW_HFUN_ABSOLUTE  +301
+    template <
+    typename R , 
+    typename I
+             >
+    class tree_timers
+        {
+        public  :
+        
+        typedef R                       real_type ;
+        typedef I                       iptr_type ;
+        
+        typedef tree_timers<R, I>       self_type ;
+        
+        real_type   _mesh_seed = (real_type)  +0. ;
+        real_type   _node_init = (real_type)  +0. ;
+        real_type   _node_rule = (real_type)  +0. ;
+        real_type   _edge_init = (real_type)  +0. ;
+        real_type   _edge_rule = (real_type)  +0. ;
+        real_type   _face_init = (real_type)  +0. ;
+        real_type   _face_rule = (real_type)  +0. ;
+        real_type   _tria_init = (real_type)  +0. ;
+        real_type   _tria_rule = (real_type)  +0. ;
+        
+        public  :
+  
+    /*-------------------------------------- elapsed time */
+   
+    #   ifdef  __use_timers
     
-#       define JIGSAW_KERN_DELFRONT  +400
-#       define JIGSAW_KERN_DELAUNAY  +401
-#       define JIGSAW_KERN_BISECTOR  +402
+        __inline_call double time_span (
+            typename std::
+                chrono::high_resolution_clock
+                    ::time_point const& _ttic,
+            typename std::
+                chrono::high_resolution_clock
+                    ::time_point const& _ttoc
+            )
+        {
+            return (double)(
+                std::chrono::duration_cast<
+                std::chrono::microseconds >
+                (_ttoc-_ttic).count()) / +1.0E+06 ;
+        }
 
-#       define JIGSAW_BNDS_TRIACELL  +402
-#       define JIGSAW_BNDS_DUALCELL  +403
+    #   endif//__use_timers
+        
+        } ;
 
-#       define JIGSAW_KERN_ODT_DQDX  +404
-#       define JIGSAW_KERN_CVT_DQDX  +405
-     
-     
-    
+    }
+
+#   endif // __TREE_TIMERS__
+
+
+

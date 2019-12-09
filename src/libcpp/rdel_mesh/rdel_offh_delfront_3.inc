@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 July, 2019
+     * Last updated: 30 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -85,7 +85,7 @@
         if (_enod[1] < _enod[0])
         std::swap(_enod[0], _enod[1]) ;
 
-        real_type  _nsiz [ 3] ;
+        real_type  _nsiz [ 4] ;
         _nsiz[ 0] = _hfun.eval (
        &_mesh._tria.
          node(_enod[0])->pval(0) , 
@@ -151,9 +151,20 @@
         {
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
 
+            real_type _PMID[3] = {
+           (real_type)+.5 * (_ipos[0]+_ppos[0]) ,
+           (real_type)+.5 * (_ipos[1]+_ppos[1]) ,
+           (real_type)+.5 * (_ipos[2]+_ppos[2]) ,
+                } ;
+
+            typename hfun_type::hint_type
+            _HINT = _hint ;
+            _nsiz[3] = _hfun.eval(_PMID, _HINT) ;
+
             real_type _hval = 
-            _nsiz[0] * (real_type)1./2.+
-            _nsiz[2] * (real_type)1./2.;
+            _nsiz[0] * (real_type)1./3. +
+            _nsiz[2] * (real_type)1./3. +
+            _nsiz[3] * (real_type)1./3. ;
 
             real_type _dist = _hval ;
 
@@ -267,7 +278,7 @@
 
         __unreferenced(_args) ;
 
-        real_type  _nsiz [ 3] ;
+        real_type  _nsiz [ 4] ;
         _nsiz[ 0] = _hfun.eval (
        &_mesh._tria.
          node(_enod[0])->pval(0) , 
@@ -319,10 +330,21 @@
         {
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
 
+            real_type _PMID[3] = {
+           (real_type)+.5 * (_pmid[0]+_ppos[0]) ,
+           (real_type)+.5 * (_pmid[1]+_ppos[1]) ,
+           (real_type)+.5 * (_pmid[2]+_ppos[2]) ,
+                } ;
+
+            typename hfun_type::hint_type
+            _HINT = _hint ;
+            _nsiz[3] = _hfun.eval(_PMID, _HINT) ;
+
             real_type _hval = 
-            _nsiz[0] * (real_type)1./4. +
-            _nsiz[1] * (real_type)1./4. +
-            _nsiz[2] * (real_type)2./4. ;
+            _nsiz[0] * (real_type)1./6. +
+            _nsiz[1] * (real_type)1./6. +
+            _nsiz[2] * (real_type)2./6. +
+            _nsiz[3] * (real_type)2./6. ;
 
             real_type _hmin ;
             _hmin = std::min (_hval , _epsh);
@@ -470,7 +492,7 @@
         __unreferenced(_geom) ;
         __unreferenced(_args) ;
 
-        real_type  _nsiz [ 4] ;
+        real_type  _nsiz [ 5] ;
         _nsiz[ 0] = _hfun.eval (
        &_mesh._tria.
          node(_fnod[0])->pval(0) , 
@@ -509,11 +531,22 @@
         {
             _nsiz[3] = _hfun.eval(_ppos, _hint) ;
 
+            real_type _PMID[3] = {
+           (real_type)+.5 * (_fbal[0]+_ppos[0]) ,
+           (real_type)+.5 * (_fbal[1]+_ppos[1]) ,
+           (real_type)+.5 * (_fbal[2]+_ppos[2]) ,
+                } ;
+
+            typename hfun_type::hint_type
+            _HINT = _hint ;
+            _nsiz[4] = _hfun.eval(_PMID, _HINT) ;
+
             real_type _hmid = 
-            _nsiz[0] * (real_type)1./6. +
-            _nsiz[1] * (real_type)1./6. +
-            _nsiz[2] * (real_type)1./6. +
-            _nsiz[3] * (real_type)3./6. ;
+            _nsiz[0] * (real_type)1./9. +
+            _nsiz[1] * (real_type)1./9. +
+            _nsiz[2] * (real_type)1./9. +
+            _nsiz[3] * (real_type)3./9. +
+            _nsiz[4] * (real_type)3./9. ;
             
             _kind    = rdel_opts::offH_kind ;
             
@@ -522,7 +555,7 @@
                 _hmid*_hmid - _fbal[ 3] ;
 
             real_type _near = 
-            _fbal[3] * (real_type)1./1. ;
+            _fbal[3] * (real_type)2./3. ;
 
             if (_dsqr < _near)
             {                       // min.-space limiter  

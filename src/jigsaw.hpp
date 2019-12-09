@@ -14,7 +14,7 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * Last updated: 02 July, 2019
+     * Last updated: 25 November, 2019
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
@@ -108,18 +108,18 @@
                 rdel_pred ,
                 geom_type ,
                 hfun_type ,
-                init_type >         rdel_func ;
+                init_type >         mesh_func ;
 
             typedef 
-            jcfg_data::rdel_opts    rdel_opts ;
+            jcfg_data::mesh_opts    mesh_opts ;
 
-            rdel_opts *_opts =  
-               &_args._rdel_opts;
+            mesh_opts *_opts =  
+               &_args._mesh_opts ;
 
-            rdel_func::rdel_mesh( 
+            mesh_func::rdel_mesh ( 
                 _geom, _init ,
                 _hfun, _mesh ,
-               *_opts, _jlog )  ;
+               *_opts, _jlog )   ;
         }
         else
         if (_args._mesh_pred ==
@@ -137,18 +137,51 @@
                 rdel_pred ,
                 geom_type ,
                 hfun_type ,
-                init_type >         rdel_func ;
+                init_type >         mesh_func ;
 
             typedef 
-            jcfg_data::rdel_opts    rdel_opts ;
+            jcfg_data::mesh_opts    mesh_opts ;
 
-            rdel_opts *_opts =  
-               &_args._rdel_opts;
+            mesh_opts *_opts =  
+               &_args._mesh_opts ;
 
-            rdel_func::rdel_mesh( 
+            mesh_func::rdel_mesh ( 
                 _geom, _init ,
                 _hfun, _mesh ,
-               *_opts, _jlog )  ;
+               *_opts, _jlog )   ;
+        }
+        else
+        if (_args._mesh_pred ==
+                jcfg_data::mesh_pred::bisector)
+        {
+    /*-------------------------- call BISECTOR kernel */
+            
+            /*
+            typedef 
+                mesh::tree_bisector_2d  <
+                geom_type ,
+                hfun_type ,
+                mesh_type >         tree_pred ;
+                
+            typedef mesh::tree_mesh_2d  <
+                mesh_type , 
+                tree_pred ,
+                geom_type ,
+                hfun_type ,
+                init_type >         mesh_func ;
+
+            typedef 
+            jcfg_data::mesh_opts    mesh_opts ;
+
+            mesh_opts *_opts =  
+               &_args._mesh_opts ;
+
+            mesh_func::tree_mesh ( 
+                _geom, _init ,
+                _hfun, _mesh ,
+               *_opts, _jlog )   ;
+            */
+
         }
     }
 
@@ -189,18 +222,18 @@
                 rdel_pred ,
                 geom_type ,
                 hfun_type ,
-                init_type >         rdel_func ;
+                init_type >         mesh_func ;
 
             typedef 
-            jcfg_data::rdel_opts    rdel_opts ;
+            jcfg_data::mesh_opts    mesh_opts ;
 
-            rdel_opts *_opts =  
-               &_args._rdel_opts;
+            mesh_opts *_opts =  
+               &_args._mesh_opts ;
 
-            rdel_func::rdel_mesh( 
+            mesh_func::rdel_mesh ( 
                 _geom, _init ,
                 _hfun, _mesh ,
-               *_opts, _jlog )  ;
+               *_opts, _jlog )   ;
         }
         else
         if (_args._mesh_pred ==
@@ -218,18 +251,51 @@
                 rdel_pred ,
                 geom_type ,
                 hfun_type ,
-                init_type >         rdel_func ;
+                init_type >         mesh_func ;
 
             typedef 
-            jcfg_data::rdel_opts    rdel_opts ;
+            jcfg_data::mesh_opts    mesh_opts ;
 
-            rdel_opts *_opts =  
-               &_args._rdel_opts;
+            mesh_opts *_opts =  
+               &_args._mesh_opts ;
 
-            rdel_func::rdel_mesh( 
+            mesh_func::rdel_mesh ( 
                 _geom, _init ,
                 _hfun, _mesh ,
-               *_opts, _jlog )  ;
+               *_opts, _jlog )   ;
+        }
+        else
+        if (_args._mesh_pred ==
+                jcfg_data::mesh_pred::bisector)
+        {
+    /*-------------------------- call BISECTOR kernel */
+
+            /*
+            typedef 
+                mesh::tree_bisector_3d  <
+                geom_type ,
+                hfun_type ,
+                mesh_type >         tree_pred ;
+                
+            typedef mesh::tree_mesh_3d  <
+                mesh_type , 
+                tree_pred ,
+                geom_type ,
+                hfun_type ,
+                init_type >         mesh_func ;
+
+            typedef 
+            jcfg_data::mesh_opts    mesh_opts ;
+
+            mesh_opts *_opts =  
+               &_args._mesh_opts ;
+
+            mesh_func::tree_mesh ( 
+                _geom, _init ,
+                _hfun, _mesh ,
+               *_opts, _jlog )   ;
+            */
+
         }
     }
 
@@ -496,9 +562,10 @@
         jlog_data &_jlog
         )
     {
-        if (true)   /* kernel? */
+        if (_args._iter_pred ==
+                jcfg_data::iter_pred::odt_dqdx)
         {
-    /*------------------------------ call ITER kernel */
+    /*-------------------------- call ODT-ITER kernel */
             typedef mesh::
                 iter_pred_euclidean_2d <
                 real_type ,
@@ -516,14 +583,47 @@
             jcfg_data::iter_opts    iter_opts ;
 
             iter_opts *_opts =  
-               &_args._iter_opts;
+               &_args._iter_opts ;
             
             pred_type  _pred ;
-            iter_func::iter_mesh(
+            iter_func::iter_mesh (
                 _geom, _hfun , 
-                _mesh. _mesh, 
+                _mesh. _mesh ,
+            iter_func::_odt_kern , 
                 _pred,
-               *_opts, _jlog )  ;
+               *_opts, _jlog )   ;
+        }
+        else
+        if (_args._iter_pred ==
+                jcfg_data::iter_pred::cvt_dqdx)
+        {
+    /*-------------------------- call CVT-ITER kernel */
+            typedef mesh::
+                iter_pred_euclidean_2d <
+                real_type ,
+                iptr_type >         pred_type ;
+            
+            typedef mesh::iter_mesh_2  <
+                geom_type ,
+                typename
+                mesh_type::
+                mesh_type ,
+                hfun_type ,
+                pred_type >         iter_func ;
+            
+            typedef 
+            jcfg_data::iter_opts    iter_opts ;
+
+            iter_opts *_opts =  
+               &_args._iter_opts ;
+            
+            pred_type  _pred ;
+            iter_func::iter_mesh (
+                _geom, _hfun , 
+                _mesh. _mesh ,
+            iter_func::_cvt_kern , 
+                _pred,
+               *_opts, _jlog )   ;
         }
     }
     
@@ -541,9 +641,10 @@
         jlog_data &_jlog
         )
     {
-        if (true)   /* kernel? */
+        if (_args._iter_pred ==
+                jcfg_data::iter_pred::odt_dqdx)
         {
-    /*------------------------------ call ITER kernel */
+    /*-------------------------- call ODT-ITER kernel */
             typedef mesh::
                 iter_pred_ellipsoid_3d <
                 real_type ,
@@ -561,14 +662,47 @@
             jcfg_data::iter_opts    iter_opts ;
 
             iter_opts *_opts =  
-               &_args._iter_opts;
+               &_args._iter_opts ;
             
             pred_type  _pred ;
-            iter_func::iter_mesh(
+            iter_func::iter_mesh (
                 _geom, _hfun , 
-                _mesh. _mesh, 
+                _mesh. _mesh ,
+            iter_func::_odt_kern , 
                 _pred,
-               *_opts, _jlog )  ;
+               *_opts, _jlog )   ;
+        }
+        else
+        if (_args._iter_pred ==
+                jcfg_data::iter_pred::cvt_dqdx)
+        {
+    /*-------------------------- call CVT-ITER kernel */
+            typedef mesh::
+                iter_pred_ellipsoid_3d <
+                real_type ,
+                iptr_type >         pred_type ;
+            
+            typedef mesh::iter_mesh_2  <
+                geom_type ,
+                typename
+                mesh_type::
+                mesh_type ,
+                hfun_type ,
+                pred_type >         iter_func ;
+            
+            typedef 
+            jcfg_data::iter_opts    iter_opts ;
+
+            iter_opts *_opts =  
+               &_args._iter_opts ;
+            
+            pred_type  _pred ;
+            iter_func::iter_mesh (
+                _geom, _hfun , 
+                _mesh. _mesh ,
+            iter_func::_cvt_kern , 
+                _pred,
+               *_opts, _jlog )   ;
         }
     }
     
@@ -1130,7 +1264,7 @@
         
         if (_gmsh != nullptr )
         {
-            if(_jcfg._rdel_opts.iter() != +0 )
+            if(_jcfg._mesh_opts.iter() != +0 )
             {
     /*--------------------------------- call mesh routine */
             _jlog.push (  __jloglndv    "\n" ) ;
@@ -1160,7 +1294,7 @@
         if (_gmsh != nullptr )
         {
     /*--------------------------------- call copy routine */
-            if(_jcfg._rdel_opts.iter() != +0 &&
+            if(_jcfg._mesh_opts.iter() != +0 &&
                _jcfg._iter_opts.iter() != +0 )
             {
             _jlog.push (  __jloglndv    "\n" ) ;
@@ -1232,7 +1366,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            if (_jcfg._rdel_opts.iter() != +0 &&
+            if (_jcfg._mesh_opts.iter() != +0 &&
                 _jcfg._iter_opts.iter() == +0 )
             {
 
@@ -1597,7 +1731,7 @@
         
         if(!_jcfg._geom_file.empty())
         {
-            if(_jcfg._rdel_opts.iter() != +0 )
+            if(_jcfg._mesh_opts.iter() != +0 )
             {
     /*--------------------------------- call mesh routine */
             _jlog.push (  __jloglndv    "\n" ) ;
@@ -1651,7 +1785,7 @@
 
         if(!_jcfg._geom_file.empty())
         {
-            if(_jcfg._rdel_opts.iter() != +0 &&
+            if(_jcfg._mesh_opts.iter() != +0 &&
                _jcfg._iter_opts.iter() != +0 )
             {
     /*--------------------------------- call copy routine */
@@ -1725,7 +1859,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            if (_jcfg._rdel_opts.iter() != +0 &&
+            if (_jcfg._mesh_opts.iter() != +0 &&
                 _jcfg._iter_opts.iter() == +0 )
             {
 

@@ -2279,7 +2279,12 @@
             
             __dumpINTS("|XGRID.|", _xnum)
             __dumpINTS("|YGRID.|", _ynum)
-            
+
+            _jlog.push("  \n") ;
+
+            if (_hfun._ellipsoid_grid_3d._wrap)
+            _jlog.push("PERIODIC = TRUE") ; 
+           
         }
 
         _jlog.push("\n") ;

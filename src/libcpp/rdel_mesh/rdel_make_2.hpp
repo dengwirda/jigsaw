@@ -122,7 +122,7 @@
                 geom_type,
                 mesh_type           >   rdel_pred ;
 
-    typedef mesh::rdel_params       <
+    typedef mesh::mesh_params       <
                 real_type, 
                 iptr_type           >   rdel_opts ;
 

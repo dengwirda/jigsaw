@@ -55,7 +55,6 @@
 #   include "meshfunc.hpp"
 #   include "meshtype.hpp"
 
-#   include "iter_mesh/iter_params.hpp"
 #   include "iter_mesh/iter_timers.hpp"
 
 #   include "iter_mesh/iter_mesh_euclidean_2.hpp"

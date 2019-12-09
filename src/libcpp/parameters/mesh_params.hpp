@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * RDEL-PARAMS: parameters for RDEL-MESH-K.
+     * MESH-PARAMS: parameters for meshing kernels.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 April, 2019
+     * Last updated: 27 November, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -43,14 +43,14 @@
 
 #   pragma once
 
-#   ifndef __RDEL_PARAMS__
-#   define __RDEL_PARAMS__
+#   ifndef __MESH_PARAMS__
+#   define __MESH_PARAMS__
 
     namespace mesh {
 
     /*
     --------------------------------------------------------
-     * RDEL-PARAMS: user-param's for RDEL-MESH-K
+     * MESH-PARAMS: user-param's for meshing kernels
     --------------------------------------------------------
      */
     
@@ -58,16 +58,16 @@
     typename R , 
     typename I
              >
-    class rdel_params
+    class mesh_params
         {
         public  :
-        
+    
         typedef  R                      real_type ;
         typedef  I                      iptr_type ;
         
-        typedef mesh::rdel_params<R, I> self_type ;
+        typedef mesh::mesh_params<R, I> self_type ;
         
-        enum node_kind { 
+        enum node_kind {        // "off-centre" descriptors 
         null_kind = +0 , 
         fail_kind ,
         circ_kind ,             // "circ"-type refinement
@@ -163,7 +163,7 @@
         public  : 
         
     /*-------------------------- construct default param. */
-        __inline_call rdel_params  (
+        __inline_call mesh_params  (
             ) : 
             _verb(iptr_type(+   0)) ,
             
@@ -207,7 +207,7 @@
             _top2(bool_type(false))
         {   // load default values
         }
-    
+
     /*------------------------------------ "write" access */
         __inline_call iptr_type      & verb (
             )
@@ -446,7 +446,7 @@
 
     }
 
-#   endif   // __RDEL_PARAMS__
+#   endif   // __MESH_PARAMS__
 
 
 

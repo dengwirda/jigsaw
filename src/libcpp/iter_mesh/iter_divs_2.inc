@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 July, 2019
+     * Last updated: 27 October, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -59,6 +59,7 @@
         real_list &_hval ,
         iter_opts &_opts ,
         iptr_type  _enum ,
+        char_type  _kern ,
         bool_type &_okay ,
         iptr_type &_inew ,
         iptr_list &_tset ,
@@ -162,9 +163,10 @@
             _tsrc[0] , _tsrc[1]) ;
         
     /*--------------------------------- exit if too good! */
-        real_type _TSQR = std::sqrt(_TLIM) ;
+        real_type _TURN = 
+            std::pow(_TLIM, +1./4.) ;
 
-        if (_TMIN>_TSQR ) return ;
+        if (_TMIN>_TURN ) return ;
         
     /*--------------------------------- get adjacent ball */
         real_type _ibal[_dims+1] ;
@@ -331,49 +333,38 @@
             _dtmp.set_count(0) ;
         
             real_type  _minC = 
-            loop_tscr( _mesh, _pred , 
+            loop_cost( _mesh, _pred , 
                        _tnew, 
-                       _ttmp ) ;
+                       _ttmp,
+                 tria_kind() ) ;
                        
             real_type  _minD = 
-            loop_dscr( _mesh, _pred , 
+            loop_cost( _mesh, _pred , 
                        _tnew, 
-                       _dtmp ) ;
+                       _dtmp,
+                 tria_kind() ) ;
             
             move_node( _geom, _mesh ,
                 _hfun, _pred, _hval , 
-                _opts, _nptr, 
-                   _odt_kind, 
+                _opts, _nptr, _kern,
                 _move, _tnew, 
                 _ttmp, _tdst,
                 _dtmp, _ddst, 
                 _minC, _TLIM,
                 _minD, _DLIM ) ;
             
-            if (_move <= +0)
-            {
-            move_node( _geom, _mesh ,
-                _hfun, _pred, _hval , 
-                _opts, _nptr, 
-                   dQdx_kind, 
-                _move, _tnew, 
-                _ttmp, _tdst,
-                _dtmp, _ddst, 
-                _minC, _TLIM,
-                _minD, _DLIM ) ;
-            }            
-
             if (_move <= +0) break  ;
         }
         
     /*--------------------------------- compare cost scr. */
         _tdst.set_count(0) ;
     
-        loop_tscr(_mesh, _pred, _tnew, 
-                  _tdst) ;
+        loop_cost(_mesh, _pred, _tnew, 
+                  _tdst,
+             tria_kind() ) ;
     
         move_okay(_tdst, _tsrc, _okay, 
-                  _TSQR,
+                  _TURN,
                   _qinc) ;
               
         if (_okay)

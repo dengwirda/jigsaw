@@ -36,6 +36,9 @@
     respond to user-defined mesh-spacing functions 
     that incorporate non-uniform spatial structure.
 
+  - Support for both ODT and CVT style optimisation
+    kernels.
+
 
   * Version 0.9.11:
     --------------

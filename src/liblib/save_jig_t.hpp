@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 April, 2019
+     * Last updated: 29 October, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -180,6 +180,17 @@
                 _file << "MESH_VOL3 = " <<
                     _jcfg->_mesh_vol3 << "\n" ;
         
+        /*--------------------------------- OPTM keywords */
+                if (_jcfg->_optm_kern == 
+                        JIGSAW_KERN_ODT_DQDX)
+                _file << "OPTM_KERN = " 
+                      << "ODT+DQDX\n" ;
+                else
+                if (_jcfg->_optm_kern == 
+                        JIGSAW_KERN_CVT_DQDX)
+                _file << "OPTM_KERN = " 
+                      << "CVT+DQDX\n" ;
+    
         /*--------------------------------- OPTM keywords */
                 _file << "OPTM_ITER = " << 
                     _jcfg->_optm_iter << "\n" ;

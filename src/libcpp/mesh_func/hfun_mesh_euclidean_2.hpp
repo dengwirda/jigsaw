@@ -77,11 +77,11 @@
             allocator >             real_list ;           
 
 
-    typedef tria_complex_node_2<I, R>  
+    typedef mesh_complex_node_2<I, R>  
                                     node_type ;
         
-    typedef tria_complex_edge_2<I>  edge_type ;
-    typedef tria_complex_tria_3<I>  tri3_type ;
+    typedef mesh_complex_edge_2<I>  edge_type ;
+    typedef mesh_complex_tria_3<I>  tri3_type ;
        
     typedef mesh::tria_complex_2<
             node_type,

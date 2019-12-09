@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 June, 2019
+     * Last updated: 29 October, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -163,7 +163,10 @@
     __normal_call void_type push_mesh_vol3 (
         double       /*_vol3*/
         ) { }
-        
+    
+    __normal_call void_type push_optm_kern (
+        std::int32_t /*_kern*/
+        ) { }    
     __normal_call void_type push_optm_iter (
         std::int32_t /*_iter*/
         ) { }
@@ -258,6 +261,28 @@
             else                        \
            _errs.push_tail(_line) ;
            
+    /*---------------------------------- read "OPTM" pred */
+        #define __putOPTM(__fun, __str)     \
+            if (__str.count() == 2 )    \
+            {                           \
+                __toUPPER(__str [1])    \
+            if (__str[1].find("ODT+DQDX")!= \
+                    std::string::npos ) \
+                _dest.__fun (           \
+                    jcfg_data           \
+               ::iter_pred::odt_dqdx) ; \
+            else                        \
+            if (__str[1].find("CVT+DQDX")!= \
+                    std::string::npos ) \
+                _dest.__fun (           \
+                    jcfg_data           \
+               ::iter_pred::cvt_dqdx) ; \
+            else                        \
+           _errs.push_tail(_line) ;     \
+            }                           \
+            else                        \
+           _errs.push_tail(_line) ;
+
     /*---------------------------------- read "BNDS" pred */
         #define __putBNDS(__fun, __str)     \
             if (__str.count() == 2 )    \
@@ -555,6 +580,11 @@
                 }
             else
         /*---------------------------- read OPTM keywords */
+            if (_stok[0] == "OPTM_KERN")
+                {
+            __putOPTM(push_optm_kern, _stok) ;
+                }
+            else
             if (_stok[0] == "OPTM_ITER")
                 {
             __putINTS(push_optm_iter, _stok) ;
@@ -602,6 +632,7 @@
         #undef  __putFILE
         #undef  __putSCAL
         #undef  __putMESH
+        #undef  __putOPTM
         #undef  __putBNDS
         #undef  __putREAL
         #undef  __putINTS 
