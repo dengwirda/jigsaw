@@ -67,10 +67,7 @@
         real_list &_tsrc ,
         real_list &_tdst ,
         real_list &_ttmp ,
-        real_list &_dtmp ,
-        real_list &_ddst ,
         real_type  _TLIM ,
-        real_type  _DLIM ,
         real_type  _lmin
             = (real_type) +1.00E+00 ,
         real_type  _qinc 
@@ -322,7 +319,7 @@
         
     /*--------------------------------- optim. node coord */
         iptr_type static 
-            constexpr _INUM = (iptr_type) +8 ;
+            constexpr _INUM = (iptr_type) +4 ;
                
         for (auto _iloc = +0; _iloc != _INUM ; 
                 ++_iloc )
@@ -330,28 +327,19 @@
             iptr_type _move = (iptr_type) -1 ;
         
             _ttmp.set_count(0) ;
-            _dtmp.set_count(0) ;
-        
+            
             real_type  _minC = 
             loop_cost( _mesh, _pred , 
                        _tnew, 
                        _ttmp,
                  tria_kind() ) ;
-                       
-            real_type  _minD = 
-            loop_cost( _mesh, _pred , 
-                       _tnew, 
-                       _dtmp,
-                 tria_kind() ) ;
-            
+
             move_node( _geom, _mesh ,
                 _hfun, _pred, _hval , 
                 _opts, _nptr, _kern,
                 _move, _tnew, 
                 _ttmp, _tdst,
-                _dtmp, _ddst, 
-                _minC, _TLIM,
-                _minD, _DLIM ) ;
+                _minC, _TLIM ) ;
             
             if (_move <= +0) break  ;
         }

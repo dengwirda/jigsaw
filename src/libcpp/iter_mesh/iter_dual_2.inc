@@ -135,14 +135,14 @@
         _qlow = (real_type) +0. ;
         _dqdw = (real_type) +0. ;
         
-        iptr_type _lnum   = +0  ;
-      //iptr_type _hnum   = +1  ;
+        iptr_type _lnum =   +0  ;
+        iptr_type _hnum =   +1  ;
         
         real_type _save = 
             _node->pval  (_dims);
         
         real_type _qlim = _qmin + 
-            (real_type) +1.0E-003 ;
+            (real_type) +1.0E-002 ;
         
         _tnum = (iptr_type) +0  ;
         for (auto _tria  = _tset.head(),
@@ -168,7 +168,7 @@
                 real_type _sbar = (real_type)0.;
         
             /*---------- local iter. on finite-diff. step */        
-                for (auto _iter = +0; _iter++ != +4; )
+                for (auto _iter = +0; _iter++ != +2; )
                 {
                 
                 /*------ centred finite-diff. for dQ / dw */
@@ -203,12 +203,11 @@
                        &_mesh._set1[
                         _tptr->node(2)].pval(0)) ;
                     
-                    _sbar = std::max(
-                        std::abs(_scr1),
-                            std::abs(_scr0));
+                    _sbar = _cost[_tnum];
+
+                    _sdel = _scr1-_scr0 ;
                     
-                    _sdel =_scr1-_scr0 ;
-                    
+                    _sbar = std::abs(_sbar) ;
                     _sabs = std::abs(_sdel) ;
                     
                     _node->pval(_dims) =
@@ -245,39 +244,39 @@
             else
             {
             /*---------- accumulate metrics in 'good' set */
-                _qbar  = 
-                    std::min(_qbar, _qtri) ;
+                _qbar += _qtri; _hnum += 1 ;
             }
         }
     
         if (_tnum > +0)  
         {       
             _dqdw /=  _lnum ;
-            _qlow /=  _lnum ;  
+            _qlow /=  _lnum ;
+            _qbar /=  _hnum ;
         }
         
     /*------------------ 1st ord. Taylor-series step est. */
         real_type _scal = std::abs (_dqdw) ;
         
-        if (_scal ==(real_type) +0. )
+        if (_scal*_wadj <= _WINC)
         {
             _step = (real_type) +0. ;
         }
         else
         {    
             _step = (_qbar-_qlow) / _dqdw  ;
+
+            _step*= (real_type)+.50 ;
         }
 
         if (_step > (real_type) +0. )
         {
-            _step = std::min(
-            _step , (real_type)+.5 *_wadj) ;
+            _step = std::min(_step,+_wadj) ;
         }
         else
         if (_step < (real_type) +0. )
         {
-            _step = std::max(
-            _step , (real_type)-.5 *_wadj) ;
+            _step = std::max(_step,-_wadj) ;
         }
    
     }

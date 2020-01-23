@@ -117,13 +117,13 @@
             real_type _ipos [_dims + 1] ;
 
             _ipos[_dims] = 
-                (real_type)+.67 * 
+                (real_type)+.75 * 
                     _inod->pval (_dims) ;
             _jpos[_dims] = 
-                (real_type)+.67 * 
+                (real_type)+.75 * 
                     _jnod->pval (_dims) ;
             _kpos[_dims] = 
-                (real_type)+.67 * 
+                (real_type)+.75 * 
                     _knod->pval (_dims) ;
 
             for (auto _idim = _dims; _idim-- != +0; )
@@ -329,13 +329,13 @@
             real_type _apos [_dims + 1] ;
 
             _apos[_dims] = 
-                (real_type)+.67 * 
+                (real_type)+.75 * 
                     _anod->pval (_dims) ;
             _bpos[_dims] = 
-                (real_type)+.67 * 
+                (real_type)+.75 * 
                     _bnod->pval (_dims) ;
             _cpos[_dims] = 
-                (real_type)+.67 * 
+                (real_type)+.75 * 
                     _cnod->pval (_dims) ;
 
             for (auto _idim = _dims; _idim-- != +0; )
@@ -561,11 +561,11 @@
         _qbar = (real_type) +1. ;
         _qlow = (real_type) +0. ;
         
-        iptr_type _lnum   = +0  ;
-      //iptr_type _hnum   = +1  ;
+        iptr_type _lnum =   +0  ;
+        iptr_type _hnum =   +1  ;
         
         real_type _qlim = _qmin + 
-            (real_type) +1.0E-003 ;
+            (real_type) +1.0E-002 ;
 
         _tnum = (iptr_type) +0  ;
         for (auto _tria  = _tset.head() ,
@@ -596,7 +596,7 @@
                 real_type _sabs = (real_type)0.;
                 real_type _sbar = (real_type)0.;
                 
-                for (auto _iter = +0; _iter++ != +4; )
+                for (auto _iter = +0; _iter++ != +2; )
                 {
                 
                 /*------ centred finite-diff. for dQ / dw */
@@ -633,12 +633,11 @@
                         _tptr->node(2)].pval(0)
                             ) ;
                 
-                    _sbar = std::max(
-                        std::abs(_scr1),
-                            std::abs(_scr0));
+                    _sbar = _cost[_tnum];
+
+                    _sdel = _scr1-_scr0 ;
                     
-                    _sdel =_scr1-_scr0 ;
-                    
+                    _sbar = std::abs(_sbar) ;
                     _sabs = std::abs(_sdel) ;
                     
                     _node->pval(_idim) 
@@ -668,13 +667,12 @@
             
                 }
             
-                _qlow += _qtri ; _lnum += +1 ;
-            
+                _qlow += _qtri ; _lnum += +1 ;         
             }
             else
             {
             /*---------- accumulate metrics in 'good' set */
-                _qbar = std::min(_qbar, _qtri) ;
+                _qbar += _qtri ; _hnum += +1 ;
             }
         }
  
@@ -686,13 +684,14 @@
             }
             
             _qlow /=  _lnum ;
+            _qbar /=  _hnum ;
         }
         
     /*------------------ 1st ord. Taylor-series step est. */
         real_type _scal = 
             std::sqrt(_pred.length_sq(_dqdx)) ;
         
-        if (_scal ==  (real_type) +0. )
+        if (_scal*_ladj <= _HINC)
         {
             for (auto _idim = _dims; _idim-- != +0; )
             {
@@ -711,8 +710,9 @@
             _scal = (_qbar - _qlow) /
             _pred .innerprod(_line, _dqdx) ;
             
-            _scal = std::min(
-            _scal , (real_type)+.5 *_ladj) ;
+            _scal*= (real_type)+.50 ;
+
+            _scal = std::min(_scal, _ladj) ;
             
             for (auto _idim = _dims; _idim-- != +0; )
             {

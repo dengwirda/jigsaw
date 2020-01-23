@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 02 March, 2019
+ * Last updated: 08 December, 2019
  *
  * Copyright 2013-2019
  * Darren Engwirda
@@ -283,7 +283,7 @@
     real_type                  _ipos [ 2] ;
     real_type                  _jpos [ 2] ;
 
-    real_type                  _xden [ 2] ;
+    real_type                  _xmul [ 2] ;
     
     real_type                  _rmin [ 2] ;
     real_type                  _rmax [ 2] ;
@@ -311,10 +311,10 @@
         this->_rmax[1] = std::max(
               _isrc[1] , _jsrc[1]) ;
               
-        this->_xden[0] = _jsrc[0]- 
-                         _isrc[0];
-        this->_xden[1] = _jsrc[1]- 
-                         _isrc[1];
+        this->_xmul[0] = (real_type)1. / 
+            ( _jsrc[0] - _isrc[0]) ;
+        this->_xmul[1] = (real_type)1. /
+            ( _jsrc[1] - _isrc[1]) ;
     }
 
 /*---------------------------------- TRUE if intersection */
@@ -330,13 +330,13 @@
             _bmin, _bmax))
     /*------------------------------ bbox can't intersect */
             return false ;
-                       
+               
     /*------------------------------ test if line overlap */        
         real_type _aval, _bval ;
         _aval = (_bmin[0]-_ipos[0])
-                /_xden[0];
+                *_xmul[0];
         _bval = (_bmax[0]-_ipos[0])
-                /_xden[0];
+                *_xmul[0];
                 
         real_type _tmin, _tmax ;
         _tmin = 
@@ -347,9 +347,9 @@
         if (_tmax<_tmin) return false ; 
         
         _aval = (_bmin[1]-_ipos[1])
-                /_xden[1];
+                *_xmul[1];
         _bval = (_bmax[1]-_ipos[1])
-                /_xden[1];
+                *_xmul[1];
         
         _tmin = std::max(_tmin, 
         std::min( _aval, _bval )) ;
@@ -358,6 +358,8 @@
         
         if (_tmax<_tmin) return false ;
         
+        if (_tmax<  +0.) return false ;
+
         return true ;
     }
     
@@ -382,7 +384,7 @@
     real_type                  _ipos [ 3] ;
     real_type                  _jpos [ 3] ;
 
-    real_type                  _xden [ 3] ;
+    real_type                  _xmul [ 3] ;
     
     real_type                  _rmin [ 3] ;
     real_type                  _rmax [ 3] ;
@@ -416,12 +418,12 @@
         this->_rmax[2] = std::max(
               _isrc[2] , _jsrc[2]) ;
               
-        this->_xden[0] = _jsrc[0]- 
-                         _isrc[0];
-        this->_xden[1] = _jsrc[1]- 
-                         _isrc[1];
-        this->_xden[2] = _jsrc[2]- 
-                         _isrc[2];
+        this->_xmul[0] = (real_type)1. / 
+            ( _jsrc[0] - _isrc[0]) ;
+        this->_xmul[1] = (real_type)1. /
+            ( _jsrc[1] - _isrc[1]) ;
+        this->_xmul[2] = (real_type)1. /
+            ( _jsrc[2] - _isrc[2]) ;
     }
 
 /*---------------------------------- TRUE if intersection */
@@ -441,9 +443,9 @@
     /*------------------------------ test if line overlap */        
         real_type _aval, _bval ;
         _aval = (_bmin[0]-_ipos[0])
-                /_xden[0];
+                *_xmul[0];
         _bval = (_bmax[0]-_ipos[0])
-                /_xden[0];
+                *_xmul[0];
                 
         real_type _tmin, _tmax ;
         _tmin = 
@@ -454,9 +456,9 @@
         if (_tmax<_tmin) return false ; 
         
         _aval = (_bmin[1]-_ipos[1])
-                /_xden[1];
+                *_xmul[1];
         _bval = (_bmax[1]-_ipos[1])
-                /_xden[1];
+                *_xmul[1];
         
         _tmin = std::max(_tmin, 
         std::min( _aval, _bval )) ;
@@ -466,9 +468,9 @@
         if (_tmax<_tmin) return false ;
         
         _aval = (_bmin[2]-_ipos[2])
-                /_xden[2];
+                *_xmul[2];
         _bval = (_bmax[2]-_ipos[2])
-                /_xden[2];
+                *_xmul[2];
         
         _tmin = std::max(_tmin, 
         std::min( _aval, _bval )) ;
@@ -476,6 +478,8 @@
         std::max( _aval, _bval )) ;
         
         if (_tmax<_tmin) return false ;
+
+        if (_tmax<  +0.) return false ;
         
         return true ;
     }

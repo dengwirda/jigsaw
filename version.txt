@@ -37,7 +37,7 @@
     that incorporate non-uniform spatial structure.
 
   - Support for both ODT and CVT style optimisation
-    kernels.
+    kernels. ODT should still usually be preferred. 
 
 
   * Version 0.9.11:

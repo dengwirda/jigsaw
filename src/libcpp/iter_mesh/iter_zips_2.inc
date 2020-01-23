@@ -70,10 +70,7 @@
         real_list &_tsrc ,
         real_list &_tdst ,
         real_list &_ttmp ,
-        real_list &_dtmp ,
-        real_list &_ddst ,
         real_type  _TLIM ,
-        real_type  _DLIM ,
         real_type  _lmax 
             = (real_type) +8.25E-01 ,
         real_type  _qinc 
@@ -109,8 +106,6 @@
         _tsrc.set_count(+0) ;
         _tdst.set_count(+0) ;
         _ttmp.set_count(+0) ;
-        _dtmp.set_count(+0) ;
-        _ddst.set_count(+0) ;
     
     /*--------------------------------- exit if FEAT node */    
         if (_iptr->feat() != mesh::null_feat)
@@ -456,7 +451,7 @@
     
     /*--------------------------------- optim. node coord */
         iptr_type static 
-            constexpr _INUM = (iptr_type) +8 ;
+            constexpr _INUM = (iptr_type) +4 ;
                
         for (auto _iloc = +0; _iloc != _INUM ; 
                 ++_iloc )
@@ -464,28 +459,19 @@
             iptr_type _move = (iptr_type) -1 ;
         
             _ttmp.set_count(0) ;
-            _dtmp.set_count(0) ;
-        
+            
             real_type  _minC = 
             loop_cost( _mesh, _pred , 
                        _cset, 
                        _ttmp,
                  tria_kind() ) ;
-                       
-            real_type  _minD = 
-            loop_cost( _mesh, _pred , 
-                       _cset, 
-                       _dtmp,
-                 dual_kind() ) ;
-            
+
             move_node( _geom, _mesh ,
                 _hfun, _pred, _hval , 
                 _opts, _nptr, _kern ,
                 _move, _cset, 
                 _ttmp, _tdst,
-                _dtmp, _ddst, 
-                _minC, _TLIM,
-                _minD, _DLIM ) ;
+                _minC, _TLIM ) ;
   
             if (_move <= +0) break  ;
         }

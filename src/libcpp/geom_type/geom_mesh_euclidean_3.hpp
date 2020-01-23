@@ -1307,7 +1307,7 @@
         float     static const _RTOL = 
             std::pow (
             std::numeric_limits<float>
-            ::epsilon(), (float) +.9);
+            ::epsilon(), (float)+.75) ;
   
         float      _BTOL[3] ;
         _BTOL[0] =
@@ -2732,7 +2732,7 @@
             real_type static const  _RTOL= 
                 std::pow (
             std::numeric_limits<real_type>
-            ::epsilon(), (real_type) +.8);
+            ::epsilon(), (real_type)+.75);
       
             real_type  _BTOL =  (
                  this->_bmax[0] - 
@@ -2769,7 +2769,7 @@
             real_type static const  _RTOL= 
                 std::pow (
             std::numeric_limits<real_type>
-            ::epsilon(), (real_type) +.8);
+            ::epsilon(), (real_type)+.75);
       
             real_type  _BTOL =  (
                  this->_bmax[0] - 

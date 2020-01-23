@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 August, 2019
+     * Last updated: 30 Aug, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -87,8 +87,10 @@
     __const_ptr  (data_type) _p3
         )
     {
-        data_type _ev12[3], _ev13[3] ;
+        data_type _ev12[3];
         vector_3d(_p1, _p2, _ev12);
+        
+        data_type _ev13[3];
         vector_3d(_p1, _p3, _ev13);
 
         data_type  _avec[3] = {
@@ -384,8 +386,8 @@
        (_q1+_q2+_q3) / (data_type)+3. ;
         
         data_type _qq = 
-      ((data_type)+1.-.50) * _qb + 
-      ((data_type)+0.+.50) * _qe ;
+      ((data_type)+1.-.33) * _qb + 
+      ((data_type)+0.+.33) * _qe ;
 
         _qq = (data_type)1.- _qq ;
 
@@ -457,8 +459,8 @@
        (_q1+_q2+_q3) / (data_type)+3. ;
         
         data_type _qq = 
-      ((data_type)+1.-.50) * _qb + 
-      ((data_type)+0.+.50) * _qe ;
+      ((data_type)+1.-.33) * _qb + 
+      ((data_type)+0.+.33) * _qe ;
 
         _qq = (data_type)1.- _qq ;
 

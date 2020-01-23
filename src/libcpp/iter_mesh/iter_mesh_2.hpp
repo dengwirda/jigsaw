@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 November, 2019
+     * Last updated: 23 Jan, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -80,6 +80,8 @@
         constexpr _odt_kern = +1 ;
     char_type static
         constexpr _cvt_kern = +2 ;
+    char_type static
+        constexpr dqdx_kern = +5 ;
  
     class   tria_kind {} ;           // dummy for overloads
     class   dual_kind {} ;
@@ -288,60 +290,108 @@
         real_type _0dst = 
             +std::numeric_limits
                 <real_type>::infinity();
-            
+        
         real_type _msrc, _mdst; 
         _msrc = (real_type) +0. ; 
         _mdst = (real_type) +0. ;
             
-        for (auto _iter  = _csrc.head() , 
-                  _tend  = _csrc.tend() ;
+        for (auto _iter  = _csrc.head(), 
+                  _tend  = _csrc.tend();
                   _iter != _tend;
                 ++_iter  )
         {
             _0src  = 
-             std::min(_0src, *_iter);
-             
-            _msrc += *_iter ;  
+            std::min(_0src, *_iter);
+
+          //_msrc += *_iter ;
+    
+            _msrc += 
+            (real_type)1. / *_iter ;
         }
-        for (auto _iter  = _cdst.head() , 
-                  _tend  = _cdst.tend() ;
+        for (auto _iter  = _cdst.head(), 
+                  _tend  = _cdst.tend();
                   _iter != _tend;
                 ++_iter  )
         {
             _0dst  = 
-             std::min(_0dst, *_iter);
+            std::min(_0dst, *_iter);
         
-            _mdst += *_iter ;
+          //_mdst += *_iter ;
+
+            _mdst += 
+            (real_type)1. / *_iter ;
         }
-   
-    /*--------------------- prevent element inversion */
-        _qtol *= std::max(
-            _0src, (real_type) +0.0);
+       
+      //_msrc /= _csrc.count() ;
+      //_mdst /= _cdst.count() ; 
         
-        _msrc /= _csrc.count() ;
-        _mdst /= _cdst.count() ;
+        _msrc  =
+            _csrc.count()/_msrc;
+        _mdst  =
+            _cdst.count()/_mdst;
 
+    /*--------------------- calc. min. + mean rel-tol */
+        _qtol *= std::max(
+            _0src, (real_type) +0.);
 
-        if (_0dst < std::sqrt(_good))
+        real_type _mtol = _qtol;
+        real_type _0tol = _qtol;
+
+        _mtol /= _csrc.count() ;
+        _mtol /= _cdst.count() ;
+
+    /*--------------------- calc. min. + mean delta's */
+        real_type _0del , _mdel; 
+        _0del  =  _0dst - _0src;
+        _mdel  =  _mdst - _msrc;
+
+        _0del /= std::min(
+            _cdst.count(), 
+                _csrc.count()) ;
+
+        _mdel *= std::min(
+            _cdst.count(), 
+                _csrc.count()) ;
+         
+        _0del  = 
+        std::max(_0del,-_0tol) ;
+        _mdel  = 
+        std::max(_mdel,-_mtol) ;
+
+    /*---------------------------- test move = 'okay' */
+        if (true)
         {  
     /*--------------------- okay if min. is improving */        
-            if (_0dst > _0src+_qtol)
+            if (_0dst > _0src+_0tol)
+            if (_mdst > _msrc-_0del)
                 _move = +1;
-            
+
             if (_move > +0) return ;
         }
- 
-        _qtol /= _csrc.count() ;
-        _qtol /= _cdst.count() ;
+
+        if (_0dst >= 
+            std::pow(_good, +2))
+        {
+    /*--------------------- okay if mean is improving */
+            if (_mdst > _msrc+_mtol)
+            if (_0dst > _0src-_mdel)
+                _move = +1;
+
+            if (_move > +0) return ;
+        }
 
         if (_0dst >= _good)
         {
-    /*--------------------- okay if mean is improving */
-            if (_mdst > _msrc+_qtol)
-                _move = +1;
-
     /*--------------------- okay if moves unconverged */
             if (_xdel > _xtol)
+            if (_0dst > _0src-_xdel)
+                _move = +1;
+
+            real_type _XDEL = 
+                _xdel/_cdst.count(); 
+
+            if (_xdel > _xtol)
+            if (_mdst > _msrc-_XDEL)
                 _move = +1;
     
             if (_move > +0) return ;
@@ -361,7 +411,7 @@
         pred_type &_pred ,
         iptr_list &_tset ,
         real_list &_cost ,
-        tria_kind const&    
+        tria_kind const&
         )
     {
         real_type _qmin = 
@@ -458,34 +508,34 @@
         iter_opts &_opts ,
         node_iter  _node ,
         char_type  _kern ,
-        bool_type &_okay ,
+        iptr_type &_move ,
         iptr_list &_tset ,
         real_list &_told ,
         real_list &_tnew ,
-        real_list &_dold ,
-        real_list &_dnew ,
         real_type  _TMIN ,
-        real_type  _TLIM ,
-        real_type  _DMIN , 
-        real_type  _DLIM
+        real_type  _TLIM
         )
     {
-        iptr_type  _move;
-        move_node( _geom, _mesh, _hfun, 
+        move_kern( _geom, _mesh, _hfun, 
             _pred, _hval, _opts, _node, 
-            _kern, _move, _tset, 
-            _told, _tnew, _dold, _dnew, 
-            _TMIN, _TLIM,
-            _DMIN, _DLIM) ;
-            
-        _okay = ( _move>(iptr_type)0 );
+            _kern, _move, _tset, _told, 
+            _tnew, _TMIN, _TLIM) ;
+
+        if (_move >= +0 ) return ;
+
+        move_kern( _geom, _mesh, _hfun, 
+            _pred, _hval, _opts, _node, 
+        dqdx_kern, _move, _tset, _told, 
+            _tnew, _TMIN, _TLIM) ;
+
+        if (_move >= +0 ) return ;
     }
-    
+
     template <
         typename  node_iter
              >
     __static_call
-    __normal_call void_type move_node (
+    __normal_call void_type move_kern (
         geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
@@ -498,79 +548,55 @@
         iptr_list &_tset ,
         real_list &_told ,
         real_list &_tnew ,
-        real_list &_dold ,
-        real_list &_dnew ,
         real_type  _TMIN ,
-        real_type  _TLIM ,
-        real_type  _DMIN , 
-        real_type  _DLIM
+        real_type  _TLIM
         )
     {
         iptr_type static 
             constexpr _ITER = (iptr_type)+5 ;
 
-        __unreferenced(_DMIN) ;
-
         _move = (iptr_type)-1 ;
         
     /*---------------- calc. line search direction vector */
-        real_type _TURN = _TLIM + 
-       (real_type)+.0875 * (+1.-_TLIM) ;
-
         real_type _line [_dims] = {
        (real_type) +0.0 } ;
         real_type _save [_dims] = {
        (real_type) +0.0 } ;
         real_type _proj [_dims] = {
        (real_type) +0.0 } ;
-        real_type _lONE [_dims] = {
-       (real_type) +0.0 } ;
-        real_type _lTWO [_dims] = {
-       (real_type) +0.0 } ;
 
         real_type _ladj = (real_type) +0.00 ;
-        real_type _ltmp = (real_type) +0.00 ;
 
-        if (_TMIN >= _TURN)
+        if (_kern == _odt_kern)
         {
-            if (_kern ==  _odt_kern)
-    /*---------------- only ODT if Q^T score large enough */            
+    /*--------------------------- ODT-style update vector */            
             _odt_move_2 ( 
                 _mesh, _hfun, _pred , 
                 _hval, _tset, _node , 
-                _lONE, _ladj) ;
-            else
-            if (_kern ==  _cvt_kern)
-    /*---------------- only CVT if Q^T score large enough */            
-            _cvt_move_2 ( 
-                _mesh, _hfun, _pred , 
-                _hval, _tset, _node , 
-                _lONE, _ladj) ;
+                _line, _ladj) ;
         }
         else
-        {       
-            if (_kern ==  _odt_kern)
-    /*---------------- blend of ODT + d./dx Q^T otherwise */
-            _odt_move_2 ( 
-                _mesh, _hfun, _pred , 
-                _hval, _tset, _node , 
-                _lONE, _ladj) ;
-            else
-            if (_kern ==  _cvt_kern)
-    /*---------------- blend of CVT + d./dx Q^T otherwise */
+        if (_kern == _cvt_kern)
+        {
+    /*--------------------------- CVT-style update vector */            
             _cvt_move_2 ( 
                 _mesh, _hfun, _pred , 
                 _hval, _tset, _node , 
-                _lONE, _ladj) ;         
-
+                _line, _ladj) ;
+        }
+        else
+        if (_kern == dqdx_kern)
+        {
+            if (_TMIN<=_TLIM)
+            {       
+    /*--------------------------- d./dx Q^T update vector */
             dqdx_move_2 ( 
                 _mesh, _hfun, _pred , 
                 _tset, _node, _told , 
-                _lTWO, _ltmp) ;
+                _line, _ladj) ;
+            }
+            else { return ; }
         }
-
-    /*---------------- penalty formulation: blend vectors */     
-        real_type _bias = (real_type) +1.00 ;
 
     /*---------------- scale line search direction vector */
         real_type _xtol =           // delta_x reltol
@@ -579,13 +605,18 @@
         real_type _xeps =           // delta_x ~= 0.0
        (real_type)+.01 *_opts.qtol() ;
 
+        if (_kern == dqdx_kern) 
+        {
+            _xtol = (real_type)+1. ;
+        }
+
         real_type _lsqr ;
         _lsqr = std::pow(_ladj, 2) ;
         _xtol = std::pow(_xtol, 2) ;
         _xeps = std::pow(_xeps, 2) ;
 
         real_type _scal =           // overrelaxation
-            (real_type) +7.0 / 6.0 ;
+            (real_type) +5.0 / 4.0 ;
         
     /*---------------- do backtracking line search iter's */
       
@@ -601,22 +632,13 @@
                 _iter != _ITER ; ++_iter)
         {
             _tnew.set_count(0) ;
-            _dnew.set_count(0) ;
 
-    /*---------------- direction via weighted combination */
-            for (auto _idim = _dims; _idim-- != +0; )
-            {
-                _line[_idim] = 
-                (0. + _bias) *  _lONE [_idim] +
-                (1. - _bias) *  _lTWO [_idim] ;
-            }   
-   
     /*---------------- push update along search direction */
             for (auto _idim = _dims; _idim-- != +0; )
             {
                 _proj[_idim] = 
                     _save[_idim] + 
-                        _scal * _line [_idim] ;
+                        _scal * _line[_idim];
             }
             
             _pred.proj_node (
@@ -632,19 +654,15 @@
             real_type _XEPS = _xeps * _scal ;
 
             real_type _lmov = _pred.
-            length_sq(_save , _proj) ;
+            length_sq(_save , _proj)/ _lsqr ;
 
-            if (_lmov <= _XEPS * _lsqr) break ;
+            if (_lmov <= _XEPS) break ; 
 
-    /*---------------- "dogleg" type updates to direction */
-            if (_TMIN <  _TURN && 
-                _bias >= _scal)
-            _bias *= (real_type).5 ;
-            else
+          //_move  = +1 ; return ;
+            
             _scal *= (real_type).5 ;
             
     /*---------------- test quasi-monotonicity w.r.t. Q^T */
-            real_type  _tmin  =             
             loop_cost( _mesh, _pred, 
                        _tset, 
                        _tnew, 
@@ -653,29 +671,7 @@
             move_okay( _tnew, 
                 _told, _move,
                 _TLIM, _opts.qtol(), 
-                _lmov, 
-                _XTOL* _lsqr) ;
-                
-            if (_move < 0) continue;
-            
-    /*---------------- test quasi-monotonicity w.r.t. Q^D */
-            real_type _base = 
-                (1. - _bias)* _TMIN+
-                (0. + _bias)* _tmin;
-
-            if (_base >= _TLIM)
-            {
-            loop_cost( _mesh, _pred, 
-                       _tset, 
-                       _dnew,
-                 dual_kind()) ;
-            
-            move_okay( _dnew, 
-                _dold, _move,
-                _DLIM, _opts.qtol(),
-                _lmov, 
-                _XTOL* _lsqr) ;
-            }
+                _lmov, _XTOL) ;
             
             if (_move > 0)   break ;
         }
@@ -703,36 +699,6 @@
         typename  node_iter
              >
     __static_call
-    __inline_call void_type move_dual (
-        geom_type &_geom ,
-        mesh_type &_mesh ,
-        size_type &_hfun ,
-        pred_type &_pred ,
-        real_list &_hval ,
-        iter_opts &_opts ,
-        node_iter  _node ,
-        bool_type &_okay ,
-        iptr_list &_tset ,
-        real_list &_dold ,
-        real_list &_dnew ,   
-        real_type  _DMIN , 
-        real_type  _DLIM
-        )
-    {
-        iptr_type  _move;
-        move_dual( _geom, _mesh, _hfun, 
-            _pred, _hval, _opts, _node, 
-            _move, _tset, 
-            _dold, _dnew,
-            _DMIN, _DLIM) ;
-            
-        _okay = ( _move>(iptr_type)0 );
-    }
-    
-    template <
-        typename  node_iter
-             >
-    __static_call
     __normal_call void_type move_dual (
         geom_type &_geom ,
         mesh_type &_mesh ,
@@ -753,13 +719,14 @@
             constexpr _ITER = (iptr_type)+5 ;
     
         __unreferenced(_hval);
+        __unreferenced(_DMIN);
 
         _move = (iptr_type)-1;
     
         real_type _wadj, _step, _save;
  
     /*---------------- calc. line search direction vector */
-        if(_DMIN < _DLIM)
+        if (true) // (_DMIN < _DLIM)
         { 
             dqdw_move_2 ( 
                 _geom, _mesh, _hfun, 
@@ -771,10 +738,10 @@
     /*---------------- scale line search direction vector */
         real_type _xeps =           // delta_w ~= 0.0 
        (real_type)+.01 *_opts.qtol() ;
- 
+
         real_type _scal =           // overrelaxation
-            (real_type) +7.0 / 6.0 ;
-      
+            (real_type) +5.0 / 4.0 ;
+
         _save = _node->pval(_dims) ;
     
     /*---------------- do backtracking line search iter's */
@@ -914,7 +881,7 @@
                 iptr_type _flag = _iout-2 ;
                 
                 real_type _TURN = 
-                    std::pow(_TLIM, 1./2.);
+                    std::pow(_TLIM, 1./4.);
        
                 if (_cost <= _TURN ||
                         std::abs(
@@ -1027,8 +994,8 @@
                     _aset.push_tail(_jnod) ;
                 }
             }      
-        }  
-                      
+        }
+          
         }
      
     }
@@ -1100,35 +1067,26 @@
         /*---------------- attempt to optimise TRIA geom. */    
             _told.set_count( +0);
             _tnew.set_count( +0);
-            _dold.set_count( +0);
-            _dnew.set_count( +0);
                
             real_type _TMIN = 
                 loop_cost( _mesh, 
                     _pred, _tset, 
                     _told,  tria_kind());
 
-            real_type _DMIN = 
-                loop_cost( _mesh, 
-                    _pred, _tset, 
-                    _dold,  dual_kind());
+            iptr_type _move = -1;
 
-            bool_type _okay = false;
-
-            if(!_okay)
+            if(_move < +0)
             {
         /*---------------- do optimisation of node coord. */
                 move_node( _geom, _mesh ,
                     _hfun, _pred, _hval , 
                     _opts, _node, _kern ,
-                    _okay, _tset, 
+                    _move, _tset, 
                     _told, _tnew,
-                    _dold, _dnew, 
-                    _TMIN, _TLIM,
-                    _DMIN, _DLIM ) ;
+                    _TMIN, _TLIM ) ;
             }
          
-            if (_okay)
+            if (_move > +0)
             {
         /*---------------- update when state is improving */
             _hval[*_apos] = (real_type)-1. ;
@@ -1177,20 +1135,20 @@
                     _pred, _tset, 
                     _dold,  dual_kind());
             
-            bool_type _okay = false;
+            iptr_type _move = -1;
             
-            if(!_okay)
+            if(_move < +0)
             {
         /*---------------- do optimisation of node weight */
                 move_dual( _geom, _mesh ,
                     _hfun, _pred, _hval , 
                     _opts, _node,
-                    _okay, _tset, 
+                    _move, _tset, 
                     _dold, _dnew, 
                     _DMIN, _DLIM ) ;
             }  
                      
-            if (_okay) 
+            if (_move > +0) 
             {
         /*---------------- update when state is improving */
             if (std::abs(
@@ -1428,7 +1386,7 @@
             public  :
     /*------------------------ tuple for edge re-ordering */
             iptr_type           _edge ;
-            real_type           _cost ;
+            float               _cost ;
             } ;
        
         class sort_less
@@ -1470,6 +1428,8 @@
         typedef containers::
             array<sort_pair>sort_list ;
 
+        __unreferenced  (_DLIM) ;
+
         _nzip = +0 ; _ndiv = +0 ;
  
         sort_list _sort;
@@ -1478,7 +1438,6 @@
         iptr_list _eset, _done;
         iptr_list _iset, _jset;
         real_list _told, _tnew, _ttmp ;
-        real_list _dold, _dnew;     
         
         for (auto _node = 
             _mesh._set1.count() ; _node-- != +0; )
@@ -1516,7 +1475,7 @@
                             _iptr->pval(_idim) ;
                     }
 
-                     auto _lsqr  = 
+                    float _lsqr  = (float)
                     _pred.length_sq(_line) ;
 
                     sort_pair _pair;
@@ -1555,17 +1514,21 @@
                     continue ;
 
             /*------------------- try to "div" local edge */
-                    if (_eptr->self() == +0) 
+                    if (_nmrk[_enod[0]] >= 0 &&
+                        _nmrk[_enod[1]] >= 0 ) 
                     {
                     if (_eset.count() > _DEG_MAX)
                     {
                         real_type _qinc = 
-                            (real_type) -1./8. ;
+                            (real_type) -1./9. ;
                         real_type _ltol = 
-                            (real_type) +3./4. ;
+                            (real_type) +8./9. ;
                     
                         _qinc *= 
                             _eset.count() - 6;
+
+                        _qinc /= // don't ping-pong w zip
+                            std::sqrt (_imrk);
 
                         iptr_type  _nnew = -1;
                                 
@@ -1575,9 +1538,8 @@
                             _hval, _opts, _eadj, 
                             _kern, _move, _nnew, 
                             _iset, _jset,
-                            _told, _tnew, _ttmp,
-                            _dold, _dnew,
-                            _TLIM, _DLIM, 
+                            _told, _tnew, 
+                            _ttmp, _TLIM, 
                             _ltol, _qinc) ;    
                         
                         if (_move)
@@ -1595,9 +1557,8 @@
                             _hval, _opts, _eadj, 
                             _kern, _move, _nnew, 
                             _iset, _jset,
-                            _told, _tnew, _ttmp,
-                            _dold, _dnew,
-                            _TLIM, _DLIM) ;
+                            _told, _tnew, 
+                            _ttmp, _TLIM) ;
                             
                         if (_move)
                         {
@@ -1636,10 +1597,13 @@
                     if (_eset.count() < _DEG_MIN)
                     {
                         real_type _qinc = 
-                            (real_type) -1./4. ;
+                            (real_type) -1./9. ;
                         real_type _ltol = 
-                            (real_type) +4./3. ;
-                        
+                            (real_type) +9./8. ;
+
+                        _qinc /= // don't ping-pong w div
+                            std::sqrt (_imrk);
+
                         iptr_type  _nnew = -1;
                         
                         if (_opts.zip_())
@@ -1649,9 +1613,8 @@
                             _kern, _move, _nnew, 
                             _iset, _jset,
                             _aset, _bset, _cset,
-                            _told, _tnew, _ttmp,
-                            _dold, _dnew,
-                            _TLIM, _DLIM, 
+                            _told, _tnew, 
+                            _ttmp, _TLIM, 
                             _ltol, _qinc) ;
                             
                         if (_move)
@@ -1670,9 +1633,8 @@
                             _kern, _move, _nnew, 
                             _iset, _jset,
                             _aset, _bset, _cset,
-                            _told, _tnew, _ttmp,
-                            _dold, _dnew,
-                            _TLIM, _DLIM) ;
+                            _told, _tnew, 
+                            _ttmp, _TLIM) ;
                             
                         if (_move)
                         {   
@@ -1892,7 +1854,7 @@
 
             real_type _DLIM = 
                 (real_type)(1. - 
-            1.375*std::pow(1.-_TLIM, 2) ) ;
+            1. * std::pow(1.-_TLIM, 2)) ;
 
     /*------------------------------ update mesh geometry */
     #       ifdef  __use_timers
