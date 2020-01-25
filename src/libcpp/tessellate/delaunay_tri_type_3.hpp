@@ -1,32 +1,32 @@
 
-/* 
+/*
 ------------------------------------------------------------
  * DEL-TRI-TYPE-3: data-types for 3-dim. delaunay tria.
 ------------------------------------------------------------
  *
- * This program may be freely redistributed under the 
- * condition that the copyright notices (including this 
- * entire header) are not removed, and no compensation 
- * is received through use of the software.  Private, 
- * research, and institutional use is free.  You may 
- * distribute modified versions of this code UNDER THE 
- * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
- * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
- * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
- * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
- * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
- * of this code as part of a commercial system is 
- * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
- * AUTHOR.  (If you are not directly supplying this 
- * code to a customer, and you are instead telling them 
- * how they can obtain it for free, then you are not 
- * required to make any arrangement with me.) 
+ * This program may be freely redistributed under the
+ * condition that the copyright notices (including this
+ * entire header) are not removed, and no compensation
+ * is received through use of the software.  Private,
+ * research, and institutional use is free.  You may
+ * distribute modified versions of this code UNDER THE
+ * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+ * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+ * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+ * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+ * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+ * of this code as part of a commercial system is
+ * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+ * AUTHOR.  (If you are not directly supplying this
+ * code to a customer, and you are instead telling them
+ * how they can obtain it for free, then you are not
+ * required to make any arrangement with me.)
  *
  * Disclaimer:  Neither I nor: Columbia University, The
- * Massachusetts Institute of Technology, The 
+ * Massachusetts Institute of Technology, The
  * University of Sydney, nor The National Aeronautics
- * and Space Administration warrant this code in any 
- * way whatsoever.  This code is provided "as-is" to be 
+ * and Space Administration warrant this code in any
+ * way whatsoever.  This code is provided "as-is" to be
  * used at your own risk.
  *
 ------------------------------------------------------------
@@ -56,7 +56,7 @@
  * REAL-TYPE - floating-point typedef.
 ------------------------------------------------------------
  */
- 
+
     template <
     typename I,
     typename R
@@ -73,10 +73,10 @@
 /*------------------------------------ local data members */
     containers::
     fixed_array<real_type, +3>  _pval ; // node coord
-    
+
     containers::
     fixed_array<char_type, +4>  _flag ; // kind, mark
-    
+
     iptr_type                   _next ;
 
 /*---------------------------------------- "write" access */
@@ -110,7 +110,7 @@
     }
 
     } ;
-    
+
 /*
 ------------------------------------------------------------
  * DELAUNAY-TRI-TRIA-3: tria for delaunay tria. in R^3.
@@ -119,13 +119,13 @@
  * REAL-TYPE - floating-point typedef.
 ------------------------------------------------------------
  */
-    
+
     template <
     typename I,
-    typename R 
+    typename R
              >
     class delaunay_tri_tria_3
-    { 
+    {
 /*----------- tria-type for delaunay triangulation in R^3 */
     public:
     typedef R               real_type ;
@@ -136,13 +136,13 @@
 /*------------------------------------ local data members */
     containers::
     fixed_array<iptr_type, +4>  _ndat ;  // node indexing
-    
+
     containers::
     fixed_array<iptr_type, +4>  _fdat ;  // edge neighbour
-    
+
     containers::
     fixed_array<char_type, +4>  _fpos ;  // edge neighbour
-    
+
     containers::
     fixed_array<char_type, +4>  _flag ;  // kind, mark
 
@@ -228,38 +228,38 @@
         switch (_fpos)
             {
         case 0 :
-            {   
+            {
         _fnod[0] = 0 ;
         _fnod[1] = 1 ;
-        _fnod[2] = 2 ; 
+        _fnod[2] = 2 ;
         _fnod[3] = 3 ; break ;
             }
         case 1 :
             {
         _fnod[0] = 0 ;
         _fnod[1] = 3 ;
-        _fnod[2] = 1 ; 
+        _fnod[2] = 1 ;
         _fnod[3] = 2 ; break ;
             }
         case 2 :
             {
         _fnod[0] = 1 ;
         _fnod[1] = 3 ;
-        _fnod[2] = 2 ; 
+        _fnod[2] = 2 ;
         _fnod[3] = 0 ; break ;
             }
         case 3 :
             {
         _fnod[0] = 2 ;
         _fnod[1] = 3 ;
-        _fnod[2] = 0 ; 
+        _fnod[2] = 0 ;
         _fnod[3] = 1 ; break ;
             }
         default:
             {            // suppress compiler warnings
         _fnod[0] =-1 ;
         _fnod[1] =-1 ;
-        _fnod[2] =-1 ; 
+        _fnod[2] =-1 ;
         _fnod[3] =-1 ; break ;
             }
             }
@@ -320,25 +320,25 @@
         case 0 :
             {
         _fnod[0] = 0 ;
-        _fnod[1] = 1 ; 
+        _fnod[1] = 1 ;
         _fnod[2] = 2 ; break ;
             }
         case 1 :
             {
         _fnod[0] = 1 ;
-        _fnod[1] = 2 ; 
+        _fnod[1] = 2 ;
         _fnod[2] = 0 ; break ;
             }
         case 2 :
             {
         _fnod[0] = 2 ;
-        _fnod[1] = 0 ; 
+        _fnod[1] = 0 ;
         _fnod[2] = 1 ; break ;
             }
         default:
             {            // suppress compiler warnings
         _fnod[0] =-1 ;
-        _fnod[1] =-1 ; 
+        _fnod[1] =-1 ;
         _fnod[2] =-1 ; break ;
             }
             }
@@ -354,7 +354,7 @@
     {
     /* index FROM 3-dim faces */
         if (_from == +3)
-            {       
+            {
     /* index INTO 3-dim faces */
         if (_into == +3)
             {
@@ -424,11 +424,11 @@
     }
 
     } ;
-    
+
 
     }
-    
-#   endif//__DELAUNAY_TRI_TYPE_3__  
-    
-    
-    
+
+#   endif//__DELAUNAY_TRI_TYPE_3__
+
+
+

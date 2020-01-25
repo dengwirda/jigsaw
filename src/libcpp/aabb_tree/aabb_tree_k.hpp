@@ -1,32 +1,32 @@
 
-/* 
+/*
 ------------------------------------------------------------
- * AABB-TREE-K: AABB-tree construction in R^k. 
+ * AABB-TREE-K: AABB-tree construction in R^k.
 ------------------------------------------------------------
  *
- * This program may be freely redistributed under the 
- * condition that the copyright notices (including this 
- * entire header) are not removed, and no compensation 
- * is received through use of the software.  Private, 
- * research, and institutional use is free.  You may 
- * distribute modified versions of this code UNDER THE 
- * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
- * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
- * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
- * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
- * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
- * of this code as part of a commercial system is 
- * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
- * AUTHOR.  (If you are not directly supplying this 
- * code to a customer, and you are instead telling them 
- * how they can obtain it for free, then you are not 
- * required to make any arrangement with me.) 
+ * This program may be freely redistributed under the
+ * condition that the copyright notices (including this
+ * entire header) are not removed, and no compensation
+ * is received through use of the software.  Private,
+ * research, and institutional use is free.  You may
+ * distribute modified versions of this code UNDER THE
+ * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+ * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+ * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+ * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+ * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+ * of this code as part of a commercial system is
+ * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+ * AUTHOR.  (If you are not directly supplying this
+ * code to a customer, and you are instead telling them
+ * how they can obtain it for free, then you are not
+ * required to make any arrangement with me.)
  *
  * Disclaimer:  Neither I nor: Columbia University, The
- * Massachusetts Institute of Technology, The 
+ * Massachusetts Institute of Technology, The
  * University of Sydney, nor The National Aeronautics
- * and Space Administration warrant this code in any 
- * way whatsoever.  This code is provided "as-is" to be 
+ * and Space Administration warrant this code in any
+ * way whatsoever.  This code is provided "as-is" to be
  * used at your own risk.
  *
 ------------------------------------------------------------
@@ -47,7 +47,7 @@
 #   define __AABB_TREE_K__
 
     namespace geom_tree {
-    
+
     template <
     typename I ,
     size_t   K ,
@@ -55,19 +55,19 @@
     typename A = allocators::basic_alloc
              >
     class aabb_tree
-    { 
+    {
 /*---------------------- a static d-dimensional AABB-tree */
     public  :
-    
+
     typedef I                           item_type ;
     typedef N                           node_user ;
     typedef A                           allocator ;
-    
-    typedef typename 
+
+    typedef typename
             item_type::real_type        real_type ;
-    typedef typename 
+    typedef typename
             item_type::iptr_type        iptr_type ;
-    
+
     iptr_type static constexpr         _dims =  K * +1 ;
 
     typedef geom_tree::aabb_tree  <
@@ -83,7 +83,7 @@
     class node_data ;
 
     class node_type : public node_user
-        { 
+        {
     /*------------------------------- aabb-tree node type */
         public  :
         real_type           _pmin[ K] ;
@@ -105,7 +105,7 @@
         __inline_call node_type* lower (
             iptr_type _ipos
             ) const
-        {   
+        {
             if (this->_lptr != nullptr)
         /*------------------------------ pointer to child */
             return &this->_lptr
@@ -116,18 +116,18 @@
         }
         } ;
     class node_data
-        { 
+        {
     /*----------------- keep node-pair together in memory */
         public  :
         node_type           _node[ 2] ;
         } ;
 
-/*----------- two-layer pool'd allocator -- items + nodes */   
+/*----------- two-layer pool'd allocator -- items + nodes */
     typedef allocators::_pool_alloc<
                 allocator>              base_pool ;
     typedef allocators::_wrap_alloc<
                 base_pool>              wrap_pool ;
-                
+
     typedef allocators::_item_alloc<
                 node_data,
                 wrap_pool>              node_pool ;
@@ -137,7 +137,7 @@
 
     typedef     node_type*              node_ptrt ;
 
-    typedef containers::array      <      
+    typedef containers::array      <
                 node_ptrt,
                 allocator>              work_list ;
 
@@ -152,7 +152,7 @@
 /*------------------------------------- pool'd allocators */
     base_pool              _node_base ;
     base_pool              _item_base ;
-    
+
     node_pool              _node_pool ;
     item_pool              _item_pool ;
 
@@ -160,7 +160,7 @@
     iptr_type                   _imax ;
     real_type                   _long ;
     real_type                   _vtol ;
-        
+
     private :
 /*---------------------- helper - delete a block of nodes */
     __inline_call void_type free_node (
@@ -173,13 +173,13 @@
        _node_pool.deallocate(_data,1) ;
        _data = nullptr ;
     }
-    
+
 /*---------------------- helper - create a block of nodes */
     __inline_call void_type make_node (
         node_data*&_data
         )
     {
-       _data = 
+       _data =
         this->_node_pool.allocate (1) ;
         this->
        _node_pool.construct (_data) ;
@@ -196,15 +196,15 @@
        _item_pool.deallocate(_idat,1) ;
        _idat = nullptr ;
     }
-    
+
 /*------------------------------- helper - create an item */
     __inline_call void_type make_item (
         item_type const&_item,
         item_data     *&_idat
         )
     {
-       _idat = 
-        this->_item_pool.allocate (1) ; 
+       _idat =
+        this->_item_pool.allocate (1) ;
         this->_item_pool.construct(
        _idat, nullptr, _item);
     }
@@ -219,7 +219,7 @@
         _item->_next = _head ;
         _head        = _item ;
     }
-    
+
 /*--------------------- helper - _pop an item from a list */
     __static_call
     __inline_call void_type _pop_item (
@@ -232,7 +232,7 @@
         {
     /*---------------------------- re-link in list middle */
         _prev->
-        _next = _item->_next ; 
+        _next = _item->_next ;
         }
         else
         {
@@ -240,12 +240,12 @@
         _head = _item->_next ;
         }
     }
-    
+
     public  :
 /*----------------------------------------- default c'tor */
     __inline_call  aabb_tree  (
         allocator const&_asrc = allocator()
-        ) : _root(nullptr) , 
+        ) : _root(nullptr) ,
             _size(     +0) ,
             _work(  _asrc) ,
     /*-------------------------------------- "base" pools */
@@ -266,7 +266,7 @@
 
 /*------------- return container count / empty statistics */
     __inline_call bool_type empty (
-        ) const { return 
+        ) const { return
               nullptr == this->_root ; }
 
     __inline_call iptr_type count (
@@ -278,7 +278,7 @@
         node_type *_nptr,
         node_type *_pptr=nullptr
         )
-    {   
+    {
     /*------------------------ init nodal aabb at -+ inf. */
         for(auto _idim = _dims ; _idim-- != +0; )
         {
@@ -298,30 +298,30 @@
             }
         }
     /*------------------ take min/max of item-wise aabb's */
-        for(item_data*_iptr  = _nptr->_hptr; 
-                      _iptr !=  nullptr; 
+        for(item_data*_iptr  = _nptr->_hptr;
+                      _iptr !=  nullptr;
                       _iptr  = _iptr->_next)
         {
         for(auto _idim = _dims ; _idim-- != +0; )
         {
         /*------------------------ find max. on each axis */
-            if (_nptr->_pmax[_idim] < 
+            if (_nptr->_pmax[_idim] <
                     _iptr->_data.pmax(_idim))
             {
-                _nptr->_pmax[_idim] = 
+                _nptr->_pmax[_idim] =
                     _iptr->_data.pmax(_idim);
             }
         /*------------------------ find min. on each axis */
-            if (_nptr->_pmin[_idim] > 
+            if (_nptr->_pmin[_idim] >
                     _iptr->_data.pmin(_idim))
             {
-                _nptr->_pmin[_idim] = 
+                _nptr->_pmin[_idim] =
                     _iptr->_data.pmin(_idim);
             }
         }
         }
     }
-    
+
 /*------------- helper - calc. best "split" axis for node */
     __normal_call void_type find_best_axis (
         node_type *_node,
@@ -336,54 +336,54 @@
                 real_type       _alen ;
                 iptr_type       _axis ;
             } ;
-            
+
         class rect_less
             {
     /*------------------ helper: sort aabb's by dimension */
             public  :
-            __inline_call 
+            __inline_call
                 bool_type operator () (
                 rect_data const&_xdat ,
                 rect_data const&_ydat
                 ) const
-            {   return ( _xdat. _alen < 
+            {   return ( _xdat. _alen <
                          _ydat. _alen ) ;
             }
             } ;
-    
+
     /*------------------------------ form aabb dimensions */
-        rect_data _rect [_dims];   
+        rect_data _rect [_dims];
         iptr_type _best = 0;
         for(auto _idim = _dims ; _idim-- != +0; )
         {
             real_type _alen;
             _alen = _node->_pmax[_idim]
                   - _node->_pmin[_idim];
-        
+
             _rect[_idim]._alen = _alen ;
-            _rect[_idim]._axis = _idim ; 
+            _rect[_idim]._axis = _idim ;
         }
-    
+
     /*------------------------------ sort aabb dimensions */
         algorithms::ssort (
             &_rect[0], &_rect[_dims], rect_less()) ;
-   
+
     /*------------------------------ scan aabb dimensions */
         for(auto _idim = _dims ; _idim-- != +0; )
-        {  
+        {
             iptr_type _axis ;
             _axis = _rect[_idim]._axis ;
-            real_type _llen ; 
+            real_type _llen ;
             _llen = _rect[_idim]._alen ;
-            
+
             _llen *= this->_long ;
-            
+
             iptr_type _pnum = +0 ;
             iptr_type _cnum = +0 ;
-        
+
         /*------------------ partition "long"/inner items */
-            for(item_data*_iptr  = _node->_hptr; 
-                          _iptr !=  nullptr ; 
+            for(item_data*_iptr  = _node->_hptr;
+                          _iptr !=  nullptr ;
                           _iptr  = _iptr->_next)
             {
                 if (_iptr->
@@ -396,19 +396,19 @@
                     _cnum  += +1 ;
                 }
             }
-            
+
         /*------------------ keep longest, non-empty dim. */
             if (_best < _cnum )
             {
                 _best = _cnum ;
                 _bdim = _axis ;
                 _blen = _llen ;
-                
+
             if (_pnum == +0) break ;
-            }                   
+            }
         }
     }
-    
+
 /*--- top-down assembly of aabb-tree via recursive splits */
     template <
     typename      iter_type
@@ -449,14 +449,14 @@
         }
         this->_root->_hptr  = _hptr ;
         }
-        
+
         init_aabb_node (this->_root);
-        
+
     /*-------------------------- a list of un-split nodes */
         this->_work.set_count( +0);
         this->_work.
             push_tail(this->_root);
-        
+
     /*--- refine tree until all nodes satisfy constraints */
         for( ; !this->_work.empty() ; )
         {
@@ -464,33 +464,33 @@
             node_data *_ndat = nullptr;
             node_type *_rnod = nullptr;
             node_type *_lnod = nullptr;
-            
-            real_type  _blen ;      
+
+            real_type  _blen ;
             iptr_type  _bdim = -1 ;
             iptr_type  _pnum = +0 ;
             iptr_type  _cnum = +0 ;
             iptr_type  _lnum = +0 ;
             iptr_type  _rnum = +0 ;
-            
+
             item_data *_next = nullptr;
             item_data *_pptr = nullptr;
             item_data *_cptr = nullptr;
             item_data *_lptr = nullptr;
             item_data *_rptr = nullptr;
-            
+
         /*-------------------------- _pop node from stack */
             this->_work._pop_tail(_pnod) ;
 
         /*---------- find best "split" axis for this node */
-            find_best_axis (_pnod, _bdim , 
+            find_best_axis (_pnod, _bdim ,
                             _blen) ;
-            
+
             if (_bdim == -1) continue ;
-                   
+
         /*---------- partition list - remove "long" items */
             for(item_data *_iptr  = _pnod->
-                                    _hptr ; 
-                           _iptr != nullptr ; 
+                                    _hptr ;
+                           _iptr != nullptr ;
                            _iptr  = _next )
             {
                 _next = _iptr->_next ;
@@ -503,29 +503,29 @@
                 }
                 else
                 {
-                    push_item(_cptr,_iptr); 
+                    push_item(_cptr,_iptr);
                    _cnum += +1 ;
                 }
             }
-        
+
         /*---------- split pos. - mean of non-long aabb's */
             real_type _spos = (real_type)+0.;
-            
-            for(item_data *_iptr  = _cptr ; 
-                           _iptr != nullptr ; 
+
+            for(item_data *_iptr  = _cptr ;
+                           _iptr != nullptr ;
                            _iptr  = _next )
             {
                 _next = _iptr->_next ;
-         
+
                 _spos +=_iptr->
                         _data.pmid (_bdim);
             }
-            
+
             _spos  = _spos / _cnum ;
-  
+
         /*---------- partition list - split on left|right */
-            for(item_data *_iptr  = _cptr ; 
-                           _iptr != nullptr ; 
+            for(item_data *_iptr  = _cptr ;
+                           _iptr != nullptr ;
                            _iptr  = _next )
             {
                 _next = _iptr->_next ;
@@ -533,62 +533,62 @@
                 if (_iptr->_data
                     .pmid (_bdim) > _spos)
                 {
-                    push_item(_rptr,_iptr); 
+                    push_item(_rptr,_iptr);
                    _rnum += +1 ;
                 }
                 else
                 {
-                    push_item(_lptr,_iptr); 
+                    push_item(_lptr,_iptr);
                    _lnum += +1 ;
                 }
             }
-        
+
         /*-------------------- alloc. new child node data */
             make_node(_ndat);
             _lnod = &_ndat->_node[ 0] ;
             _rnod = &_ndat->_node[ 1] ;
-            
+
             this->_size  += +2 ;
-            
+
             _pnod->_hptr  = _pptr ;
             _pnod->_lptr  = _ndat ;
-            
+
             _lnod->_hptr  = _lptr ;
             _lnod->_lptr  = nullptr ;
             _lnod->_pptr  = _pnod ;
-            
+
             _rnod->_hptr  = _rptr ;
             _rnod->_lptr  = nullptr ;
             _rnod->_pptr  = _pnod ;
-        
+
             init_aabb_node (_lnod, _pnod);
             init_aabb_node (_rnod, _pnod);
-            
+
         /*------------------ push new children onto stack */
             if (_cnum < this->_imax)
-            {       
+            {
                 real_type _volp, _voll, _volr ;
-        
+
                 _volp = (real_type) +1. ;
                 _voll = (real_type) +1. ;
                 _volr = (real_type) +1. ;
-        
+
                 for (auto _idim = _dims; _idim-- != +0; )
                 {
         /*--------------- parent // child (hyper) volumes */
-                    _volp *= 
-                    _pnod->_pmax[_idim] - 
+                    _volp *=
+                    _pnod->_pmax[_idim] -
                     _pnod->_pmin[_idim] ;
-                             
-                    _voll *= 
-                    _lnod->_pmax[_idim] - 
+
+                    _voll *=
+                    _lnod->_pmax[_idim] -
                     _lnod->_pmin[_idim] ;
-                             
-                    _volr *= 
-                    _rnod->_pmax[_idim] - 
+
+                    _volr *=
+                    _rnod->_pmax[_idim] -
                     _rnod->_pmin[_idim] ;
                 }
-        
+
                 if (_voll + _volr <= this->_vtol * _volp)
                 {
         /*--------------- push children due to vol. ratio */
@@ -597,7 +597,7 @@
                     this->_work
                        .push_tail(_lnod);
                 }
-                
+
             }
             else
             {
@@ -605,13 +605,13 @@
                     this->_work
                        .push_tail(_rnod);
                     this->_work
-                       .push_tail(_lnod);         
+                       .push_tail(_lnod);
             }
         }
-    
+
     }
-    
-/*-------- form a biased, spatially-local insertion order */    
+
+/*-------- form a biased, spatially-local insertion order */
     template <
         typename  iptr_list
              >
@@ -621,43 +621,43 @@
     {
         containers::array<item_data*> _next;
 
-        if (this->_root 
+        if (this->_root
                 == nullptr) return ;
 
         this->_work.set_count( +0) ;
         this->_work.
             push_tail(this->_root) ;
-    
+
     /*---------------------------- init. leading item ptr */
         for ( ; !this->_work.empty() ; )
         {
             node_type *_node = nullptr ;
             this->_work.
                 _pop_tail(_node) ;
-            
+
             if (_node->items () != nullptr)
             {
                 _next.push_tail(
                     _node->items () ) ;
             }
-            
+
             if (_node->lower(0) != nullptr)
             {
-                uint32_t  _rsiz = 
+                uint32_t  _rsiz =
                     sizeof(real_type) * +K ;
-                uint32_t  _usiz = 
+                uint32_t  _usiz =
                     sizeof(uint32_t ) * +1 ;
-            
+
                 uint32_t  _hash ;
                 _hash = hash::hashword (
-               (uint32_t*)_node->_pmin, 
+               (uint32_t*)_node->_pmin,
                     _rsiz / _usiz, +13) ;
-             
+
                 if (_hash % 2 == +0 )
                 {
                 this->_work.push_tail (
                     _node->lower( 0)) ;
-                
+
                 this->_work.push_tail (
                     _node->lower( 1)) ;
                 }
@@ -665,16 +665,16 @@
                 {
                 this->_work.push_tail (
                     _node->lower( 1)) ;
-                
+
                 this->_work.push_tail (
                     _node->lower( 0)) ;
                 }
             }
         }
-       
+
     /*---------------------------- build order from lists */
         bool_type _push  = true ;
-        for (auto _ilim  = +2 ; 
+        for (auto _ilim  = +2 ;
                 _push; _ilim *= 4 )
         {
             _push = false;
@@ -683,23 +683,23 @@
                 ++_iter  )
         {
             iptr_type _inum  = +0 ;
-            for (auto _ipos  = *_iter ; 
+            for (auto _ipos  = *_iter ;
                       _ipos != nullptr;
                 _ipos  = _ipos->_next )
             {
                 _push  =  true ;
-                
+
                 _iset.push_tail(
                     _ipos->_data.ipos());
-                    
+
                *_iter  = _ipos->_next ;
-               
+
                 if (++_inum>_ilim) break;
             }
         }
         }
     }
-    
+
 /*-------- helper: calc. "distance" between pos. and aabb */
     __normal_call real_type calc_rect_dist (
         real_type *_ppos,
@@ -712,26 +712,26 @@
         {
         if (_ppos[_idim] < _bmin[_idim])
         {
-            real_type _dloc = 
+            real_type _dloc =
             _bmin[_idim] - _ppos[_idim];
-        
-            _dist = 
+
+            _dist =
                 std::max (_dist, _dloc);
         }
         else
         if (_ppos[_idim] > _bmax[_idim])
         {
-            real_type _dloc = 
+            real_type _dloc =
             _ppos[_idim] - _bmax[_idim];
-        
-            _dist = 
+
+            _dist =
                 std::max (_dist, _dloc);
         }
         }
-        
+
         return ( _dist * _dist ) ;
     }
-    
+
 /*-------- search collection via recursive aabb traversal */
     template <
         typename  tree_pred ,// tree intersections
@@ -776,7 +776,7 @@
                      )
             this->_work.push_tail (
                   _node->lower(0)) ;
-                  
+
             if (_pred(
                 _node->lower(1)->_pmin ,
                 _node->lower(1)->_pmax )
@@ -785,16 +785,16 @@
                   _node->lower(1)) ;
             }
         }
-        
+
         return ( _find ) ;
     }
-    
+
 /*-------- check for nearsest in collection via traversal */
     template <
-        typename  projector  
-             >    
+        typename  projector
+             >
     __normal_call bool_type near (
-        real_type *_ppos , 
+        real_type *_ppos ,
         projector &_proj
         )
     {
@@ -805,12 +805,12 @@
                 real_type       _dsqr ;
                 node_type      *_node ;
             } ;
-            
+
         class node_pred
             {
     /*----------------------------- node/dist less for PQ */
             public  :
-            __inline_call 
+            __inline_call
                 bool_type operator () (
                 node_dist const&_adat ,
                 node_dist const&_bdat
@@ -819,13 +819,13 @@
                          _bdat. _dsqr ) ;
             }
             } ;
-    
+
         bool_type _find = false;
-    
-        if (this->_root 
+
+        if (this->_root
                 == nullptr) return _find;
-  
-        real_type _dsqr = 
+
+        real_type _dsqr =
             +std::numeric_limits
                 <real_type>::infinity() ;
 
@@ -833,17 +833,17 @@
         containers::priorityset<
             node_dist ,
             node_pred    > _nnpq ;
-    
+
         _nnpq.set_alloc(+64) ;
 
         node_dist _ndat ;
         _ndat._node =  _root ;
-        _ndat._dsqr = 
+        _ndat._dsqr =
         calc_rect_dist(_ppos ,
            &_root->_pmin[0],
            &_root->_pmax[0]) ;
         _nnpq.push    (_ndat);
-        
+
     /*----------------- traverse tree while len. reducing */
         for ( ; !_nnpq.empty()  ; )
         {
@@ -853,12 +853,12 @@
             if (_ndat._dsqr<=_dsqr)
             {
         /*------------------------ descend if maybe close */
-            
+
             if (_ndat.
                 _node-> _hptr   != nullptr)
             {
         /*------------------------ leaf: update item-dist */
-                _find =  true ;                
+                _find =  true ;
 
                 _dsqr = _proj(
                         _ndat._node->_hptr) ;
@@ -868,41 +868,41 @@
                 _node->lower(0) != nullptr)
             {
         /*------------------------ traverse into children */
-                node_type*_inod = 
+                node_type*_inod =
                     _ndat._node->lower(0) ;
-                    
-                node_type*_jnod = 
+
+                node_type*_jnod =
                     _ndat._node->lower(1) ;
-                
+
                 _ndat._node =  _inod ;
-                _ndat._dsqr = 
+                _ndat._dsqr =
                 calc_rect_dist(_ppos ,
                    &_inod->_pmin[ 0],
                        &_inod->_pmax[ 0]) ;
 
                 _nnpq.push(_ndat)  ;
-                
+
                 _ndat._node =  _jnod ;
-                _ndat._dsqr = 
+                _ndat._dsqr =
                 calc_rect_dist(_ppos ,
                    &_jnod->_pmin[ 0],
                        &_jnod->_pmax[ 0]) ;
-                
+
                 _nnpq.push(_ndat)  ;
             }
-            
+
             }
         }
 
     /*---------------------------- must have found a node */
-        return ( _find )  ;        
+        return ( _find )  ;
     }
-    
+
     } ;
 
-    
+
     }
-    
+
 #   endif   //__AABB_TREE_K__
 
 

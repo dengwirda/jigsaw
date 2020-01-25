@@ -1,32 +1,32 @@
 
     /*
     --------------------------------------------------------
-     * RDEL-PRED-DELFRONT-2: "frontal-DEL" kernel in R^2. 
+     * RDEL-PRED-DELFRONT-2: "frontal-DEL" kernel in R^2.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
@@ -40,16 +40,16 @@
      *
     --------------------------------------------------------
      */
-     
+
     // from rdel_pred_delfront_2.hpp
-    
-    
+
+
     /*
     --------------------------------------------------------
      * EDGE-COST: calc. edge refinement "cost".
     --------------------------------------------------------
      */
-    
+
     __static_call
     __normal_call void_type edge_cost (
         geom_type &_geom,
@@ -79,51 +79,51 @@
          tria(_tadj)->node(_enod[ 0]);
         _enod[1] =_mesh._tria.
          tria(_tadj)->node(_enod[ 1]);
-  
+
     /*--------------------------------- calc. circumballs */
-        if (!base_type::edge_ball ( 
-            _geom, _mesh, _tadj, 
-            _eadj, _ebal, _pmax, 
+        if (!base_type::edge_ball (
+            _geom, _mesh, _tadj,
+            _eadj, _ebal, _pmax,
             _feat, _topo, _part)  )
     /*--------------------------------- is not restricted */
             return  ;
-               
+
     /*------------------------- calc. refinement priority */
         _edat._mark =
         _mesh._tria.node(_enod[0])->fdim() +
         _mesh._tria.node(_enod[1])->fdim() ;
 
-        _edat._cost = 
+        _edat._cost =
                 (float)  _pmax[2] ;
 
     //  scaling via node numbering seems to make slightly
     //  better (more topologically regular) meshes
-    //  this implicitly boosts the refinement priority of 
+    //  this implicitly boosts the refinement priority of
     //  "old" cells, which typically produces meshes with
     //  fewer "seams"...
 
         _edat._cost/=    _enod[0]+1  ;
         _edat._cost/=    _enod[1]+1  ;
-        
+
     /*------------------------- eval. size func. at _tbal */
         real_type _esiz = (real_type)+0.;
         _esiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
-             node(_enod[0])->pval(0) , 
+             node(_enod[0])->pval(0) ,
             _mesh._tria.
              node(_enod[0])->idxh()) ;
         _esiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
-             node(_enod[1])->pval(0) , 
+             node(_enod[1])->pval(0) ,
             _mesh._tria.
              node(_enod[1])->idxh()) ;
 
-         auto _hint = 
+         auto _hint =
         _mesh._tria.node(_enod[ 1])->idxh() ;
 
-        _esiz += (real_type)+1.0 * 
+        _esiz += (real_type)+1.0 *
                  _hfun.eval(  _pmax, _hint) ;
-        
+
         _esiz /= (real_type)+3.0 ;
 
         real_type _eave =_pmax [ +2] ;
@@ -131,12 +131,12 @@
         _eave *= (real_type)+4.0 ;
 
     /*------------------------- eval. surface-disc.-error */
-        real_type _srat = 
+        real_type _srat =
             geometry::lensqr_2d(
                 _ebal, _pmax)/(_esiz * _esiz) ;
 
     /*------------------------- refinement classification */
-        if (_eave >= _args.siz1() * 
+        if (_eave >= _args.siz1() *
                      _args.siz1() ||
             _srat >= _args.eps1() *
                      _args.eps1() )
@@ -148,13 +148,13 @@
             _kind = mesh::good_item; return ;
         }
     }
-    
+
     /*
     --------------------------------------------------------
      * TRIA-COST: calc. tria refinement "cost".
     --------------------------------------------------------
      */
-    
+
     __static_call
     __normal_call void_type tria_cost (
         geom_type &_geom,
@@ -183,12 +183,12 @@
 
     /*--------------------------------- calc. circumballs */
         real_type  _tbal[3] ;
-        if (!base_type::tria_ball ( 
-            _geom, _mesh, 
+        if (!base_type::tria_ball (
+            _geom, _mesh,
             _tpos, _tbal, _part)  )
     /*--------------------------------- is not restricted */
             return  ;
-        
+
     /*--------------------------------- find edge lengths */
         real_type _llen[  +3];
         _llen[0] = geometry::lensqr_2d (
@@ -213,21 +213,21 @@
         iptr_type _emax = (iptr_type)+0;
         for(_enum = +3; _enum-- != +1; )
         {
-        if (_llen[_emax] < _llen[_enum]) 
+        if (_llen[_emax] < _llen[_enum])
             _emax = _enum ;
-        if (_llen[_emin] > _llen[_enum]) 
+        if (_llen[_emin] > _llen[_enum])
             _emin = _enum ;
         }
-    
+
     /*------------------------- calc. refinement priority */
         iptr_type _ebnd=_emin ;
         real_type _best;
         _best  =  _llen[_emax];
         _best += (real_type)1.;
-        
+
         _tdat._mark =  +0 ;
 
-    #   ifdef __bias_BNDS     
+    #   ifdef __bias_BNDS
         for(_enum = +3; _enum-- != +0; )
         {
             iptr_type  _enod[ +3];
@@ -240,12 +240,12 @@
             algorithms::isort(
                 &_enod[0] , &_enod[2] ,
                     std::less<iptr_type>()) ;
-                    
+
             typename mesh_type::
                      edge_data _edat;
             _edat._node[0] = _enod[0] ;
             _edat._node[1] = _enod[1] ;
-                
+
             typename mesh_type::
                      edge_list::
                  item_type *_eptr = nullptr ;
@@ -258,21 +258,21 @@
                 }
 
                 _tdat._mark -= +1 ;
-            }       
+            }
         }
     #   endif
 
     /*------------------------- eval. radius--edge ratios */
-        real_type _erat = _tbal[    2] / 
+        real_type _erat = _tbal[    2] /
                           _llen[_emin] ;
-        
+
     /*------------------------- calc. refinement priority */
-        _tdat._cost = 
+        _tdat._cost =
             (float) (_erat * _tbal[2]) ;
 
     //  scaling via node numbering seems to make slightly
     //  better (more topologically regular) meshes
-    //  this implicitly boosts the refinement priority of 
+    //  this implicitly boosts the refinement priority of
     //  "old" cells, which typically produces meshes with
     //  fewer "seams"...
 
@@ -296,24 +296,24 @@
         real_type _tsiz = (real_type)+0.;
         _tsiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
-             node(_tnod[0])->pval(0) , 
+             node(_tnod[0])->pval(0) ,
             _mesh._tria.
              node(_tnod[0])->idxh()) ;
         _tsiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
-             node(_tnod[1])->pval(0) , 
+             node(_tnod[1])->pval(0) ,
             _mesh._tria.
              node(_tnod[1])->idxh()) ;
         _tsiz += (real_type)+1.*_hfun.eval(
            &_mesh._tria.
-             node(_tnod[2])->pval(0) , 
+             node(_tnod[2])->pval(0) ,
             _mesh._tria.
              node(_tnod[2])->idxh()) ;
 
-         auto _hint = 
+         auto _hint =
         _mesh._tria.node(_tnod[ 2])->idxh() ;
 
-        _tsiz += (real_type)+1.0 * 
+        _tsiz += (real_type)+1.0 *
                  _hfun.eval(  _tbal, _hint) ;
 
         _tsiz /= (real_type)+4.0 ;
@@ -333,6 +333,6 @@
             _kind = mesh::good_item; return ;
         }
     }
-    
-    
-    
+
+
+

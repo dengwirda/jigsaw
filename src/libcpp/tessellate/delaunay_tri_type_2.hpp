@@ -1,32 +1,32 @@
 
-    /* 
+    /*
     --------------------------------------------------------
      * DEL-TRI-TYPE-2: datatypes for 2-dim. delaunay tria.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
@@ -56,7 +56,7 @@
      * REAL-TYPE - floating-point typedef.
     --------------------------------------------------------
      */
-     
+
     template <
     typename I,
     typename R
@@ -73,10 +73,10 @@
 /*------------------------------------ local data members */
     containers::
     fixed_array<real_type, +2>  _pval ;  // node coord
-    
+
     containers::
     fixed_array<char_type, +4>  _flag ;  // kind, mark
-    
+
     iptr_type                   _next ;
 
 /*---------------------------------------- "write access" */
@@ -119,7 +119,7 @@
      * REAL-TYPE - floating-point typedef.
     --------------------------------------------------------
      */
- 
+
     template <
     typename I,
     typename R
@@ -136,13 +136,13 @@
 /*------------------------------------ local data members */
     containers::
     fixed_array<iptr_type, +3>  _ndat ;  // node indexing
-    
+
     containers::
     fixed_array<iptr_type, +3>  _edat ;  // edge neighbour
-    
+
     containers::
     fixed_array<char_type, +3>  _epos ;  // edge neighbour
-    
+
     containers::
     fixed_array<char_type, +4>  _flag ;  // kind, mark
 
@@ -219,25 +219,25 @@
         case 0 :
             {
         _fnod[0] = 0 ;
-        _fnod[1] = 1 ; 
+        _fnod[1] = 1 ;
         _fnod[2] = 2 ; break ;
             }
         case 1 :
             {
         _fnod[0] = 1 ;
-        _fnod[1] = 2 ; 
+        _fnod[1] = 2 ;
         _fnod[2] = 0 ; break ;
             }
         case 2 :
             {
         _fnod[0] = 2 ;
-        _fnod[1] = 0 ; 
+        _fnod[1] = 0 ;
         _fnod[2] = 1 ; break ;
             }
         default:
             {            // suppress compiler warnings
         _fnod[0] =-1 ;
-        _fnod[1] =-1 ; 
+        _fnod[1] =-1 ;
         _fnod[2] =-1 ; break ;
             }
             }
@@ -296,8 +296,8 @@
 
 
     }
-    
-#   endif   // __DELAUNAY_TRI_TYPE_2__  
-    
-    
-    
+
+#   endif   // __DELAUNAY_TRI_TYPE_2__
+
+
+

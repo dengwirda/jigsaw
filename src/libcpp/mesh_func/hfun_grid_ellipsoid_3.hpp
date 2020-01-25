@@ -4,29 +4,29 @@
      * HFUN-GRID-ELLIPSOID-3D: ellipsoidal H(x) in R^3.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
@@ -40,7 +40,7 @@
      *
     --------------------------------------------------------
      */
-     
+
 #   pragma once
 
 #   ifndef __HFUN_GRID_ELLIPSOID_3__
@@ -57,29 +57,29 @@
         : public hfun_base_kd <I, R>
     {
     public :
-     
+
     /*-------------- lat.-lon. spheroidal size-fun in R^3 */
-    
+
     typedef R                       real_type ;
     typedef I                       iptr_type ;
     typedef A                       allocator ;
-    
+
     typedef hfun_grid_ellipsoid_3d  <
             iptr_type ,
             real_type >             hfun_type ;
-                
+
     typedef typename  hfun_base_kd  <
-            iptr_type , 
+            iptr_type ,
             real_type >::hint_type  hint_type ;
 
     typedef containers::array   <
-            real_type , 
-            allocator >             real_list ; 
-        
+            real_type ,
+            allocator >             real_list ;
+
     public  :
-    
+
     /*--------------- (x/a)**2 + (y/b)**2 + (z/c)**2 = 1. */
-        
+
     real_type                      _radA = 1. ;
     real_type                      _radB = 1. ;
     real_type                      _radC = 1. ;
@@ -88,18 +88,18 @@
         real_type, allocator>      _xpos ;
     containers::array <
         real_type, allocator>      _ypos ;
-    
-    containers::array <
-        real_type, allocator>      _hmat ; 
 
     containers::array <
-        real_type, allocator>      _dhdx ; 
-        
+        real_type, allocator>      _hmat ;
+
+    containers::array <
+        real_type, allocator>      _dhdx ;
+
     bool_type                      _xvar ;
     bool_type                      _yvar ;
 
     bool_type                      _wrap ;
-               
+
     public  :
 
     __inline_call void_type indx_from_subs (
@@ -109,7 +109,7 @@
         ) const
     {
     /*------------ helper: convert into "un-rolled" index */
-        iptr_type _ynum = 
+        iptr_type _ynum =
        (iptr_type)this->_ypos.count() ;
 
         _indx = _jpos * _ynum + _ipos ;
@@ -118,52 +118,52 @@
     __inline_call void_type subs_from_indx (
         iptr_type  _indx,
         iptr_type &_ipos,
-        iptr_type &_jpos        
+        iptr_type &_jpos
         ) const
     {
     /*------------ helper: convert from "un-rolled" index */
-        iptr_type _ynum = 
+        iptr_type _ynum =
        (iptr_type)this->_ypos.count() ;
 
         _ipos = _indx % _ynum ;
         _jpos =(_indx - _ipos )/_ynum ;
     }
-    
+
     __inline_call void_type toR3 (
       __const_ptr(real_type) _apos ,
-      __write_ptr(real_type) _ppos        
+      __write_ptr(real_type) _ppos
         ) const
     {
     /*------------ helper: convert from S^2 to R^3 coord. */
         _ppos[0] = this->_radA *
-            std::cos( _apos[0] ) * 
+            std::cos( _apos[0] ) *
             std::cos( _apos[1] ) ;
 
         _ppos[1] = this->_radB *
-            std::sin( _apos[0] ) * 
+            std::sin( _apos[0] ) *
             std::cos( _apos[1] ) ;
-        
+
         _ppos[2] = this->_radC *
             std::sin( _apos[1] ) ;
     }
 
     __inline_call void_type toS2 (
       __const_ptr(real_type) _ppos ,
-      __write_ptr(real_type) _apos        
+      __write_ptr(real_type) _apos
         ) const
     {
     /*------------ helper: convert from R^3 to S^2 coord. */
-        real_type _xmul = 
+        real_type _xmul =
             _ppos[0] * this->_radB ;
-        real_type _ymul = 
+        real_type _ymul =
             _ppos[1] * this->_radA ;
-        real_type _zrat = 
+        real_type _zrat =
             _ppos[2] / this->_radC ;
 
         _zrat = std::min(+1.,_zrat);
         _zrat = std::max(-1.,_zrat);
 
-        _apos[0]= std::atan2(_ymul, 
+        _apos[0]= std::atan2(_ymul,
                              _xmul);
         _apos[1]= std::asin (_zrat);
     }
@@ -173,74 +173,74 @@
      * INIT: init. size-fun. class.
     --------------------------------------------------------
      */
-    
+
     __inline_call void_type init (
         )
     {
-        real_type static const _FTOL = 
+        real_type static const _FTOL =
             std::pow(std::numeric_limits
        <real_type>::epsilon(), (real_type).8);
-    
+
         this->_xvar = false ;
         this->_yvar = false ;
-        this->_wrap = false ;    
+        this->_wrap = false ;
 
         if (this->_xpos.empty()) return ;
         if (this->_ypos.empty()) return ;
 
         real_type _xbar, _xmin, _xmax ;
-        _xbar = *this->_xpos.tail() - 
+        _xbar = *this->_xpos.tail() -
                 *this->_xpos.head() ;
-        
+
         _xbar /=(this->_xpos.count () - 1) ;
-        
+
         _xmin = _xbar - _FTOL * _xbar ;
         _xmax = _xbar + _FTOL * _xbar ;
-        
+
         real_type _ybar, _ymin, _ymax ;
-        _ybar = *this->_ypos.tail() - 
+        _ybar = *this->_ypos.tail() -
                 *this->_ypos.head() ;
 
         _ybar /=(this->_ypos.count () - 1) ;
-        
+
         _ymin = _ybar - _FTOL * _ybar ;
         _ymax = _ybar + _FTOL * _ybar ;
-        
-        for (auto 
+
+        for (auto
             _iter  = this->_xpos.head() ;
             _iter != this->_xpos.tail() ;
           ++_iter  )
         {
-            real_type _xdel = 
+            real_type _xdel =
                 *(_iter+1)-*(_iter+0) ;
-        
-            if (_xdel < _xmin || 
-                _xdel > _xmax )  
+
+            if (_xdel < _xmin ||
+                _xdel > _xmax )
             {
                 _xvar =  true ; break ;
             }
         }
-         
-        for (auto 
+
+        for (auto
             _iter  = this->_ypos.head() ;
             _iter != this->_ypos.tail() ;
           ++_iter  )
         {
-            real_type _ydel = 
+            real_type _ydel =
                 *(_iter+1)-*(_iter+0) ;
-        
-            if (_ydel < _ymin || 
-                _ydel > _ymax ) 
+
+            if (_ydel < _ymin ||
+                _ydel > _ymax )
             {
                 _yvar =  true ; break ;
             }
         }
 
-        real_type _xdel = 
-        std::cos(*this->_xpos.tail()) - 
+        real_type _xdel =
+        std::cos(*this->_xpos.tail()) -
         std::cos(*this->_xpos.head()) ;
-     
-        this->_wrap = 
+
+        this->_wrap =
             std::abs(_xdel) < _FTOL ;
     }
 
@@ -257,16 +257,16 @@
         {
     /*-------------------- "LESS-THAN" operator for queue */
         public  :
-            typename            
+            typename
             real_list::_write_it _hptr;
- 
+
         public  :
         __inline_call less_than  (
             typename
             real_list::_write_it _hsrc
             ) : _hptr(_hsrc) {}
 
-        __inline_call 
+        __inline_call
             bool_type operator() (
             iptr_type _ipos,
             iptr_type _jpos
@@ -279,34 +279,34 @@
         typedef typename
             allocator:: size_type   uint_type ;
 
-        uint_type static constexpr 
-            _null = 
+        uint_type static constexpr
+            _null =
         std::numeric_limits<uint_type>::max() ;
 
         containers::prioritymap <
             iptr_type ,
             less_than ,
-            allocator > 
+            allocator >
         _sort((less_than(this->_hmat.head())));
 
         containers:: array      <
             typename
             allocator:: size_type,
             allocator >     _keys;
-  
+
     /*-------------------- init. values for periodic bc's */
         iptr_type IBEG = +0;
-        iptr_type IEND = 
+        iptr_type IEND =
        (iptr_type)this->_ypos.count() - 1 ;
-        
+
         iptr_type JBEG = +0;
-        iptr_type JEND = 
+        iptr_type JEND =
        (iptr_type)this->_xpos.count() - 1 ;
 
         if (this->_wrap)
         {
         iptr_type _inum  = +0;
-        for (auto _iter  = 
+        for (auto _iter  =
                    this->_ypos.head() ;
                   _iter !=
                    this->_ypos.tend() ;
@@ -331,16 +331,16 @@
         _keys.set_count (
             _hmat.count(),
         containers::tight_alloc, _null) ;
-        
+
         iptr_type _inum  = +0;
-        for (auto _iter  = 
+        for (auto _iter  =
                    this->_hmat.head() ;
-                  _iter != 
+                  _iter !=
                    this->_hmat.tend() ;
                 ++_iter , ++_inum)
         {
             {
-                _keys[_inum] = 
+                _keys[_inum] =
                     _sort.push(_inum) ;
             }
         }
@@ -356,7 +356,7 @@
             iptr_type  _ipos, _jpos ;
             subs_from_indx(
                 _base, _ipos, _jpos);
- 
+
             for (auto _IPOS = _ipos - 1 ;
                       _IPOS < _ipos + 1 ;
                     ++_IPOS )
@@ -412,10 +412,10 @@
                 _alon = this->_xpos[_ipjj];
                 _alat = this->_ypos[_ipii];
                 _IXYZ[0] =  this->_radA *
-                    std::cos(_alon) * 
+                    std::cos(_alon) *
                     std::cos(_alat) ;
                 _IXYZ[1] =  this->_radB *
-                    std::sin(_alon) * 
+                    std::sin(_alon) *
                     std::cos(_alat) ;
                 _IXYZ[2] =  this->_radC *
                     std::sin(_alat) ;
@@ -424,10 +424,10 @@
                 _alon = this->_xpos[_jpjj];
                 _alat = this->_ypos[_jpii];
                 _JXYZ[0] =  this->_radA *
-                    std::cos(_alon) * 
+                    std::cos(_alon) *
                     std::cos(_alat) ;
                 _JXYZ[1] =  this->_radB *
-                    std::sin(_alon) * 
+                    std::sin(_alon) *
                     std::cos(_alat) ;
                 _JXYZ[2] =  this->_radC *
                     std::sin(_alat) ;
@@ -436,10 +436,10 @@
                 _alon = this->_xpos[_kpjj];
                 _alat = this->_ypos[_kpii];
                 _KXYZ[0] =  this->_radA *
-                    std::cos(_alon) * 
+                    std::cos(_alon) *
                     std::cos(_alat) ;
                 _KXYZ[1] =  this->_radB *
-                    std::sin(_alon) * 
+                    std::sin(_alon) *
                     std::cos(_alat) ;
                 _KXYZ[2] =  this->_radC *
                     std::sin(_alat) ;
@@ -448,10 +448,10 @@
                 _alon = this->_xpos[_lpjj];
                 _alat = this->_ypos[_lpii];
                 _LXYZ[0] =  this->_radA *
-                    std::cos(_alon) * 
+                    std::cos(_alon) *
                     std::cos(_alat) ;
                 _LXYZ[1] =  this->_radB *
-                    std::sin(_alon) * 
+                    std::sin(_alon) *
                     std::cos(_alat) ;
                 _LXYZ[2] =  this->_radC *
                     std::sin(_alat) ;
@@ -497,7 +497,7 @@
                 indx_from_subs(
                     _ipii, JEND  ,  _pair) ;
 
-                this->_hmat [_pair] = 
+                this->_hmat [_pair] =
                     this->_hmat [_inod] ;
 
                 if (_keys[_pair] != _null)
@@ -511,7 +511,7 @@
                 indx_from_subs(
                     _jpii, JBEG  ,  _pair) ;
 
-                this->_hmat [_pair] = 
+                this->_hmat [_pair] =
                     this->_hmat [_jnod] ;
 
                 if (_keys[_pair] != _null)
@@ -525,7 +525,7 @@
                 indx_from_subs(
                     _kpii, JBEG  ,  _pair) ;
 
-                this->_hmat [_pair] = 
+                this->_hmat [_pair] =
                     this->_hmat [_knod] ;
 
                 if (_keys[_pair] != _null)
@@ -539,7 +539,7 @@
                 indx_from_subs(
                     _lpii, JEND  ,  _pair) ;
 
-                this->_hmat [_pair] = 
+                this->_hmat [_pair] =
                     this->_hmat [_lnod] ;
 
                 if (_keys[_pair] != _null)
@@ -592,7 +592,7 @@
                 indx_from_subs(
                     _ipii, JEND  ,  _pair) ;
 
-                this->_hmat [_pair] = 
+                this->_hmat [_pair] =
                     this->_hmat [_inod] ;
 
                 if (_keys[_pair] != _null)
@@ -606,7 +606,7 @@
                 indx_from_subs(
                     _jpii, JBEG  ,  _pair) ;
 
-                this->_hmat [_pair] = 
+                this->_hmat [_pair] =
                     this->_hmat [_jnod] ;
 
                 if (_keys[_pair] != _null)
@@ -620,7 +620,7 @@
                 indx_from_subs(
                     _kpii, JBEG  ,  _pair) ;
 
-                this->_hmat [_pair] = 
+                this->_hmat [_pair] =
                     this->_hmat [_knod] ;
 
                 if (_keys[_pair] != _null)
@@ -634,7 +634,7 @@
                 indx_from_subs(
                     _lpii, JEND  ,  _pair) ;
 
-                this->_hmat [_pair] = 
+                this->_hmat [_pair] =
                     this->_hmat [_lnod] ;
 
                 if (_keys[_pair] != _null)
@@ -657,29 +657,29 @@
      * EVAL: eval. size-fun. value.
     --------------------------------------------------------
      */
-    
+
     __normal_call real_type eval (
         real_type *_ppos ,
         hint_type &_hint
         )
-    {   
-        real_type static const FT = 
+    {
+        real_type static const FT =
             std::pow (
         +std::numeric_limits <real_type>
             ::epsilon(),(real_type)+.8);
-    
-        real_type _hval = 
+
+        real_type _hval =
             +std::numeric_limits
                 <real_type>::infinity();
-    
+
         __unreferenced(_hint) ;
-    
+
         if (this->_xpos.count() == +0)
             return _hval ;
-            
+
         if (this->_ypos.count() == +0)
             return _hval ;
-    
+
     /*---------------------------- compute xyz to lat-lon */
         real_type _apos[2] ;
         if (this->_radA == +1. &&
@@ -688,17 +688,17 @@
         {
     /*---------------------------- "historical" workflow! */
         real_type _radius = std::sqrt (
-            _ppos[0]*_ppos[0] + 
-            _ppos[1]*_ppos[1] + 
-            _ppos[2]*_ppos[2] ) ; 
-         
+            _ppos[0]*_ppos[0] +
+            _ppos[1]*_ppos[1] +
+            _ppos[2]*_ppos[2] ) ;
+
         if (_radius < FT)
         _radius  = _radius + FT ;
-         
-        _apos[1] = 
+
+        _apos[1] =
         std::asin (_ppos[2]/ _radius ) ;
-        
-        _apos[0] = 
+
+        _apos[0] =
         std::atan2(_ppos[1], _ppos[0]) ;
         }
         else
@@ -712,42 +712,42 @@
 
         real_type static const PI =
        (real_type)std::atan(+1.0) * 4. ;
-       
-        real_type static const PI_h = 
-       (real_type)+.5 * PI ; 
-        real_type static const PI_1 = 
-       (real_type)+1. * PI ; 
-        real_type static const PI_2 = 
-       (real_type)+2. * PI ; 
- 
+
+        real_type static const PI_h =
+       (real_type)+.5 * PI ;
+        real_type static const PI_1 =
+       (real_type)+1. * PI ;
+        real_type static const PI_2 =
+       (real_type)+2. * PI ;
+
         if (_alon<-PI_1) _alon += PI_2 ;
-        if (_alon>=PI_1) _alon -= PI_2 ;   
-        
+        if (_alon>=PI_1) _alon -= PI_2 ;
+
         if (_alon < *this->_xpos.head())
             _alon = *this->_xpos.head();
         if (_alon > *this->_xpos.tail())
             _alon = *this->_xpos.tail();
-        
+
         if (_alat<-PI_h) _alat  =-PI_h ;
         if (_alat>=PI_h) _alat  = PI_h ;
-        
+
         if (_alat < *this->_ypos.head())
             _alat = *this->_ypos.head();
         if (_alat > *this->_ypos.tail())
             _alat = *this->_ypos.tail();
-        
+
     /*---------------------------- find enclosing x-range */
         iptr_type _ipos = (iptr_type) -1 ;
         iptr_type _jpos = (iptr_type) -1 ;
-           
+
         if (this->_xvar == true)
         {
-            auto _joff = 
+            auto _joff =
             algorithms::upper_bound (
-                this->_xpos.head(), 
-                this->_xpos.tend(), 
+                this->_xpos.head(),
+                this->_xpos.tend(),
             _alon,std::less<real_type>() ) ;
-           
+
             _jpos = (iptr_type) (
             _joff - this->_xpos.head()- 1) ;
         }
@@ -756,23 +756,23 @@
             real_type _xmin, _xmax, _xdel;
             _xmin = *this->_xpos.head();
             _xmax = *this->_xpos.tail();
-            
+
             _xdel = (_xmax - _xmin) /
                 (this->_xpos.count () - 1) ;
-            
+
             _jpos = (iptr_type)
                 ((_alon-_xmin)/_xdel) ;
         }
-        
+
     /*---------------------------- find enclosing y-range */
         if (this->_yvar == true)
         {
-            auto _ioff = 
+            auto _ioff =
             algorithms::upper_bound (
-                this->_ypos.head(), 
-                this->_ypos.tend(), 
+                this->_ypos.head(),
+                this->_ypos.tend(),
             _alat,std::less<real_type>() ) ;
-           
+
             _ipos = (iptr_type) (
             _ioff - this->_ypos.head()- 1) ;
         }
@@ -781,45 +781,45 @@
             real_type _ymin, _ymax, _ydel;
             _ymin = *this->_ypos.head();
             _ymax = *this->_ypos.tail();
-            
+
             _ydel = (_ymax - _ymin) /
                 (this->_ypos.count () - 1) ;
-            
+
             _ipos = (iptr_type)
                 ((_alat-_ymin)/_ydel) ;
         }
-        
-        if (_ipos == 
+
+        if (_ipos ==
        (iptr_type)this->_ypos.count() - 1)
             _ipos = _ipos - 1 ;
-        
-        if (_jpos == 
+
+        if (_jpos ==
        (iptr_type)this->_xpos.count() - 1)
             _jpos = _jpos - 1 ;
-        
+
     /*---------------------------- a linear interpolation */
-        real_type _xp11 = 
+        real_type _xp11 =
             this->_xpos[_jpos + 0] ;
-        real_type _xp22 = 
+        real_type _xp22 =
             this->_xpos[_jpos + 1] ;
-            
-        real_type _yp11 = 
+
+        real_type _yp11 =
             this->_ypos[_ipos + 0] ;
-        real_type _yp22 = 
+        real_type _yp22 =
             this->_ypos[_ipos + 1] ;
 
         real_type _xval = _alon ;
         real_type _yval = _alat ;
-        
-        real_type _aa22 = 
+
+        real_type _aa22 =
            (_yval-_yp11) * (_xval-_xp11) ;
-        real_type _aa21 = 
+        real_type _aa21 =
            (_yval-_yp11) * (_xp22-_xval) ;
-        real_type _aa12 = 
+        real_type _aa12 =
            (_yp22-_yval) * (_xval-_xp11) ;
-        real_type _aa11 = 
+        real_type _aa11 =
            (_yp22-_yval) * (_xp22-_xval) ;
-    
+
         iptr_type _kk11 ;
         indx_from_subs(
             _ipos + 0, _jpos + 0, _kk11) ;
@@ -832,20 +832,20 @@
         iptr_type _kk22 ;
         indx_from_subs(
             _ipos + 1, _jpos + 1, _kk22) ;
-        
-        real_type _hbar = 
+
+        real_type _hbar =
           ( _aa11*this->_hmat[_kk11]
           + _aa12*this->_hmat[_kk12]
           + _aa21*this->_hmat[_kk21]
           + _aa22*this->_hmat[_kk22] )
         / ( _aa11+_aa12+_aa21+_aa22) ;
 
-        return (  _hbar ) ; 
+        return (  _hbar ) ;
     }
-     
+
     } ;
-     
-     
+
+
     }
 
 #   endif   //__HFUN_GRID_ELLIPSOID_3__

@@ -1,32 +1,32 @@
 
     /*
     --------------------------------------------------------
-     * INTERSECT-K: various (robust) intersection tests. 
+     * INTERSECT-K: various (robust) intersection tests.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
@@ -83,16 +83,16 @@
         _ca[0] = _pa[0] -_pc[0] ;
         _ca[1] = _pa[1] -_pc[1] ;
 
-        data_type _aa = 
+        data_type _aa =
             geometry::dot_2d(_vv, _vv) ;
-        data_type _bb = 
+        data_type _bb =
             geometry::dot_2d(_vv, _ca) *
-                       (data_type) +2. ;    
-        data_type _cc = 
+                       (data_type) +2. ;
+        data_type _cc =
             geometry::dot_2d(_ca, _ca) ;
         _cc -= _rc * _rc ;
-      
-        size_t _nn = +0  ;  
+
+        size_t _nn = +0  ;
         data_type _tt[2] ;
         if ( math::
         polyroots(_aa, _bb, _cc, _tt))
@@ -101,28 +101,28 @@
             _tt[0] <= (data_type)+1. )
         {
     /*----------------------- compute 1st-root intersect. */
-            data_type _WB = 
+            data_type _WB =
            (data_type)+0.+_tt[0] ;
-            
-            data_type _WA = 
+
+            data_type _WA =
            (data_type)+1.-_tt[0] ;
-       
+
             _nn += +1 ;
-     
+
             dd_flt _PA[2] ;
             _PA[0]=_pa[0] ;
             _PA[1]=_pa[1] ;
-            
+
             dd_flt _PB[2] ;
             _PB[0]=_pb[0] ;
             _PB[1]=_pb[1] ;
-            
+
             dd_flt _QQ[2] ;
             _QQ[0]=_PA[0] * _WA  +
                    _PB[0] * _WB  ;
             _QQ[1]=_PA[1] * _WA  +
-                   _PB[1] * _WB  ; 
-       
+                   _PB[1] * _WB  ;
+
             if (_nn == 1)
             {
             _qa[0]=_QQ[0] ;
@@ -136,30 +136,30 @@
         }
         if (_tt[1] >= (data_type)+0. &&
             _tt[1] <= (data_type)+1. )
-        {    
+        {
     /*----------------------- compute 2nd-root intersect. */
-            data_type _WB = 
+            data_type _WB =
            (data_type)+0.+_tt[1] ;
-            
-            data_type _WA = 
+
+            data_type _WA =
            (data_type)+1.-_tt[1] ;
-            
+
             _nn += +1 ;
 
             dd_flt _PA[2] ;
             _PA[0]=_pa[0] ;
             _PA[1]=_pa[1] ;
-            
+
             dd_flt _PB[2] ;
             _PB[0]=_pb[0] ;
             _PB[1]=_pb[1] ;
-            
+
             dd_flt _QQ[2] ;
             _QQ[0]=_PA[0] * _WA  +
                    _PB[0] * _WB  ;
             _QQ[1]=_PA[1] * _WA  +
-                   _PB[1] * _WB  ; 
-                   
+                   _PB[1] * _WB  ;
+
             if (_nn == 1)
             {
             _qa[0]=_QQ[0] ;
@@ -198,16 +198,16 @@
         _ca[1] = _pa[1] -_pc[1] ;
         _ca[2] = _pa[2] -_pc[2] ;
 
-        data_type _aa = 
+        data_type _aa =
             geometry::dot_3d(_vv, _vv) ;
-        data_type _bb = 
+        data_type _bb =
             geometry::dot_3d(_vv, _ca) *
-                       (data_type) +2. ;    
-        data_type _cc = 
+                       (data_type) +2. ;
+        data_type _cc =
             geometry::dot_3d(_ca, _ca) ;
         _cc -= _rc * _rc ;
-      
-        size_t _nn = +0  ;  
+
+        size_t _nn = +0  ;
         data_type _tt[2] ;
         if ( math::
         polyroots(_aa, _bb, _cc, _tt))
@@ -216,32 +216,32 @@
             _tt[0] <= (data_type)+1. )
         {
     /*----------------------- compute 1st-root intersect. */
-            data_type _WB = 
+            data_type _WB =
            (data_type)+0.+_tt[0] ;
-            
-            data_type _WA = 
+
+            data_type _WA =
            (data_type)+1.-_tt[0] ;
-       
+
             _nn += +1 ;
-     
+
             dd_flt _PA[3] ;
             _PA[0]=_pa[0] ;
             _PA[1]=_pa[1] ;
             _PA[2]=_pa[2] ;
-            
+
             dd_flt _PB[3] ;
             _PB[0]=_pb[0] ;
             _PB[1]=_pb[1] ;
             _PB[2]=_pb[2] ;
-            
+
             dd_flt _QQ[3] ;
             _QQ[0]=_PA[0] * _WA  +
                    _PB[0] * _WB  ;
             _QQ[1]=_PA[1] * _WA  +
                    _PB[1] * _WB  ;
             _QQ[2]=_PA[2] * _WA  +
-                   _PB[2] * _WB  ; 
-       
+                   _PB[2] * _WB  ;
+
             if (_nn == 1)
             {
             _qa[0]=_QQ[0] ;
@@ -257,34 +257,34 @@
         }
         if (_tt[1] >= (data_type)+0. &&
             _tt[1] <= (data_type)+1. )
-        {    
+        {
     /*----------------------- compute 2nd-root intersect. */
-            data_type _WB = 
+            data_type _WB =
            (data_type)+0.+_tt[1] ;
-            
-            data_type _WA = 
+
+            data_type _WA =
            (data_type)+1.-_tt[1] ;
-            
+
             _nn += +1 ;
 
             dd_flt _PA[3] ;
             _PA[0]=_pa[0] ;
             _PA[1]=_pa[1] ;
             _PA[2]=_pa[2] ;
-            
+
             dd_flt _PB[3] ;
             _PB[0]=_pb[0] ;
             _PB[1]=_pb[1] ;
             _PB[2]=_pb[2] ;
-            
+
             dd_flt _QQ[3] ;
             _QQ[0]=_PA[0] * _WA  +
                    _PB[0] * _WB  ;
             _QQ[1]=_PA[1] * _WA  +
                    _PB[1] * _WB  ;
             _QQ[2]=_PA[2] * _WA  +
-                   _PB[2] * _WB  ; 
-                   
+                   _PB[2] * _WB  ;
+
             if (_nn == 1)
             {
             _qa[0]=_QQ[0] ;
@@ -317,7 +317,7 @@
     __const_ptr  (data_type) _b0, // min. rect. B
     __const_ptr  (data_type) _b1  // max.
         )
-    {   
+    {
         if (_pp[0] >= _b0[0] &&
             _pp[0] <= _b1[0] &&
             _pp[1] >= _b0[1] &&
@@ -339,7 +339,7 @@
     __const_ptr  (data_type) _b0, // min. rect. B
     __const_ptr  (data_type) _b1  // max.
         )
-    {   
+    {
         if (_pp[0] >= _b0[0] &&
             _pp[0] <= _b1[0] &&
             _pp[1] >= _b0[1] &&
@@ -364,7 +364,7 @@
     __const_ptr  (data_type) _b0, // min. rect. B
     __const_ptr  (data_type) _b1  // max.
         )
-    {   
+    {
         if (_a0[0] <= _b1[0] &&
             _b0[0] <= _a1[0] &&
             _a0[1] <= _b1[1] &&
@@ -387,7 +387,7 @@
     __const_ptr  (data_type) _b0, // min. rect. B
     __const_ptr  (data_type) _b1  // max.
         )
-    { 
+    {
         if (_a0[0] <= _b1[0] &&
             _b0[0] <= _a1[0] &&
             _a0[1] <= _b1[1] &&
@@ -415,7 +415,7 @@
              >
     __inline_call void copy_node_2d (
     __write_ptr  (data_one_) _pa, // copy: A := B
-    __const_ptr  (data_two_) _pb    
+    __const_ptr  (data_two_) _pb
         )
     {
         _pa[0] = (data_one_) _pb[0] ;
@@ -428,7 +428,7 @@
              >
     __inline_call void copy_node_3d (
     __write_ptr  (data_one_) _pa, // copy: A := B
-    __const_ptr  (data_two_) _pb    
+    __const_ptr  (data_two_) _pb
         )
     {
         _pa[0] = (data_one_) _pb[0] ;
@@ -442,7 +442,7 @@
              >
     __inline_call void copy_node_xy (
     __write_ptr  (data_one_) _pa, // copy: A := B
-    __const_ptr  (data_two_) _pb    
+    __const_ptr  (data_two_) _pb
         )
     {
         _pa[0] = (data_one_) _pb[0] ;
@@ -455,7 +455,7 @@
              >
     __inline_call void copy_node_yz (
     __write_ptr  (data_one_) _pa, // copy: A := B
-    __const_ptr  (data_two_) _pb    
+    __const_ptr  (data_two_) _pb
         )
     {
         _pa[0] = (data_one_) _pb[1] ;
@@ -468,7 +468,7 @@
              >
     __inline_call void copy_node_xz (
     __write_ptr  (data_one_) _pa, // copy: A := B
-    __const_ptr  (data_two_) _pb    
+    __const_ptr  (data_two_) _pb
         )
     {
         _pa[0] = (data_one_) _pb[0] ;
@@ -506,7 +506,7 @@
             _pp[1] == _pa[1] &&
             _pp[2] == _pa[2] )
         {
-        
+
             _qq[0] =  _pa[0] ;
             _qq[1] =  _pa[1] ;
             _qq[2] =  _pa[2] ;
@@ -518,7 +518,7 @@
             _pp[1] == _pb[1] &&
             _pp[2] == _pb[2] )
         {
-        
+
             _qq[0] =  _pb[0] ;
             _qq[1] =  _pb[1] ;
             _qq[2] =  _pb[2] ;
@@ -538,19 +538,19 @@
         _ap[1] = _pp[1] - _pa[1] ;
         _ap[2] = _pp[2] - _pa[2] ;
 
-        data_type _ep = + 1.0 * 
+        data_type _ep = + 1.0 *
         std::numeric_limits<data_type>::epsilon() ;
 
-        data_type _d1 = 
-        geometry::dot_3d(_ap, _nv) ; 
-        data_type _d2 = 
+        data_type _d1 =
+        geometry::dot_3d(_ap, _nv) ;
+        data_type _d2 =
         geometry::dot_3d(_ab, _nv) ;
 
         if (std::abs(_d2) <= _ep * std::abs(_d1))
             return ( false ) ;
-        
+
         data_type _tt =  _d1 / _d2 ;
-        
+
         if (_bind)
         {
         if (_tt  < (data_type)+0.)
@@ -585,7 +585,7 @@
             dd_flt   _QQ[3] ;
             _QQ[0] = _pa[0] ;
             _QQ[1] = _pa[1] ;
-            _QQ[2] = _pa[2] ;    
+            _QQ[2] = _pa[2] ;
             _QQ[0]+= _AB[0] * _tt ;
             _QQ[1]+= _AB[1] * _tt ;
             _QQ[2]+= _AB[2] * _tt ;
@@ -620,20 +620,20 @@
         )
     {
         size_t _ni = +0;
-        
+
         if (line_flat_3d (
-            _pp, _nv, 
-            _pa, _pb, 
+            _pp, _nv,
+            _pa, _pb,
            (_ni == +0) ? _qa : _qb))
             _ni += +1  ;
         if (line_flat_3d (
-            _pp, _nv, 
-            _pb, _pc, 
+            _pp, _nv,
+            _pb, _pc,
            (_ni == +0) ? _qa : _qb))
             _ni += +1  ;
         if (line_flat_3d (
-            _pp, _nv, 
-            _pc, _pa, 
+            _pp, _nv,
+            _pc, _pa,
            (_ni == +0) ? _qa : _qb))
             _ni += +1  ;
 
@@ -659,15 +659,15 @@
         real_type _ap[2] ;
         _ap[0] = _pp[0] - _pa[0] ;
         _ap[1] = _pp[1] - _pa[1] ;
-        
-        real_type _d1 = 
+
+        real_type _d1 =
         geometry::dot_2d(_ap, _va) ;
-        real_type _d2 = 
+        real_type _d2 =
         geometry::dot_2d(_va, _va) ;
-        
+
         _tt =  _d1 / _d2 ;
-        
-        return (  true ) ;        
+
+        return (  true ) ;
     }
 
     template <
@@ -685,7 +685,7 @@
         _vv[0] = _pb[0] - _pa[0] ;
         _vv[1] = _pb[1] - _pa[1] ;
 
-        if (proj_line_2d(_pp, _pa, 
+        if (proj_line_2d(_pp, _pa,
                          _vv, _tt) )
         {
         if (_tt <= (real_type)+0.)
@@ -711,11 +711,11 @@
         {
             _ht  =  edge_hits;
 
-            _qq[0] = 
+            _qq[0] =
             _pa[0] + _tt*_vv[ 0] ;
-            _qq[1] = 
+            _qq[1] =
             _pa[1] + _tt*_vv[ 1] ;
-        
+
             return (  true ) ;
         }
         }
@@ -739,15 +739,15 @@
         _ap[0] = _pp[0] - _pa[0] ;
         _ap[1] = _pp[1] - _pa[1] ;
         _ap[2] = _pp[2] - _pa[2] ;
-                
-        real_type _d1 = 
+
+        real_type _d1 =
         geometry::dot_3d(_ap, _va) ;
-        real_type _d2 = 
+        real_type _d2 =
         geometry::dot_3d(_va, _va) ;
 
         _tt =  _d1 / _d2 ;
-        
-        return (  true ) ;        
+
+        return (  true ) ;
     }
 
     template <
@@ -766,7 +766,7 @@
         _vv[1] = _pb[1] - _pa[1] ;
         _vv[2] = _pb[2] - _pa[2] ;
 
-        if (proj_line_3d(_pp, _pa, 
+        if (proj_line_3d(_pp, _pa,
                          _vv, _tt) )
         {
         if (_tt <= (real_type)+0.)
@@ -794,13 +794,13 @@
         {
             _ht  =  edge_hits;
 
-            _qq[0] = 
+            _qq[0] =
             _pa[0] + _tt*_vv[ 0] ;
-            _qq[1] = 
+            _qq[1] =
             _pa[1] + _tt*_vv[ 1] ;
-            _qq[2] = 
+            _qq[2] =
             _pa[2] + _tt*_vv[ 2] ;
-        
+
             return (  true ) ;
         }
         }
@@ -830,23 +830,23 @@
         _ip[0] = _pp[0] - _pi[0] ;
         _ip[1] = _pp[1] - _pi[1] ;
         _ip[2] = _pp[2] - _pi[2] ;
-        
+
         real_type _tt ;
-        real_type _d1 = 
+        real_type _d1 =
         geometry::dot_3d(_ip, _nv) ;
-        real_type _d2 = 
+        real_type _d2 =
         geometry::dot_3d(_nv, _nv) ;
 
         _tt    = _d1/_d2 ;
-        
-        _qq[0] = 
+
+        _qq[0] =
         _pi[0] + _tt * _nv[0] ;
-        _qq[1] = 
+        _qq[1] =
         _pi[1] + _tt * _nv[1] ;
-        _qq[2] = 
+        _qq[2] =
         _pi[2] + _tt * _nv[2] ;
-        
-        return (  true ) ;        
+
+        return (  true ) ;
     }
 
     template <
@@ -883,7 +883,7 @@
     /*----------------------- test node-tria intersection */
             double _PA[2] ;
             copy_node_2d(_PA, _pa) ;
-            
+
             double _PB[2] ;
             copy_node_2d(_PB, _pb) ;
 
@@ -893,22 +893,22 @@
             double _PP[2] ;
             copy_node_2d(_PP, _pp) ;
 
-            double _s1 = 
+            double _s1 =
                 geompred::orient2d (
-                (double*)_PA , 
-                (double*)_PB , 
+                (double*)_PA ,
+                (double*)_PB ,
                 (double*)_PP )   ;
 
-            double _s2 = 
+            double _s2 =
                 geompred::orient2d (
-                (double*)_PB , 
-                (double*)_PC , 
+                (double*)_PB ,
+                (double*)_PC ,
                 (double*)_PP )   ;
 
-            double _s3 = 
+            double _s3 =
                 geompred::orient2d (
-                (double*)_PC , 
-                (double*)_PA , 
+                (double*)_PC ,
+                (double*)_PA ,
                 (double*)_PP )   ;
 
             if (_s1 * _s2 < +0.0 ||
@@ -927,7 +927,7 @@
             __projface2d(_pa, _pb) ;
             __projface2d(_pb, _pc) ;
             __projface2d(_pc, _pa) ;
-            
+
             return ( true )  ;
             }
             else
@@ -998,7 +998,7 @@
     /*----------------------- get orientation in xy-plane */
             double _TA[2] ;
             copy_node_xy(_TA, _pa) ;
-            
+
             double _TB[2] ;
             copy_node_xy(_TB, _pb) ;
 
@@ -1008,22 +1008,22 @@
             double _TP[2] ;
             copy_node_xy(_TP, _pt) ;
 
-            _s1[0] = 
+            _s1[0] =
                 geompred::orient2d (
-                (double*)_TA , 
-                (double*)_TB , 
+                (double*)_TA ,
+                (double*)_TB ,
                 (double*)_TP )   ;
 
-            _s2[0] = 
+            _s2[0] =
                 geompred::orient2d (
-                (double*)_TB , 
-                (double*)_TC , 
+                (double*)_TB ,
+                (double*)_TC ,
                 (double*)_TP )   ;
 
-            _s3[0] = 
+            _s3[0] =
                 geompred::orient2d (
-                (double*)_TC , 
-                (double*)_TA , 
+                (double*)_TC ,
+                (double*)_TA ,
                 (double*)_TP )   ;
         }
 
@@ -1031,7 +1031,7 @@
     /*----------------------- get orientation in xz-plane */
             double _TA[2] ;
             copy_node_xz(_TA, _pa) ;
-            
+
             double _TB[2] ;
             copy_node_xz(_TB, _pb) ;
 
@@ -1041,22 +1041,22 @@
             double _TP[2] ;
             copy_node_xz(_TP, _pt) ;
 
-            _s1[1] = 
+            _s1[1] =
                 geompred::orient2d (
-                (double*)_TA , 
-                (double*)_TB , 
+                (double*)_TA ,
+                (double*)_TB ,
                 (double*)_TP )   ;
 
-            _s2[1] = 
+            _s2[1] =
                 geompred::orient2d (
-                (double*)_TB , 
-                (double*)_TC , 
+                (double*)_TB ,
+                (double*)_TC ,
                 (double*)_TP )   ;
 
-            _s3[1] = 
+            _s3[1] =
                 geompred::orient2d (
-                (double*)_TC , 
-                (double*)_TA , 
+                (double*)_TC ,
+                (double*)_TA ,
                 (double*)_TP )   ;
         }
 
@@ -1064,7 +1064,7 @@
     /*----------------------- get orientation in yz-plane */
             double _TA[2] ;
             copy_node_yz(_TA, _pa) ;
-            
+
             double _TB[2] ;
             copy_node_yz(_TB, _pb) ;
 
@@ -1074,25 +1074,25 @@
             double _TP[2] ;
             copy_node_yz(_TP, _pt) ;
 
-            _s1[2] = 
+            _s1[2] =
                 geompred::orient2d (
-                (double*)_TA , 
-                (double*)_TB , 
+                (double*)_TA ,
+                (double*)_TB ,
                 (double*)_TP )   ;
 
-            _s2[2] = 
+            _s2[2] =
                 geompred::orient2d (
-                (double*)_TB , 
-                (double*)_TC , 
+                (double*)_TB ,
+                (double*)_TC ,
                 (double*)_TP )   ;
 
-            _s3[2] = 
+            _s3[2] =
                 geompred::orient2d (
-                (double*)_TC , 
-                (double*)_TA , 
+                (double*)_TC ,
+                (double*)_TA ,
                 (double*)_TP )   ;
         }
-        
+
         {
     /*----------------------- test node-tria intersection */
             if (
@@ -1118,7 +1118,7 @@
             __projface3d(_pa, _pb) ;
             __projface3d(_pb, _pc) ;
             __projface3d(_pc, _pa) ;
-            
+
             return ( true )  ;
             }
             else
@@ -1131,7 +1131,7 @@
             return ( true )  ;
             }
         }
-  
+
     #   undef  __projface3d
     }
 
@@ -1171,7 +1171,7 @@
     /*----------------------- test node-tria intersection */
             double _PA[3] ;
             copy_node_3d(_PA, _pa) ;
-            
+
             double _PB[3] ;
             copy_node_3d(_PB, _pb) ;
 
@@ -1184,32 +1184,32 @@
             double _PP[3] ;
             copy_node_3d(_PP, _pp) ;
 
-            double _s1 = 
+            double _s1 =
                 geompred::orient3d (
-                (double*)_PB , 
-                (double*)_PD ,
-                (double*)_PC , 
-                (double*)_PP )   ;
-
-            double _s2 = 
-                geompred::orient3d (
-                (double*)_PC , 
-                (double*)_PD ,
-                (double*)_PA , 
-                (double*)_PP )   ;
-
-            double _s3 = 
-                geompred::orient3d (
-                (double*)_PA , 
-                (double*)_PD ,
-                (double*)_PB , 
-                (double*)_PP )   ;
-
-            double _s4 = 
-                geompred::orient3d (
-                (double*)_PA , 
                 (double*)_PB ,
-                (double*)_PC , 
+                (double*)_PD ,
+                (double*)_PC ,
+                (double*)_PP )   ;
+
+            double _s2 =
+                geompred::orient3d (
+                (double*)_PC ,
+                (double*)_PD ,
+                (double*)_PA ,
+                (double*)_PP )   ;
+
+            double _s3 =
+                geompred::orient3d (
+                (double*)_PA ,
+                (double*)_PD ,
+                (double*)_PB ,
+                (double*)_PP )   ;
+
+            double _s4 =
+                geompred::orient3d (
+                (double*)_PA ,
+                (double*)_PB ,
+                (double*)_PC ,
                 (double*)_PP )   ;
 
             if (_s1 * _s2 < +0.0 ||
@@ -1236,14 +1236,14 @@
                     _pa, _pd, _pb) ;
             __projface3d(
                     _pa, _pb, _pc) ;
-            
+
             return ( true )  ;
             }
             else
             {
 
             _ht =  tria_hits ;
-    
+
             copy_node_3d(_qq, _pp) ;
 
             return ( true )  ;
@@ -1267,14 +1267,14 @@
     {
         double _ab[2] ;
         _ab[0] = _pb[0]-_pa[0] ;
-        _ab[1] = _pb[1]-_pa[1] ; 
+        _ab[1] = _pb[1]-_pa[1] ;
 
         double _ap[2] ;
         _ap[0] = _pp[0]-_pa[0] ;
         _ap[1] = _pp[1]-_pa[1] ;
 
-        double _dp = 
-            _ab[0] * _ap[0] + 
+        double _dp =
+            _ab[0] * _ap[0] +
             _ab[1] * _ap[1] ;
 
         return _dp ;
@@ -1296,7 +1296,7 @@
         _ap[1] = _pp[1]-_pa[1] ;
         _ap[2] = _pp[2]-_pa[2] ;
 
-        double _dp = 
+        double _dp =
             _ab[0] * _ap[0] +
             _ab[1] * _ap[1] +
             _ab[2] * _ap[2] ;
@@ -1384,7 +1384,7 @@
             _pa[1] == _pb[1] )
         {
     /*----------------------- test node-node intersection */
-            return 
+            return
             node_node_2d(_pa, _pp, _qq);
         }
         else
@@ -1402,23 +1402,23 @@
             _PP[0] =  _pp[0] ;
             _PP[1] =  _pp[1] ;
 
-            double _ss = 
+            double _ss =
                 geompred::orient2d (
-                (double*)_PA , 
-                (double*)_PB , 
+                (double*)_PA ,
+                (double*)_PB ,
                 (double*)_PP )   ;
 
             if (_ss == +0.0)
             {
     /*----------------------- orient w.r.t. line endpoint */
             double _sa = cleave2d (
-                (double*)_PA , 
-                (double*)_PB , 
+                (double*)_PA ,
+                (double*)_PB ,
                 (double*)_PP )   ;
 
             double _sb = cleave2d (
-                (double*)_PB , 
-                (double*)_PA , 
+                (double*)_PB ,
+                (double*)_PA ,
                 (double*)_PP )   ;
 
             if (_sa*_sb > +0.0)
@@ -1432,7 +1432,7 @@
             else
             if (_sa == +0.0)
             {
-    /*----------------------- have node-node intersection */        
+    /*----------------------- have node-node intersection */
             _qq[0] =  _pa[0] ;
             _qq[1] =  _pa[1] ;
 
@@ -1441,7 +1441,7 @@
             else
             if (_sb == +0.0)
             {
-    /*----------------------- have node-node intersection */        
+    /*----------------------- have node-node intersection */
             _qq[0] =  _pb[0] ;
             _qq[1] =  _pb[1] ;
 
@@ -1487,7 +1487,7 @@
             _pa[2] == _pb[2] )
         {
     /*----------------------- test node-node intersection */
-            return 
+            return
             node_node_3d(_pa, _pp, _qq);
         }
         else
@@ -1521,10 +1521,10 @@
             _P1[0] =  _PP[0] ;
             _P1[1] =  _PP[1] ;
 
-            double _s1 = 
+            double _s1 =
                 geompred::orient2d (
-                (double*)_A1 , 
-                (double*)_B1 , 
+                (double*)_A1 ,
+                (double*)_B1 ,
                 (double*)_P1 )   ;
 
     /*----------------------- get orientation in xz-plane */
@@ -1540,10 +1540,10 @@
             _P2[0] =  _PP[0] ;
             _P2[1] =  _PP[2] ;
 
-            double _s2 = 
+            double _s2 =
                 geompred::orient2d (
-                (double*)_A2 , 
-                (double*)_B2 , 
+                (double*)_A2 ,
+                (double*)_B2 ,
                 (double*)_P2 )   ;
 
     /*----------------------- get orientation in yz-plane */
@@ -1559,10 +1559,10 @@
             _P3[0] =  _PP[1] ;
             _P3[1] =  _PP[2] ;
 
-            double _s3 = 
+            double _s3 =
                 geompred::orient2d (
-                (double*)_A3 , 
-                (double*)_B3 , 
+                (double*)_A3 ,
+                (double*)_B3 ,
                 (double*)_P3 )   ;
 
     /*----------------------- test intersection hierarchy */
@@ -1572,13 +1572,13 @@
             {
     /*----------------------- orient w.r.t. line endpoint */
             double _sa = cleave3d (
-                (double*)_PA , 
-                (double*)_PB , 
+                (double*)_PA ,
+                (double*)_PB ,
                 (double*)_PP )   ;
 
             double _sb = cleave3d (
-                (double*)_PB , 
-                (double*)_PA , 
+                (double*)_PB ,
+                (double*)_PA ,
                 (double*)_PP )   ;
 
             if (_sa*_sb > +0.0)
@@ -1593,7 +1593,7 @@
             else
             if (_sa == +0.0)
             {
-    /*----------------------- have node-node intersection */        
+    /*----------------------- have node-node intersection */
             _qq[0] =  _pa[0] ;
             _qq[1] =  _pa[1] ;
             _qq[2] =  _pa[2] ;
@@ -1603,7 +1603,7 @@
             else
             if (_sb == +0.0)
             {
-    /*----------------------- have node-node intersection */        
+    /*----------------------- have node-node intersection */
             _qq[0] =  _pb[0] ;
             _qq[1] =  _pb[1] ;
             _qq[2] =  _pb[2] ;
@@ -1689,41 +1689,41 @@
             _PD[1] =  _pd[1] ;
 
     /*----------------------- orient w.r.t. line endpoint */
-            double  _sa = 
+            double  _sa =
                 geompred::orient2d (
-                (double*)_PA , 
-                (double*)_PC , 
+                (double*)_PA ,
+                (double*)_PC ,
                 (double*)_PD )   ;
 
-            double  _sb = 
+            double  _sb =
                 geompred::orient2d (
-                (double*)_PB , 
-                (double*)_PD , 
+                (double*)_PB ,
+                (double*)_PD ,
                 (double*)_PC )   ;
 
             if (_bind)
             {
     /*----------------------- no intersections: null hits */
-            if (_sa * _sb < +0.0 ) 
+            if (_sa * _sb < +0.0 )
             return null_hits;
             }
 
-            double  _sc = 
+            double  _sc =
                 geompred::orient2d (
-                (double*)_PC , 
-                (double*)_PA , 
+                (double*)_PC ,
+                (double*)_PA ,
                 (double*)_PB )   ;
-            
-            double  _sd = 
+
+            double  _sd =
                 geompred::orient2d (
-                (double*)_PD , 
-                (double*)_PB , 
+                (double*)_PD ,
+                (double*)_PB ,
                 (double*)_PA )   ;
 
             if (_bind)
             {
     /*----------------------- no intersections: null hits */
-            if (_sc * _sd < +0.0 ) 
+            if (_sc * _sd < +0.0 )
             return null_hits;
             }
 
@@ -1743,7 +1743,7 @@
     /*----------------------- have node-line intersection */
             _qq[0] =  _pa[0] ;
             _qq[1] =  _pa[1] ;
-            
+
             return node_hits ;
             }
             else
@@ -1752,7 +1752,7 @@
     /*----------------------- have node-line intersection */
             _qq[0] =  _pb[0] ;
             _qq[1] =  _pb[1] ;
-            
+
             return node_hits ;
             }
             else
@@ -1761,7 +1761,7 @@
     /*----------------------- have node-line intersection */
             _qq[0] =  _pc[0] ;
             _qq[1] =  _pc[1] ;
-            
+
             return node_hits ;
             }
             else
@@ -1770,7 +1770,7 @@
     /*----------------------- have node-line intersection */
             _qq[0] =  _pd[0] ;
             _qq[1] =  _pd[1] ;
-            
+
             return node_hits ;
             }
             else
@@ -1793,21 +1793,21 @@
             if (_dm == +0.0)
             return null_hits ;
 
-            double _tu = 
-            _im[__ij(0,0,2)] * _rv [0] + 
+            double _tu =
+            _im[__ij(0,0,2)] * _rv [0] +
             _im[__ij(0,1,2)] * _rv [1] ;
-            double _tv = 
-            _im[__ij(1,0,2)] * _rv [0] + 
+            double _tv =
+            _im[__ij(1,0,2)] * _rv [0] +
             _im[__ij(1,1,2)] * _rv [1] ;
 
-            _tu       /= _dm ; 
+            _tu       /= _dm ;
             _tv       /= _dm ;
 
             if (_bind)
             {
-                _tu = 
+                _tu =
             std::min(+1.,std::max(+0., _tu)) ;
-                _tv = 
+                _tv =
             std::min(+1.,std::max(+0., _tv)) ;
             }
 
@@ -1860,7 +1860,7 @@
             }
             else
             {
-            __assert( false && 
+            __assert( false &&
             "line_line_2d: invalid part!!") ;
             }
 
@@ -1998,22 +1998,22 @@
             _P3[1] =  _p3[1] ;
 
     /*----------------------- orient w.r.t. tria vertices */
-            double _s3 = 
+            double _s3 =
                 geompred::orient2d (
-                (double*)_P1 , 
-                (double*)_P2 , 
+                (double*)_P1 ,
+                (double*)_P2 ,
                 (double*)_PP )   ;
 
-            double _s1 = 
+            double _s1 =
                 geompred::orient2d (
-                (double*)_P2 , 
-                (double*)_P3 , 
+                (double*)_P2 ,
+                (double*)_P3 ,
                 (double*)_PP )   ;
 
-            double _s2 = 
+            double _s2 =
                 geompred::orient2d (
-                (double*)_P3 , 
-                (double*)_P1 , 
+                (double*)_P3 ,
+                (double*)_P1 ,
                 (double*)_PP )   ;
 
     /*----------------------- test intersection hierarchy */
@@ -2165,11 +2165,11 @@
             _P3[1] =  _p3[1] ;
             _P3[2] =  _p3[2] ;
 
-            double _ss = 
+            double _ss =
                 geompred::orient3d (
-                (double*)_P1 , 
-                (double*)_P2 , 
-                (double*)_P3 , 
+                (double*)_P1 ,
+                (double*)_P2 ,
+                (double*)_P3 ,
                 (double*)_PP )  ;
 
             if (_ss == +0.0)
@@ -2190,27 +2190,27 @@
             double _T3[2] ;
             _T3[0] =  _P3[0] ;
             _T3[1] =  _P3[1] ;
-            
+
             double _s3[3] ;
             _s3[0] = geompred::orient2d (
-                (double*)_T1 , 
-                (double*)_T2 , 
+                (double*)_T1 ,
+                (double*)_T2 ,
                 (double*)_TP )  ;
 
             double _s1[3] ;
             _s1[0] = geompred::orient2d (
-                (double*)_T2 , 
-                (double*)_T3 , 
+                (double*)_T2 ,
+                (double*)_T3 ,
                 (double*)_TP )  ;
 
             double _s2[3] ;
             _s2[0] = geompred::orient2d (
-                (double*)_T3 , 
-                (double*)_T1 , 
+                (double*)_T3 ,
+                (double*)_T1 ,
                 (double*)_TP )  ;
 
-            if (_s1[0]*_s2[0] < +0.0 || 
-                _s2[0]*_s3[0] < +0.0 || 
+            if (_s1[0]*_s2[0] < +0.0 ||
+                _s2[0]*_s3[0] < +0.0 ||
                 _s3[0]*_s1[0] < +0.0 )
             {
     /*----------------------- no intersections: null hits */
@@ -2229,24 +2229,24 @@
 
             _T3[0] =  _P3[0] ;
             _T3[1] =  _P3[2] ;
-            
+
             _s3[1] = geompred::orient2d (
-                (double*)_T1 , 
-                (double*)_T2 , 
+                (double*)_T1 ,
+                (double*)_T2 ,
                 (double*)_TP )  ;
 
             _s1[1] = geompred::orient2d (
-                (double*)_T2 , 
-                (double*)_T3 , 
+                (double*)_T2 ,
+                (double*)_T3 ,
                 (double*)_TP )  ;
 
             _s2[1] = geompred::orient2d (
-                (double*)_T3 , 
-                (double*)_T1 , 
+                (double*)_T3 ,
+                (double*)_T1 ,
                 (double*)_TP )  ;
 
-            if (_s1[1]*_s2[1] < +0.0 || 
-                _s2[1]*_s3[1] < +0.0 || 
+            if (_s1[1]*_s2[1] < +0.0 ||
+                _s2[1]*_s3[1] < +0.0 ||
                 _s3[1]*_s1[1] < +0.0 )
             {
     /*----------------------- no intersections: null hits */
@@ -2265,24 +2265,24 @@
 
             _T3[0] =  _P3[1] ;
             _T3[1] =  _P3[2] ;
-            
+
             _s3[2] = geompred::orient2d (
-                (double*)_T1 , 
-                (double*)_T2 , 
+                (double*)_T1 ,
+                (double*)_T2 ,
                 (double*)_TP )  ;
 
             _s1[2] = geompred::orient2d (
-                (double*)_T2 , 
-                (double*)_T3 , 
+                (double*)_T2 ,
+                (double*)_T3 ,
                 (double*)_TP )  ;
 
             _s2[2] = geompred::orient2d (
-                (double*)_T3 , 
-                (double*)_T1 , 
+                (double*)_T3 ,
+                (double*)_T1 ,
                 (double*)_TP )  ;
 
-            if (_s1[2]*_s2[2] < +0.0 || 
-                _s2[2]*_s3[2] < +0.0 || 
+            if (_s1[2]*_s2[2] < +0.0 ||
+                _s2[2]*_s3[2] < +0.0 ||
                 _s3[2]*_s1[2] < +0.0 )
             {
     /*----------------------- no intersections: null hits */
@@ -2290,17 +2290,17 @@
             }
 
     /*----------------------- test intersection hierarchy */
-            bool_type _z1 = 
+            bool_type _z1 =
                 _s1[0] == +0.0 &&
                 _s1[1] == +0.0 &&
                 _s1[2] == +0.0  ;
 
-            bool_type _z2 = 
+            bool_type _z2 =
                 _s2[0] == +0.0 &&
                 _s2[1] == +0.0 &&
                 _s2[2] == +0.0  ;
 
-            bool_type _z3 = 
+            bool_type _z3 =
                 _s3[0] == +0.0 &&
                 _s3[1] == +0.0 &&
                 _s3[2] == +0.0  ;
@@ -2480,18 +2480,18 @@
             _P3[2] =  _p3[2] ;
 
     /*----------------------- test if line straddles tria */
-            double _sa = 
+            double _sa =
                 geompred::orient3d (
-                (double*)_P1 , 
-                (double*)_P2 , 
-                (double*)_P3 , 
+                (double*)_P1 ,
+                (double*)_P2 ,
+                (double*)_P3 ,
                 (double*)_PA )   ;
-        
-            double _sb = 
+
+            double _sb =
                 geompred::orient3d (
-                (double*)_P1 , 
-                (double*)_P3 , 
-                (double*)_P2 , 
+                (double*)_P1 ,
+                (double*)_P3 ,
+                (double*)_P2 ,
                 (double*)_PB )   ;
 
             if (_bind)
@@ -2502,25 +2502,25 @@
             }
 
     /*----------------------- test if tria straddles line */
-            double _s1 = 
+            double _s1 =
                 geompred::orient3d (
-                (double*)_P1 , 
+                (double*)_P1 ,
                 (double*)_P2 ,
-                (double*)_PA , 
+                (double*)_PA ,
                 (double*)_PB )   ;
 
-            double _s2 = 
+            double _s2 =
                 geompred::orient3d (
-                (double*)_P2 , 
+                (double*)_P2 ,
                 (double*)_P3 ,
-                (double*)_PA , 
+                (double*)_PA ,
                 (double*)_PB )   ;
-        
-            double _s3 = 
+
+            double _s3 =
                 geompred::orient3d (
-                (double*)_P3 , 
+                (double*)_P3 ,
                 (double*)_P1 ,
-                (double*)_PA , 
+                (double*)_PA ,
                 (double*)_PB )   ;
 
             if (_bind)
@@ -2531,7 +2531,7 @@
 
             if (_s2*_s3 < 0.0)
             return null_hits ;
-            
+
             if (_s3*_s1 < 0.0)
             return null_hits ;
             }
@@ -2582,11 +2582,11 @@
             else
             if (_s1 == +0.0 )
             {
-    /*----------------------- have line-edge intersection */            
+    /*----------------------- have line-edge intersection */
             double _WS = _s2 + _s3 ;
             double _W1 = _s2 / _WS ;
             double _W2 = _s3 / _WS ;
-            
+
             dd_flt _F1[3] ;
             _F1[0] =  _p1[0] ;
             _F1[1] =  _p1[1] ;
@@ -2614,11 +2614,11 @@
             else
             if (_s2 == +0.0 )
             {
-    /*----------------------- have line-edge intersection */            
+    /*----------------------- have line-edge intersection */
             double _WS = _s1 + _s3 ;
             double _W2 = _s3 / _WS ;
             double _W3 = _s1 / _WS ;
-            
+
             dd_flt _F2[3] ;
             _F2[0] =  _p2[0] ;
             _F2[1] =  _p2[1] ;
@@ -2646,11 +2646,11 @@
             else
             if (_s3 == +0.0 )
             {
-    /*----------------------- have line-edge intersection */            
+    /*----------------------- have line-edge intersection */
             double _WS = _s1 + _s2 ;
             double _W3 = _s1 / _WS ;
             double _W1 = _s2 / _WS ;
-            
+
             dd_flt _F3[3] ;
             _F3[0] =  _p3[0] ;
             _F3[1] =  _p3[1] ;
@@ -2677,12 +2677,12 @@
             }
             else
             {
-    /*----------------------- have line-face intersection */            
+    /*----------------------- have line-face intersection */
             double _WS = _s1 + _s2 + _s3 ;
             double _W1 = _s2 / _WS ;
             double _W2 = _s3 / _WS ;
             double _W3 = _s1 / _WS ;
-            
+
             dd_flt _F1[3] ;
             _F1[0] =  _p1[0] ;
             _F1[1] =  _p1[1] ;

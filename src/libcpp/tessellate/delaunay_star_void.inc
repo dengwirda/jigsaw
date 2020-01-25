@@ -4,29 +4,29 @@
      * STAR-TRIA-VOID: triangulate a star-shaped cavity.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
@@ -42,16 +42,16 @@
      */
 
     // from delaunay_tri_k.hpp
-    
+
 
     /*
     --------------------------------------------------------
      * STAR-TRIA-VOID: re-tria. star-shaped cavity.
     --------------------------------------------------------
      */
-    
+
     template <
-    typename      list_type 
+    typename      list_type
              >
     __normal_call void_type star_tria_void (
         iptr_list &_vset ,
@@ -62,8 +62,8 @@
         )
     {
     /*---------------------- mark list of trias in cavity */
-        for(auto _iter  = _vset.head(); 
-                 _iter != _vset.tend(); 
+        for(auto _iter  = _vset.head();
+                 _iter != _vset.tend();
                ++_iter  )
         {
             __mark(*_iter) += _flag ;
@@ -72,30 +72,30 @@
     /*---------------------- scan list of trias in cavity */
         iptr_type static constexpr
             FACE_SIZE = tria_pred::_dims+1;
-        
+
         this->_fset.set_slots (
             _vset.count()* tria_dims ) ;
 
-        __assert ( 
+        __assert (
             this->_fset.count() == +0 &&
         "star-tria-void: hashtable non-empty!" ) ;
 
-        for(auto _iter  = _vset.head() ; 
-                    _iter != _vset.tend() ; 
+        for(auto _iter  = _vset.head() ;
+                    _iter != _vset.tend() ;
                         ++_iter  )
         {
             if (__mark(*_iter)<_flag) continue ;
 
         /*-------------------------- scan for cavity face */
-            for(iptr_type _fpos = tria_dims +1 ; 
+            for(iptr_type _fpos = tria_dims +1 ;
                           _fpos-- != +0 ; )
             {
                 iptr_type  _tadj, _fadj, _fmrk ;
-                find_pair(*_iter, _tadj, 
+                find_pair(*_iter, _tadj,
                     _fpos, _fadj, _fmrk) ;
 
             /*--------------- continue if cavity face */
-                if (_tadj == this->null_flag() || 
+                if (_tadj == this->null_flag() ||
                     __mark(_tadj) <    _flag )
                 {
 
@@ -110,12 +110,12 @@
                 iptr_type _tnod[FACE_SIZE];
                 tria_type::face_node(
                     _tnod,_fpos ,
-                tria_dims-0, tria_dims-1) ;        
+                tria_dims-0, tria_dims-1) ;
                 iptr_type  _inod;
-                for(_inod = tria_dims + 0 ; 
+                for(_inod = tria_dims + 0 ;
                     _inod-- != +0 ; )
                 {
-                    _tnod[ _inod] = 
+                    _tnod[ _inod] =
                         tria( *_iter)->
                             node(_tnod[ _inod]);
                 }
@@ -128,32 +128,32 @@
                     node(
                    _tnod[_inod])->next()=_tria ;
                 }
-                for(_inod = tria_dims + 1 ; 
+                for(_inod = tria_dims + 1 ;
                     _inod-- != +0 ; )
                 {
                     tria(_tria)->
                     node(_inod) =  _tnod[_inod];
                 }
-                
+
             /*---------------- push about cavity boundary */
-                push_pair(_tria, _tadj, 0 , 
+                push_pair(_tria, _tadj, 0 ,
                           _fadj, _fmrk) ;
 
             /*---------------- face indexing for new tria */
-                for(iptr_type _posf = tria_dims + 1; 
+                for(iptr_type _posf = tria_dims + 1;
                               _posf-- != +1 ; )
                 {
                     iptr_type _fnod[FACE_SIZE];
                     tria_type::face_node(
                         _fnod,_posf ,
                     tria_dims-0, tria_dims-1) ;
-                    
+
                     face_ptrs _fdat, _same ;
-                    for(_inod = tria_dims + 0 ; 
+                    for(_inod = tria_dims + 0 ;
                         _inod-- != +0 ; )
                     {
-                        _fdat._node[_inod] = 
-                            tria(_tria)-> 
+                        _fdat._node[_inod] =
+                            tria(_tria)->
                                 node(_fnod[_inod]) ;
                     }
                     _fdat._tadj = _tria ;
@@ -171,8 +171,8 @@
                     else
                     {
                         push_pair(_fdat._tadj ,
-                            _same._tadj, 
-                            _fdat._fadj, 
+                            _same._tadj,
+                            _fdat._fadj,
                             _same._fadj, +1 ) ;
                     }
                 }
@@ -181,14 +181,14 @@
         }
 
     /*------------------------------ un-mark cavity trias */
-        for(auto _iter  = _vset.head() ; 
-                 _iter != _vset.tend() ; 
+        for(auto _iter  = _vset.head() ;
+                 _iter != _vset.tend() ;
                ++_iter  )
         {
             if (__mark(*_iter) >= _flag)
             {
                 __mark(*_iter) -= _flag;
-    
+
                 if (_told != nullptr)
                 {
             /*------------------ push "old" tria list */
@@ -204,6 +204,6 @@
 
     /*------------------------------ mesh is now delaunay */
     }
-    
-    
-    
+
+
+

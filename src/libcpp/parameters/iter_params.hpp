@@ -4,29 +4,29 @@
      * ITER-PARAMS: parameters for ITER-MESH-K.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
@@ -53,62 +53,62 @@
      * ITER-PARAMS: user-param's for ITER-MESH-K
     --------------------------------------------------------
      */
-    
+
     template <
-    typename R , 
+    typename R ,
     typename I
              >
     class iter_params
         {
         public  :
-        
+
         typedef R                       real_type ;
         typedef I                       iptr_type ;
-        
+
         typedef iter_params<R, I>       self_type ;
-        
+
         iptr_type        _verb ;
-        
+
         iptr_type        _iter ;
-        
+
         real_type        _qtol ;
         real_type        _qlim ;
-        
+
         bool_type        _zip_ ;
         bool_type        _div_ ;
         bool_type        _tria ;
         bool_type        _dual ;
-     
-        public  : 
-        
+
+        public  :
+
     /*-------------------------- construct default param. */
         __inline_call iter_params (
-            ) : 
+            ) :
             _verb ((iptr_type) +   0  ) ,
-            
+
             _iter ((iptr_type) +  16  ) ,
-                
+
             _qtol ((real_type) +1.E-04) ,
-            _qlim ((real_type) +0.9375) , 
-            
+            _qlim ((real_type) +0.9375) ,
+
             _zip_ ((bool_type)  true  ) ,
             _div_ ((bool_type)  true  ) ,
             _tria ((bool_type)  true  ) ,
             _dual ((bool_type)  false )
         {   // load default values
         }
-        
+
     /*------------------------------------ "write" access */
         __inline_call iptr_type      & verb (
             )
         {   return  this->_verb ;
         }
-        
+
         __inline_call iptr_type      & iter (
             )
         {   return  this->_iter ;
         }
-        
+
         __inline_call real_type      & qtol (
             )
         {   return  this->_qtol ;
@@ -117,7 +117,7 @@
             )
         {   return  this->_qlim ;
         }
-        
+
         __inline_call bool_type      & zip_ (
             )
         {   return  this->_zip_ ;
@@ -134,18 +134,18 @@
             )
         {   return  this->_dual ;
         }
-        
+
     /*------------------------------------ "const" access */
         __inline_call iptr_type const& verb (
             ) const
         {   return  this->_verb ;
         }
-        
+
         __inline_call iptr_type const& iter (
             ) const
         {   return  this->_iter ;
         }
-        
+
         __inline_call real_type const& qtol (
             ) const
         {   return  this->_qtol ;
@@ -154,7 +154,7 @@
             ) const
         {   return  this->_qlim ;
         }
-        
+
         __inline_call bool_type const& zip_ (
             ) const
         {   return  this->_zip_ ;
@@ -171,9 +171,9 @@
             ) const
         {   return  this->_dual ;
         }
-        
+
         } ;
-    
+
     }
 
 

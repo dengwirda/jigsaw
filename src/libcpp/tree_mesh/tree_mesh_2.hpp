@@ -1,32 +1,32 @@
 
     /*
     --------------------------------------------------------
-     * TREE-MESH-2: tree-like bisection for 2-manifolds. 
+     * TREE-MESH-2: tree-like bisection for 2-manifolds.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
@@ -47,7 +47,7 @@
 #   define __TREE_MESH_2__
 
     namespace mesh {
-    
+
     template <
     typename M ,
     typename P ,
@@ -57,11 +57,11 @@
     typename A = allocators::basic_alloc
              >
     class tree_mesh_2d
-    { 
-    public  : 
-    
-    /*--------------- tree-like bisection for 2-manifolds */  
-    
+    {
+    public  :
+
+    /*--------------- tree-like bisection for 2-manifolds */
+
     typedef M                           mesh_type ;
     typedef P                           pred_type ;
     typedef G                           geom_type ;
@@ -69,17 +69,17 @@
     typedef I                           init_type ;
     typedef A                           allocator ;
 
-    typedef typename 
+    typedef typename
             mesh_type::real_type        real_type ;
-    typedef typename 
+    typedef typename
             mesh_type::iptr_type        iptr_type ;
-            
-    typedef typename 
+
+    typedef typename
             allocator::size_type        uint_type ;
 
 
     typedef mesh::mesh_params       <
-                real_type, 
+                real_type,
                 iptr_type           >   tree_opts ;
 
     typedef mesh::tree_timers       <
@@ -91,7 +91,7 @@
 
     /*
     --------------------------------------------------------
-     * TREE-MESH: subdivide a 2-manifold mesh. 
+     * TREE-MESH: subdivide a 2-manifold mesh.
     --------------------------------------------------------
      */
 
@@ -107,9 +107,9 @@
         tree_opts &_args ,
         jlog_file &_dump
         )
-    {   
+    {
     //!!mode_type _mode = null_mode ;
-                
+
     /*------------------------------ push log-file header */
         if (_args.verb() >= 0 )
         {
@@ -133,7 +133,7 @@
         __unreferenced(_time) ; // why does MSVC need this??
     #   endif//__use_timers
 
-    /*------------------------------ ensure deterministic */  
+    /*------------------------------ ensure deterministic */
         std::srand( +1 ) ;
 
         tree_stat _tcpu  ;
@@ -148,15 +148,15 @@
     /*------------------------------ calc. hfun. at seeds */
 
         /*
-        for (auto _node  = 
-            _mesh._tria._nset.head() ; 
-                  _node != 
+        for (auto _node  =
+            _mesh._tria._nset.head() ;
+                  _node !=
             _mesh._tria._nset.tend() ;
                 ++_node  )
         {
             if (_node->mark() >= +0)
             {
-                _node->idxh()  = 
+                _node->idxh()  =
                  hfun_type::null_hint () ;
             }
         }
@@ -183,9 +183,9 @@
 
     } ;
 
- 
+
     }
-    
+
 #   endif   //__TREE_MESH_2__
 
 

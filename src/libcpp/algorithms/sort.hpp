@@ -1,32 +1,32 @@
 
-    /* 
+    /*
     --------------------------------------------------------
      * SORT: sorting algorithms.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
@@ -57,7 +57,7 @@
      */
 
     template <
-        typename  iter_type ,     
+        typename  iter_type ,
         typename  pred_type
              >
     __normal_call bool_type is_sorted (
@@ -68,12 +68,12 @@
     {
         for ( ; _head+1 != _tail; ++_head )
         { /* check pair ordering */
-            if (_less(*(_head+1),  *_head)) 
+            if (_less(*(_head+1),  *_head))
             {
                 return ( false )  ;
             }
         }
-        
+
         return ( true ) ;
     }
 
@@ -84,7 +84,7 @@
      */
 
     template <
-        typename  iter_type ,     
+        typename  iter_type ,
         typename  pred_type
              >
     __inline_call void_type sort_2 ( // sort 2-tuple
@@ -96,9 +96,9 @@
         if (_less(*_bb, *_aa))
         std::swap(*_aa, *_bb);
     }
-    
+
     template <
-        typename  iter_type ,     
+        typename  iter_type ,
         typename  pred_type
              >
     __inline_call void_type sort_3 ( // sort 3-tuple
@@ -110,7 +110,7 @@
     {
         if (_less(*_bb, *_aa))
         std::swap(*_aa, *_bb);
-        
+
         if (_less(*_cc, *_bb))
         {
         std::swap(*_bb, *_cc);
@@ -121,7 +121,7 @@
     }
 
     template <
-        typename  iter_type ,     
+        typename  iter_type ,
         typename  pred_type
              >
     __inline_call void_type sort_4 ( // sort 4-tuple
@@ -134,7 +134,7 @@
     {
         if (_less(*_bb, *_aa))
         std::swap(*_aa, *_bb);
-        
+
         if (_less(*_dd, *_cc))
         std::swap(*_cc, *_dd);
 
@@ -147,15 +147,15 @@
         if (_less(*_cc, *_bb))
         std::swap(*_bb, *_cc);
     }
-    
+
     /*
     --------------------------------------------------------
      * I-SORT: insertion sort.
     --------------------------------------------------------
      */
-     
+
     template <
-        typename  iter_type ,     
+        typename  iter_type ,
         typename  pred_type
              >
     __normal_call void_type isort (
@@ -172,75 +172,75 @@
         case 1: return ;
         case 2:
         /*-------------------------------- length = 2 */
-            { 
+            {
             sort_2(_head+0, _head+1, _less);
-            return ; 
+            return ;
             }
-        case 3: 
+        case 3:
         /*-------------------------------- length = 3 */
-            { 
-            sort_3(_head+0, 
-                   _head+1, _head+2, _less);       
-            return ; 
+            {
+            sort_3(_head+0,
+                   _head+1, _head+2, _less);
+            return ;
             }
-        case 4: 
+        case 4:
         /*-------------------------------- length = 4 */
-            { 
-            sort_4(_head+0, _head+1, 
-                   _head+2, _head+3, _less);       
-            return ; 
+            {
+            sort_4(_head+0, _head+1,
+                   _head+2, _head+3, _less);
+            return ;
             }
         }
-        
+
     /*-------- scan sequence, find min., swap as sentinel */
         iter_type _mark  = _head + 0 ;
-        for (auto _item  = _head + 1 ; 
+        for (auto _item  = _head + 1 ;
                   _item != _tend ; ++ _item )
-        { 
+        {
         /*-------- _item becomes _mark if new minimum */
             if(_less( *_item,*_mark)) _mark = _item;
         }
-        
+
         if (_mark != _head)
-        { 
+        {
         /*-------- swap _mark to _head if new minimum */
             std::swap(*_mark, *_head);
         }
-        
+
     /* insertion sort: sift down toward head until sorted */
         for(_head += 2; _head != _tend; ++_head)
-        { 
+        {
             if (_less( *_head, *(_head-1)))
             {
                 typename containers::
                     iterator_traits<iter_type>::
-                        data_type _temp = 
+                        data_type _temp =
                             std::move (*_head) ;
-                
+
                 iter_type _item = _head ;
-                        
+
             /*---------- sift pivot into sorted order */
                 do
                 {
-                    *_item = std::move(*(_item-1)) ; 
+                    *_item = std::move(*(_item-1)) ;
                    --_item ;
                 }
                 while ( _less( _temp,  *(_item-1)));
-            
+
             /*---------- swap pivot into new position */
                *_item = std::move( _temp) ;
             }
         }
     }
-    
+
     /*
     --------------------------------------------------------
      * S-SORT: shell sort.
     --------------------------------------------------------
      */
-     
+
     template <
-        typename  iter_type ,     
+        typename  iter_type ,
         typename  pred_type
              >
     __normal_call void_type ssort (
@@ -255,31 +255,31 @@
         /*-------------------------------- quick exit */
         case 0:
         case 1: return ;
-        case 2: 
+        case 2:
         /*-------------------------------- length = 2 */
-            { 
+            {
             sort_2(_head+0, _head+1, _less);
-            return ; 
+            return ;
             }
-        case 3: 
+        case 3:
         /*-------------------------------- length = 3 */
-            { 
-            sort_3(_head+0, 
-                   _head+1, _head+2, _less);       
-            return ; 
+            {
+            sort_3(_head+0,
+                   _head+1, _head+2, _less);
+            return ;
             }
-        case 4: 
+        case 4:
         /*-------------------------------- length = 4 */
-            { 
-            sort_4(_head+0, _head+1, 
-                   _head+2, _head+3, _less);       
-            return ; 
+            {
+            sort_4(_head+0, _head+1,
+                   _head+2, _head+3, _less);
+            return ;
             }
         }
-    
-    /* Niels Pardons, A154393: "Empirically good sequence of 
+
+    /* Niels Pardons, A154393: "Empirically good sequence of
      * increments for the shell sort algorithm", 2009, OEIS.
-     */ 
+     */
         typename containers::
             iterator_traits<iter_type>::
                 size_type _finc = _tend - _head;
@@ -288,27 +288,27 @@
                 size_type _incn = +12 ;
         typename containers::
             iterator_traits<iter_type>::
-            size_type static constexpr _incv[12] 
-            = {   1,        9,        34,      
-                182,      836,      4025,   
-              19001,    90358,    428481, 
+            size_type static constexpr _incv[12]
+            = {   1,        9,        34,
+                182,      836,      4025,
+              19001,    90358,    428481,
             2034035,  9651787,  45806244}  ;
-    
-    /* insertion sort: sift down toward head until sorted */    
+
+    /* insertion sort: sift down toward head until sorted */
         for ( ; _incn != 0 ;  --_incn)
         {
             if (_finc <= _incv[_incn-1]) continue;
-                
-        /* just a pass of insertion sort with stride ival */            
+
+        /* just a pass of insertion sort with stride ival */
             typename containers::
                 iterator_traits<iter_type>::
                     data_type _temp ;
             typename containers::
                 iterator_traits<iter_type>::
                     size_type _ival ;
-            
+
             _ival = _incv[_incn - 1];
-            
+
             iter_type _ipos =_head + _ival ;
             iter_type _iend =_head + _ival ;
             iter_type _item ;
@@ -323,17 +323,17 @@
                 {
                     *_item = std::move(*(_item-_ival)) ;
                 }
-                while ((_item-=_ival) >= _iend && 
+                while ((_item-=_ival) >= _iend &&
                         _less( _temp, *( _item-_ival)));
-                        
+
             /*---------- swap pivot into new position */
                *_item = std::move(_temp) ;
             }
             }
         }
-        
+
     }
-    
+
     /*
     --------------------------------------------------------
      * Q-SORT: quick sort.
@@ -353,36 +353,36 @@
         typename containers::
             iterator_traits<iter_type>::
         diff_type static constexpr _LONG = 256;
-    
-        iter_type _imid = 
+
+        iter_type _imid =
             _head + (_tail - _head) / 2 ;
-    
+
         if (_tail - _head >= _LONG)
         {
-    /*-------------- median-of-5 choice for pivot element */ 
+    /*-------------- median-of-5 choice for pivot element */
             typename containers::
                 iterator_traits<iter_type>::
-                    size_type _step = 
+                    size_type _step =
                         (_tail - _head) / 4;
 
-            iter_type _pos1 = 
+            iter_type _pos1 =
                 _head + _step * 1 ;
-            iter_type _pos3 = 
+            iter_type _pos3 =
                 _head + _step * 3 ;
-        
+
             sort_3(_head, _pos1, _imid, _less);
             sort_3(_imid, _pos3, _tail, _less);
             sort_3(_pos1, _imid, _pos3, _less);
         }
         else
-        {   
-    /*-------------- median-of-3 choice for pivot element */   
+        {
+    /*-------------- median-of-3 choice for pivot element */
             sort_3(_head, _imid, _tail, _less);
         }
-        
+
         return ( _imid ) ;
     }
-    
+
     template <
         typename  iter_type ,
         typename  pred_type
@@ -392,19 +392,19 @@
         iter_type _tend,
         pred_type _less
         )
-    {    
+    {
         typedef containers::
             iterator_traits<iter_type> iter_base ;
- 
-    /*------- tiny-list threshold, push to insertion sort */           
+
+    /*------- tiny-list threshold, push to insertion sort */
         typename iter_base::
             diff_type static constexpr _LONG = 16;
-        
+
     /*------- stack max depth = log2(maxint/sizeof(data)) */
         typename iter_base::
-            size_type static constexpr _DEEP = 
+            size_type static constexpr _DEEP =
         8 * sizeof(typename iter_base::size_type);
-        
+
         class node_type
             {
             public  :
@@ -414,15 +414,15 @@
                 iter_type  _ll ,
                 iter_type  _rr
                 )
-            {   _obj[0] =  _ll ; 
-                _obj[1] =  _rr ; 
+            {   _obj[0] =  _ll ;
+                _obj[1] =  _rr ;
             }
             __inline_call void _pop (
                 iter_type &_ll,
                 iter_type &_rr
                 )
-            {   _ll = _obj [0] ; 
-                _rr = _obj [1] ; 
+            {   _ll = _obj [0] ;
+                _rr = _obj [1] ;
             }
             } ;
 
@@ -443,19 +443,19 @@
         /* find pivot item for current partition */
             _mm = pivot(_hh, _tt, _less);
         /* push pivot onto a local copy */
-            typename 
+            typename
             iter_base::data_type _pp = *_mm;
         /* reduce partition around pivot element */
-            iter_type _ll = _hh + 1; 
+            iter_type _ll = _hh + 1;
             iter_type _rr = _tt - 1;
             for ( ; _ll < _rr; )
             {
                 for(;_less(*_ll,  _pp);) ++_ll;
                 for(;_less( _pp, *_rr);) --_rr;
-                
+
                 if (_ll <  _rr)
                 { /* swap elements */
-                std::swap(*_ll, 
+                std::swap(*_ll,
                           *_rr) ;
                 }
                 if (_ll <= _rr)
@@ -476,7 +476,7 @@
             }
         }
         while (_nptr !=_node) ;
-        
+
     /*------- sort remaining sequences via insertion sort */
         isort (_head , _tend, _less) ;
     }

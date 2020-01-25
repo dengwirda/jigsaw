@@ -4,37 +4,37 @@
  * a singly-linked list object.
 ------------------------------------------------------------
  *
- * BASIC-STACK is a "singly-linked" list type, where 
- * list items comprise a singly-oriented chain of 
- * pointers. This variant only supports singly-oriented 
- * manipulation. Insertion/deletion is O(1), acccess is 
- * O(N). List count is NOT stored! 
+ * BASIC-STACK is a "singly-linked" list type, where
+ * list items comprise a singly-oriented chain of
+ * pointers. This variant only supports singly-oriented
+ * manipulation. Insertion/deletion is O(1), acccess is
+ * O(N). List count is NOT stored!
  *
 ------------------------------------------------------------
  *
- * This program may be freely redistributed under the 
- * condition that the copyright notices (including this 
- * entire header) are not removed, and no compensation 
- * is received through use of the software.  Private, 
- * research, and institutional use is free.  You may 
- * distribute modified versions of this code UNDER THE 
- * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
- * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
- * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
- * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
- * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
- * of this code as part of a commercial system is 
- * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
- * AUTHOR.  (If you are not directly supplying this 
- * code to a customer, and you are instead telling them 
- * how they can obtain it for free, then you are not 
- * required to make any arrangement with me.) 
+ * This program may be freely redistributed under the
+ * condition that the copyright notices (including this
+ * entire header) are not removed, and no compensation
+ * is received through use of the software.  Private,
+ * research, and institutional use is free.  You may
+ * distribute modified versions of this code UNDER THE
+ * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+ * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+ * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+ * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+ * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+ * of this code as part of a commercial system is
+ * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+ * AUTHOR.  (If you are not directly supplying this
+ * code to a customer, and you are instead telling them
+ * how they can obtain it for free, then you are not
+ * required to make any arrangement with me.)
  *
  * Disclaimer:  Neither I nor: Columbia University, The
- * Massachusetts Institute of Technology, The 
+ * Massachusetts Institute of Technology, The
  * University of Sydney, nor The National Aeronautics
- * and Space Administration warrant this code in any 
- * way whatsoever.  This code is provided "as-is" to be 
+ * and Space Administration warrant this code in any
+ * way whatsoever.  This code is provided "as-is" to be
  * used at your own risk.
  *
 ------------------------------------------------------------
@@ -64,42 +64,42 @@
     typename D ,
     typename A = allocators::basic_alloc
              >
-    class basic_stack : public 
+    class basic_stack : public
             allocators::_item_alloc <
                 single_item < D>, A >
     {
 /*------ single-ended linked-list for singly-linked items */
     public  :
-    
+
     typedef D                           data_type ;
     typedef A                           allocator ;
 
     typedef containers::basic_stack <
-                data_type , 
+                data_type ,
                 allocator >             self_type ;
 
     typedef containers::single_item <
                 data_type >             item_type ;
     typedef allocators::_item_alloc <
-                item_type , 
+                item_type ,
                 allocator >             obj_alloc ;
 
     typedef containers::const_single_iterator <
                 self_type >             _const_it ;
     typedef containers::write_single_iterator <
                 self_type >             _write_it ;
-    
-    typedef typename 
+
+    typedef typename
             allocator::size_type        size_type ;
-    typedef typename 
+    typedef typename
             allocator::diff_type        diff_type ;
 
     private :
 
     item_type* _hptr ;          // head/tail pointers
-    
+
     private :
-    
+
 /*------------------------------ helper - construct range */
     template <
     typename      iter_type
@@ -110,10 +110,10 @@
     __cont::base_iterator_kind
         )
     { /* push the sequence onto list */
-        for ( ; _head != _tend; ++_head) 
+        for ( ; _head != _tend; ++_head)
             push_tail(*_head) ;
     }
-    
+
     __inline_call void_type copy_list (
         size_type _size ,
         data_type const& _dsrc,
@@ -121,13 +121,13 @@
         )
     {   copy_data(_size, _dsrc);
     }
-    
+
     __normal_call void_type copy_data (
         size_type _size,
         data_type const& _dsrc
         )
     { /* push _size copies onto list */
-        for ( ; _size-- != 0; ) 
+        for ( ; _size-- != 0; )
             push_head(_dsrc);
     }
 
@@ -164,7 +164,7 @@
         copy_list(_head,_tail,
             __cont::iter_kind(_head)) ;
     }
-    
+
 /*-------------------------------------------- _def d'tor */
     __inline_call~basic_stack (
         ) { clear() ; }
@@ -172,7 +172,7 @@
 /*-------------------------------------------- copy c'tor */
     __inline_call basic_stack (
         self_type const& _src
-        ) : obj_alloc(  
+        ) : obj_alloc(
         __copy(obj_alloc,_src))
     {
         this->_hptr = nullptr ;
@@ -183,18 +183,18 @@
         copy_list(_head,_tail,
             __cont::iter_kind(_head)) ;
     }
-    
+
 /*-------------------------------------------- move c'tor */
     __inline_call basic_stack (
         self_type && _src
-        ) : obj_alloc(  
+        ) : obj_alloc(
         __move(obj_alloc,_src))
     {
     /*------------------------------- move data from _src */
         this->_hptr = _src._hptr ;
         _src. _hptr = nullptr ;
     }
-    
+
 /*-------------------------------------------- copy a-op. */
     __inline_call self_type& operator = (
         self_type const& _src
@@ -210,13 +210,13 @@
         static_cast<obj_alloc&>(*this),
         static_cast<obj_alloc&>(_copy)) ;
 
-        swap(this->_hptr, 
+        swap(this->_hptr,
             _copy. _hptr) ;
         }
-        
+
         return ( *this )  ;
     }
-    
+
 /*-------------------------------------------- move a-op. */
     __inline_call self_type &operator = (
         self_type && _src
@@ -232,28 +232,28 @@
         static_cast<obj_alloc&>(*this),
         static_cast<obj_alloc&>(_copy)) ;
 
-        swap(this->_hptr, 
+        swap(this->_hptr,
             _copy. _hptr) ;
         }
-        
+
         return ( *this )  ;
     }
-        
+
 /*-------------------------------- true if sequence empty */
     __inline_call bool_type empty (
         ) const
     { /* return empty status */
         return ( nullptr == this->_hptr ) ;
     }
-    
+
 /*-------------------------------- return container alloc */
     __inline_call allocator get_alloc (
         ) const
-    {   
-        return 
+    {
+        return
         static_cast<allocator>( *this ) ;
     }
-  
+
 /*------------------------------ "const" access iterators */
     __inline_call _const_it head (
         ) const
@@ -261,7 +261,7 @@
         self_type *_obj = (self_type *)this;
         return _const_it(this->_hptr, _obj);
     }
-    
+
     __inline_call _const_it tend (
         ) const
     {/* return iterator "past" tail, via null terminator! */
@@ -276,24 +276,24 @@
         self_type *_obj = (self_type *)this;
         return _write_it(this->_hptr, _obj);
     }
-    
+
     __inline_call _write_it tend (
         )
     {/* return iterator "past" tail, via null terminator! */
         self_type *_obj = (self_type *)this;
         return _write_it(nullptr, _obj) ;
     }
-    
+
 /*-------------------------------------- "free" container */
     __normal_call void_type clear (
-        ) 
+        )
     {/* _pop all items in traversal from head */
         _write_it _head = head();
         _write_it _tend = tend();
         for ( ; _head != _tend; )
         {
             _write_it _prev(_head++) ;
-            self_type:: 
+            self_type::
              _destruct(_prev.item()) ;
             self_type::
             deallocate(_prev.item(),1) ;
@@ -305,48 +305,48 @@
     __inline_call _write_it push_head (
         )
     {/* allocate and construct a new raw item */
-        item_type *_this_item = 
-        self_type::allocate(1); 
-        self_type::construct(_this_item, 
+        item_type *_this_item =
+        self_type::allocate(1);
+        self_type::construct(_this_item,
             this->_hptr) ;
 
         this->_hptr = _this_item ;
 
-        return 
+        return
         _write_it(_this_item,(self_type*)this) ;
     }
-    
+
 /*---------------------------- push data (copy construct) */
     __inline_call _write_it push_head (
         data_type const&_data
         )
     {/* allocate and construct a new raw item */
-        item_type *_this_item = 
-        self_type::allocate(1); 
-        self_type::construct(_this_item, 
-            this->_hptr,//link! 
+        item_type *_this_item =
+        self_type::allocate(1);
+        self_type::construct(_this_item,
+            this->_hptr,//link!
                 __copy(data_type,_data)) ;
 
         this->_hptr = _this_item ;
-        
-        return 
+
+        return
         _write_it(_this_item,(self_type*)this) ;
     }
-    
+
 /*---------------------------- push data (move construct) */
     __inline_call _write_it push_head (
         data_type &&_data
         )
     {/* allocate and construct a new raw item */
-        item_type *_this_item = 
-        self_type::allocate(1); 
-        self_type::construct(_this_item, 
-            this->_hptr,//link! 
+        item_type *_this_item =
+        self_type::allocate(1);
+        self_type::construct(_this_item,
+            this->_hptr,//link!
                 __move(data_type,_data)) ;
 
         this->_hptr = _this_item ;
-        
-        return 
+
+        return
         _write_it(_this_item,(self_type*)this) ;
     }
 
@@ -357,15 +357,15 @@
         __assert( this->_hptr != nullptr &&
         "single_list._pop_head: null ptr");
     /* shuffle next item onto list _head */
-        item_type *_head_item = 
+        item_type *_head_item =
         this->_hptr ;
         this->_hptr = _head_item->next();
 
     /* _destruct and deallocate old head */
-        self_type:: _destruct(_head_item) ;     
+        self_type:: _destruct(_head_item) ;
         self_type::deallocate(_head_item,1) ;
     }
-    
+
 /*--------------------------------------------- _pop data */
     __inline_call void_type _pop_head (
         data_type &_data
@@ -386,25 +386,25 @@
         )
     {
         item_type *_prev_item, *_next_item ;
-        if ((_prev_item = 
+        if ((_prev_item =
              _prev_iter. item()) == nullptr)
         { /*----- push onto list head */
             return push_head() ;
         }
         else
         { /* insert in middle of list */
-            item_type *_this_item = 
-            self_type::allocate(1); 
+            item_type *_this_item =
+            self_type::allocate(1);
             self_type::construct(
                 _this_item, _next_item);
-            
+
             _prev_item->next() = _this_item;
-            
+
             return _write_it(
               _this_item, (self_type*)this);
         }
     }
-    
+
 /*-------------------------- insert data (copy construct) */
     __normal_call _write_it insert_next (
         _write_it  _prev_iter,
@@ -412,7 +412,7 @@
         )
     {
         item_type *_prev_item, *_next_item ;
-        if ((_prev_item = 
+        if ((_prev_item =
              _prev_iter. item()) == nullptr)
         { /*----- push onto list head */
             return push_head(
@@ -420,19 +420,19 @@
         }
         else
         { /* insert in middle of list */
-            item_type *_this_item = 
-            self_type::allocate(1); 
-            self_type::construct(_this_item, 
+            item_type *_this_item =
+            self_type::allocate(1);
+            self_type::construct(_this_item,
                 _next_item, //link!
                     __copy(data_type,_data)) ;
-            
+
             _prev_item->next() = _this_item;
-            
+
             return _write_it(
               _this_item, (self_type*)this);
         }
     }
-    
+
 /*-------------------------- insert data (move construct) */
     __normal_call _write_it insert_next (
         _write_it _prev_iter,
@@ -440,7 +440,7 @@
         )
     {
         item_type *_prev_item, *_next_item ;
-        if ((_prev_item = 
+        if ((_prev_item =
              _prev_iter. item()) == nullptr)
         { /*----- push onto list head */
             return push_head(
@@ -448,14 +448,14 @@
         }
         else
         { /* insert in middle of list */
-            item_type *_this_item = 
-            self_type::allocate(1); 
-            self_type::construct(_this_item, 
+            item_type *_this_item =
+            self_type::allocate(1);
+            self_type::construct(_this_item,
                 _next_item, //link!
                     __move(data_type,_data)) ;
-            
-            _prev_item->next() = _this_item;            
-            
+
+            _prev_item->next() = _this_item;
+
             return _write_it(
               _this_item, (self_type*)this);
         }
@@ -467,11 +467,11 @@
         _write_it _this_iter
         )
     {
-        __assert ( 
+        __assert (
             _this_iter.item() != nullptr &&
             "list.erase: null iterator!");
     /* _pop item, re-link, _destruct//deallocate */
-        item_type 
+        item_type
        *_this_item = _this_iter. item() ,
        *_prev_item = _prev_iter. item() ,
        *_prev_next = _prev_item->next() ,
@@ -479,26 +479,26 @@
 
         if (_prev_item == nullptr)
         {/* re-link item neighbours at list head */
-            __assert ( 
+            __assert (
                 this->_hptr == _this_item &&
-            "list.erase: _bad iterator!" ) ;                      
+            "list.erase: _bad iterator!" ) ;
             this->_hptr = _next_item ;
         }
-        else        
+        else
         {/* re-link item neighbours in list mid  */
-            __assert ( 
+            __assert (
                 _prev_next  == _this_item &&
-            "list.erase: _bad iterator!" ) ;          
-            _prev_item->next() 
+            "list.erase: _bad iterator!" ) ;
+            _prev_item->next()
                         = _next_item ;
         }
-        
-        self_type:: _destruct(_this_item) ;         
+
+        self_type:: _destruct(_this_item) ;
         self_type::deallocate(_this_item,1) ;
     }
 
     } ;
-    
+
     #   undef  __cont
 
 

@@ -4,41 +4,41 @@
  * a dynamically-allocated, "block-wise" array object.
 ------------------------------------------------------------
  *
- * BLOCK-ARRAY is a block-wise array implementation, 
- * where the linear array storage is broken across 
- * non-contiguous "blocks" in memory. It is otherwise 
- * equivalent to a standard array interface. The blocked 
- * data-structure can be helpful for very large 
- * dynamically-resizable arrays, since memory is only 
- * re-alloc'd on the block level. Peformance asymptotics 
- * are equivalent to the standard arry object, with 
- * larger constant factors. 
+ * BLOCK-ARRAY is a block-wise array implementation,
+ * where the linear array storage is broken across
+ * non-contiguous "blocks" in memory. It is otherwise
+ * equivalent to a standard array interface. The blocked
+ * data-structure can be helpful for very large
+ * dynamically-resizable arrays, since memory is only
+ * re-alloc'd on the block level. Peformance asymptotics
+ * are equivalent to the standard arry object, with
+ * larger constant factors.
  *
 ------------------------------------------------------------
  *
- * This program may be freely redistributed under the 
- * condition that the copyright notices (including this 
- * entire header) are not removed, and no compensation 
- * is received through use of the software.  Private, 
- * research, and institutional use is free.  You may 
- * distribute modified versions of this code UNDER THE 
- * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
- * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
- * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
- * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
- * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
- * of this code as part of a commercial system is 
- * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
- * AUTHOR.  (If you are not directly supplying this 
- * code to a customer, and you are instead telling them 
- * how they can obtain it for free, then you are not 
- * required to make any arrangement with me.) 
+ * This program may be freely redistributed under the
+ * condition that the copyright notices (including this
+ * entire header) are not removed, and no compensation
+ * is received through use of the software.  Private,
+ * research, and institutional use is free.  You may
+ * distribute modified versions of this code UNDER THE
+ * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+ * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+ * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+ * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+ * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+ * of this code as part of a commercial system is
+ * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+ * AUTHOR.  (If you are not directly supplying this
+ * code to a customer, and you are instead telling them
+ * how they can obtain it for free, then you are not
+ * required to make any arrangement with me.)
  *
  * Disclaimer:  Neither I nor: Columbia University, The
- * Massachusetts Institute of Technology, The 
+ * Massachusetts Institute of Technology, The
  * University of Sydney, nor The National Aeronautics
- * and Space Administration warrant this code in any 
- * way whatsoever.  This code is provided "as-is" to be 
+ * and Space Administration warrant this code in any
+ * way whatsoever.  This code is provided "as-is" to be
  * used at your own risk.
  *
 ------------------------------------------------------------
@@ -65,8 +65,8 @@
 #   define __cont containers
 
     template <
-    typename D , 
-    typename A = allocators::basic_alloc 
+    typename D ,
+    typename A = allocators::basic_alloc
              >
     class block_array
     {
@@ -76,29 +76,29 @@
     typedef A                           allocator ;
 
     typedef __cont::block_array <
-                data_type , 
+                data_type ,
                 allocator >             self_type ;
 
-    typedef typename 
+    typedef typename
             allocator::size_type        size_type ;
-    typedef typename 
+    typedef typename
             allocator::diff_type        diff_type ;
 
     typedef __cont::const_block_iterator <
                 self_type >             _const_it ;
     typedef __cont::write_block_iterator <
                 self_type >             _write_it ;
-    
+
     typedef __cont::array <
-                data_type , 
+                data_type ,
                 allocator >             leaf_type ;
     typedef __cont::array <
                 leaf_type ,
                 allocator >             root_type ;
 
     size_type static constexpr _pwr2 =       + 14 ;
-    size_type static constexpr _size =  +1<<_pwr2 ;    
-    
+    size_type static constexpr _size =  +1<<_pwr2 ;
+
     private :
 
     root_type           _block ;
@@ -120,25 +120,25 @@
         size_type _new_alloc = alloc();
         if (_new_count <= _size)
         { /* grow allocation as multiples of two */
-            _new_alloc = 
+            _new_alloc =
             std::max(_new_alloc * 2, _new_count);
         }
         else
         { /* round to the nearest block boundary */
-            _new_alloc = 
+            _new_alloc =
           ((_new_count / _size) + 1) * _size    ;
         }
         set_alloc(_new_alloc) ;
     }
-    
+
     /*
     --------------------------------------------------------
      * COPY-ITER: helper - construct range.
     --------------------------------------------------------
      */
-    
+
     template <
-    typename      iter_type 
+    typename      iter_type
              >
     __normal_call void_type copy_iter (
         iter_type _head,
@@ -158,12 +158,12 @@
     __cont::null_iterator_kind
         )
     { /* copy _data onto object */
-        set_count(_SIZE, 
+        set_count(_SIZE,
             __cont::tight_alloc, _dsrc) ;
     }
 
     public  :
-    
+
     /*
     --------------------------------------------------------
      * Container c'tor's/d'tor's/assignment op's, etc
@@ -211,7 +211,7 @@
     __inline_call~block_array (
         )
     /*---------------------------------------- _def d'tor */
-    { set_count(0,__cont::tight_alloc) ; 
+    { set_count(0,__cont::tight_alloc) ;
     }
 
 /*-------------------------------------------- copy c'tor */
@@ -223,22 +223,22 @@
         self_type &&    _src
         ) : _block(std::move(_src._block) )
     {
-        this->_alloc = 
-        _src. _alloc ;    
+        this->_alloc =
+        _src. _alloc ;
         _src. _alloc = +0u ;
-        
-        this->_count = 
+
+        this->_count =
         _src. _count ;
         _src. _count = +0u ;
     }
 
 /*-------------------------------------------- copy a-op. */
-    __inline_call 
+    __inline_call
         self_type & operator = (
         self_type const&_src
         )                       = default ;
 /*-------------------------------------------- move a-op. */
-    __inline_call 
+    __inline_call
         self_type & operator = (
         self_type &&    _src
         )
@@ -249,14 +249,14 @@
         self_type _copy (
                 __move(self_type , _src)) ;
 
-        swap(this->_block, 
+        swap(this->_block,
             _copy. _block) ;
-        swap(this->_count, 
+        swap(this->_count,
             _copy. _count) ;
-        swap(this->_alloc, 
+        swap(this->_alloc,
             _copy. _alloc) ;
         }
-        
+
         return ( *this ) ;
     }
 
@@ -272,7 +272,7 @@
     {
         size_type _cur_count = count();
         size_type _cur_alloc = alloc();
-        
+
         size_type _cur_block = +0;
         size_type _new_block = +0;
         size_type _end_block = +0;
@@ -284,37 +284,37 @@
         if (_new_alloc  < _cur_count )
         {
         /*--------------- _destruct un-needed range first */
-            set_count(_new_alloc, 
+            set_count(_new_alloc,
                 __cont::loose_alloc) ;
         }
 
         if (_cur_alloc!=+0)
         {
         /*-------------- calc. block-wise storage offsets */
-            _cur_block = 
+            _cur_block =
            (_cur_alloc - 1) / _size + 0 ;
         }
         if (_new_alloc!=+0)
         {
-            _new_block = 
+            _new_block =
            (_new_alloc - 1) / _size + 0 ;
-            _end_block = 
+            _end_block =
            (_new_alloc - 1) / _size + 1 ;
-            _end_shift = 
+            _end_shift =
            (_new_alloc - 1) % _size + 1 ;
         }
 
         if (_new_alloc  < _cur_alloc )
-        { 
+        {
         /*--------------- _pop old blocks and realloc end */
             size_type _pos_block ;
-            for(_pos_block=_cur_block; 
-                _pos_block>_new_block; 
+            for(_pos_block=_cur_block;
+                _pos_block>_new_block;
               --_pos_block )
             {
             this->_block [_pos_block].
                 set_alloc(_nil_block);
-            }           
+            }
             this->_block [_new_block].
                 set_alloc(_end_shift);
 
@@ -325,15 +325,15 @@
         }
         else
         if (_new_alloc  > _cur_alloc )
-        { 
+        {
         /*--------------- push new blocks and realloc end */
             this->_block.set_count (
-                _end_block, __cont::loose_alloc, 
-            leaf_type(this->_block.get_alloc())) ;   
+                _end_block, __cont::loose_alloc,
+            leaf_type(this->_block.get_alloc())) ;
 
             size_type _pos_block ;
-            for(_pos_block=_cur_block; 
-                _pos_block<_new_block; 
+            for(_pos_block=_cur_block;
+                _pos_block<_new_block;
               ++_pos_block )
             {
             this->_block [_pos_block].
@@ -345,7 +345,7 @@
             this->_alloc =_new_alloc ;
         }
     }
-    
+
     /*
     --------------------------------------------------------
      * FIX-ALLOC: trim current alloc to count.
@@ -363,45 +363,45 @@
 
     __normal_call void_type  inc_count (   // _def-construct
         size_type _inc_count ,
-        __cont::alloc_types _new_alloc = 
+        __cont::alloc_types _new_alloc =
         __cont::loose_alloc
         )
     {
         size_type _cur_count = count() ;
-        size_type _new_count = count() + 
+        size_type _new_count = count() +
                   _inc_count ;
-        
+
         size_type _cur_block = +0;
         size_type _new_block = +0;
         size_type _end_shift = +0;
 
         size_type _siz_block = _size ;
-    
+
     /*------------------ calc. block-wise storage offsets */
         if (_cur_count!=+0)
         {
-            _cur_block = 
+            _cur_block =
            (_cur_count - 1) / _size + 0;
         }
         if (_new_count!=+0)
         {
-            _new_block = 
+            _new_block =
            (_new_count - 1) / _size + 0;
-            _end_shift = 
+            _end_shift =
            (_new_count - 1) % _size + 1;
         }
 
     /*--------- expand underlying buffer, based on policy */
         switch (_new_alloc )
         {
-        case __cont::loose_alloc : 
+        case __cont::loose_alloc :
         { inc_alloc(_cur_count + _inc_count); break ; }
-        case __cont::tight_alloc : 
+        case __cont::tight_alloc :
         { set_alloc(_cur_count + _inc_count); break ; }
         }
     /*--------- update block structure and ctor new items */
-        for(size_type _pos_block = _cur_block; 
-                      _pos_block < _new_block; 
+        for(size_type _pos_block = _cur_block;
+                      _pos_block < _new_block;
                     ++_pos_block )
         {
             this->_block [_pos_block].set_count(
@@ -429,35 +429,35 @@
         )
     {
         size_type _cur_count = count() ;
-        size_type _new_count = count() + 
+        size_type _new_count = count() +
                   _inc_count ;
-        
+
         size_type _cur_block = +0;
         size_type _new_block = +0;
         size_type _end_shift = +0;
 
         size_type _siz_block = _size ;
-        
+
     /*------------------ calc. block-wise storage offsets */
         if (_cur_count!=+0)
         {
-            _cur_block = 
+            _cur_block =
            (_cur_count - 1) / _size + 0;
         }
         if (_new_count!=+0)
         {
-            _new_block = 
+            _new_block =
            (_new_count - 1) / _size + 0;
-            _end_shift = 
+            _end_shift =
            (_new_count - 1) % _size + 1;
         }
 
     /*--------- expand underlying buffer, based on policy */
         switch (_new_alloc )
         {
-        case __cont::loose_alloc : 
+        case __cont::loose_alloc :
         { inc_alloc(_cur_count + _inc_count); break ; }
-        case __cont::tight_alloc : 
+        case __cont::tight_alloc :
         { set_alloc(_cur_count + _inc_count); break ; }
         }
     /*--------- update block structure and ctor new items */
@@ -485,37 +485,37 @@
 
     __normal_call void_type  dec_count (
         size_type _dec_count,
-        __cont::alloc_types _new_alloc = 
+        __cont::alloc_types _new_alloc =
         __cont::loose_alloc
         )
     {
         size_type _cur_count = count() ;
-        size_type _new_count = count() - 
+        size_type _new_count = count() -
                   _dec_count ;
-        
+
         size_type _nil_block = +0;
-        
+
         size_type _cur_block = +0;
         size_type _new_block = +0;
         size_type _end_shift = +0;
-        
+
     /*------------------ calc. block-wise storage offsets */
         if (_cur_count!=+0)
         {
-            _cur_block = 
+            _cur_block =
            (_cur_count - 1) / _size + 0 ;
         }
         if (_new_count!=+0)
         {
-            _new_block = 
+            _new_block =
            (_new_count - 1) / _size + 0 ;
-            _end_shift = 
+            _end_shift =
            (_new_count - 1) % _size + 1 ;
         }
 
     /*--------- update block structure and ctor new items */
-        for(size_type _pos_block = _cur_block; 
-                      _pos_block > _new_block; 
+        for(size_type _pos_block = _cur_block;
+                      _pos_block > _new_block;
                     --_pos_block )
         {
             this->_block [_pos_block].set_count(
@@ -532,9 +532,9 @@
     /*--------- shrink underlying buffer, based on policy */
         switch (_new_alloc )
         {
-        case __cont::loose_alloc : 
+        case __cont::loose_alloc :
         { /* do nothing - preserve buffer */  break ; }
-        case __cont::tight_alloc : 
+        case __cont::tight_alloc :
         { set_alloc(_cur_count - _dec_count); break ; }
         }
     }
@@ -547,7 +547,7 @@
 
     __inline_call void_type  set_count (   // _def-construct
         size_type _new_count ,
-        __cont::alloc_types _new_alloc = 
+        __cont::alloc_types _new_alloc =
         __cont::loose_alloc
         )
     {
@@ -565,7 +565,7 @@
            _cur_count - _new_count, _new_alloc) ;
         }
     }
-    
+
     __inline_call void_type  set_count (   // copy-construct
         size_type _new_count ,
         __cont::alloc_types _new_alloc ,
@@ -597,22 +597,22 @@
         ) const
     { return static_cast<allocator>(  *this ) ;
     }
-    
+
     __inline_call size_type count (// return container count
         ) const { return this->_count ; }
-        
+
     __inline_call size_type alloc (// return container alloc
         ) const { return this->_alloc ; }
-        
+
     __inline_call bool_type empty (// true if sequence empty
         ) const { return this->_count == +0 ; }
-        
+
     /*
     --------------------------------------------------------
      * (const.-access) container iterators.
     --------------------------------------------------------
      */
-     
+
     __inline_call _const_it head (
         ) const
     {/*--- return iterator for list head */
@@ -621,7 +621,7 @@
         self_type *_obj =(self_type*) this;
         return _const_it(_obj, _ptr, _off);
     }
-    
+
     __inline_call _const_it tail (
         ) const
     {/*--- return iterator for list tail */
@@ -630,7 +630,7 @@
         self_type *_obj =(self_type*) this;
         return _const_it(_obj, _ptr, _off);
     }
-    
+
     __inline_call _const_it hend (
         ) const
     {/*----- return iterator "past" head */
@@ -639,7 +639,7 @@
         self_type *_obj =(self_type*) this;
         return _const_it(_obj, _ptr, _off);
     }
-    
+
     __inline_call _const_it tend (
         ) const
     {/*----- return iterator "past" tail */
@@ -663,7 +663,7 @@
         self_type *_obj =(self_type*) this;
         return _write_it(_obj, _ptr, _off);
     }
-    
+
     __inline_call _write_it tail (
         )
     {/*--- return iterator for list tail */
@@ -672,7 +672,7 @@
         self_type *_obj =(self_type*) this;
         return _write_it(_obj, _ptr, _off);
     }
-    
+
     __inline_call _write_it hend (
         )
     {/*----- return iterator "past" head */
@@ -681,7 +681,7 @@
         self_type *_obj =(self_type*) this;
         return _write_it(_obj, _ptr, _off);
     }
-    
+
     __inline_call _write_it tend (
         )
     {/*----- return iterator "past" tail */
@@ -698,7 +698,7 @@
      */
 
     __inline_call void_type clear (
-        __cont::alloc_types _this_alloc = 
+        __cont::alloc_types _this_alloc =
         __cont::loose_alloc
         )
     {
@@ -707,20 +707,20 @@
         else
             set_count(0, _this_alloc) ;
     }
-    
+
     /*
     --------------------------------------------------------
      * PUSH-TAIL: append data to tail .
     --------------------------------------------------------
      */
-    
+
     __inline_call size_type push_tail ( // _def-construct
         )
     {/* _def construct object and increment count */
         size_type result = count();
-        size_type offset = count()>>_pwr2; 
+        size_type offset = count()>>_pwr2;
 
-        if (result == alloc()) 
+        if (result == alloc())
         inc_alloc(result + 1);
 
         this-> _block[offset].push_tail();
@@ -728,7 +728,7 @@
 
         return result ;
     }
-    
+
     __inline_call size_type push_tail ( // copy-construct
         data_type const&_data
         )
@@ -736,7 +736,7 @@
         size_type result = count();
         size_type offset = count()>>_pwr2;
 
-        if (result == alloc()) 
+        if (result == alloc())
         inc_alloc(result + 1);
 
         this-> _block[offset].
@@ -745,15 +745,15 @@
 
         return result ;
     }
-    
+
     __inline_call size_type push_tail ( // move-construct
         data_type &&  _data
         )
     {/* copy data onto object and increment count */
         size_type result = count();
-        size_type offset = count()>>_pwr2;  
+        size_type offset = count()>>_pwr2;
 
-        if (result == alloc()) 
+        if (result == alloc())
         inc_alloc(result + 1);
 
         this-> _block[offset].
@@ -762,7 +762,7 @@
 
         return result ;
     }
-    
+
     template <
     typename      iter_type
              >
@@ -771,24 +771,24 @@
         iter_type _tend
         )
     {/* push full sequence at tail and inc. count */
-        for(; _head != _tend; ++_head) 
+        for(; _head != _tend; ++_head)
         {
         self_type::push_tail ( *_head);
         }
     }
-    
+
     /*
     --------------------------------------------------------
      * _POP-TAIL: erase data about tail.
     --------------------------------------------------------
      */
-    
+
     __inline_call void_type _pop_tail (
         )
     { /* _destruct tail item and dec count */
-        dec_count(+1, __cont::loose_alloc) ;        
+        dec_count(+1, __cont::loose_alloc) ;
     }
-    
+
     __inline_call void_type _pop_tail (
         data_type &_data
         )
@@ -807,22 +807,22 @@
         size_type _pos
         )
     { /*------------ subscript operator */
-        __assert ( _pos >=   +0   && 
+        __assert ( _pos >=   +0   &&
                    _pos < count() &&
         "::block_array[]: out of range!" );
-        
+
         return this->_block[_pos >>_pwr2]
                            [_pos &(_size-1)] ;
     }
-    
+
     __inline_call data_type const&operator[] (  // const
         size_type _pos
         ) const
     { /*------------ subscript operator */
-        __assert ( _pos >=   +0   && 
+        __assert ( _pos >=   +0   &&
                    _pos < count() &&
         "::block_array[]: out of range!" );
-        
+
         return this->_block[_pos >>_pwr2]
                            [_pos &(_size-1)] ;
     }

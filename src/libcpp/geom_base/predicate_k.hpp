@@ -401,7 +401,7 @@ void exactinit()
   epsilon = 1.0;
   splitter = 1.0;
   check = 1.0;
-  
+
   /* Repeatedly divide `epsilon' by two until it is too small to add to      */
   /*   one without causing roundoff.  (Also check if the sum is equal to     */
   /*   the previous sum, for machines that round up instead of using exact   */
@@ -444,9 +444,9 @@ void exactinit()
 /*****************************************************************************/
 
 int grow_expansion (
-  int elen, 
-  __const_ptr(REAL) e , 
-  REAL  b , 
+  int elen,
+  __const_ptr(REAL) e ,
+  REAL  b ,
   __write_ptr(REAL) h )             /* e and h can be the same. */
 {
   REAL Q, Qnew;
@@ -479,9 +479,9 @@ int grow_expansion (
 /*****************************************************************************/
 
 int grow_expansion_zeroelim (
-  int elen, 
-  __const_ptr(REAL) e , 
-  REAL  b , 
+  int elen,
+  __const_ptr(REAL) e ,
+  REAL  b ,
   __write_ptr(REAL) h )             /* e and h can be the same. */
 {
   REAL Q, hh, Qnew;
@@ -519,11 +519,11 @@ int grow_expansion_zeroelim (
 /*****************************************************************************/
 
 int expansion_sum (
-  int elen, 
-  __const_ptr(REAL) e , 
-  int flen, 
-  __const_ptr(REAL) f , 
-  __write_ptr(REAL) h ) 
+  int elen,
+  __const_ptr(REAL) e ,
+  int flen,
+  __const_ptr(REAL) f ,
+  __write_ptr(REAL) h )
 /* e and h can be the same, but f and h cannot. */
 {
   REAL Q, Qnew;
@@ -566,10 +566,10 @@ int expansion_sum (
 /*****************************************************************************/
 
 int expansion_sum_zeroelim1 (
-  int elen, 
-  __const_ptr(REAL) e , 
-  int flen, 
-  __const_ptr(REAL) f , 
+  int elen,
+  __const_ptr(REAL) e ,
+  int flen,
+  __const_ptr(REAL) f ,
   __write_ptr(REAL) h )
 /* e and h can be the same, but f and h cannot. */
 {
@@ -624,10 +624,10 @@ int expansion_sum_zeroelim1 (
 /*****************************************************************************/
 
 int expansion_sum_zeroelim2 (
-  int elen, 
-  __const_ptr(REAL) e , 
-  int flen, 
-  __const_ptr(REAL) f , 
+  int elen,
+  __const_ptr(REAL) e ,
+  int flen,
+  __const_ptr(REAL) f ,
   __write_ptr(REAL) h )
 /* e and h can be the same, but f and h cannot. */
 {
@@ -679,10 +679,10 @@ int expansion_sum_zeroelim2 (
 /*****************************************************************************/
 
 int fast_expansion_sum (
-  int elen, 
-  __const_ptr(REAL) e , 
-  int flen, 
-  __const_ptr(REAL) f , 
+  int elen,
+  __const_ptr(REAL) e ,
+  int flen,
+  __const_ptr(REAL) f ,
   __write_ptr(REAL) h )           /* h cannot be e or f. */
 {
   REAL Q, Qnew;
@@ -754,10 +754,10 @@ int fast_expansion_sum (
 /*****************************************************************************/
 
 int fast_expansion_sum_zeroelim (
-  int elen, 
-  __const_ptr(REAL) e , 
-  int flen, 
-  __const_ptr(REAL) f , 
+  int elen,
+  __const_ptr(REAL) e ,
+  int flen,
+  __const_ptr(REAL) f ,
   __write_ptr(REAL) h )  /* h cannot be e or f. */
 {
   REAL Q, Qnew, hh;
@@ -836,10 +836,10 @@ int fast_expansion_sum_zeroelim (
 /*****************************************************************************/
 
 int linear_expansion_sum (
-  int elen, 
-  __const_ptr(REAL) e , 
-  int flen, 
-  __const_ptr(REAL) f , 
+  int elen,
+  __const_ptr(REAL) e ,
+  int flen,
+  __const_ptr(REAL) f ,
   __write_ptr(REAL) h )         /* h cannot be e or f. */
 {
   REAL Q, q, Qnew, R;
@@ -896,10 +896,10 @@ int linear_expansion_sum (
 /*****************************************************************************/
 
 int linear_expansion_sum_zeroelim (
-  int elen, 
-  __const_ptr(REAL) e , 
-  int flen, 
-  __const_ptr(REAL) f , 
+  int elen,
+  __const_ptr(REAL) e ,
+  int flen,
+  __const_ptr(REAL) f ,
   __write_ptr(REAL) h )         /* h cannot be e or f. */
 {
   REAL Q, q, hh, Qnew, R;
@@ -966,9 +966,9 @@ int linear_expansion_sum_zeroelim (
 /*****************************************************************************/
 
 int scale_expansion (
-  int elen, 
-  __const_ptr(REAL) e , 
-  REAL  b , 
+  int elen,
+  __const_ptr(REAL) e ,
+  REAL  b ,
   __write_ptr(REAL) h )            /* e and h cannot be the same. */
 {
   REAL Q, sum, product1, product0;
@@ -1009,9 +1009,9 @@ int scale_expansion (
 /*****************************************************************************/
 
 int scale_expansion_zeroelim (
-  int elen, 
-  __const_ptr(REAL) e , 
-  REAL  b , 
+  int elen,
+  __const_ptr(REAL) e ,
+  REAL  b ,
   __write_ptr(REAL) h )   /* e and h cannot be the same. */
 {
   REAL Q, sum, hh;
@@ -1059,8 +1059,8 @@ int scale_expansion_zeroelim (
 /*****************************************************************************/
 
 int compress (
-  int elen, 
-  __const_ptr(REAL) e , 
+  int elen,
+  __const_ptr(REAL) e ,
   __write_ptr(REAL) h )             /* e and h may be the same. */
 {
   REAL Q, q, Qnew;
@@ -1103,7 +1103,7 @@ int compress (
 /*****************************************************************************/
 
 REAL estimate (
-  int elen, 
+  int elen,
   __const_ptr(REAL) e )
 {
   REAL Q;
@@ -1137,8 +1137,8 @@ REAL estimate (
 /*****************************************************************************/
 
 REAL orient2dexact (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
   __const_ptr(REAL) pc)
 {
   REAL axby1, axcy1, bxcy1, bxay1, cxay1, cxby1;
@@ -1178,9 +1178,9 @@ REAL orient2dexact (
 }
 
 REAL orient2dadapt (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
-  __const_ptr(REAL) pc, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
+  __const_ptr(REAL) pc,
   REAL detsum)
 {
   REAL acx, acy, bcx, bcy;
@@ -1256,8 +1256,8 @@ REAL orient2dadapt (
 }
 
 REAL orient2d (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
   __const_ptr(REAL) pc)
 {
   REAL detleft, detright, det;
@@ -1315,9 +1315,9 @@ REAL orient2d (
 /*****************************************************************************/
 
 REAL orient3dexact (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
-  __const_ptr(REAL) pc, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
+  __const_ptr(REAL) pc,
   __const_ptr(REAL) pd)
 {
   REAL axby1, bxcy1, cxdy1, dxay1, axcy1, bxdy1;
@@ -1392,10 +1392,10 @@ REAL orient3dexact (
 }
 
 REAL orient3dadapt (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
-  __const_ptr(REAL) pc, 
-  __const_ptr(REAL) pd, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
+  __const_ptr(REAL) pc,
+  __const_ptr(REAL) pd,
   REAL permanent)
 {
   REAL adx, bdx, cdx, ady, bdy, cdy, adz, bdz, cdz;
@@ -1794,9 +1794,9 @@ REAL orient3dadapt (
 }
 
 REAL orient3d (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
-  __const_ptr(REAL) pc, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
+  __const_ptr(REAL) pc,
   __const_ptr(REAL) pd)
 {
   REAL adx, bdx, cdx, ady, bdy, cdy, adz, bdz, cdz;
@@ -1823,7 +1823,7 @@ REAL orient3d (
   adxbdy = adx * bdy;
   bdxady = bdx * ady;
 
-  det = adz * (bdxcdy - cdxbdy) 
+  det = adz * (bdxcdy - cdxbdy)
       + bdz * (cdxady - adxcdy)
       + cdz * (adxbdy - bdxady);
 
@@ -1859,9 +1859,9 @@ REAL orient3d (
 /*****************************************************************************/
 
 REAL incircleexact (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
-  __const_ptr(REAL) pc, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
+  __const_ptr(REAL) pc,
   __const_ptr(REAL) pd)
 {
   REAL axby1, bxcy1, cxdy1, dxay1, axcy1, bxdy1;
@@ -1957,10 +1957,10 @@ REAL incircleexact (
 }
 
 REAL incircleadapt (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
-  __const_ptr(REAL) pc, 
-  __const_ptr(REAL) pd, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
+  __const_ptr(REAL) pc,
+  __const_ptr(REAL) pd,
   REAL permanent)
 {
   REAL adx, bdx, cdx, ady, bdy, cdy;
@@ -2531,9 +2531,9 @@ REAL incircleadapt (
 }
 
 REAL incircle (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
-  __const_ptr(REAL) pc, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
+  __const_ptr(REAL) pc,
   __const_ptr(REAL) pd)
 {
   REAL adx, bdx, cdx, ady, bdy, cdy;
@@ -2598,10 +2598,10 @@ REAL incircle (
 /*****************************************************************************/
 
 REAL insphereexact (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
-  __const_ptr(REAL) pc, 
-  __const_ptr(REAL) pd, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
+  __const_ptr(REAL) pc,
+  __const_ptr(REAL) pd,
   __const_ptr(REAL) pe)
 {
   REAL axby1, bxcy1, cxdy1, dxey1, exay1;
@@ -2851,11 +2851,11 @@ REAL insphereexact (
 }
 
 REAL insphereadapt (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
-  __const_ptr(REAL) pc, 
-  __const_ptr(REAL) pd, 
-  __const_ptr(REAL) pe, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
+  __const_ptr(REAL) pc,
+  __const_ptr(REAL) pd,
+  __const_ptr(REAL) pe,
   REAL permanent)
 {
   REAL aex, bex, cex, dex, aey, bey, cey, dey, aez, bez, cez, dez;
@@ -3068,10 +3068,10 @@ REAL insphereadapt (
 }
 
 REAL insphere (
-  __const_ptr(REAL) pa, 
-  __const_ptr(REAL) pb, 
-  __const_ptr(REAL) pc, 
-  __const_ptr(REAL) pd, 
+  __const_ptr(REAL) pa,
+  __const_ptr(REAL) pb,
+  __const_ptr(REAL) pc,
+  __const_ptr(REAL) pd,
   __const_ptr(REAL) pe)
 {
   REAL aex, bex, cex, dex;
@@ -3764,13 +3764,13 @@ REAL regular2 (
   PC[0] = pc[0] ; PC[1] = pc[1] ;
   PD[0] = pd[0] ; PD[1] = pd[1] ;
 
-  PA[2] = pa[0] * pa[0] 
+  PA[2] = pa[0] * pa[0]
         + pa[1] * pa[1] - pa[2] ;
-  PB[2] = pb[0] * pb[0] 
+  PB[2] = pb[0] * pb[0]
         + pb[1] * pb[1] - pb[2] ;
-  PC[2] = pc[0] * pc[0] 
+  PC[2] = pc[0] * pc[0]
         + pc[1] * pc[1] - pc[2] ;
-  PD[2] = pd[0] * pd[0] 
+  PD[2] = pd[0] * pd[0]
         + pd[1] * pd[1] - pd[2] ;
 
   return orient3d(PA, PB, PC, PD) ;
@@ -3792,19 +3792,19 @@ REAL regular3 (
   PE[0] = pe[0] ; PE[1] = pe[1] ; PE[2] = pe[2] ;
 
   PA[3] = pa[0] * pa[0]
-        + pa[1] * pa[1] 
+        + pa[1] * pa[1]
         + pa[2] * pa[2] - pa[3] ;
   PB[3] = pb[0] * pb[0]
-        + pb[1] * pb[1] 
+        + pb[1] * pb[1]
         + pb[2] * pb[2] - pb[3] ;
   PC[3] = pc[0] * pc[0]
-        + pc[1] * pc[1] 
+        + pc[1] * pc[1]
         + pc[2] * pc[2] - pc[3] ;
   PD[3] = pd[0] * pd[0]
-        + pd[1] * pd[1] 
+        + pd[1] * pd[1]
         + pd[2] * pd[2] - pd[3] ;
   PE[3] = pe[0] * pe[0]
-        + pe[1] * pe[1] 
+        + pe[1] * pe[1]
         + pe[2] * pe[2] - pe[3] ;
 
   return orient4d(PA, PB, PC, PD, PE) ;

@@ -1,32 +1,32 @@
 
     /*
     --------------------------------------------------------
-     * RDEL-PRED-DELFRONT-2: "frontal-DEL" kernel in R^2. 
+     * RDEL-PRED-DELFRONT-2: "frontal-DEL" kernel in R^2.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
@@ -42,44 +42,44 @@
      *
      * This class defines the behaviour of the "frontal"
      * restricted delaunay refinement scheme for meshes
-     * in R^2. Routines are provided to assess the 
-     * "restricted-ness" of faces, to compute refinement 
+     * in R^2. Routines are provided to assess the
+     * "restricted-ness" of faces, to compute refinement
      * "costs" (priorities), and to insert new vertices.
      *
      * My implementation is described in:
      *
-     * D. Engwirda and D. Ivers, (2016): Off-centre Steiner 
-     * points for Delaunay-refinement on curved surfaces, 
-     * Computer-Aided Design, 72, pp. 157-171, 
+     * D. Engwirda and D. Ivers, (2016): Off-centre Steiner
+     * points for Delaunay-refinement on curved surfaces,
+     * Computer-Aided Design, 72, pp. 157-171,
      * http://dx.doi.org/10.1016/j.cad.2015.10.007
      *
-     * D. Engwirda, (2016): "Conforming restricted Delaunay 
-     * mesh generation for piecewise smooth complexes", 
-     * Procedia Engineering, 163, pp. 84-96, 
+     * D. Engwirda, (2016): "Conforming restricted Delaunay
+     * mesh generation for piecewise smooth complexes",
+     * Procedia Engineering, 163, pp. 84-96,
      * http://dx.doi.org/10.1016/j.proeng.2016.11.024
      *
      * D. Engwirda, (2014): "Locally-optimal Delaunay-
-     * refinement and optimisation-based mesh generation", 
-     * Ph.D. Thesis, School of Mathematics and Statistics, 
-     * Univ. of Sydney. 
+     * refinement and optimisation-based mesh generation",
+     * Ph.D. Thesis, School of Mathematics and Statistics,
+     * Univ. of Sydney.
      * http://hdl.handle.net/2123/13148
      *
      * which is based on various previous works, including
      * (primarily):
      *
-     * J.D. Boissonnat, S. Oudot, (2005): "Provably Good 
-     * Sampling and Meshing of Surfaces", Graphical Models, 
+     * J.D. Boissonnat, S. Oudot, (2005): "Provably Good
+     * Sampling and Meshing of Surfaces", Graphical Models,
      * 67, pp. 405-451,
      * https://doi.org/10.1016/j.gmod.2005.01.004
      *
-     * C. Jamin, P. Alliez, M. Yvinec, and J.D. Boissonnat, 
-     * (2015): "CGALmesh: a generic framework for Delaunay 
-     * mesh generation", ACM Transactions on Mathematical 
+     * C. Jamin, P. Alliez, M. Yvinec, and J.D. Boissonnat,
+     * (2015): "CGALmesh: a generic framework for Delaunay
+     * mesh generation", ACM Transactions on Mathematical
      * Software (TOMS), 41, pp. 23
      * https://doi.org/10.1145/2699463
      *
-     * S.W. Cheng, T.K. Dey, E.A. Ramos, (2010): "Delaunay 
-     * Refinement for Piecewise Smooth Complexes", 
+     * S.W. Cheng, T.K. Dey, E.A. Ramos, (2010): "Delaunay
+     * Refinement for Piecewise Smooth Complexes",
      * Discrete & Computational Geometry, 43, pp. 121-166,
      * https://doi.org/10.1007/s00454-008-9109-3
      *
@@ -87,14 +87,14 @@
      * of "off-centre" refinement rules - a generalisation
      * of ideas introduced in:
      *
-     * S. Rebay, (1993): "Efficient Unstructured Mesh 
-     * Generation by Means of Delaunay Triangulation and 
-     * the Bowyer-Watson Algorithm", J. Comp. Phys., 106, 
-     * pp. 125-138 
+     * S. Rebay, (1993): "Efficient Unstructured Mesh
+     * Generation by Means of Delaunay Triangulation and
+     * the Bowyer-Watson Algorithm", J. Comp. Phys., 106,
+     * pp. 125-138
      * https://doi.org/10.1006/jcph.1993.1097
      *
-     * H. Erten, A. Üngör, (2009): "Quality Triangulations 
-     * with Locally Optimal Steiner Points", SIAM J. Sci. 
+     * H. Erten, A. Üngör, (2009): "Quality Triangulations
+     * with Locally Optimal Steiner Points", SIAM J. Sci.
      * Comp., 31, pp. 2103-2130,
      * https://doi.org/10.1137/080716748
      *
@@ -107,9 +107,9 @@
 #   define __RDEL_PRED_DELFRONT_2__
 
     namespace mesh {
-    
+
 #   define __bias_BNDS          // preference "bnd" faces
-    
+
     template <
     typename G ,
     typename H ,
@@ -119,34 +119,34 @@
         public rdel_pred_base_2<G, M>
     {
     public  :
-    
+
     /*-------------- "frontal" delaunay refinement in R^2 */
-    
+
     typedef G                           geom_type ;
     typedef H                           hfun_type ;
     typedef M                           mesh_type ;
 
-    typedef typename 
+    typedef typename
             mesh_type::real_type        real_type ;
-    typedef typename 
+    typedef typename
             mesh_type::iptr_type        iptr_type ;
 
     typedef mesh::mesh_params  <
-                real_type , 
+                real_type ,
                 iptr_type      >        rdel_opts ;
 
     typedef mesh::rdel_pred_base_2      <
-                geom_type , 
+                geom_type ,
                 mesh_type      >        base_type ;
 
     typedef mesh::keep_minmax_length_2d <
-                real_type , 
+                real_type ,
                 iptr_type      >    minmax_intersect ;
-                
+
     typedef mesh::keep_minmax_cosine_2d <
-                real_type, 
+                real_type,
                 iptr_type      >    cosine_intersect ;
-                
+
     /*------------------------ refinement priority types */
 
     class edge_data
@@ -155,7 +155,7 @@
         iptr_type       _mark = +0;
         float           _cost ;
         } ;
-        
+
     class tria_data
         {
         public  :
@@ -170,76 +170,76 @@
         edge_data const&_idat ,
         edge_data const&_jdat
         )
-    {   
+    {
         if(_idat._mark == _jdat._mark )
-        return _idat._cost > 
+        return _idat._cost >
                _jdat._cost ;
         else
-        return _idat._mark < 
+        return _idat._mark <
                _jdat._mark ;
     }
-    
+
     __static_call
     __inline_call bool_type tria_pred (
         tria_data const&_idat ,
         tria_data const&_jdat
         )
-    {   
+    {
         if(_idat._mark == _jdat._mark )
-        return _idat._cost > 
+        return _idat._cost >
                _jdat._cost ;
         else
-        return _idat._mark < 
+        return _idat._mark <
                _jdat._mark ;
     }
-    
+
     /*------------------------ deterministic coord. hash */
-    
+
     __static_call
     __inline_call uint32_t  hash_ball (
         real_type*_ball
         )
     {
-        uint32_t  _rsiz = 
+        uint32_t  _rsiz =
             sizeof(real_type) * +2 ;
-        uint32_t  _usiz = 
+        uint32_t  _usiz =
             sizeof(uint32_t ) * +1 ;
-    
+
         uint32_t  _hash ;
         _hash = hash::hashword (
        (uint32_t*)_ball, _rsiz
                        / _usiz, +13)  ;
-                       
-        return (  _hash ) ;     
+
+        return (  _hash ) ;
     }
-    
+
     /*
     --------------------------------------------------------
      * FACE-COST: calc. face refinement "cost".
     --------------------------------------------------------
-     */    
-    
+     */
+
     #include "rdel_cost_delfront_2.inc"
-    
-    
+
+
     /*
     --------------------------------------------------------
      * FACE-OFFH: form "size"-based off-centre.
     --------------------------------------------------------
-     */    
-    
+     */
+
     #include "rdel_offh_delfront_2.inc"
-    
-    
+
+
     /*
     --------------------------------------------------------
      * FACE-SINK: form "sink"-based off-centre.
     --------------------------------------------------------
-     */    
-    
+     */
+
     #include "rdel_sink_delfront_2.inc"
-    
-    
+
+
     /*
     --------------------------------------------------------
      * BASE-EDGE: TRUE if edge is "frontal".
@@ -262,7 +262,7 @@
             tria(_tpos)->node(_fnod[1]);
 
         algorithms::isort (
-            &_fnod[0], &_fnod[2], 
+            &_fnod[0], &_fnod[2],
                 std::less<iptr_type>());
 
         typename mesh_type::
@@ -273,7 +273,7 @@
         typename mesh_type::
                  edge_list::
             item_type *_fptr = nullptr ;
-        if(_mesh.find_edge(_fdat,_fptr)) 
+        if(_mesh.find_edge(_fdat,_fptr))
         {
             return (  true ) ;
         }
@@ -282,26 +282,26 @@
         iptr_type _fadj = +0 ;
         iptr_type _tmrk = +0 ;
         _mesh. _tria.find_pair (
-            _tpos, _tadj, 
+            _tpos, _tadj,
                 _fpos, _fadj, _tmrk) ;
 
         if (_tadj != _mesh._tria.null_flag())
         {
             typename mesh_type::
                      tria_data _tdat ;
-            _tdat._node[0] = 
+            _tdat._node[0] =
             _mesh._tria.tria(_tadj)->node(0);
-            _tdat._node[1] = 
+            _tdat._node[1] =
             _mesh._tria.tria(_tadj)->node(1);
-            _tdat._node[2] = 
+            _tdat._node[2] =
             _mesh._tria.tria(_tadj)->node(2);
-            
+
             typename mesh_type::
                      tria_list::
                 item_type *_tptr = nullptr ;
-            if(_mesh.find_tria(_tdat,_tptr)) 
+            if(_mesh.find_tria(_tdat,_tptr))
             {
-                if (_tptr->_data._kind 
+                if (_tptr->_data._kind
                         ==  mesh::good_item)
                 return ( true ) ;
             }
@@ -313,15 +313,15 @@
 
         return ( false ) ;
     }
-    
+
     /*
     --------------------------------------------------------
      * EDGE-NODE: compute edge-based steiner point.
     --------------------------------------------------------
      */
-    
+
     __static_call
-    __normal_call 
+    __normal_call
     typename rdel_opts::node_kind edge_node (
         geom_type &_geom,
         hfun_type &_size,
@@ -333,11 +333,11 @@
         rdel_opts &_args
         )
     {
-        typename rdel_opts::node_kind 
+        typename rdel_opts::node_kind
         _kind  = rdel_opts::null_kind ;
 
         __unreferenced(_edat);
- 
+
     /*--------------------------- assemble local indexing */
         iptr_type _enod[ +3] ;
         mesh_type::tria_type::tria_type::
@@ -353,14 +353,14 @@
         real_type _ebal[ +3] ;
         real_type _pmax[ +3] ;
         if (!base_type::edge_ball (
-            _geom, _mesh, _tadj, 
-            _eadj, _ebal, _pmax, 
+            _geom, _mesh, _tadj,
+            _eadj, _ebal, _pmax,
             _feat, _topo, _part)  )
         {
     /*--------------------------------- is not restricted */
-        __assert( false && 
+        __assert( false &&
             "EDGE-NODE: interior facet!") ;
-            
+
         return ( _kind ) ;
         }
 
@@ -370,8 +370,8 @@
             if(__chkbit(_args.rule(),
                     rdel_opts
                   ::offH_kind) )
-            _kind = edge_offh( _geom, 
-                _size, _mesh , _enod, 
+            _kind = edge_offh( _geom,
+                _size, _mesh , _enod,
                 _pmax, _ppos , _args) ;
         }
         if (_kind == rdel_opts::null_kind ||
@@ -380,22 +380,22 @@
     /*----------------------- resort to circumball centre */
             _ppos[0] = _pmax[0] ;
             _ppos[1] = _pmax[1] ;
-            
+
             _kind  = rdel_opts::circ_kind ;
         }
 
     /*----------------------- report point-placement kind */
         return ( _kind ) ;
     }
-    
+
     /*
     --------------------------------------------------------
      * TRIA-NODE: compute tria-based steiner point.
     --------------------------------------------------------
      */
-     
+
     __static_call
-    __normal_call 
+    __normal_call
     typename rdel_opts::node_kind tria_node (
         geom_type &_geom,
         hfun_type &_size,
@@ -406,7 +406,7 @@
         rdel_opts &_args
         )
     {
-        typename rdel_opts::node_kind 
+        typename rdel_opts::node_kind
         _kind  = rdel_opts::null_kind ;
 
         __unreferenced(_geom) ;
@@ -429,21 +429,21 @@
             _tria.tria(_tpos)->circ(0);
         _tbal[1] = _mesh.
             _tria.tria(_tpos)->circ(1);
-  
-        _tbal[2] = (real_type)+0. ; 
-        _tbal[2]+= 
-        geometry::lensqr_2d (_tbal, 
+
+        _tbal[2] = (real_type)+0. ;
+        _tbal[2]+=
+        geometry::lensqr_2d (_tbal,
             &_mesh._tria.node(
                 _tnod[0])->pval( 0)) ;
-        _tbal[2]+= 
-        geometry::lensqr_2d (_tbal, 
+        _tbal[2]+=
+        geometry::lensqr_2d (_tbal,
             &_mesh._tria.node(
                 _tnod[1])->pval( 0)) ;
-        _tbal[2]+= 
-        geometry::lensqr_2d (_tbal, 
+        _tbal[2]+=
+        geometry::lensqr_2d (_tbal,
             &_mesh._tria.node(
                 _tnod[2])->pval( 0)) ;
-        
+
         _tbal[2]/= (real_type)+3. ;
 
     /*--------------------------------- find edge lengths */
@@ -460,35 +460,35 @@
             _enod[1] = _mesh._tria.
              tria(_tpos)->node(_enod[ 1]);
 
-            _llen[_enum] = 
+            _llen[_enum] =
                 geometry::lensqr_2d (
            &_mesh._tria.
              node(_enod[0])->pval(0),
            &_mesh._tria.
              node(_enod[1])->pval(0)) ;
         }
-     
+
     /*--------------------------------- find min/max edge */
         iptr_type _emin = (iptr_type)+0;
         iptr_type _emax = (iptr_type)+0;
         for(_enum = +3; _enum-- != +1; )
         {
-        if (_llen[_emax] < _llen[_enum]) 
+        if (_llen[_emax] < _llen[_enum])
             _emax = _enum ;
-        if (_llen[_emin] > _llen[_enum]) 
+        if (_llen[_emin] > _llen[_enum])
             _emin = _enum ;
         }
- 
-    /*-------------------------- ask for "frontal" status */ 
+
+    /*-------------------------- ask for "frontal" status */
         if(!base_edge(_mesh,_tpos,_emin))
         {
             if (_tdat._mark <= +512)    // finite cycles! //
             {
         /*---------------------- reject as "void" element */
-                uint32_t _hash = 
+                uint32_t _hash =
                 hash_ball(_tbal) % +8u  ;
-                    
-                _tdat._mark += 
+
+                _tdat._mark +=
                     std::max(1u, _hash) ;
 
                 return ( _kind ) ;
@@ -498,7 +498,7 @@
         /*----------------------------- just fall through */
             }
         }
-    
+
     /*--------------------------------- get face indexing */
         iptr_type _enod [ +3];
         mesh_type::tria_type::tria_type::
@@ -507,7 +507,7 @@
          tria(_tpos)->node( _enod[0]) ;
         _enod[1] = _mesh._tria.
          tria(_tpos)->node( _enod[1]) ;
-        
+
     /*----------------------------------- calc. edge-ball */
         real_type _ebal [ +3];
         geometry::circ_ball_2d(_ebal,
@@ -524,26 +524,26 @@
         _dvec[1] = _tbal[1] -
                    _ebal[1] ;
 
-        _dvec[2] = 
+        _dvec[2] =
          geometry::length_2d(_dvec) ;
         _dvec[0]/= _dvec[2] ;
         _dvec[1]/= _dvec[2] ;
 
     /*-------------------------- off-centre, a la "ungor" */
-        _dvec[3] = 
+        _dvec[3] =
            +std::numeric_limits
                 <real_type>::infinity() ;
-        
-        real_type _elen = 
+
+        real_type _elen =
             _ebal[2]     * (real_type)+4. ;
-        real_type _rtri = 
+        real_type _rtri =
         std::sqrt(_elen) * _args.off2() ;
-        real_type _rfac = 
+        real_type _rfac =
         std::sqrt(_elen) * (real_type)+.5 ;
-        
+
         if (_rtri > _rfac )
         _dvec[ 3] = _rtri + std::sqrt (
-            _rtri * _rtri - 
+            _rtri * _rtri -
             _rfac * _rfac ) ;
 
         if (_kind == rdel_opts::null_kind )
@@ -552,9 +552,9 @@
             if(__chkbit(_args.rule(),
                     rdel_opts
                   ::offH_kind) )
-            _kind = tria_offh( _geom, 
-                _size , _mesh, _enod, 
-                _ebal , _tbal, _dvec, 
+            _kind = tria_offh( _geom,
+                _size , _mesh, _enod,
+                _ebal , _tbal, _dvec,
                 _ppos , _args) ;
         }
         if (_kind == rdel_opts::null_kind ||
@@ -564,9 +564,9 @@
             if(__chkbit(_args.rule(),
                     rdel_opts
                   ::sink_kind) )
-            _kind = tria_sink( _geom, 
-                _size , _mesh, 
-                _tpos , _tnod, _tbal, 
+            _kind = tria_sink( _geom,
+                _size , _mesh,
+                _tpos , _tnod, _tbal,
                 _ppos , _args) ;
         }
         if (_kind == rdel_opts::null_kind ||
@@ -575,22 +575,22 @@
     /*----------------------- resort to circumball centre */
             _ppos[ 0] = _tbal[ 0] ;
             _ppos[ 1] = _tbal[ 1] ;
-            
+
             _kind  = rdel_opts::circ_kind ;
         }
 
     /*----------------------- report point-placement kind */
         return ( _kind ) ;
     }
-    
+
     } ;
-    
+
 #   undef  __bias_BNDS
-                
-    
+
+
     }
-    
+
 #   endif   //__RDEL_PRED_DELFRONT_2__
-    
-    
-    
+
+
+

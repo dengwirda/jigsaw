@@ -4,37 +4,37 @@
  * "double" iterator -- for doubly-linked sequences.
 ------------------------------------------------------------
  *
- * DOUBLE-LIST is a "doubly-linked" list type, where 
- * list items comprise a doubly-oriented chain of 
- * pointers. Insertion/deletion is O(1), acccess is O(N). 
- * List count is stored explicitly, and is O(1) as a 
- * result. 
+ * DOUBLE-LIST is a "doubly-linked" list type, where
+ * list items comprise a doubly-oriented chain of
+ * pointers. Insertion/deletion is O(1), acccess is O(N).
+ * List count is stored explicitly, and is O(1) as a
+ * result.
  *
 ------------------------------------------------------------
  *
- * This program may be freely redistributed under the 
- * condition that the copyright notices (including this 
- * entire header) are not removed, and no compensation 
- * is received through use of the software.  Private, 
- * research, and institutional use is free.  You may 
- * distribute modified versions of this code UNDER THE 
- * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
- * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
- * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
- * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
- * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
- * of this code as part of a commercial system is 
- * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
- * AUTHOR.  (If you are not directly supplying this 
- * code to a customer, and you are instead telling them 
- * how they can obtain it for free, then you are not 
- * required to make any arrangement with me.) 
+ * This program may be freely redistributed under the
+ * condition that the copyright notices (including this
+ * entire header) are not removed, and no compensation
+ * is received through use of the software.  Private,
+ * research, and institutional use is free.  You may
+ * distribute modified versions of this code UNDER THE
+ * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+ * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+ * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+ * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+ * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+ * of this code as part of a commercial system is
+ * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+ * AUTHOR.  (If you are not directly supplying this
+ * code to a customer, and you are instead telling them
+ * how they can obtain it for free, then you are not
+ * required to make any arrangement with me.)
  *
  * Disclaimer:  Neither I nor: Columbia University, The
- * Massachusetts Institute of Technology, The 
+ * Massachusetts Institute of Technology, The
  * University of Sydney, nor The National Aeronautics
- * and Space Administration warrant this code in any 
- * way whatsoever.  This code is provided "as-is" to be 
+ * and Space Administration warrant this code in any
+ * way whatsoever.  This code is provided "as-is" to be
  * used at your own risk.
  *
 ------------------------------------------------------------
@@ -48,7 +48,7 @@
  *
 ------------------------------------------------------------
  */
- 
+
 #   pragma once
 
 #   ifndef __DOUBLE_ITER__
@@ -62,26 +62,26 @@
     typename L,
     typename I
              >
-    class double_iterator_base_ : 
+    class double_iterator_base_ :
         public containers::double_iterator_base
-    { 
+    {
 /*---------------------- iterator for doubly-linked lists */
     public  :
-    
+
     typedef L                           list_type ;
     typedef I                           iter_type ;
-    
-    typedef typename 
+
+    typedef typename
             list_type::data_type        data_type ;
-    typedef typename 
-            list_type::item_type        item_type ; 
-    typedef typename 
+    typedef typename
+            list_type::item_type        item_type ;
+    typedef typename
             list_type::size_type        size_type ;
-    typedef typename 
+    typedef typename
             list_type::diff_type        diff_type ;
-    
+
     typedef double_iterator_base_ <
-            list_type , 
+            list_type ,
             iter_type             >     self_type ;
 
     public  :
@@ -94,12 +94,12 @@
 #   endif
 
     public  :
-    
+
     __inline_call double_iterator_base_ (
         item_type *_psrc = nullptr,
         list_type *_lsrc = nullptr
 #   ifdef _DEBUG
-        ) : _ptr(_psrc) , 
+        ) : _ptr(_psrc) ,
             _obj(_lsrc) {}
 #   else
         ) : _ptr(_psrc) { __unreferenced(_lsrc) ; }
@@ -114,11 +114,11 @@
         self_type &&    _src
         )                               = default ;
 
-    __inline_call 
+    __inline_call
         self_type & operator = (
         self_type const&_src
         )                               = default ;
-    __inline_call 
+    __inline_call
         self_type & operator = (
         self_type &&    _src
         )                               = default ;
@@ -146,14 +146,14 @@
         return *(iter_type*)this;
     }
 
-    __inline_call 
+    __inline_call
         iter_type operator++ ( int )
     {
         iter_type _tmp(*(iter_type*)this) ;
         ++*this;
         return _tmp;
     }
-    __inline_call 
+    __inline_call
         iter_type operator-- ( int )
     {
         iter_type _tmp(*(iter_type*)this) ;
@@ -216,36 +216,36 @@
 
     template <
     typename L
-             > 
-    class const_double_iterator: public 
-            double_iterator_base_<L, 
+             >
+    class const_double_iterator: public
+            double_iterator_base_<L,
             const_double_iterator<L> >
     {
 /*---------------------- iterator for doubly-linked lists */
     public  :
-    
+
     typedef L                           list_type ;
 
     typedef const_double_iterator<
             list_type            >      self_type ;
-    typedef double_iterator_base_< 
-            list_type , 
+    typedef double_iterator_base_<
+            list_type ,
             self_type            >      base_type ;
 
-    typedef typename 
+    typedef typename
             base_type::data_type        data_type ;
-    typedef typename 
-            base_type::item_type        item_type ; 
-    typedef typename 
+    typedef typename
+            base_type::item_type        item_type ;
+    typedef typename
             base_type::size_type        size_type ;
-    typedef typename 
+    typedef typename
             base_type::diff_type        diff_type ;
 
     typedef data_type const&            const_ref ;
     typedef data_type const*            const_ptr ;
 
     public  :
-    
+
     __inline_call const_double_iterator (
         item_type *_psrc = nullptr,
         list_type *_lsrc = nullptr
@@ -260,11 +260,11 @@
         self_type &&    _src
         )                              =  default ;
 
-    __inline_call 
+    __inline_call
         self_type & operator = (
         self_type const&_src
         )                              =  default ;
-    __inline_call 
+    __inline_call
         self_type & operator = (
         self_type &&    _src
         )                              =  default ;
@@ -272,7 +272,7 @@
 /*-------------------------------- "const" access to data */
 
     __inline_call const_ref operator * (
-        ) const 
+        ) const
     {
 #       ifdef _DEBUG
         __assert( this->_ptr != nullptr &&
@@ -284,9 +284,9 @@
     __inline_call const_ptr operator-> (
         ) const { return &**this ;   }
 
-    __inline_call item_type const*item ( 
+    __inline_call item_type const*item (
         ) const { return this->_ptr; }
-    
+
     } ;
 
     /*
@@ -297,36 +297,36 @@
 
     template <
     typename L
-             > 
-    class write_double_iterator: public 
-            double_iterator_base_<L, 
+             >
+    class write_double_iterator: public
+            double_iterator_base_<L,
             write_double_iterator<L> >
     {
 /*---------------------- iterator for doubly-linked lists */
     public  :
-    
+
     typedef L                           list_type ;
 
     typedef write_double_iterator<
             list_type            >      self_type ;
-    typedef double_iterator_base_< 
-            list_type , 
+    typedef double_iterator_base_<
+            list_type ,
             self_type            >      base_type ;
 
-    typedef typename 
+    typedef typename
             base_type::data_type        data_type ;
-    typedef typename 
-            base_type::item_type        item_type ; 
-    typedef typename 
+    typedef typename
+            base_type::item_type        item_type ;
+    typedef typename
             base_type::size_type        size_type ;
-    typedef typename 
+    typedef typename
             base_type::diff_type        diff_type ;
 
     typedef data_type &                 write_ref ;
     typedef data_type *                 write_ptr ;
 
     public  :
-    
+
     __inline_call write_double_iterator (
         item_type *_psrc = nullptr,
         list_type *_lsrc = nullptr
@@ -341,11 +341,11 @@
         self_type &&    _src
         )                              =  default ;
 
-    __inline_call 
+    __inline_call
         self_type & operator = (
         self_type const&_src
         )                              =  default ;
-    __inline_call 
+    __inline_call
         self_type & operator = (
         self_type &&    _src
         )                              =  default ;
@@ -353,7 +353,7 @@
 /*-------------------------------- "write" access to data */
 
     __inline_call write_ref operator * (
-        ) const 
+        ) const
     {
 #       ifdef _DEBUG
         __assert( this->_ptr != nullptr &&
@@ -365,9 +365,9 @@
     __inline_call write_ptr operator-> (
         ) const { return &**this ;   }
 
-    __inline_call item_type*item ( 
+    __inline_call item_type*item (
         ) const { return this->_ptr; }
-    
+
     } ;
 
 

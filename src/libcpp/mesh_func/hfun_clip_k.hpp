@@ -4,29 +4,29 @@
      * HFUN-CLIP-kD: kernels for eikonal solvers.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
@@ -55,12 +55,12 @@
     __const_ptr  (real_type) _p1 ,
                   real_type  _h1 ,
                   real_type  _g1 ,
-    __const_ptr  (real_type) _p2 ,    
+    __const_ptr  (real_type) _p2 ,
                   real_type& _h2 ,
                   real_type  _g2
         )
     {
-        real_type _gg = 
+        real_type _gg =
             (_g1 + _g2) / (real_type)2. ;
 
     /*---------------------- form "limited" extrap. to P2 */
@@ -82,12 +82,12 @@
     __const_ptr  (real_type) _p1 ,
                   real_type  _h1 ,
                   real_type  _g1 ,
-    __const_ptr  (real_type) _p2 ,    
+    __const_ptr  (real_type) _p2 ,
                   real_type& _h2 ,
                   real_type  _g2
         )
     {
-        real_type _gg = 
+        real_type _gg =
             (_g1 + _g2) / (real_type)2. ;
 
     /*---------------------- form "limited" extrap. to P2 */
@@ -109,15 +109,15 @@
     __const_ptr  (real_type) _p1 ,
                   real_type  _h1 ,
                   real_type  _g1 ,
-    __const_ptr  (real_type) _p2 ,    
+    __const_ptr  (real_type) _p2 ,
                   real_type  _h2 ,
                   real_type  _g2 ,
-    __const_ptr  (real_type) _p3 ,    
+    __const_ptr  (real_type) _p3 ,
                   real_type& _h3 ,
                   real_type  _g3
         )
     {
-        real_type _gg = 
+        real_type _gg =
             (_g1+_g2+_g3)/(real_type)3. ;
 
     /*---------------------- form "limited" extrap. to P3 */
@@ -130,23 +130,23 @@
 
         real_type _dh =_h2- _h1;
 
-        real_type _aa = 
+        real_type _aa =
         geometry::   dot_2d(_d1, _d3) ;
-        real_type _bb = 
+        real_type _bb =
         geometry::lensqr_2d(_d1) ;
-        real_type _cc = 
+        real_type _cc =
         geometry::lensqr_2d(_d3) ;
 
-        real_type _rr = 
+        real_type _rr =
             std::pow(_dh/_gg, +2);
-        real_type _at = 
+        real_type _at =
             _bb * _bb - _rr * _bb;
-        real_type _bt = 
+        real_type _bt =
             +2. * _aa * (_bb-_rr);
-        real_type _ct = 
+        real_type _ct =
             _aa * _aa - _rr * _cc;
 
-        real_type _hn = 
+        real_type _hn =
             std::numeric_limits
                 <real_type>::infinity() ;
 
@@ -176,25 +176,25 @@
         _tt[1] = std::max(
             (real_type)+0.,_tt[1]) ;
 
-        real_type _vp[2] = { 
+        real_type _vp[2] = {
         _d3[0] +  _tt[0] * _d1[0],
         _d3[1] +  _tt[0] * _d1[1],
             } ;
-        real_type _vm[2] = { 
+        real_type _vm[2] = {
         _d3[0] +  _tt[1] * _d1[0],
         _d3[1] +  _tt[1] * _d1[1],
             } ;
 
         real_type _lp = std::sqrt(
             geometry::lensqr_2d(_vp)) ;
-        
-        real_type _hp = 
+
+        real_type _hp =
         _h1 + _tt[0]*_dh + _gg*_lp ;
-        
+
         real_type _lm = std::sqrt(
             geometry::lensqr_2d(_vm)) ;
 
-        real_type _hm = 
+        real_type _hm =
         _h1 + _tt[1]*_dh + _gg*_lm ;
 
         _hn = std::min(_hp, _hm) ;
@@ -215,15 +215,15 @@
     __const_ptr  (real_type) _p1 ,
                   real_type  _h1 ,
                   real_type  _g1 ,
-    __const_ptr  (real_type) _p2 ,    
+    __const_ptr  (real_type) _p2 ,
                   real_type  _h2 ,
                   real_type  _g2 ,
-    __const_ptr  (real_type) _p3 ,    
+    __const_ptr  (real_type) _p3 ,
                   real_type& _h3 ,
                   real_type  _g3
         )
     {
-        real_type _gg = 
+        real_type _gg =
             (_g1+_g2+_g3)/(real_type)3. ;
 
     /*---------------------- form "limited" extrap. to P3 */
@@ -236,23 +236,23 @@
 
         real_type _dh =_h2- _h1;
 
-        real_type _aa = 
+        real_type _aa =
         geometry::   dot_3d(_d1, _d3) ;
-        real_type _bb = 
+        real_type _bb =
         geometry::lensqr_3d(_d1) ;
-        real_type _cc = 
+        real_type _cc =
         geometry::lensqr_3d(_d3) ;
 
-        real_type _rr = 
+        real_type _rr =
             std::pow(_dh/_gg, +2);
-        real_type _at = 
+        real_type _at =
             _bb * _bb - _rr * _bb;
-        real_type _bt = 
+        real_type _bt =
             +2. * _aa * (_bb-_rr);
-        real_type _ct = 
+        real_type _ct =
             _aa * _aa - _rr * _cc;
 
-        real_type _hn = 
+        real_type _hn =
             std::numeric_limits
                 <real_type>::infinity() ;
 
@@ -282,12 +282,12 @@
         _tt[1] = std::max(
             (real_type)+0.,_tt[1]) ;
 
-        real_type _vp[3] = { 
+        real_type _vp[3] = {
         _d3[0] +  _tt[0] * _d1[0],
         _d3[1] +  _tt[0] * _d1[1],
         _d3[2] +  _tt[0] * _d1[2],
             } ;
-        real_type _vm[3] = { 
+        real_type _vm[3] = {
         _d3[0] +  _tt[1] * _d1[0],
         _d3[1] +  _tt[1] * _d1[1],
         _d3[2] +  _tt[1] * _d1[2],
@@ -295,14 +295,14 @@
 
         real_type _lp = std::sqrt(
             geometry::lensqr_3d(_vp)) ;
-        
-        real_type _hp = 
+
+        real_type _hp =
         _h1 + _tt[0]*_dh + _gg*_lp ;
-        
+
         real_type _lm = std::sqrt(
             geometry::lensqr_3d(_vm)) ;
 
-        real_type _hm = 
+        real_type _hm =
         _h1 + _tt[1]*_dh + _gg*_lm ;
 
         _hn = std::min(_hp, _hm) ;
@@ -336,20 +336,20 @@
         if (_h2 > _h0)
     /*--------------------------------- 1st node ordering */
             if (EIKONAL_edge_2d (
-                _p1, _h1, _g1 , 
+                _p1, _h1, _g1 ,
                 _p2, _h2, _g2 ) )
                 _clip =  true ;
 
         if (_h1 > _h0)
     /*--------------------------------- 2nd node ordering */
             if (EIKONAL_edge_2d (
-                _p2, _h2, _g2 , 
+                _p2, _h2, _g2 ,
                 _p1, _h1, _g1 ) )
                 _clip =  true ;
 
         return ( _clip ) ;
     }
-    
+
     template <
         typename  real_type
              >
@@ -370,20 +370,20 @@
         if (_h2 > _h0)
     /*--------------------------------- 1st node ordering */
             if (EIKONAL_edge_3d (
-                _p1, _h1, _g1 , 
+                _p1, _h1, _g1 ,
                 _p2, _h2, _g2 ) )
                 _clip =  true ;
 
         if (_h1 > _h0)
     /*--------------------------------- 2nd node ordering */
             if (EIKONAL_edge_3d (
-                _p2, _h2, _g2 , 
+                _p2, _h2, _g2 ,
                 _p1, _h1, _g1 ) )
                 _clip =  true ;
 
         return ( _clip ) ;
     }
- 
+
     template <
         typename  real_type
              >
@@ -402,14 +402,14 @@
     /*---------------------- limit h-values within TRIA-3 */
         bool_type _clip = false ;
 
-        real_type _h0 = 
+        real_type _h0 =
         std::min( _h3, std::min(_h1,_h2)) ;
 
         if (_h3 > _h0)
     /*--------------------------------- 1st node ordering */
             if (EIKONAL_tria_2d (
                 _p1, _h1, _g1 ,
-                _p2, _h2, _g2 , 
+                _p2, _h2, _g2 ,
                 _p3, _h3, _g3 ) )
                 _clip =  true ;
 
@@ -417,7 +417,7 @@
     /*--------------------------------- 2nd node ordering */
             if (EIKONAL_tria_2d (
                 _p2, _h2, _g2 ,
-                _p3, _h3, _g3 , 
+                _p3, _h3, _g3 ,
                 _p1, _h1, _g1 ) )
                 _clip =  true ;
 
@@ -425,7 +425,7 @@
     /*--------------------------------- 3rd node ordering */
             if (EIKONAL_tria_2d (
                 _p3, _h3, _g3 ,
-                _p1, _h1, _g1 , 
+                _p1, _h1, _g1 ,
                 _p2, _h2, _g2 ) )
                 _clip =  true ;
 
@@ -450,14 +450,14 @@
     /*---------------------- limit h-values within TRIA-3 */
         bool_type _clip = false ;
 
-        real_type _h0 = 
+        real_type _h0 =
         std::min( _h3, std::min(_h1,_h2)) ;
 
         if (_h3 > _h0)
     /*--------------------------------- 1st node ordering */
             if (EIKONAL_tria_3d (
                 _p1, _h1, _g1 ,
-                _p2, _h2, _g2 , 
+                _p2, _h2, _g2 ,
                 _p3, _h3, _g3 ) )
                 _clip =  true ;
 
@@ -465,7 +465,7 @@
     /*--------------------------------- 2nd node ordering */
             if (EIKONAL_tria_3d (
                 _p2, _h2, _g2 ,
-                _p3, _h3, _g3 , 
+                _p3, _h3, _g3 ,
                 _p1, _h1, _g1 ) )
                 _clip =  true ;
 
@@ -473,7 +473,7 @@
     /*--------------------------------- 3rd node ordering */
             if (EIKONAL_tria_3d (
                 _p3, _h3, _g3 ,
-                _p1, _h1, _g1 , 
+                _p1, _h1, _g1 ,
                 _p2, _h2, _g2 ) )
                 _clip =  true ;
 
@@ -502,46 +502,46 @@
         bool_type _clip = false ;
         bool_type _okay = false ;
 
-        real_type _a1 = 
+        real_type _a1 =
         geometry::tria_area_2d(_p1, _p2, _p3) ;
-        real_type _a2 = 
+        real_type _a2 =
         geometry::tria_area_2d(_p1, _p3, _p4) ;
-        
+
         if (_a1*_a2 > (real_type)+0.)
         {
             _okay =  true ;
     /*--------------------------------- 1st tria ordering */
             if (eikonal_tria_2d (
                 _p1, _p2, _p3 ,
-                _h1, _h2, _h3 , 
+                _h1, _h2, _h3 ,
                 _g1, _g2, _g3 ) )
                 _clip =  true ;
 
             if (eikonal_tria_2d (
                 _p1, _p3, _p4 ,
-                _h1, _h3, _h4 , 
+                _h1, _h3, _h4 ,
                 _g1, _g3, _g4 ) )
                 _clip =  true ;
         }
 
-        real_type _a3 = 
+        real_type _a3 =
         geometry::tria_area_2d(_p1, _p2, _p4) ;
-        real_type _a4 = 
+        real_type _a4 =
         geometry::tria_area_2d(_p2, _p3, _p4) ;
-    
+
         if (_a3*_a4 > (real_type)+0.)
         {
             _okay =  true ;
     /*--------------------------------- 2nd tria ordering */
             if (eikonal_tria_2d (
                 _p1, _p2, _p4 ,
-                _h1, _h2, _h4 , 
+                _h1, _h2, _h4 ,
                 _g1, _g2, _g4 ) )
                 _clip =  true ;
 
             if (eikonal_tria_2d (
                 _p2, _p3, _p4 ,
-                _h2, _h3, _h4 , 
+                _h2, _h3, _h4 ,
                 _g2, _g3, _g4 ) )
                 _clip =  true ;
         }
@@ -595,13 +595,13 @@
         bool_type _clip = false ;
         bool_type _okay = false ;
 
-        real_type _n1[3]; 
+        real_type _n1[3];
         geometry::tria_norm_3d(_p1, _p2, _p3,
                                _n1) ;
         real_type _n2[3];
         geometry::tria_norm_3d(_p1, _p3, _p4,
                                _n2) ;
-        
+
         if (geometry::dot_3d(
                 _n1, _n2) > (real_type)+0.)
         {
@@ -609,13 +609,13 @@
     /*--------------------------------- 1st tria ordering */
             if (eikonal_tria_3d (
                 _p1, _p2, _p3 ,
-                _h1, _h2, _h3 , 
+                _h1, _h2, _h3 ,
                 _g1, _g2, _g3 ) )
                 _clip =  true ;
 
             if (eikonal_tria_3d (
                 _p1, _p3, _p4 ,
-                _h1, _h3, _h4 , 
+                _h1, _h3, _h4 ,
                 _g1, _g3, _g4 ) )
                 _clip =  true ;
         }
@@ -626,7 +626,7 @@
         real_type _n4[3];
         geometry::tria_norm_3d(_p2, _p3, _p4,
                                _n4) ;
-    
+
         if (geometry::dot_3d(
                 _n3, _n4) > (real_type)+0.)
         {
@@ -634,13 +634,13 @@
     /*--------------------------------- 2nd tria ordering */
             if (eikonal_tria_3d (
                 _p1, _p2, _p4 ,
-                _h1, _h2, _h4 , 
+                _h1, _h2, _h4 ,
                 _g1, _g2, _g4 ) )
                 _clip =  true ;
 
             if (eikonal_tria_3d (
                 _p2, _p3, _p4 ,
-                _h2, _h3, _h4 , 
+                _h2, _h3, _h4 ,
                 _g2, _g3, _g4 ) )
                 _clip =  true ;
         }
@@ -695,7 +695,7 @@
 
 
     }
-    
+
 #   endif//__HFUN_CLIP_K__
 
 
