@@ -4,34 +4,34 @@
      * JIG-READ: parse *.JIG file into config. data.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
      *
-     * Last updated: 19 June, 2019
+     * Last updated: 29 October, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -53,7 +53,7 @@
     __normal_call void_type push_verbosity (
         std::int32_t /*_verb*/
         ) { }
-        
+
     __normal_call void_type push_geom_file (
         std::string  /*_file*/
         ) { }
@@ -72,7 +72,7 @@
     __normal_call void_type push_bnds_file (
         std::string  /*_file*/
         ) { }
-        
+
     __normal_call void_type push_geom_seed (
         std::int32_t /*_seed*/
         ) { }
@@ -95,7 +95,7 @@
     __normal_call void_type push_init_near (
         double       /*_near*/
         ) { }
-        
+
     __normal_call void_type push_hfun_scal (
         std::int32_t /*_scal*/
         ) { }
@@ -105,7 +105,7 @@
     __normal_call void_type push_hfun_hmin (
         double       /*_hmin*/
         ) { }
-        
+
     __normal_call void_type push_mesh_kern (
         std::int32_t /*_kern*/
         ) { }
@@ -129,7 +129,7 @@
         ) { }
     __normal_call void_type push_mesh_siz3 (
         double       /*_siz3*/
-        ) { }      
+        ) { }
     __normal_call void_type push_mesh_top1 (
         bool         /*_top1*/
         ) { }
@@ -163,7 +163,10 @@
     __normal_call void_type push_mesh_vol3 (
         double       /*_vol3*/
         ) { }
-        
+
+    __normal_call void_type push_optm_kern (
+        std::int32_t /*_kern*/
+        ) { }
     __normal_call void_type push_optm_iter (
         std::int32_t /*_iter*/
         ) { }
@@ -185,9 +188,9 @@
     __normal_call void_type push_optm_zip_ (
         bool         /*_flag*/
         ) { }
-        
+
     } ;
-    
+
     /*
     --------------------------------------------------------
      * JCFG-READER: read *.JIG mesh files
@@ -197,14 +200,14 @@
     class jcfg_reader
     {
     public  :
-    
+
     typedef containers::array <
             std::string > string_tokens;
-    
+
     string_tokens           _errs ;
-    
+
     public  :
-    
+
     /*
     --------------------------------------------------------
      * READ-FILE: read *.MSH file into MESH
@@ -219,7 +222,7 @@
         dest_type   &&_dest
         )
     {
-    
+
     /*---------------------------------- flip to up.-case */
         #define __toUPPER(__str)        \
             std::transform(__str.begin(),   \
@@ -235,7 +238,7 @@
                  trim(__tok[ 1])) ;     \
             else                        \
            _errs.push_tail(_line) ;
-           
+
     /*---------------------------------- read "MESH" pred */
         #define __putMESH(__fun, __str)     \
             if (__str.count() == 2 )    \
@@ -257,7 +260,29 @@
             }                           \
             else                        \
            _errs.push_tail(_line) ;
-           
+
+    /*---------------------------------- read "OPTM" pred */
+        #define __putOPTM(__fun, __str)     \
+            if (__str.count() == 2 )    \
+            {                           \
+                __toUPPER(__str [1])    \
+            if (__str[1].find("ODT+DQDX")!= \
+                    std::string::npos ) \
+                _dest.__fun (           \
+                    jcfg_data           \
+               ::iter_pred::odt_dqdx) ; \
+            else                        \
+            if (__str[1].find("CVT+DQDX")!= \
+                    std::string::npos ) \
+                _dest.__fun (           \
+                    jcfg_data           \
+               ::iter_pred::cvt_dqdx) ; \
+            else                        \
+           _errs.push_tail(_line) ;     \
+            }                           \
+            else                        \
+           _errs.push_tail(_line) ;
+
     /*---------------------------------- read "BNDS" pred */
         #define __putBNDS(__fun, __str)     \
             if (__str.count() == 2 )    \
@@ -279,7 +304,7 @@
             }                           \
             else                        \
            _errs.push_tail(_line) ;
-    
+
     /*---------------------------------- read "SCAL" data */
         #define __putSCAL(__fun, __str)     \
             if (__str.count() == 2 )    \
@@ -301,7 +326,7 @@
             }                           \
             else                        \
            _errs.push_tail(_line) ;
-    
+
     /*---------------------------------- read "real" data */
         #define __putREAL(__fun, __tok)     \
             if (__tok.count() == +2)    \
@@ -311,7 +336,7 @@
             }                           \
             else                        \
            _errs.push_tail(_line) ;
-           
+
     /*---------------------------------- read "ints" data */
         #define __putINTS(__fun, __tok)     \
             if (__tok.count() == +2)    \
@@ -321,7 +346,7 @@
             }                           \
             else                        \
            _errs.push_tail(_line) ;
-           
+
     /*---------------------------------- read "bool" data */
         #define __putBOOL(__fun, __str)     \
             if (__str.count() == 2 )    \
@@ -339,36 +364,36 @@
             }                           \
             else                        \
            _errs.push_tail(_line) ;
-  
-    
+
+
         std::string _line;
         while (std::getline(_ffid, _line))
         {
             _line = trim(_line) ;
-            
+
             if (_line.size() <= 0) continue ;
             if (_line[ +0] == '#') continue ;
-        
+
             try
             {
             containers::
                 array<std::string> _stok ;
-            
+
             find_toks(_line, "=;", _stok);
-                     
+
             for (auto _iter  = _stok.head() ;
                       _iter != _stok.tend() ;
                     ++_iter  )
         /*---------------------------- trim on each token */
             *_iter = trim( *_iter ) ;
-        
-            std::transform(_stok[0].begin() , 
-                           _stok[0].  end() , 
-                           _stok[0].begin() , 
-            [](unsigned char c){ return 
+
+            std::transform(_stok[0].begin() ,
+                           _stok[0].  end() ,
+                           _stok[0].begin() ,
+            [](unsigned char c){ return
               (unsigned char)::toupper(c); } ) ;
-        
-        /*---------------------------- read MISC keywords */    
+
+        /*---------------------------- read MISC keywords */
             if (_stok[0] == "VERBOSITY")
                 {
             __putINTS(push_verbosity, _stok) ;
@@ -440,7 +465,7 @@
             if (_stok[0] == "HFUN_HMIN")
                 {
             __putREAL(push_hfun_hmin, _stok) ;
-                }          
+                }
             else
         /*---------------------------- read MESH keywords */
             if (_stok[0] == "TRIA_FILE")
@@ -512,7 +537,7 @@
             if (_stok[0] == "MESH_OFF2")
                 {
             __putREAL(push_mesh_off2, _stok) ;
-                }          
+                }
             else
             if (_stok[0] == "MESH_OFF3")
                 {
@@ -555,6 +580,11 @@
                 }
             else
         /*---------------------------- read OPTM keywords */
+            if (_stok[0] == "OPTM_KERN")
+                {
+            __putOPTM(push_optm_kern, _stok) ;
+                }
+            else
             if (_stok[0] == "OPTM_ITER")
                 {
             __putINTS(push_optm_iter, _stok) ;
@@ -588,31 +618,32 @@
                 {
             __putBOOL(push_optm_dual, _stok) ;
                 }
-  
+
             }
             catch (...)
             {
                 this->
                _errs.push_tail (_line) ;
-            }        
+            }
         }
-    
+
         #undef  __toUPPER
-    
+
         #undef  __putFILE
         #undef  __putSCAL
         #undef  __putMESH
+        #undef  __putOPTM
         #undef  __putBNDS
         #undef  __putREAL
-        #undef  __putINTS 
+        #undef  __putINTS
         #undef  __putBOOL
-                
-    }    
-    
+
+    }
+
     } ;
-      
+
 
 #   endif   //__JIG_READ__
-        
-        
-        
+
+
+

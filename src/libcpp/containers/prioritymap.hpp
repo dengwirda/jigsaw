@@ -4,37 +4,37 @@
  * an "n-ary"-heap based priority queue.
 ------------------------------------------------------------
  *
- * PRIORITY-MAP utilises an "n-ary" heap data-structure, 
- * designed to maintain sorted precedence in mutable 
- * collections. This "n-ary" heap simply generalises 
- * a standard binary heap (i.e. a 2-heap) to trees with 
+ * PRIORITY-MAP utilises an "n-ary" heap data-structure,
+ * designed to maintain sorted precedence in mutable
+ * collections. This "n-ary" heap simply generalises
+ * a standard binary heap (i.e. a 2-heap) to trees with
  * "n" children per level.
  *
 ------------------------------------------------------------
  *
- * This program may be freely redistributed under the 
- * condition that the copyright notices (including this 
- * entire header) are not removed, and no compensation 
- * is received through use of the software.  Private, 
- * research, and institutional use is free.  You may 
- * distribute modified versions of this code UNDER THE 
- * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
- * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
- * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
- * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
- * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
- * of this code as part of a commercial system is 
- * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
- * AUTHOR.  (If you are not directly supplying this 
- * code to a customer, and you are instead telling them 
- * how they can obtain it for free, then you are not 
- * required to make any arrangement with me.) 
+ * This program may be freely redistributed under the
+ * condition that the copyright notices (including this
+ * entire header) are not removed, and no compensation
+ * is received through use of the software.  Private,
+ * research, and institutional use is free.  You may
+ * distribute modified versions of this code UNDER THE
+ * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+ * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+ * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+ * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+ * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+ * of this code as part of a commercial system is
+ * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+ * AUTHOR.  (If you are not directly supplying this
+ * code to a customer, and you are instead telling them
+ * how they can obtain it for free, then you are not
+ * required to make any arrangement with me.)
  *
  * Disclaimer:  Neither I nor: Columbia University, The
- * Massachusetts Institute of Technology, The 
+ * Massachusetts Institute of Technology, The
  * University of Sydney, nor The National Aeronautics
- * and Space Administration warrant this code in any 
- * way whatsoever.  This code is provided "as-is" to be 
+ * and Space Administration warrant this code in any
+ * way whatsoever.  This code is provided "as-is" to be
  * used at your own risk.
  *
 ------------------------------------------------------------
@@ -62,7 +62,7 @@
 
     template <
     typename T ,
-    typename K 
+    typename K
              >
     class heap_pair
     {
@@ -70,10 +70,10 @@
     public  :
     typedef T       data_type ;
     typedef K       kptr_type ;
-    
+
     public  :
     data_type       _data ; // heap data
-    kptr_type       _kptr ; // keys iptr    
+    kptr_type       _kptr ; // keys iptr
     } ;
 
 #   define  D heap_pair<T, typename A::size_type>
@@ -97,22 +97,22 @@
     typedef A                           allocator ;
 
     typedef containers::prioritymap <
-            data_type , 
+            data_type ,
             pred_type ,
-            allocator , 
+            allocator ,
             container   >               self_type ;
 
-    typedef typename 
-            container::data_type        pair_type ;    
-    typedef typename 
+    typedef typename
+            container::data_type        pair_type ;
+    typedef typename
             container::size_type        size_type ;
-    
-    typedef typename 
+
+    typedef typename
             container::_write_it        _write_it ;
-    typedef typename 
+    typedef typename
             container::_const_it        _const_it ;
 
-    typedef typename 
+    typedef typename
             pair_type::kptr_type        kptr_type ;
 
     typedef containers::array <
@@ -128,14 +128,14 @@
     public  :
 
     container           _heap ;
-    
+
     kptr_list           _keys ;
     free_list           _free ;
-    
+
     pred_type           _pred ;
 
     private :
-    
+
 /*------------- helper - push "hole" into sorted position */
     __normal_call _write_it push_upper (
         _write_it _head,
@@ -146,28 +146,28 @@
         for (; _ipos != _head ; )
         {
         /*----------------------- find position of parent */
-            _write_it _ppos = 
+            _write_it _ppos =
             _head + (_ipos-_head-1) / _nfan;
         /*----------------------- swap parent with "hole" */
             if (this->_pred(_data,_ppos->_data))
             {
             /*------------------ update heap-keys mapping */
-                _ipos->_data = 
+                _ipos->_data =
                     std::move(_ppos->_data);
-                _ipos->_kptr = 
+                _ipos->_kptr =
                     std::move(_ppos->_kptr);
             /*------------------ update keys-heap mapping */
-                 this->_keys[_ipos->_kptr] = 
+                 this->_keys[_ipos->_kptr] =
                              _ipos- _head;
             /*------------------ traverse to upper levels */
                 _ipos =_ppos ;
             }
             else break ;
         }
-        
+
         return (_ipos) ;
     }
-    
+
 /*------------- helper - push "hole" into sorted position */
     __normal_call _write_it push_lower (
         _write_it _head,
@@ -183,14 +183,14 @@
         _write_it _iend =  _head;
         if (_tail - _head > 0)
         {
-            _iend = 
+            _iend =
             _head + (_tail-_head-1) / _nfan ;
         }
     /*-- push "hole" into sorted position on lower levels */
         for ( ; _ipos < _iend; )
         {
         /*---------------------------- pos of right child */
-            _cpos =  _head + 
+            _cpos =  _head +
             _nfan * (_ipos - _head) + _nfan ;
         /*---------------------------- find minimum child */
             _imin = _cpos;
@@ -226,26 +226,26 @@
                 _imin=_cpos;  // falls through
             }
         /*---------------------- update heap-keys mapping */
-            _ipos->_data = 
+            _ipos->_data =
                 std::move(_imin->_data);
-            _ipos->_kptr = 
+            _ipos->_kptr =
                 std::move(_imin->_kptr);
         /*---------------------- update keys-heap mapping */
-             this->_keys[_ipos->_kptr] = 
+             this->_keys[_ipos->_kptr] =
                          _ipos- _head;
         /*---------------------- move onto next child pos */
             _ipos =_imin ;
         }
-        
+
     /*-- deal with special case - last partial sub - tree */
         if (_ipos == _iend)
         {
-            size_type _inum = 
+            size_type _inum =
             _tail-_head-_nfan*(_ipos-_head);
             if (_inum > +0)
             {
         /*---------------------------- pos of right child */
-            _cpos =  _head + 
+            _cpos =  _head +
             _nfan * (_ipos -_head) + _inum ;
         /*---------------------------- find minimum child */
             _imin = _cpos;
@@ -281,18 +281,18 @@
                 _imin=_cpos;  // falls through
             }
         /*---------------------- update heap-keys mapping */
-            _ipos->_data = 
+            _ipos->_data =
                 std::move(_imin->_data);
-            _ipos->_kptr = 
+            _ipos->_kptr =
                 std::move(_imin->_kptr);
         /*---------------------- update keys-heap mapping */
-             this->_keys[_ipos->_kptr] = 
+             this->_keys[_ipos->_kptr] =
                          _ipos- _head;
         /*---------------------- move onto next child pos */
             _ipos =_imin ;
             }
         }
-        
+
     /*--- push "hole" into final position sorted position */
         return push_upper(_head, _ipos, _data) ;
     }
@@ -307,7 +307,7 @@
             _keys(_asrc),
             _free(_asrc),
             _pred(_psrc)   {}
-            
+
 /*--------------------------- default c'tor - initialisor */
     __inline_call prioritymap (
         pred_type const&_psrc
@@ -325,11 +325,11 @@
         self_type &&    _src
         )                       = default ;
 
-    __inline_call 
+    __inline_call
         self_type & operator= (
         self_type const&_src
         )                       = default ;
-    __inline_call 
+    __inline_call
         self_type & operator= (
         self_type &&    _src
         )                       = default ;
@@ -338,42 +338,42 @@
 
     __inline_call data_type const& root (
         ) const
-    {   return this->_heap[  +0 ]._data ; 
+    {   return this->_heap[  +0 ]._data ;
     }
-    
+
 /*------------------------------------- peek at heap item */
     __inline_call data_type const& peek (
         size_type  _hpos   = +0
         ) const
     {   return this->_heap[_hpos]._data ;
     }
- 
+
 /*-------------------------------------------- empty test */
     __inline_call bool_type empty (
-        ) const 
-    { return ( this->_heap. empty() ) ; 
+        ) const
+    { return ( this->_heap. empty() ) ;
     }
-    
+
 /*-------------------------------------------- heap count */
     __inline_call size_type count (
-        ) const 
-    { return ( this->_heap. count() ) ; 
+        ) const
+    { return ( this->_heap. count() ) ;
     }
-    
+
 /*-------------------------------------------- heap alloc */
     __inline_call size_type alloc (
-        ) const 
-    { return ( this->_heap. alloc() ) ; 
+        ) const
+    { return ( this->_heap. alloc() ) ;
     }
-    
+
 /*-------------------------------------------- _set alloc */
     __inline_call size_type set_alloc (
         size_type _asiz
         )
-    { this->_heap.set_alloc( _asiz) ; 
+    { this->_heap.set_alloc( _asiz) ;
     }
-    
-/*------------------------------------- (const) iterators */   
+
+/*------------------------------------- (const) iterators */
     __inline_call _const_it head (
         ) const
     {   return this->_heap. head() ;
@@ -390,13 +390,13 @@
         ) const
     {   return this->_heap. tend() ;
     }
- 
+
     /*
     --------------------------------------------------------
      * PUSH: push data onto heap
     --------------------------------------------------------
      */
-     
+
     __inline_call kptr_type push ( // copy
         data_type const&_data
         )
@@ -408,21 +408,21 @@
             this->_free ._pop_tail(_kptr );
 
     /*----------------- push _data onto tail of container */
-        size_type _tpos = 
+        size_type _tpos =
             this->_heap.push_tail()  ;
     /*----------------- sort corresponding "hole" to pos. */
         _write_it _ipos = push_upper (
-            this->_heap.head() , 
-            this->_heap.head() + _tpos , 
+            this->_heap.head() ,
+            this->_heap.head() + _tpos ,
         __copy(data_type, _data)) ;
 
     /*------------------------- copy new data into "hole" */
         _ipos->_kptr =    _kptr   ;
-        _ipos->_data = 
+        _ipos->_data =
         __copy(data_type, _data)  ;
 
     /*------------------------- map _item to _data "hole" */
-        this->_keys[_kptr] = 
+        this->_keys[_kptr] =
             _ipos - this->_heap.head() ;
 
         return ( _kptr ) ;
@@ -439,32 +439,32 @@
             this->_free ._pop_tail(_kptr );
 
     /*----------------- push _data onto tail of container */
-        size_type _tpos = 
+        size_type _tpos =
             this->_heap.push_tail()  ;
     /*----------------- sort corresponding "hole" to pos. */
         _write_it _ipos = push_upper (
-            this->_heap.head() , 
-            this->_heap.head() + _tpos , 
+            this->_heap.head() ,
+            this->_heap.head() + _tpos ,
         __copy(data_type, _data)) ;
 
     /*------------------------- move new data into "hole" */
         _ipos->_kptr =    _kptr   ;
-        _ipos->_data = 
+        _ipos->_data =
         __move(data_type, _data)  ;
 
     /*------------------------- map _item to _data "hole" */
-        this->_keys[_kptr] = 
+        this->_keys[_kptr] =
             _ipos - this->_heap.head() ;
 
         return ( _kptr ) ;
     }
-    
+
     /*
     --------------------------------------------------------
      * _POP: _pop data from heap
     --------------------------------------------------------
      */
-     
+
     __inline_call void_type _pop_root (
         )
     {
@@ -479,18 +479,18 @@
     /*---------------------------- _pop item, return data */
         size_type _hpos =   +0 ;
         kptr_type _kptr ;
-        _kptr =    this->_heap[_hpos]._kptr ;    
-        _data = 
+        _kptr =    this->_heap[_hpos]._kptr ;
+        _data =
         std::move (this->_heap[_hpos]._data);
     /*----------------------- push "hole" to lower levels */
-        if (this->_heap.head() + _hpos != 
+        if (this->_heap.head() + _hpos !=
             this->_heap.tail() )
         {
     /*----------- sort "hole" at root to updated position */
         _write_it _ipos =  push_lower (
-            this->_heap.head() ,  
-            this->_heap.tail() - 1    , 
-            this->_heap.head() + _hpos, 
+            this->_heap.head() ,
+            this->_heap.tail() - 1    ,
+            this->_heap.head() + _hpos,
             this->_heap.tail()-> _data) ;
 
     /*----------- copy current tail into updated position */
@@ -504,14 +504,14 @@
             _ipos  - this->_heap.head() ;
         }
         this->_heap._pop_tail();
- 
-        this->_keys[_kptr] = 
+
+        this->_keys[_kptr] =
         std::numeric_limits<kptr_type>::max() ;
-         
+
         this->
         _free.push_tail(_kptr) ;
     }
-    
+
     __inline_call void_type _pop (
         kptr_type  _kptr
         )
@@ -527,17 +527,17 @@
     {
     /*---------------------------- _pop item, return data */
         size_type _hpos = this->_keys[_kptr];
-        _data = 
+        _data =
         std::move (this->_heap[_hpos]._data);
     /*----------------------- push "hole" to lower levels */
-        if (this->_heap.head() + _hpos != 
+        if (this->_heap.head() + _hpos !=
             this->_heap.tail() )
         {
     /*----------- sort "hole" at root to updated position */
         _write_it _ipos =  push_lower (
-            this->_heap.head() ,  
-            this->_heap.tail() - 1    , 
-            this->_heap.head() + _hpos, 
+            this->_heap.head() ,
+            this->_heap.tail() - 1    ,
+            this->_heap.head() + _hpos,
             this->_heap.tail()-> _data) ;
 
     /*----------- copy current tail into updated position */
@@ -551,50 +551,50 @@
             _ipos  - this->_heap.head() ;
         }
         this->_heap._pop_tail();
-        
-        this->_keys[_kptr] = 
+
+        this->_keys[_kptr] =
         std::numeric_limits<kptr_type>::max() ;
-         
+
         this->
         _free.push_tail(_kptr) ;
     }
-        
+
     /*
     --------------------------------------------------------
      * UPDATE: update data in heap
     --------------------------------------------------------
      */
-     
+
     __normal_call void_type update ( // copy
         kptr_type _kptr,
         data_type const&_data
         )
     {/*------------------ move "hole" to updated position */
-        size_type _hpos = 
+        size_type _hpos =
             this->_keys[_kptr];
         _write_it _ipos ;
         if (this->_pred(_data ,
             this->_heap[_hpos]. _data))
         /*-------------------- push "hole" to upper level */
             _ipos = push_upper (
-            this-> _heap.head(), 
-            this-> _heap.head()+_hpos , 
+            this-> _heap.head(),
+            this-> _heap.head()+_hpos ,
         __copy(data_type,_data)) ;
         else
         /*-------------------- push "hole" to lower level */
             _ipos = push_lower (
-            this-> _heap.head(),  
-            this-> _heap.tail(), 
-            this-> _heap.head()+_hpos , 
+            this-> _heap.head(),
+            this-> _heap.tail(),
+            this-> _heap.head()+_hpos ,
         __copy(data_type,_data)) ;
 
     /*------------------------ copy this data into "hole" */
         _ipos->_kptr =   _kptr   ;
-        _ipos->_data = 
+        _ipos->_data =
         __copy(data_type,_data)  ;
 
     /*------------------------ copy position into mapping */
-        this->_keys[_kptr] = 
+        this->_keys[_kptr] =
             _ipos - this->_heap.head()  ;
     }
 
@@ -603,31 +603,31 @@
         data_type &&_data
         )
     {/*------------------ move "hole" to updated position */
-        size_type _hpos = 
+        size_type _hpos =
             this->_keys[_kptr];
         _write_it _ipos ;
         if (this->_pred(_data ,
             this->_heap[_hpos]. _data))
         /*-------------------- push "hole" to upper level */
             _ipos = push_upper (
-            this-> _heap.head(), 
-            this-> _heap.head()+_hpos , 
+            this-> _heap.head(),
+            this-> _heap.head()+_hpos ,
         __copy(data_type,_data)) ;
         else
         /*-------------------- push "hole" to lower level */
             _ipos = push_lower (
-            this-> _heap.head(),  
-            this-> _heap.tail(), 
-            this-> _heap.head()+_hpos , 
+            this-> _heap.head(),
+            this-> _heap.tail(),
+            this-> _heap.head()+_hpos ,
         __copy(data_type,_data)) ;
 
     /*------------------------ copy this data into "hole" */
         _ipos->_kptr =   _kptr   ;
-        _ipos->_data = 
+        _ipos->_data =
         __move(data_type,_data)  ;
 
     /*------------------------ copy position into mapping */
-        this->_keys[_kptr] = 
+        this->_keys[_kptr] =
             _ipos - this->_heap.head()  ;
     }
 
@@ -636,23 +636,23 @@
      * test heap validity (debug only!)
     --------------------------------------------------------
      */
-     
+
     __normal_call bool_type test_heap (
         )
     {
 #       ifdef _DEBUG
     /*------------------ test relationships for all nodes */
         size_type _ipos = +1 ;
-        size_type _iend = 
-        this->_heap.count () ;        
+        size_type _iend =
+        this->_heap.count () ;
         for ( ; _ipos < _iend; ++_ipos)
         {
     /*------------------ heap is invalid if lower < upper */
-            size_type _ppos = 
+            size_type _ppos =
                 (_ipos - 1)/_nfan ;
-        
+
             if (this->_pred(
-                this->_heap[_ipos], 
+                this->_heap[_ipos],
                 this->_heap[_ppos]
                 )   )
                 return false ;

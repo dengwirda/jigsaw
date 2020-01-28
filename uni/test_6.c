@@ -82,10 +82,9 @@
             { {.5, .5}, +0 }
             } ;
         
-        jigsaw_EDGE2_t _edges[3] = {
+        jigsaw_EDGE2_t _edges[2] = {
             { {+0, +1}, -1 } ,      // -1 => "un-refinable"
-            { {+1, +2}, -1 } ,
-            { {+2, +3}, -1 }
+            { {+1, +2}, -1 }
             } ;
 
         _init._flags
@@ -95,7 +94,7 @@
         _init._vert2._size = +4 ;
 
         _init._edge2._data = &_edges[0] ;
-        _init._edge2._size = +3 ;  
+        _init._edge2._size = +2 ;  
 
     /*-------------------------------- build JIGSAW tria. */
         

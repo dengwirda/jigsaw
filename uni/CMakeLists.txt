@@ -45,3 +45,18 @@ add_executable (test_6 test_6.c)
 target_link_libraries (test_6 ${LIBJIGSAW})
 set_target_properties(test_6 PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 install (TARGETS test_6 DESTINATION "${PROJECT_SOURCE_DIR}")
+
+add_executable (test_7 test_7.c)
+target_link_libraries (test_7 ${LIBJIGSAW})
+set_target_properties(test_7 PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+install (TARGETS test_7 DESTINATION "${PROJECT_SOURCE_DIR}")
+
+add_executable (test_8 test_8.c)
+target_link_libraries (test_8 ${LIBJIGSAW})
+set_target_properties(test_8 PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+install (TARGETS test_8 DESTINATION "${PROJECT_SOURCE_DIR}")
+
+add_executable (test_9 test_9.c)
+target_link_libraries (test_9 ${LIBJIGSAW})
+set_target_properties(test_9 PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+install (TARGETS test_9 DESTINATION "${PROJECT_SOURCE_DIR}")

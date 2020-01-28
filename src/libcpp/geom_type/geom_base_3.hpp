@@ -4,34 +4,34 @@
      * GEOM-BASE-3: base class for geom. in R^3.
     --------------------------------------------------------
      *
-     * This program may be freely redistributed under the 
-     * condition that the copyright notices (including this 
-     * entire header) are not removed, and no compensation 
-     * is received through use of the software.  Private, 
-     * research, and institutional use is free.  You may 
-     * distribute modified versions of this code UNDER THE 
-     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE 
-     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE 
-     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE 
-     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR 
-     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution 
-     * of this code as part of a commercial system is 
-     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE 
-     * AUTHOR.  (If you are not directly supplying this 
-     * code to a customer, and you are instead telling them 
-     * how they can obtain it for free, then you are not 
-     * required to make any arrangement with me.) 
+     * This program may be freely redistributed under the
+     * condition that the copyright notices (including this
+     * entire header) are not removed, and no compensation
+     * is received through use of the software.  Private,
+     * research, and institutional use is free.  You may
+     * distribute modified versions of this code UNDER THE
+     * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
+     * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
+     * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
+     * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
+     * of this code as part of a commercial system is
+     * permissible ONLY BY DIRECT ARRANGEMENT WITH THE
+     * AUTHOR.  (If you are not directly supplying this
+     * code to a customer, and you are instead telling them
+     * how they can obtain it for free, then you are not
+     * required to make any arrangement with me.)
      *
      * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The 
+     * Massachusetts Institute of Technology, The
      * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any 
-     * way whatsoever.  This code is provided "as-is" to be 
+     * and Space Administration warrant this code in any
+     * way whatsoever.  This code is provided "as-is" to be
      * used at your own risk.
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 January, 2019
+     * Last updated: 09 August, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -50,14 +50,14 @@
 
     template <
     typename R ,
-    typename I 
+    typename I
              >
     class geom_base_3d
     {
     public  :
-    
+
     /*------------------------- base geometry type in R^3 */
-    
+
     typedef R                       real_type ;
     typedef I                       iptr_type ;
 
@@ -116,6 +116,8 @@
         iptr_type _fdim
         )
     {
+        __unreferenced(_fdim) ;
+
         return ( false ) ;
     }
 
@@ -170,7 +172,7 @@
         line_type &_line ,
         hits_func &_hfun
         )
-    {   
+    {
         __unreferenced(_line) ;
         __unreferenced(_hfun) ;
 
@@ -190,7 +192,7 @@
         flat_type &_flat ,
         hits_func &_hfun
         )
-    {   
+    {
         __unreferenced(_flat) ;
         __unreferenced(_hfun) ;
 
@@ -211,8 +213,9 @@
         real_type *_sbal ,
         hits_func &_hfun
         )
-    {   
+    {
         __unreferenced(_disc) ;
+        __unreferenced(_sbal) ;
         __unreferenced(_hfun) ;
 
         return ( false ) ;
@@ -231,7 +234,7 @@
         ball_type &_ball ,
         hits_func &_hfun
         )
-    {   
+    {
         __unreferenced(_ball) ;
         __unreferenced(_hfun) ;
 
@@ -253,6 +256,22 @@
         return (iptr_type) -1 ;
     }
 
+    /*
+    --------------------------------------------------------
+     * PROJECTOR: project a point to the geometry.
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type projector (
+        real_type *_ppos,
+        iptr_type  _idim,
+        real_type *_proj
+        )
+    {
+        __unreferenced(_ppos) ;
+        __unreferenced(_idim) ;
+        __unreferenced(_proj) ;
+    }
 
     } ;
 
