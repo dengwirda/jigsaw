@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 April, 2019
+     * Last updated: 30 January, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -318,6 +318,8 @@
             {
                 _jlog.push(
             "**parse error: " + * _iter + "\n" ) ;
+
+                _errv = __invalid_argument ;
             }
         }
         catch (...)
@@ -683,7 +685,7 @@
                 _jlog.push (
     "**input error: GEOM. tria. indexing is incorrect.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_indexing ;
             }
         }
         else
@@ -781,7 +783,7 @@
                 _jlog.push (
     "**input error: GEOM. tria. indexing is incorrect.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_indexing ;
             }
         }
 

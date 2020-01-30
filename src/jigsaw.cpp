@@ -37,10 +37,10 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * JIGSAW release 0.9.12.x
-     * Last updated: 25 November, 2019
+     * JIGSAW release 0.9.13.x
+     * Last updated: 30 January, 2020
      *
-     * Copyright 2013 -- 2019
+     * Copyright 2013 -- 2020
      * Darren Engwirda
      * darren.engwirda@columbia.edu
      * https://github.com/dengwirda
@@ -204,7 +204,7 @@
 
 #   endif
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.12"
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.13"
 
     /*---------------------------------- for i/o on files */
 
@@ -278,6 +278,12 @@
 
     iptr_type static constexpr
         __invalid_argument      = +4 ;
+    iptr_type static constexpr
+        __invalid_indexing      = +5 ;
+    iptr_type static constexpr
+        __invalid_useropts      = +6 ;
+    iptr_type static constexpr
+        __invalid_arraydim      = +7 ;
 
 
     /*

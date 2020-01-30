@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 July, 2019
+     * Last updated: 30 January, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -343,6 +343,8 @@
             {
                 _jlog.push(
             "**parse error: " + * _iter + "\n" ) ;
+
+                _errv = __invalid_argument ;
             }
         }
         catch (...)
@@ -708,7 +710,7 @@
                 if (_imin < +0 ||
                         _imax >= _nnPT)
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
             }
 
@@ -740,12 +742,12 @@
                     _pptr->_data.indx() >= _nnE2
                     )
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
                 }
                 else
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
 
                 }
@@ -807,7 +809,7 @@
                 if (_imin < +0 ||
                         _imax >= _nnPT)
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
             }
 
@@ -845,7 +847,7 @@
                 if (_imin < +0 ||
                         _imax >= _nnPT)
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
             }
 
@@ -877,12 +879,12 @@
                     _pptr->_data.indx() >= _nnT3
                     )
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
                 }
                 else
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
 
                 }
@@ -1004,7 +1006,7 @@
                 if (_imin < +0 ||
                         _imax >= _nnPT)
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
             }
 

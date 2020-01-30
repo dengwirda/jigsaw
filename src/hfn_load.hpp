@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 July, 2019
+     * Last updated: 30 January, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -583,6 +583,8 @@
             {
                 _jlog.push(
             "**parse error: " + * _iter + "\n" ) ;
+
+                _errv = __invalid_argument ;
             }
         }
         catch (...)
@@ -1216,7 +1218,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -1240,7 +1242,7 @@
                 _jlog.push (
     "**input error: HFUN. tria. indexing is incorrect.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_indexing ;
             }
         }
         else
@@ -1317,7 +1319,7 @@
                 _jlog.push (
     "**input error: HFUN. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_gnum > +0 &&
@@ -1327,7 +1329,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -1441,7 +1443,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -1465,7 +1467,7 @@
                 _jlog.push (
     "**input error: HFUN. tria. indexing is incorrect.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_indexing ;
             }
         }
         else
@@ -1558,7 +1560,7 @@
                 _jlog.push (
     "**input error: HFUN. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_gnum > +0 &&
@@ -1568,7 +1570,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -1739,7 +1741,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -1763,7 +1765,7 @@
                 _jlog.push (
     "**input error: HFUN. tria. indexing is incorrect.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_indexing ;
             }
         }
         else
@@ -1901,7 +1903,7 @@
                 _jlog.push (
     "**input error: HFUN. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_gnum > +0 &&
@@ -1911,7 +1913,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
