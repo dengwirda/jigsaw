@@ -472,7 +472,6 @@
                 tria(_edge->_tadj)
                     ->node( _enod[ 1]) ;
 
-            char_type _hits;
             char_type _feat, _topo ;
             iptr_type _part;
             real_type _fbal[ +4] ;
@@ -482,8 +481,7 @@
                 _edge->_tadj ,
                 _edge->_eadj ,
                 _fbal, _sbal ,
-                _hits, _feat ,
-                _topo, _part ) )
+                _feat, _topo ,  _part) )
             __assert( false &&
                 "TOPO-NODE: edge-ball" ) ;
 

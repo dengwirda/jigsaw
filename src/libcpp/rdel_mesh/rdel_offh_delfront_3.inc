@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 August, 2019
+     * Last updated: 04 Februay, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -63,62 +63,55 @@
         )
     {
         typename rdel_opts::node_kind
-        _kind  = rdel_opts::null_kind ;
+            _kind = rdel_opts::null_kind;
 
         typename hfun_type::hint_type
-        _hint  =_hfun   .null_hint () ;
+            _hint = _hfun  .null_hint() ;
 
-        real_type static const _rtol =
-            (real_type)+1.00E-03 ;
+        real_type static const
+            _rtol = (real_type)+1.00E-003 ;
 
-        real_type static const _dtol =
-            (real_type)+8.75E-01 ;
+        real_type static const
+            _dtol = (real_type)+8.00E-001 ;
 
-        real_type static const _lgap =
-            (real_type)+9.50E-01 ;
+        real_type static const
+            _lgap = (real_type)+9.00E-001 ;
 
-        real_type static const _ugap =
-            (real_type)+1.05E+00 ;
+        real_type static const
+            _ugap = (real_type)+1.10E+000 ;
 
         __unreferenced(_args) ;
 
         if (_enod[1] < _enod[0])
-        std::swap(_enod[0], _enod[1]) ;
+            std::swap (_enod[0], _enod[1]);
 
-        real_type  _nsiz [ 4] ;
-        _nsiz[ 0] = _hfun.eval (
-       &_mesh._tria.
-         node(_enod[0])->pval(0) ,
-        _mesh._tria.
-         node(_enod[0])->idxh()) ;
-        _nsiz[ 1] = _hfun.eval (
-       &_mesh._tria.
-         node(_enod[1])->pval(0) ,
-        _mesh._tria.
-         node(_enod[1])->idxh()) ;
+        real_type  _hsiz [ 4] ;
+        _hsiz[ 0] = _hfun.eval (
+       &_mesh._tria.node(_enod[0])->pval(0) ,
+        _mesh._tria.node(_enod[0])->idxh()) ;
+        _hsiz[ 1] = _hfun.eval (
+       &_mesh._tria.node(_enod[1])->pval(0) ,
+        _mesh._tria.node(_enod[1])->idxh()) ;
 
         real_type _dvec[4] ;
-        real_type _ipos[3] = {
-        _mesh._tria.
-         node(_enod[0])->pval(0) ,
-        _mesh._tria.
-         node(_enod[0])->pval(1) ,
-        _mesh._tria.
-         node(_enod[0])->pval(2)
+        real_type _base[3] = {
+        _mesh._tria.node(_enod[0])->pval(0) ,
+        _mesh._tria.node(_enod[0])->pval(1) ,
+        _mesh._tria.node(_enod[0])->pval(2) ,
             } ;
 
-        _hint = _mesh._tria.
-            node (_enod[0])->idxh() ;
+        _hint =
+        _mesh._tria.node (_enod[0])->idxh() ;
 
         _dvec[ 0] =
-        _sbal[ 0] - _ipos[ 0] ;
+        _sbal[ 0] - _base[ 0] ;
         _dvec[ 1] =
-        _sbal[ 1] - _ipos[ 1] ;
+        _sbal[ 1] - _base[ 1] ;
         _dvec[ 2] =
-        _sbal[ 2] - _ipos[ 2] ;
+        _sbal[ 2] - _base[ 2] ;
 
         _dvec[ 3] =
-         geometry::length_3d(_dvec) ;
+            geometry::length_3d (_dvec);
         _dvec[ 0]/= _dvec[ 3] ;
         _dvec[ 1]/= _dvec[ 3] ;
         _dvec[ 2]/= _dvec[ 3] ;
@@ -128,13 +121,13 @@
         _ppos[ 2] = _sbal[ 2] ;
 
         typename
-        geom_type::ball_type _ball;
+            geom_type::ball_type _ball ;
         _ball.
-        _pmid[ 0] = _ipos[ 0] ;
+        _pmid[ 0] = _base[ 0] ;
         _ball.
-        _pmid[ 1] = _ipos[ 1] ;
+        _pmid[ 1] = _base[ 1] ;
         _ball.
-        _pmid[ 2] = _ipos[ 2] ;
+        _pmid[ 2] = _base[ 2] ;
 
         real_type static const  _seps =
             (real_type)std::sqrt(
@@ -149,22 +142,22 @@
 
         for (auto _iter = +0; _iter++ != +4 ; )
         {
-            _nsiz[2] = _hfun.eval(_ppos, _hint) ;
+            _hsiz[2] = _hfun.eval(_ppos, _hint) ;
 
             real_type _PMID[3] = {
-           (real_type)+.5 * (_ipos[0]+_ppos[0]) ,
-           (real_type)+.5 * (_ipos[1]+_ppos[1]) ,
-           (real_type)+.5 * (_ipos[2]+_ppos[2]) ,
+           (real_type)+.5 * (_base[0]+_ppos[0]) ,
+           (real_type)+.5 * (_base[1]+_ppos[1]) ,
+           (real_type)+.5 * (_base[2]+_ppos[2]) ,
                 } ;
 
             typename hfun_type::hint_type
             _HINT = _hint ;
-            _nsiz[3] = _hfun.eval(_PMID, _HINT) ;
+            _hsiz[3] = _hfun.eval(_PMID, _HINT) ;
 
             real_type _hval =
-            _nsiz[0] * (real_type)1./3. +
-            _nsiz[2] * (real_type)1./3. +
-            _nsiz[3] * (real_type)1./3. ;
+            _hsiz[0] * (real_type)1./3. +
+            _hsiz[2] * (real_type)1./3. +
+            _hsiz[3] * (real_type)1./3. ;
 
             real_type _dist = _hval ;
 
@@ -198,7 +191,7 @@
             _dist -= _pert * _dist ;
 
             iptr_type _dual = -1 ;
-            cosine_intersect _pred(_ipos,_dvec);
+            cosine_intersect _pred(_base,_dvec);
             _ball._rrad  = _dist ;
             if (!_geom.intersect (
                  _ball, _pred) )
@@ -247,7 +240,6 @@
         hfun_type &_hfun,
         mesh_type &_mesh,
         iptr_type *_enod,
-        real_type *_pmid,
         real_type *_evec,
         real_type *_dvec,
         real_type *_sbal,
@@ -256,55 +248,70 @@
         )
     {
         typename rdel_opts::node_kind
-        _kind  = rdel_opts::null_kind ;
+            _kind = rdel_opts::null_kind;
 
         typename hfun_type::hint_type
-        _hint  =_hfun   .null_hint () ;
+            _hint = _hfun  .null_hint() ;
 
-        real_type static const _rtol =
-            (real_type)+1.00E-03 ;
-
-        real_type static const _dtol =
-            (real_type)+8.75E-01 ;
-
-        real_type static const _lgap =
-            (real_type)+9.50E-01 ;
-
-        real_type static const _ugap =
-            (real_type)+1.05E+00 ;
+        real_type static const
+            _rtol = (real_type)+1.00E-003 ;
 
         real_type static const _alth =
             (real_type)std::sqrt(3.)/2. ;
 
+        real_type static const
+            _dtol = (real_type)+8.00E-001 ;
+
+        real_type static const
+            _lgap = (real_type)+9.00E-001 ;
+
+        real_type static const
+            _ugap = (real_type)+1.10E+000 ;
+
         __unreferenced(_args) ;
 
-        real_type  _nsiz [ 4] ;
-        _nsiz[ 0] = _hfun.eval (
-       &_mesh._tria.
-         node(_enod[0])->pval(0) ,
-        _mesh._tria.
-         node(_enod[0])->idxh()) ;
-        _nsiz[ 1] = _hfun.eval (
-       &_mesh._tria.
-         node(_enod[1])->pval(0) ,
-        _mesh._tria.
-         node(_enod[1])->idxh()) ;
+        real_type  _hsiz [ 4] ;
+        _hsiz[ 0] = _hfun.eval (
+       &_mesh._tria.node(_enod[0])->pval(0) ,
+        _mesh._tria.node(_enod[0])->idxh()) ;
+        _hsiz[ 1] = _hfun.eval (
+       &_mesh._tria.node(_enod[1])->pval(0) ,
+        _mesh._tria.node(_enod[1])->idxh()) ;
 
-        _hint = _mesh._tria.
-            node (_enod[0])->idxh() ;
+        _hint =
+        _mesh._tria.node(_enod[0])->idxh () ;
+
+        real_type  _bias[2] = {
+        _hsiz[ 1] / (_hsiz[0] + _hsiz[1]) ,
+        _hsiz[ 0] / (_hsiz[0] + _hsiz[1]) ,
+            } ;
+
+        real_type  _base[3] ;
+        _base[0] = _bias[0] *
+        _mesh._tria.node(_enod[0])->pval(0) +
+                   _bias[1] *
+        _mesh._tria.node(_enod[1])->pval(0) ;
+        _base[1] = _bias[0] *
+        _mesh._tria.node(_enod[0])->pval(1) +
+                   _bias[1] *
+        _mesh._tria.node(_enod[1])->pval(1) ;
+        _base[2] = _bias[0] *
+        _mesh._tria.node(_enod[0])->pval(2) +
+                   _bias[1] *
+        _mesh._tria.node(_enod[1])->pval(2) ;
 
         _ppos[ 0] = _sbal[ 0] ;
         _ppos[ 1] = _sbal[ 1] ;
         _ppos[ 2] = _sbal[ 2] ;
 
         typename
-        geom_type::disc_type _disc;
+            geom_type::disc_type _disc ;
         _disc.
-        _pmid[ 0] = _pmid[ 0] ;
+        _pmid[ 0] = _base[ 0] ;
         _disc.
-        _pmid[ 1] = _pmid[ 1] ;
+        _pmid[ 1] = _base[ 1] ;
         _disc.
-        _pmid[ 2] = _pmid[ 2] ;
+        _pmid[ 2] = _base[ 2] ;
         _disc.
         _nvec[ 0] = _evec[ 0] ;
         _disc.
@@ -328,23 +335,23 @@
 
         for (auto _iter = +0; _iter++ != +4 ; )
         {
-            _nsiz[2] = _hfun.eval(_ppos, _hint) ;
+            _hsiz[2] = _hfun.eval(_ppos, _hint) ;
 
             real_type _PMID[3] = {
-           (real_type)+.5 * (_pmid[0]+_ppos[0]) ,
-           (real_type)+.5 * (_pmid[1]+_ppos[1]) ,
-           (real_type)+.5 * (_pmid[2]+_ppos[2]) ,
+           (real_type)+.5 * (_base[0]+_ppos[0]) ,
+           (real_type)+.5 * (_base[1]+_ppos[1]) ,
+           (real_type)+.5 * (_base[2]+_ppos[2]) ,
                 } ;
 
             typename hfun_type::hint_type
             _HINT = _hint ;
-            _nsiz[3] = _hfun.eval(_PMID, _HINT) ;
+            _hsiz[3] = _hfun.eval(_PMID, _HINT) ;
 
             real_type _hval =
-            _nsiz[0] * (real_type)1./6. +
-            _nsiz[1] * (real_type)1./6. +
-            _nsiz[2] * (real_type)2./6. +
-            _nsiz[3] * (real_type)2./6. ;
+            _hsiz[0] * (real_type)1./6. +
+            _hsiz[1] * (real_type)1./6. +
+            _hsiz[2] * (real_type)2./6. +
+            _hsiz[3] * (real_type)2./6. ;
 
             real_type _hmin ;
             _hmin = std::min (_hval , _epsh);
@@ -411,7 +418,7 @@
             _dist -= _pert * _dist ;
 
             iptr_type _dual = -1 ;
-            cosine_intersect _pred(_pmid,_dvec);
+            cosine_intersect _pred(_base,_dvec);
             _disc._rrad =  _dist ;
             if (!_geom.intersect (
                  _disc,
@@ -470,47 +477,42 @@
         )
     {
         typename rdel_opts::node_kind
-        _kind  = rdel_opts::null_kind ;
+            _kind = rdel_opts::null_kind;
 
         typename hfun_type::hint_type
-        _hint  =_hfun   .null_hint () ;
+            _hint = _hfun  .null_hint() ;
 
-        __unreferenced(_geom) ;
-
-        real_type static const _rtol =
-            (real_type)+1.00E-03 ;
-
-        real_type static const _lgap =
-            (real_type)+9.50E-01 ;
-
-        real_type static const _ugap =
-            (real_type)+1.05E+00 ;
+        real_type static const
+            _rtol = (real_type)+1.00E-003 ;
 
         real_type static const _alth =
             (real_type)std::sqrt(6.)/3. ;
 
+        real_type static const
+            _dtol = (real_type)+8.00E-001 ;
+
+        real_type static const
+            _lgap = (real_type)+9.00E-001 ;
+
+        real_type static const
+            _ugap = (real_type)+1.10E+000 ;
+
         __unreferenced(_geom) ;
         __unreferenced(_args) ;
 
-        real_type  _nsiz [ 5] ;
-        _nsiz[ 0] = _hfun.eval (
-       &_mesh._tria.
-         node(_fnod[0])->pval(0) ,
-        _mesh._tria.
-         node(_fnod[0])->idxh()) ;
-        _nsiz[ 1] = _hfun.eval (
-       &_mesh._tria.
-         node(_fnod[1])->pval(0) ,
-        _mesh._tria.
-         node(_fnod[1])->idxh()) ;
-        _nsiz[ 2] = _hfun.eval (
-       &_mesh._tria.
-         node(_fnod[2])->pval(0) ,
-        _mesh._tria.
-         node(_fnod[2])->idxh()) ;
+        real_type  _hsiz [ 5] ;
+        _hsiz[ 0] = _hfun.eval (
+       &_mesh._tria.node(_fnod[0])->pval(0) ,
+        _mesh._tria.node(_fnod[0])->idxh()) ;
+        _hsiz[ 1] = _hfun.eval (
+       &_mesh._tria.node(_fnod[1])->pval(0) ,
+        _mesh._tria.node(_fnod[1])->idxh()) ;
+        _hsiz[ 2] = _hfun.eval (
+       &_mesh._tria.node(_fnod[2])->pval(0) ,
+        _mesh._tria.node(_fnod[2])->idxh()) ;
 
-        _hint = _mesh._tria.
-            node (_fnod[0])->idxh() ;
+        _hint =
+        _mesh._tria.node (_fnod[0])->idxh() ;
 
         _ppos[ 0] = _tbal[ 0] ;
         _ppos[ 1] = _tbal[ 1] ;
@@ -529,7 +531,7 @@
 
         for (auto _iter = +0; _iter++ != +4 ; )
         {
-            _nsiz[3] = _hfun.eval(_ppos, _hint) ;
+            _hsiz[3] = _hfun.eval(_ppos, _hint) ;
 
             real_type _PMID[3] = {
            (real_type)+.5 * (_fbal[0]+_ppos[0]) ,
@@ -539,14 +541,14 @@
 
             typename hfun_type::hint_type
             _HINT = _hint ;
-            _nsiz[4] = _hfun.eval(_PMID, _HINT) ;
+            _hsiz[4] = _hfun.eval(_PMID, _HINT) ;
 
             real_type _hmid =
-            _nsiz[0] * (real_type)1./9. +
-            _nsiz[1] * (real_type)1./9. +
-            _nsiz[2] * (real_type)1./9. +
-            _nsiz[3] * (real_type)3./9. +
-            _nsiz[4] * (real_type)3./9. ;
+            _hsiz[0] * (real_type)1./9. +
+            _hsiz[1] * (real_type)1./9. +
+            _hsiz[2] * (real_type)1./9. +
+            _hsiz[3] * (real_type)3./9. +
+            _hsiz[4] * (real_type)3./9. ;
 
             _kind    = rdel_opts::offH_kind ;
 
@@ -555,7 +557,7 @@
                 _hmid*_hmid - _fbal[ 3] ;
 
             real_type _near =
-            _fbal[3] * (real_type)2./3. ;
+            _fbal[3] * (real_type)1./3. ;
 
             if (_dsqr < _near)
             {                       // min.-space limiter
@@ -565,7 +567,7 @@
             else
             {
                 _dist =
-               (real_type) std::sqrt(_dsqr) ;
+                (real_type)std::sqrt(_dsqr) ;
             }
 
             if (_dist > _alth * _hmid)
@@ -608,18 +610,35 @@
 
             real_type _proj[3] ;
             _proj[ 0] =
-            _fbal[ 0] + _dist*_dvec[0];
+            _fbal[ 0] + _dist * _dvec[0];
             _proj[ 1] =
-            _fbal[ 1] + _dist*_dvec[1];
+            _fbal[ 1] + _dist * _dvec[1];
             _proj[ 2] =
-            _fbal[ 2] + _dist*_dvec[2];
+            _fbal[ 2] + _dist * _dvec[2];
 
+            iptr_type _dual = -1 ;
             real_type _move =
             geometry::length_3d(_ppos, _proj);
 
             _ppos[ 0] = _proj[ 0];
             _ppos[ 1] = _proj[ 1];
             _ppos[ 2] = _proj[ 2];
+
+            _mesh._tria.find_node ( // test voro. limiter
+                &_ppos[0], _dual, _fnod[ 0]) ;
+
+            real_type _dlen =
+                geometry::length_3d(
+                    _ppos, &_mesh._tria.
+                       node(_dual)->pval(0)) ;
+
+            if (_dual != _fnod [ +0] &&
+                _dual != _fnod [ +1] &&
+                _dual != _fnod [ +2] )
+            if (_dlen <= _dtol*_hmid )
+            {
+                return  rdel_opts::null_kind ;
+            }
 
             if (_move < _rtol * _hmid) break ;
         }

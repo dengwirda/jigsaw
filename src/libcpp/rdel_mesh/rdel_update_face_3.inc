@@ -287,7 +287,6 @@
                 (char_type)  _fpos;
 
         /*--------------------------- call edge predicate */
-            char_type _hits;
             real_type _fbal[ 4];
             real_type _sbal[ 4];
             mesh_pred::edge_cost (
@@ -297,7 +296,6 @@
                 _edat._eadj,
                 _opts,_cdat,
                 _edat._part,
-                _hits,
                 _edat._feat,
                 _edat._topo,
                 _edat._kind,

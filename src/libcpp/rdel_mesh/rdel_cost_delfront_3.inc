@@ -60,7 +60,6 @@
         rdel_opts &_args,
         edge_data &_edat,
         iptr_type &_part,
-        char_type &_hits,
         char_type &_feat,
         char_type &_topo,
         char_type &_kind,
@@ -84,8 +83,7 @@
     /*--------------------------------- calc. circumballs */
         if (!base_type::edge_ball (
             _geom, _mesh, _tadj,
-            _eadj, _ebal,
-            _pmax, _hits,
+            _eadj, _ebal, _pmax,
             _feat, _topo, _part)  )
     /*--------------------------------- is not restricted */
             return  ;
@@ -235,7 +233,7 @@
 
         _fdat._mark =  +0 ;
 
-    #   ifdef __bias_BNDS
+    #   ifdef __bias_bnds
         for(_enum = +3; _enum-- != +0; )
         {
             iptr_type  _enod[ +3];
@@ -479,7 +477,7 @@
 
         _tdat._mark =  +0 ;
 
-    #   ifdef __bias_BNDS
+    #   ifdef __bias_bnds
         for(_fnum = +4; _fnum-- != +0; )
         {
             iptr_type  _fnod[ +4];
@@ -611,7 +609,8 @@
            &_mesh._tria.
              node(_tnod[2])->pval(0),
            &_mesh._tria.
-             node(_tnod[3])->pval(0)) ;
+             node(_tnod[3])->pval(0)
+            ) ;
 
         if (_vlen <= _args.vol3() )
         {

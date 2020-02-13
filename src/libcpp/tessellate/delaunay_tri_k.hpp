@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 July, 2019
+     * Last updated: 12 February, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -400,7 +400,7 @@
     --------------------------------------------------------
      */
 
-    __inline_call  delaunay_tri_k   (
+    __inline_call  delaunay_tri_k (
         allocator const& _asrc = allocator ()
         ) : _fpol(sizeof(
       typename hash_list::item_type)) ,
@@ -415,6 +415,12 @@
             _npop( _asrc),
             _work( _asrc)
     {   tria_pred::exactinit() ;    // init. predicates
+    }
+
+    __inline_call ~delaunay_tri_k (
+        )
+    {
+        clear (containers::tight_alloc);
     }
 
     /*

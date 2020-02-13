@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 June, 2019
+     * Last updated: 12 February, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -358,29 +358,35 @@
     __normal_call tria_complex_1 (
         allocator const& _asrc = allocator()
         ) : _hsrc(sizeof (
-            typename edge_maps::item_type)),
+        typename edge_maps::item_type)),
             _csrc(sizeof (
-            typename conn_list::item_type)),
-        /*------------------------------ init. adj. lists */
-            _adj1(pool_wrap(&_csrc)),
-            _adj2(pool_wrap(&_csrc)),
-        /*------------------------------ init. hash lists */
-          //_map1(
-          // node_hash(& this->_set1) ,
-          // node_pred(& this->_set1) ,
-          //+.8, (pool_wrap(&_hsrc))) ,
-            _map2(
-             edge_hash(& this->_set2) ,
-             edge_pred(& this->_set2) ,
-            +.8, (pool_wrap(&_hsrc))) ,
-        /*------------------------------ init. face lists */
-            _set1(_asrc),_set2(_asrc) ,
-        /*------------------------------ init. free lists */
-            _del1(_asrc),_del2(_asrc) ,
-        /*------------------------------ init. work lists */
-            _tmp1(_asrc),_tmp2(_asrc)
-        {
-        }
+        typename conn_list::item_type)),
+    /*---------------------------------- init. adj. lists */
+        _adj1(pool_wrap(&_csrc)),
+        _adj2(pool_wrap(&_csrc)),
+    /*---------------------------------- init. hash lists */
+      //_map1(
+      // node_hash(& this->_set1) ,
+      // node_pred(& this->_set1) ,
+      //+.8, (pool_wrap(&_hsrc))) ,
+        _map2(
+         edge_hash(& this->_set2) ,
+         edge_pred(& this->_set2) ,
+        +.8, (pool_wrap(&_hsrc))) ,
+    /*---------------------------------- init. face lists */
+        _set1(_asrc),_set2(_asrc) ,
+    /*---------------------------------- init. free lists */
+        _del1(_asrc),_del2(_asrc) ,
+    /*---------------------------------- init. work lists */
+        _tmp1(_asrc),_tmp2(_asrc)
+    {
+    }
+
+    __inline_call~tria_complex_1 (
+        )
+    {
+        clear(containers::tight_alloc);
+    }
 
     /*
     --------------------------------------------------------
@@ -393,23 +399,23 @@
         containers::loose_alloc
         )
     {
-            this->_adj1.clear (_kind) ;
-            this->_adj2.clear (_kind) ;
+        this->_adj1.clear (_kind) ;
+        this->_adj2.clear (_kind) ;
 
-          //this->_map1.clear (_kind) ;
-            this->_map2.clear (_kind) ;
+      //this->_map1.clear (_kind) ;
+        this->_map2.clear (_kind) ;
 
-            this->_set1.clear (_kind) ;
-            this->_set2.clear (_kind) ;
+        this->_set1.clear (_kind) ;
+        this->_set2.clear (_kind) ;
 
-            this->_del1.clear (_kind) ;
-            this->_del2.clear (_kind) ;
+        this->_del1.clear (_kind) ;
+        this->_del2.clear (_kind) ;
 
-            this->_tmp1.clear (_kind) ;
-            this->_tmp2.clear (_kind) ;
+        this->_tmp1.clear (_kind) ;
+        this->_tmp2.clear (_kind) ;
 
-            this->_hsrc.clear ();
-            this->_csrc.clear ();
+        this->_hsrc.clear ();
+        this->_csrc.clear ();
     }
 
     /*

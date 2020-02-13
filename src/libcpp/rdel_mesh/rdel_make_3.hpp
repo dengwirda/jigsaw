@@ -193,7 +193,6 @@
             _edat._pass    =   +0 ;
 
         /*--------------------------- call edge predicate */
-            char_type _hits;
             real_type _fbal[ 4];
             real_type _sbal[ 4];
 
@@ -205,7 +204,6 @@
                 _edat._tadj,
                 _edat._eadj,
                 _fbal,_sbal,
-                _hits,
                 _edat._feat,
                 _edat._topo,
                 _edat._part) ;

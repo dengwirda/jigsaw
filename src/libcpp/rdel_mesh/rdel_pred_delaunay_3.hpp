@@ -211,7 +211,6 @@
         __unreferenced(_args);
 
     /*--------------------------------- calc. circumballs */
-        char_type _hits;
         char_type _feat, _topo ;
         iptr_type _part;
         real_type _ebal[ +4] ;
@@ -219,7 +218,6 @@
         if (!base_type::edge_ball (
             _geom, _mesh, _tadj,
             _eadj, _ebal, _pmax,
-            _hits,
             _feat, _topo, _part)  )
         {
     /*--------------------------------- is not restricted */

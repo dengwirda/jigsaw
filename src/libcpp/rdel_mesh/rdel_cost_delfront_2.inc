@@ -227,7 +227,7 @@
 
         _tdat._mark =  +0 ;
 
-    #   ifdef __bias_BNDS
+    #   ifdef __bias_bnds
         for(_enum = +3; _enum-- != +0; )
         {
             iptr_type  _enod[ +3];

@@ -334,7 +334,6 @@
         iptr_type  _eadj,
         real_type *_ebal,
         real_type *_sbal,
-        char_type &_hits,
         char_type &_feat,
         char_type &_topo,
         iptr_type &_part
@@ -625,8 +624,6 @@
         _sbal[ 2] = _iful->pval(2);
 
         _part     = _iful->itag ();
-
-        _hits     = _iful->hits ();
         _feat     = _iful->feat ();
         _topo     = _iful->topo ();
 
@@ -655,8 +652,6 @@
         _sbal[ 2] = _imax->pval(2);
 
         _part     = _imax->itag ();
-
-        _hits     = _imax->hits ();
         _feat     = _imax->feat ();
         _topo     = _imax->topo ();
 
