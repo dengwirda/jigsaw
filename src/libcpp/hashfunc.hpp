@@ -40,7 +40,7 @@ on 1 byte), but shoehorning those bytes into integers efficiently is messy.
 #ifndef __HASHFUNC__
 #define __HASHFUNC__
 
-#include "libbasic.hpp"
+#include "basebase.hpp"
 
 namespace hash {
 

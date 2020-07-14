@@ -54,46 +54,6 @@
     --------------------------------------------------------
      */
 
-    template <
-    typename G ,
-    typename M ,
-    typename H ,
-    typename P
-             >
-    class iter_mesh_3
-    {
-    public  :
-    typedef  M                          mesh_type ;
-    typedef  G                          geom_type ;
-    typedef  H                          size_type ;
-    typedef  P                          pred_type ;
-
-    typedef typename
-            mesh_type::real_type        real_type ;
-    typedef typename
-            mesh_type::iptr_type        iptr_type ;
-
-    iptr_type static
-        constexpr _dims = pred_type::_dims ;
-
-    typedef mesh::iter_params  <
-            real_type ,
-            iptr_type          >        iter_opts ;
-
-    typedef mesh::iter_timers  <
-            real_type ,
-            iptr_type          >        iter_stat ;
-
-    typedef containers
-            ::array< iptr_type >        iptr_list ;
-    typedef containers
-            ::array< real_type >        real_list ;
-
-    public  :
-
-
-
-    } ;
 
     }
 

@@ -580,7 +580,7 @@
 
     /*---------------------- calc. ball in floating-point */
         real_type _tbal[4] ;
-        geometry::circ_ball_3d (
+        geometry::perp_ball_3d (
             _tbal ,
        &_mesh._tria.
             node(_tnod[0])->pval(0) ,

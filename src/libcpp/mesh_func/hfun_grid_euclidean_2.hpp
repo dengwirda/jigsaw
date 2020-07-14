@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 June, 2019
+     * Last updated: 25 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -208,6 +208,8 @@
             subs_from_indx(
                 _base, _ipos, _jpos);
 
+            real_type _hnow = _hmat[_base] ;
+
             for (auto _IPOS = _ipos - 1 ;
                       _IPOS < _ipos + 1 ;
                     ++_IPOS )
@@ -257,6 +259,18 @@
                 if (_keys[_lnod] == _null &&
                     _lnod != _base) continue ;
 
+    /*-------------------- skip cells due to sorted order */
+                real_type _hmax;
+                _hmax = this->_hmat[_inod] ;
+                _hmax = std::max(
+                _hmax , this->_hmat[_jnod]);
+                _hmax = std::max(
+                _hmax , this->_hmat[_knod]);
+                _hmax = std::max(
+                _hmax , this->_hmat[_lnod]);
+
+                if (_hmax <= _hnow) continue ;
+
     /*-------------------- set-up cell vertex coordinates */
                 real_type _IXYZ[2];
                 _IXYZ[0] = this->_xpos[_ipjj];
@@ -273,6 +287,16 @@
                 real_type _LXYZ[2];
                 _LXYZ[0] = this->_xpos[_lpjj];
                 _LXYZ[1] = this->_ypos[_lpii];
+
+    /*-------------------- solve for local |dh/dx| limits */
+                real_type _iold =
+                     this->_hmat[_inod] ;
+                real_type _jold =
+                     this->_hmat[_jnod] ;
+                real_type _kold =
+                     this->_hmat[_knod] ;
+                real_type _lold =
+                     this->_hmat[_lnod] ;
 
                 if (this->_dhdx.count() >1)
                 {
@@ -291,18 +315,22 @@
                 {
 
                 if (_keys[_inod] != _null)
+                if (_hmat[_inod] != _iold)
                     _sort.update(
                     _keys[_inod] ,  _inod) ;
 
                 if (_keys[_jnod] != _null)
+                if (_hmat[_jnod] != _jold)
                     _sort.update(
                     _keys[_jnod] ,  _jnod) ;
 
                 if (_keys[_knod] != _null)
+                if (_hmat[_knod] != _kold)
                     _sort.update(
                     _keys[_knod] ,  _knod) ;
 
                 if (_keys[_lnod] != _null)
+                if (_hmat[_lnod] != _lold)
                     _sort.update(
                     _keys[_lnod] ,  _lnod) ;
 
@@ -326,18 +354,22 @@
                 {
 
                 if (_keys[_inod] != _null)
+                if (_hmat[_inod] != _iold)
                     _sort.update(
                     _keys[_inod] ,  _inod) ;
 
                 if (_keys[_jnod] != _null)
+                if (_hmat[_jnod] != _jold)
                     _sort.update(
                     _keys[_jnod] ,  _jnod) ;
 
                 if (_keys[_knod] != _null)
+                if (_hmat[_knod] != _kold)
                     _sort.update(
                     _keys[_knod] ,  _knod) ;
 
                 if (_keys[_lnod] != _null)
+                if (_hmat[_lnod] != _lold)
                     _sort.update(
                     _keys[_lnod] ,  _lnod) ;
 

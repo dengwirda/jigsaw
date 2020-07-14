@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Aug, 2019
+     * Last updated: 20 May, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -57,7 +57,7 @@
     template <
     typename      data_type
              >
-    __normal_call data_type tria_area_2d (
+    __inline_call data_type tria_area_2d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
     __const_ptr  (data_type) _p3
@@ -81,7 +81,7 @@
     template <
     typename      data_type
              >
-    __normal_call data_type tria_area_3d (
+    __inline_call data_type tria_area_3d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
     __const_ptr  (data_type) _p3
@@ -178,25 +178,17 @@
     template <
     typename      data_type
              >
-    __normal_call
+    __inline_call
         data_type tria_quality_2d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
     __const_ptr  (data_type) _p3
         )
-    {
-        // mean of condition no. + gradient-error metrics
-        // see Shewchuk
+    {   // "volume-length" metric, see Shewchuk
 
-        // 4. * std::sqrt(3.)
-        data_type static
-            constexpr _mulA =
+        data_type static // +4. * std::sqrt(3.)
+            constexpr _mul =
        (data_type)+6.928203230275509 ;
-
-        // 4. / std::sqrt(3.)
-        data_type static
-            constexpr _mulB =
-       (data_type)+2.309401076758503 ;
 
         data_type _len1 =
             lensqr_2d(_p1, _p2) ;
@@ -205,51 +197,29 @@
         data_type _len3 =
             lensqr_2d(_p3, _p1) ;
 
-        data_type _barA =
+        data_type _lbar =
             _len1+_len2+_len3 ;
 
-        data_type _barB =
-            _len1*_len2*_len3 ;
-
-        _barB = std::pow(
-            _barB, (data_type)+1./3.);
-
         data_type _area =
-        tria_area_2d(_p1, _p2, _p3);
+        tria_area_2d(_p1, _p2, _p3) ;
 
-        data_type _scrA =
-            _mulA * _area / _barA ;
-
-        data_type _scrB =
-            _mulB * _area / _barB ;
-
-        return
-      ((data_type)+1.0-.33)*_scrA +
-      ((data_type)+0.0+.33)*_scrB ;
+        return _mul * _area / _lbar ;
     }
 
     template <
     typename      data_type
              >
-    __normal_call
+    __inline_call
         data_type tria_quality_3d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
     __const_ptr  (data_type) _p3
         )
-    {
-        // mean of condition no. + gradient-error metrics
-        // see Shewchuk
+    {   // "volume-length" metric, see Shewchuk
 
-        // 4. * std::sqrt(3.)
-        data_type static
-            constexpr _mulA =
+        data_type static // +4. * std::sqrt(3.)
+            constexpr _mul =
        (data_type)+6.928203230275509 ;
-
-        // 4. / std::sqrt(3.)
-        data_type static
-            constexpr _mulB =
-       (data_type)+2.309401076758503 ;
 
         data_type _len1 =
             lensqr_3d(_p1, _p2) ;
@@ -258,42 +228,28 @@
         data_type _len3 =
             lensqr_3d(_p3, _p1) ;
 
-        data_type _barA =
+        data_type _lbar =
             _len1+_len2+_len3 ;
 
-        data_type _barB =
-            _len1*_len2*_len3 ;
-
-        _barB = std::pow(
-            _barB, (data_type)+1./3.);
-
         data_type _area =
-        tria_area_3d(_p1, _p2, _p3);
+        tria_area_3d(_p1, _p2, _p3) ;
 
-        data_type _scrA =
-            _mulA * _area / _barA ;
-
-        data_type _scrB =
-            _mulB * _area / _barB ;
-
-        return
-      ((data_type)+1.0-.33)*_scrA +
-      ((data_type)+0.0+.33)*_scrB ;
+        return _mul * _area / _lbar ;
     }
 
     template <
     typename      data_type
              >
-    __normal_call
+    __inline_call
         data_type tria_quality_3d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
     __const_ptr  (data_type) _p3,
     __const_ptr  (data_type) _p4
         )
-    {
-        // 6. * std::sqrt(2.)
-        data_type static
+    {   // "volume-length" metric, see Shewchuk
+
+        data_type static // +6. * std::sqrt(2.)
             constexpr _scal =
        (data_type)+8.485281374238571 ;
 

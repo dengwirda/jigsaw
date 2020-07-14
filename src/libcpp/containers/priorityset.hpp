@@ -90,7 +90,7 @@
     typedef typename
             container::_const_it        _const_it ;
 
-    size_type static const _nfan = +4;  // fan out
+    size_type static constexpr _nfan = +4;  // fan out
 
     public  :
 

@@ -37,9 +37,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 05 July, 2019
+ * Last updated: 28 April, 2020
  *
- * Copyright 2013-2019
+ * Copyright 2013-2020
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -519,6 +519,8 @@
     __normal_call void_type _get_info (
         size_type &_min_count,
         size_type &_max_count,
+        double    &_nil_ratio,
+        double    &_bad_ratio,
         double    &_ave_count
         )
     {
@@ -527,6 +529,11 @@
         _max_count =
          std::numeric_limits<size_type>::min();
 
+        size_type _bad_limit =
+            (size_type) (+3 * this->_load);
+
+        _nil_ratio = (double)+.0;
+        _bad_ratio = (double)+.0;
         _ave_count = (double)+.0;
     /*-------------------------- iter. all lists in table */
         typename lptr_list::_write_it
@@ -548,9 +555,17 @@
             if (_max_count < _lsiz)
                 _max_count = _lsiz;
 
+            if (_lsiz == (size_type) +0)
+                _nil_ratio += +1. ;
+
+            if (_bad_limit < _lsiz)
+                _bad_ratio += +1. ;
+
             _ave_count += (double)_lsiz;
         }
 
+        _nil_ratio /= this->_lptr.count() ;
+        _bad_ratio /= this->_lptr.count() ;
         _ave_count /= this->_lptr.count() ;
     }
 

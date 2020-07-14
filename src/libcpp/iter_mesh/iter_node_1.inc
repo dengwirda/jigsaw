@@ -56,7 +56,7 @@
     __static_call
     __normal_call void_type sprg_move_1 (
         mesh_type &_mesh ,
-        size_type &_hfun ,
+        hfun_type &_hfun ,
         pred_type &_pred ,
         real_list &_hval ,
         iptr_list &_eset ,

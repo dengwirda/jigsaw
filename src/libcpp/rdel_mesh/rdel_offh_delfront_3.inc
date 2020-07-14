@@ -111,10 +111,7 @@
         _sbal[ 2] - _base[ 2] ;
 
         _dvec[ 3] =
-            geometry::length_3d (_dvec);
-        _dvec[ 0]/= _dvec[ 3] ;
-        _dvec[ 1]/= _dvec[ 3] ;
-        _dvec[ 2]/= _dvec[ 3] ;
+        geometry:: normalise_3d (_dvec);
 
         _ppos[ 0] = _sbal[ 0] ;
         _ppos[ 1] = _sbal[ 1] ;
@@ -162,7 +159,7 @@
             real_type _dist = _hval ;
 
             if (_dist >= _dvec[3] * _lgap &&
-                _dist <  _dvec[3] * _ugap )
+                _dist <= _dvec[3] * _ugap )
             {                       // circumball cushion
                 _dist += _dvec[3] ;
                 _dist /= (real_type)2.;
@@ -170,7 +167,7 @@
                 _kind  =
                  rdel_opts::offH_kind ;
             }
-            else
+
             if (_dist >= _dvec[3] * _ugap )
             {                       // circumball limiter
                 _ppos[0]=_sbal[0] ;
@@ -394,7 +391,7 @@
             }
 
             if (_dist >= _dvec[3] * _lgap &&
-                _dist <  _dvec[3] * _ugap )
+                _dist <= _dvec[3] * _ugap )
             {                       // circumball cushion
                 _dist += _dvec[3] ;
                 _dist /= (real_type)2.;
@@ -402,7 +399,7 @@
                 _kind  =
                  rdel_opts::offH_kind ;
             }
-            else
+
             if (_dist >= _dvec[3] * _ugap )
             {                       // circumball limiter
                 _ppos[0]=_sbal[0] ;
@@ -585,7 +582,7 @@
             }
 
             if (_dist >= _dvec[3] * _lgap &&
-                _dist <  _dvec[3] * _ugap )
+                _dist <= _dvec[3] * _ugap )
             {                       // circumball cushion
                 _dist += _dvec[3] ;
                 _dist /= (real_type)2.;
@@ -593,7 +590,7 @@
                 _kind  =
                  rdel_opts::offH_kind ;
             }
-            else
+
             if (_dist >= _dvec[3] * _ugap )
             {                       // circumball limiter
                 _ppos[0]=_tbal[0] ;

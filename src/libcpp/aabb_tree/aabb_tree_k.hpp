@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 10 July, 2019
+ * Last updated: 02 April, 2020
  *
- * Copyright 2013-2019
+ * Copyright 2013-2020
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -68,7 +68,7 @@
     typedef typename
             item_type::iptr_type        iptr_type ;
 
-    iptr_type static constexpr         _dims =  K * +1 ;
+    iptr_type static constexpr         _dims =  K ;
 
     typedef geom_tree::aabb_tree  <
                 item_type ,
@@ -509,19 +509,19 @@
             }
 
         /*---------- split pos. - mean of non-long aabb's */
-            real_type _spos = (real_type)+0.;
-
+            double _SPOS = +0. ;
             for(item_data *_iptr  = _cptr ;
                            _iptr != nullptr ;
                            _iptr  = _next )
             {
                 _next = _iptr->_next ;
 
-                _spos +=_iptr->
+                _SPOS +=_iptr->
                         _data.pmid (_bdim);
             }
 
-            _spos  = _spos / _cnum ;
+            real_type _spos =
+                (real_type)(_SPOS / _cnum);
 
         /*---------- partition list - split on left|right */
             for(item_data *_iptr  = _cptr ;
@@ -567,11 +567,11 @@
         /*------------------ push new children onto stack */
             if (_cnum < this->_imax)
             {
-                real_type _volp, _voll, _volr ;
+                double _volp, _voll, _volr ;
 
-                _volp = (real_type) +1. ;
-                _voll = (real_type) +1. ;
-                _volr = (real_type) +1. ;
+                _volp = +1. ;
+                _voll = +1. ;
+                _volr = +1. ;
 
                 for (auto _idim = _dims; _idim-- != +0; )
                 {
@@ -655,19 +655,19 @@
 
                 if (_hash % 2 == +0 )
                 {
-                this->_work.push_tail (
-                    _node->lower( 0)) ;
+                    this->_work.push_tail (
+                        _node->lower( 0)) ;
 
-                this->_work.push_tail (
-                    _node->lower( 1)) ;
+                    this->_work.push_tail (
+                        _node->lower( 1)) ;
                 }
                 else
                 {
-                this->_work.push_tail (
-                    _node->lower( 1)) ;
+                    this->_work.push_tail (
+                        _node->lower( 1)) ;
 
-                this->_work.push_tail (
-                    _node->lower( 0)) ;
+                    this->_work.push_tail (
+                        _node->lower( 0)) ;
                 }
             }
         }
@@ -774,15 +774,15 @@
                 _node->lower(0)->_pmin ,
                 _node->lower(0)->_pmax )
                      )
-            this->_work.push_tail (
-                  _node->lower(0)) ;
+                this->_work.push_tail (
+                      _node->lower(0)) ;
 
             if (_pred(
                 _node->lower(1)->_pmin ,
                 _node->lower(1)->_pmax )
                      )
-            this->_work.push_tail (
-                  _node->lower(1)) ;
+                this->_work.push_tail (
+                      _node->lower(1)) ;
             }
         }
 
@@ -820,14 +820,7 @@
             }
             } ;
 
-        bool_type _find = false;
-
-        if (this->_root
-                == nullptr) return _find;
-
-        real_type _dsqr =
-            +std::numeric_limits
-                <real_type>::infinity() ;
+        if (this->_root == nullptr) return false ;
 
     /*----------------- maintain stack of unvisited nodes */
         containers::priorityset<
@@ -845,6 +838,12 @@
         _nnpq.push    (_ndat);
 
     /*----------------- traverse tree while len. reducing */
+        bool_type _find = false ;
+
+        real_type _dsqr =
+            +std::numeric_limits
+                <real_type>::infinity() ;
+
         for ( ; !_nnpq.empty()  ; )
         {
         /*------------------------ test next closest node */

@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 08 December, 2019
+ * Last updated: 27 April, 2020
  *
- * Copyright 2013-2019
+ * Copyright 2013-2020
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -49,15 +49,15 @@
     namespace mesh
     {
 /*-------------------------- classification of mesh cells */
-    char_type EMPTY_tag = +0 ;
-    char_type POINT_tag = 10 ;
-    char_type EDGE2_tag = 20 ;
-    char_type TRIA3_tag = 30 ;
-    char_type QUAD4_tag = 40 ;
-    char_type TRIA4_tag = 50 ;
-    char_type HEXA8_tag = 60 ;
-    char_type WEDG6_tag = 70 ;
-    char_type PYRA5_tag = 80 ;
+    char_type constexpr EMPTY_tag = +0 ;
+    char_type constexpr POINT_tag = 10 ;
+    char_type constexpr EDGE2_tag = 20 ;
+    char_type constexpr TRIA3_tag = 30 ;
+    char_type constexpr QUAD4_tag = 40 ;
+    char_type constexpr TRIA4_tag = 50 ;
+    char_type constexpr HEXA8_tag = 60 ;
+    char_type constexpr WEDG6_tag = 70 ;
+    char_type constexpr PYRA5_tag = 80 ;
     }
 
 #   include "containers.hpp"
@@ -66,9 +66,16 @@
 
 #   include "mesh_type/mesh_complex_type_k.hpp"
 
+#   include "mesh_type/hash_complex_k.hpp"
+#   include "mesh_type/base_complex_k.hpp"
+
 #   include "mesh_type/tria_complex_1.hpp"
 #   include "mesh_type/tria_complex_2.hpp"
 #   include "mesh_type/tria_complex_3.hpp"
+
+#   include "mesh_type/mesh_complex_1.hpp"
+#   include "mesh_type/mesh_complex_2.hpp"
+#   include "mesh_type/mesh_complex_3.hpp"
 
 #   endif//__MESHTYPE__
 

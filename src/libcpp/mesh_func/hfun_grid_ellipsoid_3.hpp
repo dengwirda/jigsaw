@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 June, 2019
+     * Last updated: 23 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -91,6 +91,9 @@
 
     containers::array <
         real_type, allocator>      _hmat ;
+
+    real_type                      _htop ;  // mean at poles
+    real_type                      _hbot ;
 
     containers::array <
         real_type, allocator>      _dhdx ;
@@ -179,7 +182,7 @@
     {
         real_type static const _FTOL =
             std::pow(std::numeric_limits
-       <real_type>::epsilon(), (real_type).8);
+       <real_type>::epsilon(), (real_type)+.80) ;
 
         this->_xvar = false ;
         this->_yvar = false ;
@@ -188,6 +191,7 @@
         if (this->_xpos.empty()) return ;
         if (this->_ypos.empty()) return ;
 
+    /*-------------------------- test for uniform spacing */
         real_type _xbar, _xmin, _xmax ;
         _xbar = *this->_xpos.tail() -
                 *this->_xpos.head() ;
@@ -206,10 +210,9 @@
         _ymin = _ybar - _FTOL * _ybar ;
         _ymax = _ybar + _FTOL * _ybar ;
 
-        for (auto
-            _iter  = this->_xpos.head() ;
-            _iter != this->_xpos.tail() ;
-          ++_iter  )
+        for (auto _iter  = _xpos.head() ;
+                  _iter != _xpos.tail() ;
+                ++_iter  )
         {
             real_type _xdel =
                 *(_iter+1)-*(_iter+0) ;
@@ -221,10 +224,9 @@
             }
         }
 
-        for (auto
-            _iter  = this->_ypos.head() ;
-            _iter != this->_ypos.tail() ;
-          ++_iter  )
+        for (auto _iter  = _ypos.head() ;
+                  _iter != _ypos.tail() ;
+                ++_iter  )
         {
             real_type _ydel =
                 *(_iter+1)-*(_iter+0) ;
@@ -236,12 +238,39 @@
             }
         }
 
+    /*-------------------------- test for "x" periodicity */
         real_type _xdel =
-        std::cos(*this->_xpos.tail()) -
-        std::cos(*this->_xpos.head()) ;
+            std::cos(*_xpos.tail()) -
+            std::cos(*_xpos.head()) ;
 
         this->_wrap =
             std::abs(_xdel) < _FTOL ;
+
+    /*-------------------------- sum for extrap. at poles */
+        this->_htop = (real_type)0. ;
+        this->_hbot = (real_type)0. ;
+
+        iptr_type _indx, _jpos = +0 ;
+        for (auto _iter  = _xpos.head() ;
+                  _iter != _xpos.tail() ;
+                ++_iter, ++_jpos)
+        {
+            iptr_type _n = -1 +
+           (iptr_type)this->_ypos.count() ;
+
+            indx_from_subs(
+                +0, _jpos, _indx) ;
+
+            _htop += this->_hmat[_indx] ;
+
+            indx_from_subs(
+                _n, _jpos, _indx) ;
+
+            _hbot += this->_hmat[_indx] ;
+        }
+
+        this->_htop/= this->_xpos.count() ;
+        this->_hbot/= this->_xpos.count() ;
     }
 
     /*
@@ -357,6 +386,8 @@
             subs_from_indx(
                 _base, _ipos, _jpos);
 
+            real_type _hnow = _hmat[_base] ;
+
             for (auto _IPOS = _ipos - 1 ;
                       _IPOS < _ipos + 1 ;
                     ++_IPOS )
@@ -405,6 +436,18 @@
                     _knod != _base) continue ;
                 if (_keys[_lnod] == _null &&
                     _lnod != _base) continue ;
+
+    /*-------------------- skip cells due to sorted order */
+                real_type _hmax;
+                _hmax = this->_hmat[_inod] ;
+                _hmax = std::max(
+                _hmax , this->_hmat[_jnod]);
+                _hmax = std::max(
+                _hmax , this->_hmat[_knod]);
+                _hmax = std::max(
+                _hmax , this->_hmat[_lnod]);
+
+                if (_hmax <= _hnow) continue ;
 
     /*-------------------- set-up cell vertex coordinates */
                 real_type  _alon, _alat ;
@@ -456,6 +499,16 @@
                 _LXYZ[2] =  this->_radC *
                     std::sin(_alat) ;
 
+    /*-------------------- solve for local |dh/dx| limits */
+                real_type _iold =
+                     this->_hmat[_inod] ;
+                real_type _jold =
+                     this->_hmat[_jnod] ;
+                real_type _kold =
+                     this->_hmat[_knod] ;
+                real_type _lold =
+                     this->_hmat[_lnod] ;
+
                 if (this->_dhdx.count() >1)
                 {
     /*-------------------- update adj. set, g = g(x) case */
@@ -473,18 +526,22 @@
                 {
 
                 if (_keys[_inod] != _null)
+                if (_hmat[_inod] != _iold)
                     _sort.update(
                     _keys[_inod] ,  _inod) ;
 
                 if (_keys[_jnod] != _null)
+                if (_hmat[_jnod] != _jold)
                     _sort.update(
                     _keys[_jnod] ,  _jnod) ;
 
                 if (_keys[_knod] != _null)
+                if (_hmat[_knod] != _kold)
                     _sort.update(
                     _keys[_knod] ,  _knod) ;
 
                 if (_keys[_lnod] != _null)
+                if (_hmat[_lnod] != _lold)
                     _sort.update(
                     _keys[_lnod] ,  _lnod) ;
 
@@ -501,6 +558,7 @@
                     this->_hmat [_inod] ;
 
                 if (_keys[_pair] != _null)
+                if (_hmat[_inod] != _iold)
                     _sort.update(
                     _keys[_pair] ,  _pair) ;
                 }
@@ -515,6 +573,7 @@
                     this->_hmat [_jnod] ;
 
                 if (_keys[_pair] != _null)
+                if (_hmat[_jnod] != _jold)
                     _sort.update(
                     _keys[_pair] ,  _pair) ;
                 }
@@ -529,6 +588,7 @@
                     this->_hmat [_knod] ;
 
                 if (_keys[_pair] != _null)
+                if (_hmat[_knod] != _kold)
                     _sort.update(
                     _keys[_pair] ,  _pair) ;
                 }
@@ -543,6 +603,7 @@
                     this->_hmat [_lnod] ;
 
                 if (_keys[_pair] != _null)
+                if (_hmat[_lnod] != _lold)
                     _sort.update(
                     _keys[_pair] ,  _pair) ;
                 }
@@ -568,18 +629,22 @@
                 {
 
                 if (_keys[_inod] != _null)
+                if (_hmat[_inod] != _iold)
                     _sort.update(
                     _keys[_inod] ,  _inod) ;
 
                 if (_keys[_jnod] != _null)
+                if (_hmat[_jnod] != _jold)
                     _sort.update(
                     _keys[_jnod] ,  _jnod) ;
 
                 if (_keys[_knod] != _null)
+                if (_hmat[_knod] != _kold)
                     _sort.update(
                     _keys[_knod] ,  _knod) ;
 
                 if (_keys[_lnod] != _null)
+                if (_hmat[_lnod] != _lold)
                     _sort.update(
                     _keys[_lnod] ,  _lnod) ;
 
@@ -596,6 +661,7 @@
                     this->_hmat [_inod] ;
 
                 if (_keys[_pair] != _null)
+                if (_hmat[_inod] != _iold)
                     _sort.update(
                     _keys[_pair] ,  _pair) ;
                 }
@@ -610,6 +676,7 @@
                     this->_hmat [_jnod] ;
 
                 if (_keys[_pair] != _null)
+                if (_hmat[_jnod] != _jold)
                     _sort.update(
                     _keys[_pair] ,  _pair) ;
                 }
@@ -624,6 +691,7 @@
                     this->_hmat [_knod] ;
 
                 if (_keys[_pair] != _null)
+                if (_hmat[_knod] != _kold)
                     _sort.update(
                     _keys[_pair] ,  _pair) ;
                 }
@@ -638,6 +706,7 @@
                     this->_hmat [_lnod] ;
 
                 if (_keys[_pair] != _null)
+                if (_hmat[_lnod] != _lold)
                     _sort.update(
                     _keys[_pair] ,  _pair) ;
                 }
@@ -710,8 +779,11 @@
         real_type _alon = _apos[ 0] ;
         real_type _alat = _apos[ 1] ;
 
+        iptr_type _pole = (iptr_type)0 ;
+        real_type _bias = (real_type)0.;
+
         real_type static const PI =
-       (real_type)std::atan(+1.0) * 4. ;
+       (real_type)std::atan(+1.0) * +4.;
 
         real_type static const PI_h =
        (real_type)+.5 * PI ;
@@ -732,15 +804,32 @@
         if (_alat>=PI_h) _alat  = PI_h ;
 
         if (_alat < *this->_ypos.head())
+        {
+            _bias =             // deal w interp. at pole
+           (_alat - *this->_ypos.head()) /
+           (-PI_h - *this->_ypos.head()) ;
+            _pole = -1 ;
             _alat = *this->_ypos.head();
+
+            _bias = std::sin(_bias*PI_h) ;
+        }
+
         if (_alat > *this->_ypos.tail())
+        {
+            _bias =             // deal w interp. at pole
+           (_alat - *this->_ypos.tail()) /
+           ( PI_h - *this->_ypos.tail()) ;
+            _pole = +1 ;
             _alat = *this->_ypos.tail();
+
+            _bias = std::sin(_bias*PI_h) ;
+        }
 
     /*---------------------------- find enclosing x-range */
         iptr_type _ipos = (iptr_type) -1 ;
         iptr_type _jpos = (iptr_type) -1 ;
 
-        if (this->_xvar == true)
+        if (this->_xvar)
         {
             auto _joff =
             algorithms::upper_bound (
@@ -765,7 +854,7 @@
         }
 
     /*---------------------------- find enclosing y-range */
-        if (this->_yvar == true)
+        if (this->_yvar)
         {
             auto _ioff =
             algorithms::upper_bound (
@@ -840,7 +929,20 @@
           + _aa22*this->_hmat[_kk22] )
         / ( _aa11+_aa12+_aa21+_aa22) ;
 
-        return (  _hbar ) ;
+        if (_pole >= +1)
+        {
+            return              // deal w interp. at pole
+        ((real_type)1. - _bias) * _hbar +
+        ((real_type)0. + _bias) * _htop ;
+        }
+        else
+        if (_pole <= -1)
+        {
+            return              // deal w interp. at pole
+        ((real_type)1. - _bias) * _hbar +
+        ((real_type)0. + _bias) * _hbot ;
+        }
+        else { return _hbar ; } // return interior interp
     }
 
     } ;

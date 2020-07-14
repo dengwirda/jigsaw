@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * LIBPARSE: utilities for string/file parsing.
+     * TEXTUTIL: utilities for string/file parsing.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the
@@ -43,8 +43,8 @@
 
 #   pragma once
 
-#   ifndef __LIBPARSE__
-#   define __LIBPARSE__
+#   ifndef __TEXTUTIL__
+#   define __TEXTUTIL__
 
     /*
     --------------------------------------------------------
@@ -221,7 +221,7 @@
     }
 
 
-#   endif//__LIBPARSE__
+#   endif//__TEXTUTIL__
 
 
 

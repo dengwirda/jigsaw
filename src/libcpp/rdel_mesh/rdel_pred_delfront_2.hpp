@@ -540,9 +540,7 @@
         vector_2d( _ebal, _tbal, _dvec) ;
 
         _dvec[2] =
-            geometry::length_2d (_dvec) ;
-        _dvec[0]/= _dvec[2] ;
-        _dvec[1]/= _dvec[2] ;
+        geometry:: normalise_2d (_dvec) ;
 
     /*-------------------------- off-centre, a la "ungor" */
         _dvec[3] =

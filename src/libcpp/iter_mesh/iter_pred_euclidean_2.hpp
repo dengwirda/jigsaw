@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * ITER-PRED-EUCLIDEAN-2: predicates for MESH-ITER-2.
+     * ITER-PRED-EUCLIDEAN-2: predicates for ITER-MESH-k.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the
@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 November, 2018
+     * Last updated: 29 April, 2020
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -48,106 +48,34 @@
 
     namespace mesh {
 
-    //_pred.vnrm();
-    //_pred.vcos();
-
-
     template <
-    typename R ,
-    typename I
+    typename G  ,
+    typename M
              >
     class iter_pred_euclidean_2d
         {
-        public  :
-        typedef R                   real_type ;
-        typedef I                   iptr_type ;
-
-        iptr_type static constexpr _dims = +2 ;
-
+/*------------------------ optimisation predicates in E^2 */
         public  :
 
-        __static_call
-        __inline_call real_type mass_tria (
-          __const_ptr(real_type) _ipos ,
-          __const_ptr(real_type) _jpos ,
-          __const_ptr(real_type) _kpos
-            )
-        {   return geometry
-                ::tria_area_2d (
-                   _ipos, _jpos, _kpos) ;
-        }
+        typedef G                   geom_type ;
+        typedef M                   mesh_type ;
 
-        __static_call
-        __inline_call void_type circ_ball (
-          __write_ptr(real_type) _ball ,
-          __const_ptr(real_type) _ipos ,
-          __const_ptr(real_type) _jpos ,
-                      bool_type  _bind = false
-            )
-        {   return geometry
-                ::circ_ball_2d (
-            _ball, _ipos, _jpos, _bind) ;
-        }
+        typedef typename
+            mesh_type::real_type    real_type ;
+        typedef typename
+            mesh_type::iptr_type    iptr_type ;
 
-        __static_call
-        __inline_call void_type circ_ball (
-          __write_ptr(real_type) _ball ,
-          __const_ptr(real_type) _ipos ,
-          __const_ptr(real_type) _jpos ,
-          __const_ptr(real_type) _kpos ,
-                      bool_type  _bind = false
-            )
-        {   return geometry
-                ::circ_ball_2d (
-            _ball, _ipos, _jpos, _kpos, _bind) ;
-        }
+        struct cell_kind {};
+        struct dual_kind {};
 
-        __static_call
-        __inline_call void_type perp_ball (
-          __write_ptr(real_type) _ball ,
-          __const_ptr(real_type) _ipos ,
-          __const_ptr(real_type) _jpos ,
-                      bool_type  _bind = false
-            )
-        {   return geometry
-                ::perp_ball_2d (
-            _ball, _ipos, _jpos, _bind) ;
-        }
+        iptr_type static
+            constexpr  topo_dims        =  +2 ;
+        iptr_type static
+            constexpr  geom_dims        =  +2 ;
+        iptr_type static
+            constexpr  real_dims        =  +3 ;
 
-        __static_call
-        __inline_call void_type perp_ball (
-          __write_ptr(real_type) _ball ,
-          __const_ptr(real_type) _ipos ,
-          __const_ptr(real_type) _jpos ,
-          __const_ptr(real_type) _kpos ,
-                      bool_type  _bind = false
-            )
-        {   return geometry
-                ::perp_ball_2d (
-            _ball, _ipos, _jpos, _kpos, _bind) ;
-        }
-
-        __static_call
-        __inline_call real_type cost_tria (
-          __const_ptr(real_type) _ipos ,
-          __const_ptr(real_type) _jpos ,
-          __const_ptr(real_type) _kpos
-            )
-        {   return geometry
-                ::tria_quality_2d (
-                   _ipos, _jpos, _kpos) ;
-        }
-
-        __static_call
-        __inline_call real_type cost_dual (
-          __const_ptr(real_type) _ipos ,
-          __const_ptr(real_type) _jpos ,
-          __const_ptr(real_type) _kpos
-            )
-        {   return geometry
-                ::dual_quality_2d (
-                   _ipos, _jpos, _kpos) ;
-        }
+        public  :
 
         __static_call
         __inline_call real_type innerprod (
@@ -175,25 +103,165 @@
             geometry::lensqr_2d (_vvec) ;
         }
 
-        template <
-        typename      geom_type
-                 >
         __static_call
         __inline_call void_type proj_node (
             geom_type &_geom ,
-          __const_ptr(real_type) _save ,
-          __write_ptr(real_type) _proj
+            real_type *_save ,
+            real_type *_proj
             )
-        {   // R^2: do nothing!
-            __unreferenced(_geom) ;
-            __unreferenced(_save) ;
-            __unreferenced(_proj) ;
+        {
+            __unreferenced (_geom) ;
+            __unreferenced (_save) ;
+            __unreferenced (_proj) ;
+        }
+
+        __static_call
+        __inline_call real_type tri3_mass (
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos
+            )
+        {
+            return geometry::tria_area_2d (
+               &_ipos[0] ,
+               &_jpos[0] ,
+               &_kpos[0] ) ;
+        }
+
+        __static_call
+        __inline_call real_type quad_mass (
+          __const_ptr(real_type) /*_ipos*/ ,
+          __const_ptr(real_type) /*_jpos*/ ,
+          __const_ptr(real_type) /*_kpos*/ ,
+          __const_ptr(real_type) /*_lpos*/
+            )
+        {   /*
+            return geometry::quad_mass_2d (
+               &_ipos[0] ,
+               &_jpos[0] ,
+               &_kpos[0] ,
+               &_lpos[0] ) ;
+            */
+            return (real_type) +1. ;
+        }
+
+        __static_call
+        __inline_call void_type edge_ball (
+          __write_ptr(real_type) _ball ,
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+                      bool_type  _bind = false
+            )
+        {
+            return geometry::perp_ball_2d (
+               &_ball[0],
+               &_ipos[0],
+               &_jpos[0], _bind) ;
+        }
+
+        __static_call
+        __inline_call void_type tri3_ball (
+          __write_ptr(real_type) _ball ,
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos ,
+                      bool_type  _bind = false
+            )
+        {
+            return geometry::perp_ball_2d (
+               &_ball[0],
+               &_ipos[0],
+               &_jpos[0],
+               &_kpos[0], _bind) ;
+        }
+
+        __static_call
+        __inline_call void_type quad_ball (
+          __write_ptr(real_type) _ball ,
+          __const_ptr(real_type) /*_ipos*/ ,
+          __const_ptr(real_type) /*_jpos*/ ,
+          __const_ptr(real_type) /*_kpos*/ ,
+          __const_ptr(real_type) /*_lpos*/ ,
+                      bool_type  /*_bind = false*/
+            )
+        {   /*
+            return geometry::quad_ball_2d (
+               &_ball[0],
+               &_ipos[0],
+               &_jpos[0],
+               &_kpos[0],
+               &_lpos[0], _bind) ;
+            */
+            _ball[0] = _ball[1] = _ball[2] = 0. ;
+        }
+
+        __static_call
+        __inline_call real_type tri3_cost (
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos ,
+            cell_kind const&
+            )
+        {
+            return geometry::tria_quality_2d (
+               &_ipos[0] ,
+               &_jpos[0] ,
+               &_kpos[0] ) ;
+        }
+
+        __static_call
+        __inline_call real_type tri3_cost (
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos ,
+            dual_kind const&
+            )
+        {
+            return geometry::dual_quality_2d (
+               &_ipos[0] ,
+               &_jpos[0] ,
+               &_kpos[0] ) ;
+        }
+
+        __static_call
+        __inline_call real_type quad_cost (
+          __const_ptr(real_type) /*_ipos*/ ,
+          __const_ptr(real_type) /*_jpos*/ ,
+          __const_ptr(real_type) /*_kpos*/ ,
+          __const_ptr(real_type) /*_lpos*/ ,
+            cell_kind const&
+            )
+        {   /*
+            return geometry::quad_quality_2d (
+               &_ipos[0] ,
+               &_jpos[0] ,
+               &_kpos[0] ,
+               &_lpos[0] ) ;
+            */
+            return (real_type) +1. ;
+        }
+
+        __static_call
+        __inline_call real_type quad_cost (
+          __const_ptr(real_type) /*_ipos*/ ,
+          __const_ptr(real_type) /*_jpos*/ ,
+          __const_ptr(real_type) /*_kpos*/ ,
+          __const_ptr(real_type) /*_lpos*/ ,
+            dual_kind const&
+            )
+        {   /*
+            return geometry::quad_duality_2d (
+               &_ipos[0] ,
+               &_jpos[0] ,
+               &_kpos[0] ,
+               &_lpos[0] ) ;
+            */
+            return (real_type) +1. ;
         }
 
         } ;
 
     }
-
 
 #   endif   //__ITER_PRED_EUCLIDEAN_2__
 

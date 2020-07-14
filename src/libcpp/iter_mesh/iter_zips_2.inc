@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 October, 2019
+     * Last updated: 30 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -54,34 +54,39 @@
     __normal_call void_type _zip_edge (
         geom_type &_geom ,
         mesh_type &_mesh ,
-        size_type &_hfun ,
-        pred_type &_pred ,
+        hfun_type &_hfun ,
         real_list &_hval ,
         iter_opts &_opts ,
         iptr_type  _edge ,
         char_type  _kern ,
         bool_type &_okay ,
         iptr_type &_nnew ,
-        iptr_list &_iset ,
-        iptr_list &_jset ,
-        iptr_list &_aset ,
-        iptr_list &_bset ,
-        iptr_list &_cset ,
-        real_list &_tsrc ,
-        real_list &_tdst ,
-        real_list &_ttmp ,
-        real_type  _TLIM ,
+        conn_list &_iset ,
+        conn_list &_jset ,
+        conn_list &_aset ,
+        conn_list &_bset ,
+        conn_list &_cset ,
+        real_list &_qsrc ,
+        real_list &_qdst ,
+        real_list &_qtmp ,
+        real_type  _QLIM ,
         real_type  _lmax
-            = (real_type) +8.25E-01 ,
+            = (real_type) +7.50E-01 ,
         real_type  _qinc
             = (real_type) +1.00E-02
         )
     {
-        __unreferenced(_pred) ;         // for MSVC...
+        iptr_type static constexpr
+            _last = pred_type::geom_dims+0 ;
+
+        iptr_type static constexpr
+            _DEG_TRIA3 = (iptr_type)+6 ;
+    //  iptr_type static constexpr
+    //      _DEG_QUAD4 = (iptr_type)+4 ;
 
     /*--------------------------------- get edge indexing */
          auto _eptr =
-        _mesh._set2.head() + _edge;
+        _mesh. edge().head()+_edge  ;
 
         typename mesh_type::
             edge_type _edat(*_eptr) ;
@@ -91,9 +96,9 @@
         _jnod = _eptr->node(1) ;
 
          auto _iptr = _mesh.
-        _set1.head()+ _eptr->node(0);
+         node().head() + _eptr->node(0);
          auto _jptr = _mesh.
-        _set1.head()+ _eptr->node(1);
+         node().head() + _eptr->node(1);
 
         _okay = false ;
 
@@ -103,37 +108,74 @@
         _bset.set_count(+0) ;
         _cset.set_count(+0) ;
 
-        _tsrc.set_count(+0) ;
-        _tdst.set_count(+0) ;
-        _ttmp.set_count(+0) ;
+        _qsrc.set_count(+0) ;
+        _qdst.set_count(+0) ;
+        _qtmp.set_count(+0) ;
 
     /*--------------------------------- exit if FEAT node */
-        if (_iptr->feat() != mesh::null_feat)
+        if (_iptr->feat() != null_feat)
             return ;
-        if (_jptr->feat() != mesh::null_feat)
+        if (_jptr->feat() != null_feat)
             return ;
 
-    /*--------------------------------- get edge h-sizing */
-        real_type _ipos[_dims + 1] ;
-        real_type _jpos[_dims + 1] ;
-        iptr_type _idim = +0;
-        for (_idim = _dims+1; _idim-- != 0; )
+    /*--------------------------------- get adjacent face */
+        _mesh.connect_2(_eptr->node(+0),
+             POINT_tag, _iset) ;
+        _mesh.connect_2(_eptr->node(+1),
+             POINT_tag, _jset) ;
+
+    /*--------------------------------- calc. local topo. */
+        auto _ndeg = _iset.count()
+                   + _jset.count() - 4 ;
+
+        auto _ideg = _iset.count() ;
+        auto _ierr =
+            (iptr_type)(_DEG_TRIA3-_ideg) ;
+
+        auto _jdeg = _jset.count() ;
+        auto _jerr =
+            (iptr_type)(_DEG_TRIA3-_jdeg) ;
+
+        auto _iabs = std::abs(_ierr) ;
+        auto _jabs = std::abs(_jerr) ;
+
+        auto _nerr = std::abs(
+            (iptr_type)(_DEG_TRIA3-_ndeg));
+
+    //  bail-out early if the topological defect would be
+    //  made worse if the zip is done
+
+        if (_nerr> std::max(_ierr, _jerr))
+            return  ;
+
+    //  if more regular topo. is constructed via the edge
+    //  zip, make it easier to do so!
+
+        real_type _qerr =
+            (real_type)-1./9. * _ierr +
+            (real_type)-1./9. * _jerr ;
+
+        real_type _lerr =
+            (real_type)+6./5. * _lmax ;
+
+        if (2 * _nerr < _iabs + _jabs)
         {
-            _ipos[_idim] =
-                _iptr->pval(_idim) ;
-            _jpos[_idim] =
-                _jptr->pval(_idim) ;
+        _qinc = std::min(_qinc, _qerr);
+        _lmax = std::max(_lmax, _lerr);
         }
 
-        real_type  _isiz =
-        _hfun.eval(_ipos, _iptr->hidx ()) ;
-        real_type  _jsiz =
-        _hfun.eval(_jpos, _jptr->hidx ()) ;
+    /*--------------------------------- get edge h-sizing */
+        real_type _isiz, _jsiz ;
+        _isiz = _hfun.eval(
+            &_iptr->pval(0), _iptr->hidx()) ;
+        _jsiz = _hfun.eval(
+            &_jptr->pval(0), _jptr->hidx()) ;
 
-        real_type  _lsqr =
-            _pred.length_sq(_ipos, _jpos) ;
+        real_type _lsqr =
+            pred_type::length_sq (
+           &_iptr->pval(0),&_jptr->pval(0)) ;
 
-        real_type  _hbar =
+        real_type _hbar =
             std::min(_isiz , _jsiz);
 
     /*--------------------------------- exit if too large */
@@ -141,390 +183,376 @@
                      _hbar * _lmax )
             return  ;
 
-    /*--------------------------------- get adjacent face */
-        _mesh.node_tri3(_eptr->node (0),
-             _iset) ;
-        _mesh.node_tri3(_eptr->node (1),
-             _jset) ;
-
-    /*--------------------------------- exit if poor topo */
-        if (_iset.count() <= +1 ||
-            _jset.count() <= +1 )
-            return  ;
-        if (_iset.count() >= +6 &&
-            _jset.count() >= +6 )
-            return  ;
-        if (_iset.count()  +
-            _jset.count() >= 12 )
-            return  ;
-
-    /*--------------------------------- calc. local topo. */
-        auto _ideg = _iset.count() ;
-        auto _jdeg = _jset.count() ;
-
-        auto _ndeg = _iset.count()
-                   + _jset.count()
-                   - 4   ;
-
-        auto _ierr = std::abs(
-            (iptr_type)(+6-_ideg)) ;
-        auto _jerr = std::abs(
-            (iptr_type)(+6-_jdeg)) ;
-
-        auto _nerr = std::abs(
-            (iptr_type)(+6-_ndeg)) ;
-
-    //  bail-out early if the topological defect would be
-    //  made worse if the zip is done
-
-        if (_nerr   >
-            std::max(_ierr,_jerr))
-            return  ;
-
-    //  if more regular topo. is constructed via the edge
-    //  zip, make it easier to do so!
-
-      //if (2*_nerr < _ierr+_jerr)
-      //_qinc = std::min(0.,_qinc) ;
-
-    /*--------------------------------- get disjoint face */
-        for (auto _tria  = _iset.head();
-                  _tria != _iset.tend();
-                ++_tria  )
+    /*--------------------------------- get disjoint sets */
+        for (auto _cell  = _iset.head();
+                  _cell != _iset.tend();
+                ++_cell  )
         {
+    /*--------------------------------- set a = { i \ e } */
+            if (_cell->_kind == TRIA3_tag)
+            {
              auto _tptr  =
-            _mesh._set3.head()+*_tria ;
+            _mesh. tri3().head()+_cell->_cell ;
 
-            iptr_type _same =  +0 ;
-            if (_tptr->node(0) ==
-                _eptr->node(0) )
-                _same += +1 ;
-            if (_tptr->node(0) ==
-                _eptr->node(1) )
-                _same += +1 ;
-            if (_tptr->node(1) ==
-                _eptr->node(0) )
-                _same += +1 ;
-            if (_tptr->node(1) ==
-                _eptr->node(1) )
-                _same += +1 ;
-            if (_tptr->node(2) ==
-                _eptr->node(0) )
-                _same += +1 ;
-            if (_tptr->node(2) ==
-                _eptr->node(1) )
-                _same += +1 ;
+            iptr_type _nnum, _same = +0;
+            for(_nnum = 3; _nnum-- != 0; )
+            {
+                if (_tptr->node(_nnum) ==
+                    _eptr->node(  0) )
+                    _same += +1 ;
+
+                if (_tptr->node(_nnum) ==
+                    _eptr->node(  1) )
+                    _same += +1 ;
+            }
+
             if (_same >= +2) continue ;
+            }
+            else
+            if (_cell->_kind == QUAD4_tag)
+            {
+             auto _qptr  =
+            _mesh. quad().head()+_cell->_cell ;
 
-            _aset.push_tail(*_tria) ;
+            iptr_type _nnum, _same = +0;
+            for(_nnum = 4; _nnum-- != 0; )
+            {
+                if (_qptr->node(_nnum) ==
+                    _eptr->node(  0) )
+                    _same += +1 ;
+
+                if (_qptr->node(_nnum) ==
+                    _eptr->node(  1) )
+                    _same += +1 ;
+            }
+
+            if (_same >= +2) continue ;
+            }
+
+            _aset.push_tail( *_cell ) ;
         }
 
-        for (auto _tria  = _jset.head();
-                  _tria != _jset.tend();
-                ++_tria  )
+        for (auto _cell  = _jset.head();
+                  _cell != _jset.tend();
+                ++_cell  )
         {
+    /*--------------------------------- set b = { j \ e } */
+            if (_cell->_kind == TRIA3_tag)
+            {
              auto _tptr  =
-            _mesh._set3.head()+*_tria ;
+            _mesh. tri3().head()+_cell->_cell ;
 
-            iptr_type _same =  +0 ;
-            if (_tptr->node(0) ==
-                _eptr->node(0) )
-                _same += +1 ;
-            if (_tptr->node(0) ==
-                _eptr->node(1) )
-                _same += +1 ;
-            if (_tptr->node(1) ==
-                _eptr->node(0) )
-                _same += +1 ;
-            if (_tptr->node(1) ==
-                _eptr->node(1) )
-                _same += +1 ;
-            if (_tptr->node(2) ==
-                _eptr->node(0) )
-                _same += +1 ;
-            if (_tptr->node(2) ==
-                _eptr->node(1) )
-                _same += +1 ;
+            iptr_type _nnum, _same = +0;
+            for(_nnum = 3; _nnum-- != 0; )
+            {
+                if (_tptr->node(_nnum) ==
+                    _eptr->node(  0) )
+                    _same += +1 ;
+
+                if (_tptr->node(_nnum) ==
+                    _eptr->node(  1) )
+                    _same += +1 ;
+            }
+
             if (_same >= +2) continue ;
+            }
+            else
+            if (_cell->_kind == QUAD4_tag)
+            {
+             auto _qptr  =
+            _mesh. quad().head()+_cell->_cell ;
 
-            _bset.push_tail(*_tria) ;
+            iptr_type _nnum, _same = +0;
+            for(_nnum = 4; _nnum-- != 0; )
+            {
+                if (_qptr->node(_nnum) ==
+                    _eptr->node(  0) )
+                    _same += +1 ;
+
+                if (_qptr->node(_nnum) ==
+                    _eptr->node(  1) )
+                    _same += +1 ;
+            }
+
+            if (_same >= +2) continue ;
+            }
+
+            _bset.push_tail( *_cell ) ;
         }
 
     /*--------------------------------- get adjacent cost */
-        real_type _minA =
-        loop_cost(_mesh, _pred ,
-                  _iset,
-                  _tsrc,
-             tria_kind()) ;
-        real_type _minB =
-        loop_cost(_mesh, _pred ,
-                  _bset,
-                  _tsrc,
-             tria_kind()) ;
+        real_type  _amin = loop_cost(
+            _mesh, _iset, _qsrc, cell_kind()) ;
 
-        real_type _TMIN =
-        std::min( _minA, _minB);
+        real_type  _bmin = loop_cost(
+            _mesh, _bset, _qsrc, cell_kind()) ;
 
-        real_type _TURN =
-            std::pow(_TLIM, +1./4.) ;
-
-        if (_TMIN>_TURN) return;
+        real_type  _qmin =
+            std::min(_amin, _bmin) ;
 
     /*--------------------------------- get adjacent ball */
-        real_type _pbal[_dims+1] = {
-            (real_type) +0.000 } ;
-
-        for (auto _tria  = _iset.head();
-                  _tria != _iset.tend();
-                ++_tria  )
+        real_type _ball[_last + 1] ;
+        for (auto _idim =
+        pred_type::real_dims; _idim-- != 0; )
         {
-            real_type _ball[_dims];
-            for(_idim = _dims;
-                    _idim-- != +0 ; )
-            {
-                _ball[_idim] =
-                _mesh._set1[
-                _mesh._set3[
-            *_tria].node(0)].pval(_idim) +
-                _mesh._set1[
-                _mesh._set3[
-            *_tria].node(1)].pval(_idim) +
-                _mesh._set1[
-                _mesh._set3[
-            *_tria].node(2)].pval(_idim) ;
+            _ball[_idim]  = (real_type) +0. ;
+            _ball[_idim] +=
+                _iptr->pval(_idim) ;
+            _ball[_idim] +=
+                _jptr->pval(_idim) ;
 
-                _ball[_idim]/=
-                    (real_type)+3.;
-            }
-
-            for(_idim = _dims;
-                    _idim-- != +0 ; )
-            {
-                _pbal [_idim] +=
-                    _ball [_idim] ;
-            }
+            _ball[_idim] /= (real_type) +2. ;
         }
 
-        for (auto _tria  = _jset.head();
-                  _tria != _jset.tend();
-                ++_tria  )
-        {
-            real_type _ball[_dims];
-            for(_idim = _dims;
-                    _idim-- != +0 ; )
-            {
-                _ball[_idim] =
-                _mesh._set1[
-                _mesh._set3[
-            *_tria].node(0)].pval(_idim) +
-                _mesh._set1[
-                _mesh._set3[
-            *_tria].node(1)].pval(_idim) +
-                _mesh._set1[
-                _mesh._set3[
-            *_tria].node(2)].pval(_idim) ;
-
-                _ball[_idim]/=
-                    (real_type)+3.;
-            }
-
-            for(_idim = _dims;
-                    _idim-- != +0 ; )
-            {
-                _pbal [_idim] +=
-                    _ball [_idim] ;
-            }
-        }
-
-        for(_idim = _dims+0; _idim-- != 0; )
-        {
-        _pbal[_idim] /= (_iset.count() +
-                         _jset.count() ) ;
-        }
-
-        _pbal[_dims]  = (real_type)+0. ;
-        _pbal[_dims] +=
-            _iptr->pval(_dims) ;
-        _pbal[_dims] +=
-            _jptr->pval(_dims) ;
-
-        _pbal[_dims] /= (real_type)+2. ;
+        pred_type::
+        proj_node(_geom, _ball, _ball);
 
     /*--------------------------------- try to merge edge */
-        typename mesh_type
-               ::node_type  _ndat ;
-        typename mesh_type
-               ::tri3_type  _tdat ;
+    #   define NULLHINT hfun_type::null_hint()
+    #   define NULLFEAT null_feat
 
-        _ndat.fdim() =   +2 ;
-        _ndat.feat() =
-            mesh::null_feat ;
+        typename mesh_type::node_type _ndat ;
 
-        for(_idim =_dims+1; _idim-- != 0 ; )
+        typename mesh_type::tri3_type _tdat ;
+        typename mesh_type::quad_type _qdat ;
+
+        for (auto _idim =
+        pred_type::real_dims; _idim-- != 0; )
         {
-        _ndat.pval(_idim) = _pbal[_idim] ;
+            _ndat.pval(_idim) = _ball[_idim];
         }
 
-        _ndat.hidx() =
-            size_type::null_hint() ;
-
-        iptr_type _inew =
-            _mesh.push_node(_ndat) ;
-
-        _nnew =   _inew ;
+        _ndat.fdim() = (iptr_type) +2 ;
+        _ndat.feat() = NULLFEAT ;
+        _ndat.hidx() = NULLHINT ;
+        _nnew = _mesh.push_node(_ndat);
 
          auto _nptr  =
-        _mesh._set1.head() + _inew ;
+        _mesh. node().head () + _nnew ;
 
-        _hval.set_count(std::max (
-            _inew + 1,
-        (iptr_type)_hval.count())) ;
+        _hval.set_count( std::max(
+        _nnew + 1, (iptr_type)_hval.count())) ;
 
-        _hval[_inew] = (real_type)-1. ;
+        _hval[_nnew] = (real_type)-1. ;
 
     /*--------------------------------- push a new cavity */
-        for (auto _tria  = _aset.head();
-                  _tria != _aset.tend();
-                ++_tria  )
+        for (auto _cell  = _aset.head();
+                  _cell != _aset.tend();
+                ++_cell  )
         {
+            if (_cell->_kind == TRIA3_tag)
+            {
              auto _tptr  =
-            _mesh._set3.head()+*_tria ;
+            _mesh. tri3().head()+_cell->_cell ;
 
-            _tdat.node(0) =
-                _tptr->node(0) ;
-            _tdat.node(1) =
-                _tptr->node(1) ;
-            _tdat.node(2) =
-                _tptr->node(2) ;
+            _tdat.node(0) = _tptr->node(0) ;
+            _tdat.node(1) = _tptr->node(1) ;
+            _tdat.node(2) = _tptr->node(2) ;
 
-            _tdat.itag () =
-                _tptr->itag () ;
+            _tdat.itag () = _tptr->itag () ;
 
-            if (_tdat. node(0) ==
+            iptr_type _nnum ;
+            for(_nnum = 3; _nnum-- != 0; )
+            {
+            if (_tdat. node(_nnum) ==
                 _edat. node(0) )
-                _tdat. node(0) = _inew ;
+                _tdat. node(_nnum) = _nnew ;
+            }
 
-            if (_tdat. node(1) ==
+             auto _tnum =
+                _mesh.push_tri3(_tdat) ;
+
+            _cset.push_tail( typename
+        conn_list::data_type(_tnum,TRIA3_tag));
+            }
+            else
+            if (_cell->_kind == QUAD4_tag)
+            {
+             auto _qptr  =
+            _mesh. quad().head()+_cell->_cell ;
+
+            _qdat.node(0) = _qptr->node(0) ;
+            _qdat.node(1) = _qptr->node(1) ;
+            _qdat.node(2) = _qptr->node(2) ;
+            _qdat.node(3) = _qptr->node(3) ;
+
+            _qdat.itag () = _qptr->itag () ;
+
+            iptr_type _nnum ;
+            for(_nnum = 4; _nnum-- != 0; )
+            {
+            if (_qdat. node(_nnum) ==
                 _edat. node(0) )
-                _tdat. node(1) = _inew ;
+                _qdat. node(_nnum) = _nnew ;
+            }
 
-            if (_tdat. node(2) ==
-                _edat. node(0) )
-                _tdat. node(2) = _inew ;
+             auto _qnum =
+                _mesh.push_quad(_qdat) ;
 
-            _cset.push_tail(
-            _mesh.push_tri3(_tdat)) ;
+            _cset.push_tail( typename
+        conn_list::data_type(_qnum,QUAD4_tag));
+            }
         }
 
-        for (auto _tria  = _bset.head();
-                  _tria != _bset.tend();
-                ++_tria  )
+        for (auto _cell  = _bset.head();
+                  _cell != _bset.tend();
+                ++_cell  )
         {
+            if (_cell->_kind == TRIA3_tag)
+            {
              auto _tptr  =
-            _mesh._set3.head()+*_tria ;
+            _mesh. tri3().head()+_cell->_cell ;
 
-            _tdat.node(0) =
-                _tptr->node(0) ;
-            _tdat.node(1) =
-                _tptr->node(1) ;
-            _tdat.node(2) =
-                _tptr->node(2) ;
+            _tdat.node(0) = _tptr->node(0) ;
+            _tdat.node(1) = _tptr->node(1) ;
+            _tdat.node(2) = _tptr->node(2) ;
 
-            _tdat.itag () =
-                _tptr->itag () ;
+            _tdat.itag () = _tptr->itag () ;
 
-            if (_tdat. node(0) ==
+            iptr_type _nnum ;
+            for(_nnum = 3; _nnum-- != 0; )
+            {
+            if (_tdat. node(_nnum) ==
                 _edat. node(1) )
-                _tdat. node(0) = _inew ;
+                _tdat. node(_nnum) = _nnew ;
+            }
 
-            if (_tdat. node(1) ==
+             auto _tnum =
+                _mesh.push_tri3(_tdat) ;
+
+            _cset.push_tail( typename
+        conn_list::data_type(_tnum,TRIA3_tag));
+            }
+            else
+            if (_cell->_kind == QUAD4_tag)
+            {
+             auto _qptr  =
+            _mesh. quad().head()+_cell->_cell ;
+
+            _qdat.node(0) = _qptr->node(0) ;
+            _qdat.node(1) = _qptr->node(1) ;
+            _qdat.node(2) = _qptr->node(2) ;
+            _qdat.node(3) = _qptr->node(3) ;
+
+            _qdat.itag () = _qptr->itag () ;
+
+            iptr_type _nnum ;
+            for(_nnum = 4; _nnum-- != 0; )
+            {
+            if (_qdat. node(_nnum) ==
                 _edat. node(1) )
-                _tdat. node(1) = _inew ;
+                _qdat. node(_nnum) = _nnew ;
+            }
 
-            if (_tdat. node(2) ==
-                _edat. node(1) )
-                _tdat. node(2) = _inew ;
+             auto _qnum =
+                _mesh.push_quad(_qdat) ;
 
-            _cset.push_tail(
-            _mesh.push_tri3(_tdat)) ;
+            _cset.push_tail( typename
+        conn_list::data_type(_qnum,QUAD4_tag));
+            }
         }
 
     /*--------------------------------- optim. node coord */
         iptr_type static
-            constexpr _INUM = (iptr_type) +4 ;
+            constexpr _INUM = (iptr_type) +8;
 
-        for (auto _iloc = +0; _iloc != _INUM ;
-                ++_iloc )
+        iptr_type _move = -1;
+        for (auto _iter = +0; _iter != _INUM;
+                ++_iter )
         {
-            iptr_type _move = (iptr_type) -1 ;
-
-            _ttmp.set_count(0) ;
+            _qtmp.set_count(0) ;
 
             real_type  _minC =
-            loop_cost( _mesh, _pred ,
-                       _cset,
-                       _ttmp,
-                 tria_kind() ) ;
+                loop_cost( _mesh,
+                    _cset, _qtmp, cell_kind()
+                ) ;
 
-            move_node( _geom, _mesh ,
-                _hfun, _pred, _hval ,
-                _opts, _nptr, _kern ,
+            move_node( _geom, _mesh,
+                _hfun, _hval,
+                _opts, _nptr, _kern,
                 _move, _cset,
-                _ttmp, _tdst,
-                _minC, _TLIM ) ;
+                _qtmp, _qdst,
+                _minC, _QLIM ) ;
 
-            if (_move <= +0) break  ;
+            if (_move <= +0) break ;
         }
 
-    /*--------------------------------- compare cost scr. */
-        _tdst.set_count(0) ;
+    /*--------------------------------- is cost improved? */
+        _qdst.set_count(0);
 
-        loop_cost(_mesh, _pred, _cset,
-                  _tdst,
-             tria_kind() ) ;
+        real_type  _QMIN =
+        loop_cost( _mesh,
+            _cset, _qdst,  cell_kind ()
+            ) ;
 
-        move_okay(_tdst, _tsrc, _okay,
-                  _TURN,
-                  _qinc) ;
+        move_okay( _qdst, _qsrc, _move,
+            +1.0 , _qinc) ;
 
-        if (_okay)
+        if((_okay = _move > 0 &&
+                    _QMIN >= _qmin+_qinc))
         {
     /*--------------------------------- delete old cavity */
-        for (auto _tria  = _aset.head();
-                  _tria != _aset.tend();
-                ++_tria  )
+        for (auto _cell  = _aset.head();
+                  _cell != _aset.tend();
+                ++_cell  )
         {
-            _mesh.
-                _pop_tri3(* _tria) ;
+            if (_cell->_kind == TRIA3_tag)
+            {
+                _mesh.
+                _pop_tri3(_cell->_cell);
+            }
+            else
+            if (_cell->_kind == QUAD4_tag)
+            {
+                _mesh.
+                _pop_quad(_cell->_cell);
+            }
         }
-        for (auto _tria  = _jset.head();
-                  _tria != _jset.tend();
-                ++_tria  )
+        for (auto _cell  = _jset.head();
+                  _cell != _jset.tend();
+                ++_cell  )
         {
-            _mesh.
-                _pop_tri3(* _tria) ;
+            if (_cell->_kind == TRIA3_tag)
+            {
+                _mesh.
+                _pop_tri3(_cell->_cell);
+            }
+            else
+            if (_cell->_kind == QUAD4_tag)
+            {
+                _mesh.
+                _pop_quad(_cell->_cell);
+            }
         }
 
-            _mesh.
-                _pop_node(& _inod) ;
-            _mesh.
-                _pop_node(& _jnod) ;
+            _mesh._pop_node ( &_inod ) ;
+            _mesh._pop_node ( &_jnod ) ;
         }
         else
         {
     /*--------------------------------- delete new cavity */
-        for (auto _tria  = _cset.head();
-                  _tria != _cset.tend();
-                ++_tria  )
+        for (auto _cell  = _cset.head();
+                  _cell != _cset.tend();
+                ++_cell  )
         {
-            _mesh.
-                _pop_tri3(* _tria) ;
+            if (_cell->_kind == TRIA3_tag)
+            {
+                _mesh.
+                _pop_tri3(_cell->_cell);
+            }
+            else
+            if (_cell->_kind == QUAD4_tag)
+            {
+                _mesh.
+                _pop_quad(_cell->_cell);
+            }
         }
 
-            _mesh.
-                _pop_node(& _inew) ;
+            _mesh._pop_node ( &_nnew ) ;
         }
 
+    #   undef   NULLHINT
+    #   undef   NULLFEAT
     }
 
 

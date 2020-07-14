@@ -41,9 +41,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 21 August, 2018
+ * Last updated: 27 April, 2020
  *
- * Copyright 2013-2018
+ * Copyright 2013-2020
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -117,11 +117,11 @@
     }
     __normal_call void_type ctor_iter (
         _write_it _head,
-        _write_it _tail,
+        _write_it _tend,
         data_type const& _data
         )
     { /* copy construct sequence */
-        for ( ; _head != _tail ; ++_head)
+        for ( ; _head != _tend ; ++_head)
         {
         self_type::construct(&*_head,
                                _data) ;
@@ -132,10 +132,10 @@
 
     __normal_call void_type dtor_iter (
         _write_it _head,
-        _write_it _tail
+        _write_it _tend
         )
     {
-        for ( ; _head != _tail ; ++_head)
+        for ( ; _head != _tend ; ++_head)
         {
         self_type::_destruct(&*_head) ;
         }
@@ -201,11 +201,11 @@
              >
     __normal_call void_type copy_iter (
         iter_type _head,
-        iter_type _tail,
+        iter_type _tend,
     __cont::base_iterator_kind
         )
     { /* copy range onto object */
-        for(;_head!=_tail;++_head) push_tail(*_head) ;
+        for(;_head!=_tend;++_head) push_tail(*_head) ;
     }
 
     public  :
@@ -241,7 +241,7 @@
              >
     __inline_call array (
         iter_type _head,
-        iter_type _tail,
+        iter_type _tend,
         allocator const&_asrc = allocator()
         ) : obj_alloc(  _asrc )
     {
@@ -249,7 +249,7 @@
         this->_ptrs[_tptr] = nullptr;
         this->_ptrs[_lptr] = nullptr;
 
-        copy_iter(_head,_tail,
+        copy_iter(_head,_tend,
             __cont::iter_kind(_head)) ;
     }
 
@@ -272,10 +272,10 @@
     /*------------------------------------- alloc storage */
         set_alloc(_src.count());
     /*------------------------------------- copy sequence */
-        _const_it _head, _tail ;
+        _const_it _head, _tend ;
         _head = _src.head();
-        _tail = _src.tend();
-        copy_iter(_head,_tail,
+        _tend = _src.tend();
+        copy_iter(_head,_tend,
             __cont::iter_kind(_head)) ;
     }
 
@@ -346,6 +346,17 @@
         }
 
         return ( *this ) ;
+    }
+
+/*-------------------------------------- fill const. data */
+    __inline_call void_type fill (
+        data_type const& _data
+        )
+    {
+        for (auto _iter = this->head();
+                  _iter!= this->tend();
+                ++_iter )
+           *_iter = __copy(data_type, _data) ;
     }
 
 /*-------------------------------------- push array alloc */
@@ -759,6 +770,14 @@
         std::move(*(this->_ptrs[_tptr]-1)) ;
         self_type::
         _destruct(--this->_ptrs[_tptr] ) ;
+    }
+
+/*------------------------------------ is index in bounds */
+    __inline_call bool_type bounds (
+        size_type _pos
+        ) const
+    {
+        return _pos >= +0 && _pos < count() ;
     }
 
 /*------------------------------------ operator[] (write) */

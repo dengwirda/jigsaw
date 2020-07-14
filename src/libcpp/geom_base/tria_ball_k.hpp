@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 July, 2019
+     * Last updated: 26 March, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -1108,6 +1108,14 @@
         _xm[__ij(2,1,3)] +
         _xm[__ij(2,2,3)] *
         _xm[__ij(2,2,3)] ) ;
+
+        real_type _w21 = _p2[3]-_p1[3] ;
+        real_type _w31 = _p3[3]-_p1[3] ;
+        real_type _w41 = _p4[3]-_p1[3] ;
+
+        _xr[0]-= (real_type)+.5 * _w21 ;
+        _xr[1]-= (real_type)+.5 * _w31 ;
+        _xr[2]-= (real_type)+.5 * _w41 ;
 
         real_type _dd ;
         math::inv_3x3 (

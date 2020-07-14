@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 June, 2019
+     * Last updated: 30 May, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -64,6 +64,14 @@
         std:: size_t  /*_nrow*/
         ) { }
     __normal_call void_type push_point (
+        std:: size_t  /*_irow*/,
+        double     *  /*_pval*/,
+        std::int32_t  /*_itag*/
+        ) { }
+    __normal_call void_type open_seeds (
+        std:: size_t  /*_nrow*/
+        ) { }
+    __normal_call void_type push_seeds (
         std:: size_t  /*_irow*/,
         double     *  /*_pval*/,
         std::int32_t  /*_itag*/
@@ -405,6 +413,86 @@
                     _tstr[this->_ndim]);
 
                 _dest.push_point (
+                   _irow, _pval, _itag);
+            }
+            else
+            {
+                this->_errs.push_tail(_line);
+            }
+
+            }
+            catch (...)
+            {
+                this->_errs.push_tail(_line);
+            }
+
+            _irow += +1 ;
+
+            if (--_nrow == +0) break ;
+        }
+    }
+
+    /*
+    --------------------------------------------------------
+     * READ-SEEDS: read SEEDS data section
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  dest_type
+             >
+    __normal_call void_type read_seeds (
+        std::ifstream&_ffid ,
+        string_tokens&_stok ,
+        dest_type    &_dest
+        )
+    {
+        containers::
+            array< std::string > _tstr ;
+
+    /*----------------------------------------- read head */
+        std:: size_t _nrow = +0;
+        std:: size_t _irow = +0;
+        if (_stok.count() == +2)
+        {
+            _nrow = std::stol(_stok[1]);
+        }
+        else
+        {
+            this->_errs.
+            push_tail("Invalid SEEDS!");
+        }
+
+        _dest.open_seeds(_nrow);
+
+    /*----------------------------------------- read data */
+        std::string _line;
+        while (std::getline(_ffid, _line))
+        {
+            _tstr.clear();
+
+            try
+            {
+            find_toks (_line, ";", _tstr);
+
+            if (_tstr.count() == this->_ndim+1)
+            {
+                std:: size_t static
+                    constexpr _VMAX = +16;
+
+                double _pval[_VMAX];
+                std::int32_t _itag ;
+                for (auto _ipos = this->_ndim ;
+                          _ipos-- != +0; )
+                {
+                    _pval[_ipos] =
+                     std::stod(_tstr[_ipos]);
+                }
+
+                _itag = std::stol(
+                    _tstr[this->_ndim]);
+
+                _dest.push_seeds (
                    _irow, _pval, _itag);
             }
             else
@@ -1403,6 +1491,12 @@
             if (_stok[0] == "POINT")
                 {
                 read_point(_ffid, _stok,
+                           _dest) ;
+                }
+            else
+            if (_stok[0] == "SEEDS")
+                {
+                read_seeds(_ffid, _stok,
                            _dest) ;
                 }
             else

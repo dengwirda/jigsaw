@@ -65,10 +65,18 @@ template <
             iptr_type >             edge_base ;
 
     typedef mesh::mesh_complex_tria_3 <
-            iptr_type >             face_base ;
+            iptr_type >             tri3_base ;
+    typedef mesh::mesh_complex_quad_4 <
+            iptr_type >             quad_base ;
 
     typedef mesh::mesh_complex_tria_4 <
-            iptr_type >             tria_base ;
+            iptr_type >             tri4_base ;
+    typedef mesh::mesh_complex_hexa_8 <
+            iptr_type >             hexa_base ;
+    typedef mesh::mesh_complex_wedg_6 <
+            iptr_type >             wedg_base ;
+    typedef mesh::mesh_complex_pyra_5 <
+            iptr_type >             pyra_base ;
 
     typedef mesh::mesh_complex_node_4 <
             iptr_type ,
@@ -140,7 +148,7 @@ template <
         }
         } ;
 
-    class face_type : public face_base
+    class tri3_type : public tri3_base
         {
     /*------------------------- face type for ITER-MESH-3 */
         public  :
@@ -159,9 +167,9 @@ template <
         }
         } ;
 
-    class tria_type : public tria_base
+    class quad_type : public quad_base
         {
-    /*------------------------- tria type for ITER-MESH-3 */
+    /*------------------------- face type for ITER-MESH-3 */
         public  :
 
         iptr_type                     _itag ;
@@ -178,11 +186,89 @@ template <
         }
         } ;
 
-    typedef mesh::tria_complex_3 <
+    class tri4_type : public tri4_base
+        {
+    /*------------------------- cell type for ITER-MESH-3 */
+        public  :
+
+        iptr_type                     _itag ;
+
+        public  :
+
+        __inline_call iptr_type      & itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        } ;
+
+    class hexa_type : public hexa_base
+        {
+    /*------------------------- cell type for ITER-MESH-3 */
+        public  :
+
+        iptr_type                     _itag ;
+
+        public  :
+
+        __inline_call iptr_type      & itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        } ;
+
+    class wedg_type : public wedg_base
+        {
+    /*------------------------- cell type for ITER-MESH-3 */
+        public  :
+
+        iptr_type                     _itag ;
+
+        public  :
+
+        __inline_call iptr_type      & itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        } ;
+
+    class pyra_type : public pyra_base
+        {
+    /*------------------------- cell type for ITER-MESH-3 */
+        public  :
+
+        iptr_type                     _itag ;
+
+        public  :
+
+        __inline_call iptr_type      & itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        } ;
+
+    typedef mesh::mesh_complex_3 <
             node_type ,
             edge_type ,
-            face_type ,
-            tria_type            >  mesh_type ;
+            tri3_type , quad_type,
+            tri4_type , hexa_type,
+            wedg_type ,
+            pyra_type            >  mesh_type ;
 
     public  :
 

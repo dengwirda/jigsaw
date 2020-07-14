@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 July, 2019
+     * Last updated: 25 May, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -178,10 +178,16 @@
                 tria(_edge->_tadj)
                     ->node( _enod[ 1]) ;
 
+             auto _iptr =
+            _mesh._tria.node(_enod[0]) ;
+             auto _jptr =
+            _mesh._tria.node(_enod[1]) ;
+
             char_type _feat, _topo ;
             iptr_type _part;
             real_type _fbal[ +3] ;
             real_type _sbal[ +3] ;
+            real_type _enrm[ +2] ;
             if (!mesh_pred::edge_ball  (
                 _geom, _mesh ,
                 _edge->_tadj ,
@@ -191,18 +197,13 @@
             __assert( false &&
                 "TOPO-NODE: edge-ball" ) ;
 
-            real_type _enrm[ +3] ;
+    /*--------------------- try to est. local normals */
             geometry::line_norm_2d (
-               &_mesh._tria.
-                 node(_enod[0])->pval(0) ,
-               &_mesh._tria.
-                 node(_enod[1])->pval(0) ,
-                _enrm) ;
+               &_iptr->pval(0),
+               &_jptr->pval(0), _enrm
+                ) ;
 
-            _enrm[2] =
-                geometry::length_2d(_enrm) ;
-            _enrm[0]/= _enrm[2] ;
-            _enrm[1]/= _enrm[2] ;
+            geometry::normalise_2d (_enrm) ;
 
             real_type _sign =
             geometry::dot_2d(_enrm, _vnrm) ;
@@ -220,6 +221,7 @@
 
             if (_pmax[2] < _sbal[2])
             {
+    /*--------------------- keep max. SDB in edge-set */
                 _pmax[2] = _sbal[2];
 
                 _kind    =
@@ -239,95 +241,100 @@
               ::offT_kind) )
         {
     /*--------------------- calc. "skinny" off-centre */
-        _vnrm[2] =
-            geometry::length_2d(_vnrm) ;
-        _vnrm[0]/= _vnrm[2] ;
-        _vnrm[1]/= _vnrm[2] ;
+            _vnrm[2] =
+            geometry::normalise_2d (_vnrm) ;
 
-        real_type _rrad =
-            std::sqrt(_pmax[ 2]);
+            real_type _rrad =
+                std::sqrt(_pmax[ 2]) ;
 
-        if (_vnrm[2] >= _rEPS * _rrad)
-        {
-    /*--------------------- project on local "normal" */
-        _vnrm[0]*= _rrad *
-            (real_type) +2. ;
-        _vnrm[1]*= _rrad *
-            (real_type) +2. ;
-
-        typename
-        geom_type::line_type _ldat ;
-        _ldat._ipos[0] = _ppos[0]
-                       - _vnrm[0];
-        _ldat._ipos[1] = _ppos[1]
-                       - _vnrm[1];
-
-        _ldat._jpos[0] = _ppos[0]
-                       + _vnrm[0];
-        _ldat._jpos[1] = _ppos[1]
-                       + _vnrm[1];
-
-        mesh::keep_all_2d <
-            real_type ,
-            iptr_type >  _halo   ;
-
-        _geom.intersect( _ldat ,
-                         _halo ) ;
-
-        auto _ioff = _halo._list.tend();
-
-        real_type _dmin  =
-            _rEPS * std::pow(_rrad, +2);
-
-        real_type static constexpr
-            _NEAR = (real_type) +.75 ;
-
-        real_type _best  =
-            +std::numeric_limits
-                <real_type>::infinity();
-
-        for (auto _iter  =
-                _halo._list.head() ;
-                  _iter !=
-                _halo._list.tend() ;
-                ++_iter  )
-        {
-            iptr_type _near = -1;
-            _mesh._tria.find_node (
-           &_iter->pval(0), _near , _npos) ;
-
-            auto _nptr = &_mesh.
-                _tria.node(_near)->pval(0) ;
-
-            real_type _nsqr =
-                geometry::lensqr_2d (
-                   &_iter->pval(0), _nptr) ;
-
-            real_type _dsqr =
-                geometry::lensqr_2d (
-                   &_iter->pval(0), _ppos) ;
-
-            if (_nsqr > _dsqr *
-                        _NEAR )
-            if (_dsqr < _best &&
-                _dsqr > _dmin )
+            if (_vnrm[2] >= _rEPS * _rrad)
             {
-                _kind =
-                 rdel_opts::offT_kind  ;
+    /*--------------------- project on local "normal" */
+            real_type _pvec[2] ;
+            geometry::
+            vector_2d(_ppos, _pmax, _pvec) ;
 
-                _best = _dsqr ;
+            real_type _sign =
+            geometry::dot_2d(_pvec, _vnrm) ;
 
-                _ioff = _iter ;
+            if (_sign > (real_type)+0.)
+            {
+            _vnrm[0]*=
+                (real_type)+2. * _rrad ;
+            _vnrm[1]*=
+                (real_type)+2. * _rrad ;
             }
-        }
+            else
+            {
+            _vnrm[0]*=
+                (real_type)-2. * _rrad ;
+            _vnrm[1]*=
+                (real_type)-2. * _rrad ;
+            }
 
-        if (_ioff != _halo._list.tend())
-        {
-            _pmax[0] = _ioff->pval (0) ;
-            _pmax[1] = _ioff->pval (1) ;
-        }
+    /*--------------------- calc. local intersections */
+            typename
+            geom_type::line_type _ldat ;
+            _ldat._ipos[0] = _ppos[0];
+            _ldat._ipos[1] = _ppos[1];
 
-        }
+            _ldat._jpos[0] = _ppos[0];
+            _ldat._jpos[1] = _ppos[1];
+            _ldat._jpos[0]+= _vnrm[0];
+            _ldat._jpos[1]+= _vnrm[1];
+
+            mesh::keep_all_2d <
+                real_type ,
+                iptr_type >  _halo   ;
+
+            _geom.intersect( _ldat ,
+                             _halo ) ;
+
+            if (_halo._list.count() <=  +2)
+            {
+    /*--------------------- keep "best" intersections */
+            auto _ioff = _halo._list.tend();
+
+            real_type _dmin  =
+                _rEPS * std::pow(_rrad, +2);
+
+            real_type _best  =
+                +std::numeric_limits
+                    <real_type>::infinity();
+
+            for (auto
+                _iter  = _halo._list.head();
+                _iter != _halo._list.tend();
+              ++_iter  )
+            {
+                iptr_type _near = -1;
+                _mesh._tria.find_node (
+               &_iter->pval(0), _near , _npos) ;
+
+                real_type _dsqr =
+                    geometry::lensqr_2d (
+                       &_iter->pval(0), _ppos) ;
+
+                if (_near == _npos &&
+                    _dsqr >= _dmin &&
+                    _dsqr <= _best)
+                {
+                    _kind =
+                     rdel_opts::offT_kind  ;
+
+                    _best = _dsqr ;
+                    _ioff = _iter ;
+                }
+            }
+
+            if (_ioff != _halo._list.tend())
+            {
+                _pmax[0] = _ioff->pval (0) ;
+                _pmax[1] = _ioff->pval (1) ;
+            }
+            }
+
+            }
         }
 
         return  _kind ;
@@ -425,10 +432,8 @@
         _bscr.set_count(  + 0) ;
         _bcav.set_count(  + 0) ;
 
-        containers::
-            array<iptr_type> _tset ;
-        containers::
-            array<edge_data> _eset ;
+        containers::array<iptr_type> _tset;
+        containers::array<edge_data> _eset;
 
         _tset.set_alloc(  +32) ;
         _eset.set_alloc(  +32) ;
@@ -449,11 +454,10 @@
             _eset.set_count( +0) ;
 
             _mesh._tria.walk_node(
-                _npos ,
-             node_pred(_npos),_tset) ;
+            _npos, node_pred(_npos), _tset) ;
 
-            if (!etop_disk(_mesh,
-                _npos, _tset, _eset) )
+            if (!etop_disk(
+                _mesh, _npos, _tset, _eset) )
             {
                 _find = true; break ;
             }

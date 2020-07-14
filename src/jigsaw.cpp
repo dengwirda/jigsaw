@@ -2,22 +2,25 @@
     //
     // for cmd-jigsaw:
     //
-    // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto
-    // -DNDEBUG -D__cmd_jigsaw jigsaw.cpp -o../bin/jigsaw
+    // g++ -std=c++17 -pedantic -Wall -Wextra -O3 -flto
+    // -DNDEBUG -DCMD_JIGSAW jigsaw.cpp -o../bin/jigsaw
     //
-    // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto
-    // -DNDEBUG -D__cmd_tripod jigsaw.cpp -o../bin/tripod
+    // g++ -std=c++17 -pedantic -Wall -Wextra -O3 -flto
+    // -DNDEBUG -DCMD_TRIPOD jigsaw.cpp -o../bin/tripod
     //
-    // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto
-    // -DNDEBUG -D__cmd_marche jigsaw.cpp -o../bin/marche
-    //
+    // g++ -std=c++17 -pedantic -Wall -Wextra -O3 -flto
+    // -DNDEBUG -DCMD_MARCHE jigsaw.cpp -o../bin/marche
     //
     // for lib-jigsaw:
     //
-    // g++ -std=c++11 -pedantic -Wall -Wextra -O3 -flto
-    // -fPIC -DNDEBUG -D__lib_jigsaw jigsaw.cpp -shared
+    // g++ -std=c++17 -pedantic -Wall -Wextra -O3 -flto
+    // -fPIC -DNDEBUG -DLIB_JIGSAW jigsaw.cpp -shared
     // -o../lib/libjigsaw.so
     //
+    // more option(s):
+    //
+    // -DUSE_NETCDF
+    // -DUSE_TIMERS
     //
     // -Wfloat-conversion -Wsign-conversion -Wshadow
     //
@@ -38,7 +41,7 @@
     --------------------------------------------------------
      *
      * JIGSAW release 0.9.13.x
-     * Last updated: 30 January, 2020
+     * Last updated: 08 June, 2020
      *
      * Copyright 2013 -- 2020
      * Darren Engwirda
@@ -184,27 +187,43 @@
     --------------------------------------------------------
      */
 
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.13"
 
-#   define __jloglndv   \
-"#------------------------------------------------------------\n"
+#   if  defined(  USE_NETCDF)
+#       define  __use_netcdf
+#   endif
+#   if  defined(  USE_TIMERS)
+#       define  __use_timers
+#   endif
 
-//  define __cmd_jigsaw               // the cmd-ln exe's
-//  define __cmd_tripod
-//  define __cmd_marche
+    //  define  __cmd_jigsaw          // the cmd-ln exe's
+    //  define  __cmd_tripod
+    //  define  __cmd_marche
+    //  define  __lib_jigsaw          // a shared library
 
-//  define __lib_jigsaw               // a shared library
+#   if  defined(  CMD_JIGSAW)
+#       define  __cmd_jigsaw
+#   endif
+#   if  defined(  CMD_TRIPOD)
+#       define  __cmd_tripod
+#   endif
+#   if  defined(  CMD_MARCHE)
+#       define  __cmd_marche
+#   endif
+#   if  defined(  LIB_JIGSAW)
+#       define  __lib_jigsaw
+#   endif
 
 #   if !defined(__cmd_jigsaw) && \
        !defined(__cmd_tripod) && \
        !defined(__cmd_marche) && \
        !defined(__lib_jigsaw)
-
     /*---------------------------------- build by default */
 #       define  __cmd_jigsaw
-
 #   endif
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.13"
+#   define __jloglndv   \
+"#------------------------------------------------------------\n"
 
     /*---------------------------------- for i/o on files */
 
@@ -229,11 +248,19 @@
 #   include <chrono>
 #   endif//__use_timers
 
+    /*---------------------------------- to do netcdf i/o */
+
+    extern  "C"
+    {
+#   ifdef  __use_netcdf
+#   include "netcdf/lib_netcdf.h"
+#   endif//__use_netcdf
+    }
+
     /*---------------------------------- JIGSAW's backend */
 
-
-#   include "libcpp/libbasic.hpp"
-#   include "libcpp/libparse.hpp"
+#   include "libcpp/basebase.hpp"
+#   include "libcpp/textutil.hpp"
 
 #   include "libcpp/useropts.hpp"
 
@@ -386,7 +413,6 @@
     class geom_data         // holds the GEOM obj.
         {
         public  :
-
         typedef mesh ::geom_mesh_euclidean_2d  <
                     real_type,
                     iptr_type>   euclidean_mesh_2d ;
@@ -411,9 +437,7 @@
         ellipsoid_mesh_3d       _ellipsoid_mesh_3d ;
 
         public  :
-
     /*------------------------- helper: init. everything! */
-
         __normal_call void_type init_geom (
             jcfg_data &_jcfg
             )
@@ -445,7 +469,6 @@
     class hfun_data         // holds the HFUN obj.
         {
         public  :
-
         typedef mesh ::hfun_constant_value_kd  <
                     iptr_type,
                     real_type>   constant_value_kd ;
@@ -493,9 +516,7 @@
         ellipsoid_grid_3d       _ellipsoid_grid_3d ;
 
         public  :
-
     /*------------------------- helper: init. everything! */
-
         __normal_call void_type init_hfun (
             jcfg_data &_jcfg,
             bool_type  _link = false
@@ -532,7 +553,6 @@
         }
 
     /*------------------------- helper: limit everything! */
-
         __normal_call void_type clip_hfun (
             jcfg_data &_jcfg
             )
@@ -561,14 +581,13 @@
 
     /*
     --------------------------------------------------------
-     * aggregated RDEL data containers.
+     * aggregated MESH data containers.
     --------------------------------------------------------
      */
 
-    class rdel_data         // holds the restrict-del obj.
+    class mesh_data         // holds the mesh-complex obj.
         {
         public  :
-
         typedef mesh::rdel_complex_2d <
                 real_type ,
                 iptr_type >      euclidean_rdel_2d ;
@@ -577,29 +596,15 @@
                 real_type ,
                 iptr_type >      euclidean_rdel_3d ;
 
-		std::size_t             _ndim = +0;
+        /*
+        typedef mesh::tree_complex_2d <
+                real_type ,
+                iptr_type >      euclidean_tree_2d ;
 
-        jmsh_kind ::
-        enum_data               _kind =
-                            jmsh_kind::null_mesh_kind ;
-
-        euclidean_rdel_2d       _euclidean_rdel_2d ;
-        euclidean_rdel_3d       _euclidean_rdel_3d ;
-
-        euclidean_rdel_2d       _euclidean_rvor_2d ;
-        euclidean_rdel_3d       _euclidean_rvor_3d ;
-
-        } ;
-
-    /*
-    --------------------------------------------------------
-     * aggregated MESH data containers.
-    --------------------------------------------------------
-     */
-
-    class mesh_data         // holds the tria-complex obj.
-        {
-        public  :
+        typedef mesh::tree_complex_3d <
+                real_type ,
+                iptr_type >      euclidean_tree_3d ;
+         */
 
         typedef mesh::iter_mesh_euclidean_2d <
                 real_type ,
@@ -614,6 +619,12 @@
         jmsh_kind ::
         enum_data               _kind =
                             jmsh_kind::null_mesh_kind ;
+
+        euclidean_rdel_2d       _euclidean_rdel_2d ;
+        euclidean_rdel_3d       _euclidean_rdel_3d ;
+
+        euclidean_rdel_2d       _euclidean_rvor_2d ;
+        euclidean_rdel_3d       _euclidean_rvor_3d ;
 
         euclidean_mesh_2d       _euclidean_mesh_2d ;
         euclidean_mesh_3d       _euclidean_mesh_3d ;
@@ -753,11 +764,20 @@
 
     /*
     --------------------------------------------------------
-     * COPY-MESH: copy r-DT to tri-complex.
+     * COPY-MESH: copy rDT to mesh-complex.
     --------------------------------------------------------
      */
 
     #   include "msh_copy.hpp"
+
+
+    /*
+    --------------------------------------------------------
+     * CULL-MESH: segment mesh using seeds.
+    --------------------------------------------------------
+     */
+
+    #   include "msh_cull.hpp"
 
 
     /*

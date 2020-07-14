@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 January, 2020
+     * Last updated: 04 March, 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -221,7 +221,7 @@
             {
                 typename
                 mesh_data::euclidean_mesh_2d
-                    ::tria_type _tdat ;
+                    ::tri3_type _tdat ;
                 _tdat.node(0) = _node[0];
                 _tdat.node(1) = _node[1];
                 _tdat.node(2) = _node[2];
@@ -238,7 +238,7 @@
             {
                 typename
                 mesh_data::euclidean_mesh_3d
-                    ::face_type _tdat ;
+                    ::tri3_type _tdat ;
                 _tdat.node(0) = _node[0];
                 _tdat.node(1) = _node[1];
                 _tdat.node(2) = _node[2];
@@ -247,6 +247,52 @@
                 this->_init->
                    _euclidean_mesh_3d.
                _mesh.push_tri3(_tdat, false) ;
+            }
+        }
+    /*---------------------------------- parse QUAD4 data */
+        __normal_call void_type push_quad4 (
+            std:: size_t  _ipos ,
+            std::int32_t *_node ,
+            std::int32_t  _itag
+            )
+        {
+            __unreferenced(_ipos) ;
+            __unreferenced(_itag) ;
+
+            if (this->_ndim == +2 &&
+                this->_kind ==
+                    jmsh_kind::euclidean_mesh)
+            {
+                typename
+                mesh_data::euclidean_mesh_2d
+                    ::quad_type _qdat ;
+                _qdat.node(0) = _node[0];
+                _qdat.node(1) = _node[1];
+                _qdat.node(2) = _node[2];
+                _qdat.node(3) = _node[3];
+                _qdat.itag () = _itag ;
+
+                this->_init->
+                   _euclidean_mesh_2d.
+               _mesh.push_quad(_qdat, false) ;
+            }
+            else
+            if (this->_ndim == +3 &&
+                this->_kind ==
+                    jmsh_kind::euclidean_mesh)
+            {
+                typename
+                mesh_data::euclidean_mesh_3d
+                    ::quad_type _qdat ;
+                _qdat.node(0) = _node[0];
+                _qdat.node(1) = _node[1];
+                _qdat.node(2) = _node[2];
+                _qdat.node(3) = _node[3];
+                _qdat.itag () = _itag ;
+
+                this->_init->
+                   _euclidean_mesh_3d.
+               _mesh.push_quad(_qdat, false) ;
             }
         }
     /*---------------------------------- parse TRIA4 data */
@@ -272,7 +318,7 @@
             {
                 typename
                 mesh_data::euclidean_mesh_3d
-                    ::tria_type _tdat ;
+                    ::tri4_type _tdat ;
                 _tdat.node(0) = _node[0];
                 _tdat.node(1) = _node[1];
                 _tdat.node(2) = _node[2];
@@ -418,7 +464,7 @@
             {
                 typename
                 mesh_data::euclidean_mesh_2d
-                    ::tria_type _tdat ;
+                    ::tri3_type _tdat ;
                 _tdat.node(0) = _imsh.
                     _tria3._data[_ipos]._node[0];
                 _tdat.node(1) = _imsh.
@@ -430,6 +476,28 @@
 
                 _init._euclidean_mesh_2d.
                     _mesh.push_tri3(_tdat,false);
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _imsh._quad4._size ;
+                    ++_ipos )
+            {
+                typename
+                mesh_data::euclidean_mesh_2d
+                    ::quad_type _qdat ;
+                _qdat.node(0) = _imsh.
+                    _quad4._data[_ipos]._node[0];
+                _qdat.node(1) = _imsh.
+                    _quad4._data[_ipos]._node[1];
+                _qdat.node(2) = _imsh.
+                    _quad4._data[_ipos]._node[2];
+                _qdat.node(3) = _imsh.
+                    _quad4._data[_ipos]._node[3];
+                _qdat.itag () = _imsh.
+                    _quad4._data[_ipos]._itag ;
+
+                _init._euclidean_mesh_2d.
+                    _mesh.push_quad(_qdat,false);
             }
 
             }
@@ -497,7 +565,7 @@
             {
                 typename
                 mesh_data::euclidean_mesh_3d
-                    ::face_type _tdat ;
+                    ::tri3_type _tdat ;
                 _tdat.node(0) = _imsh.
                     _tria3._data[_ipos]._node[0];
                 _tdat.node(1) = _imsh.
@@ -512,12 +580,34 @@
             }
 
             for (auto _ipos = (size_t) +0 ;
+                _ipos != _imsh._quad4._size ;
+                    ++_ipos )
+            {
+                typename
+                mesh_data::euclidean_mesh_3d
+                    ::quad_type _qdat ;
+                _qdat.node(0) = _imsh.
+                    _quad4._data[_ipos]._node[0];
+                _qdat.node(1) = _imsh.
+                    _quad4._data[_ipos]._node[1];
+                _qdat.node(2) = _imsh.
+                    _quad4._data[_ipos]._node[2];
+                _qdat.node(3) = _imsh.
+                    _quad4._data[_ipos]._node[3];
+                _qdat.itag () = _imsh.
+                    _quad4._data[_ipos]._itag ;
+
+                _init._euclidean_mesh_3d.
+                    _mesh.push_quad(_qdat,false);
+            }
+
+            for (auto _ipos = (size_t) +0 ;
                 _ipos != _imsh._tria4._size ;
                     ++_ipos )
             {
                 typename
                 mesh_data::euclidean_mesh_3d
-                    ::tria_type _tdat ;
+                    ::tri4_type _tdat ;
                 _tdat.node(0) = _imsh.
                     _tria4._data[_ipos]._node[0];
                 _tdat.node(1) = _imsh.
@@ -630,9 +720,9 @@
             iptr_type _nmax = +0 ;
 
             for (auto _iter  = _init.
-            _euclidean_mesh_2d._mesh._set1.head() ;
+            _euclidean_mesh_2d._mesh.node().head();
                       _iter != _init.
-            _euclidean_mesh_2d._mesh._set1.tend() ;
+            _euclidean_mesh_2d._mesh.node().tend();
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
@@ -641,9 +731,9 @@
             }
 
             for (auto _iter  = _init.
-            _euclidean_mesh_2d._mesh._set2.head() ;
+            _euclidean_mesh_2d._mesh.edge().head();
                       _iter != _init.
-            _euclidean_mesh_2d._mesh._set2.tend() ;
+            _euclidean_mesh_2d._mesh.edge().tend();
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
@@ -659,9 +749,9 @@
             }
 
             for (auto _iter  = _init.
-            _euclidean_mesh_2d._mesh._set3.head() ;
+            _euclidean_mesh_2d._mesh.tri3().head();
                       _iter != _init.
-            _euclidean_mesh_2d._mesh._set3.tend() ;
+            _euclidean_mesh_2d._mesh.tri3().tend();
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
@@ -680,10 +770,36 @@
                     _imax, _iter->node(2)) ;
             }
 
+            for (auto _iter  = _init.
+            _euclidean_mesh_2d._mesh.quad().head();
+                      _iter != _init.
+            _euclidean_mesh_2d._mesh.quad().tend();
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+
+                _imin = std::min(
+                    _imin, _iter->node(0)) ;
+                _imin = std::min(
+                    _imin, _iter->node(1)) ;
+                _imin = std::min(
+                    _imin, _iter->node(2)) ;
+                _imin = std::min(
+                    _imin, _iter->node(3)) ;
+                _imax = std::max(
+                    _imax, _iter->node(0)) ;
+                _imax = std::max(
+                    _imax, _iter->node(1)) ;
+                _imax = std::max(
+                    _imax, _iter->node(2)) ;
+                _imax = std::max(
+                    _imax, _iter->node(3)) ;
+            }
+
             if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
-    "**input error: GEOM. tria. indexing is incorrect.\n") ;
+    "**input error: INIT. cell. indexing is incorrect.\n") ;
 
                 _errv = __invalid_indexing ;
             }
@@ -702,9 +818,9 @@
             iptr_type _nmax = +0 ;
 
             for (auto _iter  = _init.
-            _euclidean_mesh_3d._mesh._set1.head() ;
+            _euclidean_mesh_3d._mesh.node().head();
                       _iter != _init.
-            _euclidean_mesh_3d._mesh._set1.tend() ;
+            _euclidean_mesh_3d._mesh.node().tend();
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
@@ -713,9 +829,9 @@
             }
 
             for (auto _iter  = _init.
-            _euclidean_mesh_3d._mesh._set2.head() ;
+            _euclidean_mesh_3d._mesh.edge().head();
                       _iter != _init.
-            _euclidean_mesh_3d._mesh._set2.tend() ;
+            _euclidean_mesh_3d._mesh.edge().tend();
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
@@ -731,9 +847,9 @@
             }
 
             for (auto _iter  = _init.
-            _euclidean_mesh_3d._mesh._set3.head() ;
+            _euclidean_mesh_3d._mesh.tri3().head();
                       _iter != _init.
-            _euclidean_mesh_3d._mesh._set3.tend() ;
+            _euclidean_mesh_3d._mesh.tri3().tend();
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
@@ -753,9 +869,35 @@
             }
 
             for (auto _iter  = _init.
-            _euclidean_mesh_3d._mesh._set4.head() ;
+            _euclidean_mesh_3d._mesh.quad().head();
                       _iter != _init.
-            _euclidean_mesh_3d._mesh._set4.tend() ;
+            _euclidean_mesh_3d._mesh.quad().tend();
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+
+                _imin = std::min(
+                    _imin, _iter->node(0)) ;
+                _imin = std::min(
+                    _imin, _iter->node(1)) ;
+                _imin = std::min(
+                    _imin, _iter->node(2)) ;
+                _imin = std::min(
+                    _imin, _iter->node(3)) ;
+                _imax = std::max(
+                    _imax, _iter->node(0)) ;
+                _imax = std::max(
+                    _imax, _iter->node(1)) ;
+                _imax = std::max(
+                    _imax, _iter->node(2)) ;
+                _imax = std::max(
+                    _imax, _iter->node(3)) ;
+            }
+
+            for (auto _iter  = _init.
+            _euclidean_mesh_3d._mesh.tri4().head();
+                      _iter != _init.
+            _euclidean_mesh_3d._mesh.tri4().tend();
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
@@ -781,7 +923,7 @@
             if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
-    "**input error: GEOM. tria. indexing is incorrect.\n") ;
+    "**input error: INIT. cell. indexing is incorrect.\n") ;
 
                 _errv = __invalid_indexing ;
             }
@@ -842,42 +984,53 @@
 
             _jlog.push("\n") ;
 
-            iptr_type _num1 = +0 ;
-            iptr_type _num2 = +0 ;
-            iptr_type _num3 = +0 ;
+            iptr_type _nnN1 = +0 ;
+            iptr_type _nnE2 = +0 ;
+            iptr_type _nnT3 = +0 , _nnQ4 =  +0 ;
 
             for (auto _iter  = _init.
-            _euclidean_mesh_2d._mesh._set1.head() ;
+            _euclidean_mesh_2d._mesh.node().head();
                       _iter != _init.
-            _euclidean_mesh_2d._mesh._set1.tend() ;
+            _euclidean_mesh_2d._mesh.node().tend();
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num1 += +1 ;
+            if (_iter->mark()>=+0) _nnN1 += +1 ;
             }
 
-            __dumpINTS("|COORD.|", _num1)
+            __dumpINTS("|COORD.|", _nnN1)
 
             for (auto _iter  = _init.
-            _euclidean_mesh_2d._mesh._set2.head() ;
+            _euclidean_mesh_2d._mesh.edge().head();
                       _iter != _init.
-            _euclidean_mesh_2d._mesh._set2.tend() ;
+            _euclidean_mesh_2d._mesh.edge().tend();
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num2 += +1 ;
+            if (_iter->mark()>=+0) _nnE2 += +1 ;
             }
 
-            __dumpINTS("|EDGE-2|", _num2)
+            __dumpINTS("|EDGE-2|", _nnE2)
 
             for (auto _iter  = _init.
-            _euclidean_mesh_2d._mesh._set3.head() ;
+            _euclidean_mesh_2d._mesh.tri3().head();
                       _iter != _init.
-            _euclidean_mesh_2d._mesh._set3.tend() ;
+            _euclidean_mesh_2d._mesh.tri3().tend();
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num3 += +1 ;
+            if (_iter->mark()>=+0) _nnT3 += +1 ;
             }
 
-            __dumpINTS("|TRIA-3|", _num3)
+            __dumpINTS("|TRIA-3|", _nnT3)
+
+            for (auto _iter  = _init.
+            _euclidean_mesh_2d._mesh.quad().head();
+                      _iter != _init.
+            _euclidean_mesh_2d._mesh.quad().tend();
+                    ++_iter )
+            {
+            if (_iter->mark()>=+0) _nnQ4 += +1 ;
+            }
+
+            __dumpINTS("|QUAD-4|", _nnQ4)
         }
         else
         if (_init._ndim == +3 &&
@@ -892,54 +1045,65 @@
 
             _jlog.push("\n") ;
 
-            iptr_type _num1 = +0 ;
-            iptr_type _num2 = +0 ;
-            iptr_type _num3 = +0 ;
-            iptr_type _num4 = +0 ;
+            iptr_type _nnN1 = +0 ;
+            iptr_type _nnE2 = +0 ;
+            iptr_type _nnT3 = +0 , _nnQ4 =  +0 ;
+            iptr_type _nnT4 = +0 ;
 
             for (auto _iter  = _init.
-            _euclidean_mesh_3d._mesh._set1.head() ;
+            _euclidean_mesh_3d._mesh.node().head();
                       _iter != _init.
-            _euclidean_mesh_3d._mesh._set1.tend() ;
+            _euclidean_mesh_3d._mesh.node().tend();
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num1 += +1 ;
+            if (_iter->mark()>=+0) _nnN1 += +1 ;
             }
 
-            __dumpINTS("|COORD.|", _num1)
+            __dumpINTS("|COORD.|", _nnN1)
 
             for (auto _iter  = _init.
-            _euclidean_mesh_3d._mesh._set2.head() ;
+            _euclidean_mesh_3d._mesh.edge().head();
                       _iter != _init.
-            _euclidean_mesh_3d._mesh._set2.tend() ;
+            _euclidean_mesh_3d._mesh.edge().tend();
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num2 += +1 ;
+            if (_iter->mark()>=+0) _nnE2 += +1 ;
             }
 
-            __dumpINTS("|EDGE-2|", _num2)
+            __dumpINTS("|EDGE-2|", _nnE2)
 
             for (auto _iter  = _init.
-            _euclidean_mesh_3d._mesh._set3.head() ;
+            _euclidean_mesh_3d._mesh.tri3().head();
                       _iter != _init.
-            _euclidean_mesh_3d._mesh._set3.tend() ;
+            _euclidean_mesh_3d._mesh.tri3().tend();
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num3 += +1 ;
+            if (_iter->mark()>=+0) _nnT3 += +1 ;
             }
 
-            __dumpINTS("|TRIA-3|", _num3)
+            __dumpINTS("|TRIA-3|", _nnT3)
 
             for (auto _iter  = _init.
-            _euclidean_mesh_3d._mesh._set4.head() ;
+            _euclidean_mesh_3d._mesh.quad().head();
                       _iter != _init.
-            _euclidean_mesh_3d._mesh._set4.tend() ;
+            _euclidean_mesh_3d._mesh.quad().tend();
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _num4 += +1 ;
+            if (_iter->mark()>=+0) _nnQ4 += +1 ;
             }
 
-            __dumpINTS("|TRIA-4|", _num4)
+            __dumpINTS("|QUAD-4|", _nnQ4)
+
+            for (auto _iter  = _init.
+            _euclidean_mesh_3d._mesh.tri4().head();
+                      _iter != _init.
+            _euclidean_mesh_3d._mesh.tri4().tend();
+                    ++_iter )
+            {
+            if (_iter->mark()>=+0) _nnT4 += +1 ;
+            }
+
+            __dumpINTS("|TRIA-4|", _nnT4)
         }
 
         _jlog.push("\n") ;

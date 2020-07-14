@@ -278,8 +278,7 @@
         iptr_type  _fadj
         )
     {
-        containers
-            ::array<iptr_type> _tset ;
+        containers::array<iptr_type> _tset;
 
         _tset.set_alloc(8) ;
 
@@ -295,13 +294,13 @@
 
         _tset.set_count(0) ;
 
-        base_type::edge_loop ( _mesh ,
+        base_type::edge_loop (_mesh ,
             _enod, _tadj ,
             _fadj, _tset ) ;
 
         algorithms::isort (
             &_enod[0], &_enod[2],
-                std::less<iptr_type>()) ;
+                std::less<iptr_type>());
 
         typename mesh_type::
                  edge_data _edat;
@@ -698,16 +697,10 @@
         vector_3d( _pmid, _pmax, _dvec) ;
 
         _evec[ 3] =
-            geometry::length_3d (_evec) ;
-        _evec[ 0]/= _evec[3] ;
-        _evec[ 1]/= _evec[3] ;
-        _evec[ 2]/= _evec[3] ;
+        geometry:: normalise_3d (_evec) ;
 
         _dvec[ 3] =
-            geometry::length_3d (_dvec) ;
-        _dvec[ 0]/= _dvec[3] ;
-        _dvec[ 1]/= _dvec[3] ;
-        _dvec[ 2]/= _dvec[3] ;
+        geometry:: normalise_3d (_dvec) ;
 
     /*-------------------------- off-centre, a la "ungor" */
         _dvec[4] =
@@ -992,10 +985,7 @@
         vector_3d( _fbal, _tbal, _dvec) ;
 
         _dvec[3] =
-            geometry::length_3d (_dvec) ;
-        _dvec[0]/= _dvec[3] ;
-        _dvec[1]/= _dvec[3] ;
-        _dvec[2]/= _dvec[3] ;
+        geometry:: normalise_3d (_dvec) ;
 
     /*------------------------- off-centre - a'la "ungor" */
         _dvec[4] =

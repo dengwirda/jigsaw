@@ -14,9 +14,9 @@
      * MARCHE: "fast-marching" eikonal equation solver.
     --------------------------------------------------------
      *
-     * Last updated: 28 June, 2019
+     * Last updated: 01 March, 2020
      *
-     * Copyright 2013 -- 2019
+     * Copyright 2013 -- 2020
      * Darren Engwirda
      * darren.engwirda@columbia.edu
      * https://github.com/dengwirda
@@ -108,6 +108,9 @@
 
         __unreferenced(_time) ;
 #       endif//__use_timers
+
+    /*--------------------------------- init. geo. kernel */
+        mp_float::exactinit() ;
 
     /*--------------------------------- setup *.JLOG data */
         if (_jjig != nullptr )
@@ -292,6 +295,9 @@
 
         __unreferenced(_time) ;
 #       endif//__use_timers
+
+    /*--------------------------------- init. geo. kernel */
+        mp_float::exactinit() ;
 
     /*-------------------------- find *.JFCG file in args */
         iptr_type _retv = -1  ;

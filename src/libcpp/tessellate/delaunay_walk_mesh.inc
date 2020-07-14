@@ -96,7 +96,7 @@
     /*--------------------- scale no. iter with dims. */
         iptr_type _imax = (iptr_type)
             std::pow ((double) _ntri,
-        +1.0 / tria_pred::_dims) / 4 + 1 ;
+                1. / tria_pred::geom_dims) / 4 + 1 ;
 
         for (auto _iter = _imax; _iter-- != +0; )
         {
@@ -212,7 +212,7 @@
         real_type _dmin = +std ::
         numeric_limits<real_type>::infinity () ;
 
-        for (auto _inod = tria_pred::_dims + 1 ;
+        for (auto _inod = tria_pred::topo_dims+1 ;
                   _inod-- != +0 ;  )
         {
             auto _next = tria(_elem)

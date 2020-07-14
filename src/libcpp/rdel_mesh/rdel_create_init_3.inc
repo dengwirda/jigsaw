@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 August, 2019
+     * Last updated: 05 March, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -75,9 +75,9 @@
         iptr_type _npos  = 0 ;
         tree_type _tree  ;
         for (auto _node  =
-            _init._mesh._set1.head() ;
+            _init._mesh.node().head();
                   _node !=
-            _init._mesh._set1.tend() ;
+            _init._mesh.node().tend();
                 ++_node, ++_npos)
         {
             if (_node->mark() >= +0)
@@ -404,7 +404,7 @@
                 ++_iter  )
         {
              auto _node =
-           &_init._mesh._set1 [*_iter] ;
+           &_init._mesh. node (*_iter) ;
 
             _pmid[0] +=
                 _node->pval(0);
@@ -423,7 +423,7 @@
                 ++_iter  )
         {
              auto _node =
-           &_init._mesh._set1 [*_iter] ;
+           &_init._mesh. node (*_iter) ;
 
             real_type _dsqr =
             geometry::lensqr_3d(
@@ -441,7 +441,7 @@
         if (_imid > -1)
         {
              auto _node =
-           &_init._mesh._set1 [ _imid] ;
+           &_init._mesh. node ( _imid) ;
 
             iptr_type _npos = -1 ;
             iptr_type _near = -1 ;
@@ -514,7 +514,7 @@
 
              auto _inum =*_iter;
              auto _node =
-           &_init._mesh ._set1[*_iter] ;
+           &_init._mesh . node(*_iter) ;
 
             iptr_type _near = -1 ;
             iptr_type _npos = -1 ;
@@ -579,9 +579,9 @@
 
     /*------------------------------ seed edge from init. */
         for (auto _iter  =
-            _init._mesh._set2.head();
+            _init._mesh.edge().head() ;
                   _iter !=
-            _init._mesh._set2.tend();
+            _init._mesh.edge().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0)
@@ -636,9 +636,9 @@
 
     /*------------------------------ seed face from init. */
         for (auto _iter  =
-            _init._mesh._set3.head();
+            _init._mesh.tri3().head() ;
                   _iter !=
-            _init._mesh._set3.tend();
+            _init._mesh.tri3().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0)

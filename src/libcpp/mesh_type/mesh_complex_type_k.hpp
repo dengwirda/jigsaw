@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 December, 2019
+     * Last updated: 04 March, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -52,8 +52,8 @@
     --------------------------------------------------------
      * BASE-NODE-2: node-type for mesh complexes in R^2.
     --------------------------------------------------------
-     * IPTR-TYPE - signed-integer typedef.
-     * REAL-TYPE - floating-point typedef.
+     * IPTR-TYPE -- signed-integer typedef.
+     * REAL-TYPE -- floating-point typedef.
     --------------------------------------------------------
      */
 
@@ -129,8 +129,8 @@
     --------------------------------------------------------
      * BASE-NODE-3: node-type for mesh complexes in R^3.
     --------------------------------------------------------
-     * IPTR-TYPE - signed-integer typedef.
-     * REAL-TYPE - floating-point typedef.
+     * IPTR-TYPE -- signed-integer typedef.
+     * REAL-TYPE -- floating-point typedef.
     --------------------------------------------------------
      */
 
@@ -206,8 +206,8 @@
     --------------------------------------------------------
      * BASE-NODE-4: node-type for mesh complexes in R^4.
     --------------------------------------------------------
-     * IPTR-TYPE - signed-integer typedef.
-     * REAL-TYPE - floating-point typedef.
+     * IPTR-TYPE -- signed-integer typedef.
+     * REAL-TYPE -- floating-point typedef.
     --------------------------------------------------------
      */
 
@@ -281,9 +281,9 @@
 
     /*
     --------------------------------------------------------
-     * BASE-EDGE-2: 1-simplex type for MESH-COMPLEX-K.
+     * BASE-EDGE-2: edge-2 cell for MESH-COMPLEX-k.
     --------------------------------------------------------
-     * IPTR-TYPE - signed-integer typedef.
+     * IPTR-TYPE -- signed-integer typedef.
     --------------------------------------------------------
      */
 
@@ -292,7 +292,7 @@
              >
     class mesh_complex_edge_2
     {
-/*---------------------------------------- base 1-simplex */
+/*---------------------------------------- EDGE-2 element */
     public  :
 
     typedef I                 iptr_type ;
@@ -401,9 +401,9 @@
 
     /*
     --------------------------------------------------------
-     * BASE-TRIA-3: 2-simplex type for MESH-COMPLEX-K.
+     * BASE-TRIA-3: tria-3 cell for MESH-COMPLEX-k.
     --------------------------------------------------------
-     * IPTR-TYPE - signed-integer typedef.
+     * IPTR-TYPE -- signed-integer typedef.
     --------------------------------------------------------
      */
 
@@ -412,7 +412,7 @@
              >
     class mesh_complex_tria_3
     {
-/*---------------------------------------- base 2-simplex */
+/*---------------------------------------- TRIA-3 element */
     public  :
 
     typedef I                 iptr_type ;
@@ -591,9 +591,9 @@
 
     /*
     --------------------------------------------------------
-     * BASE-QUAD-4: quad-4 cell type for MESH-COMPLEX-K.
+     * BASE-QUAD-4: quad-4 cell for MESH-COMPLEX-k.
     --------------------------------------------------------
-     * IPTR-TYPE - signed-integer typedef.
+     * IPTR-TYPE -- signed-integer typedef.
     --------------------------------------------------------
      */
 
@@ -602,7 +602,7 @@
              >
     class mesh_complex_quad_4
     {
-/*-------------------------------------- base quad-4 cell */
+/*---------------------------------------- QUAD-4 element */
     public  :
 
     typedef I                 iptr_type ;
@@ -794,9 +794,9 @@
 
     /*
     --------------------------------------------------------
-     * BASE-TRIA-4: 3-simplex type for MESH-COMPLEX-K.
+     * BASE-TRIA-4: tria-4 cell for MESH-COMPLEX-k.
     --------------------------------------------------------
-     * IPTR-TYPE - signed-integer typedef.
+     * IPTR-TYPE -- signed-integer typedef.
     --------------------------------------------------------
      */
 
@@ -805,7 +805,7 @@
              >
     class mesh_complex_tria_4
     {
-/*---------------------------------------- base 3-simplex */
+/*---------------------------------------- TRIA-4 element */
     public  :
 
     typedef I                 iptr_type ;
@@ -1114,6 +1114,189 @@
         {
             return   +0;
         }
+    }
+
+    } ;
+
+    /*
+    --------------------------------------------------------
+     * BASE-HEXA-8: hexa-8 cell for MESH-COMPLEX-k.
+    --------------------------------------------------------
+     * IPTR-TYPE -- signed-integer typedef.
+    --------------------------------------------------------
+     */
+
+    template <
+    typename I
+             >
+    class mesh_complex_hexa_8
+    {
+/*---------------------------------------- HEXA-8 element */
+    public  :
+
+    typedef I                 iptr_type ;
+
+    iptr_type static constexpr _dims = +3 ;
+
+    containers::
+    fixed_array<iptr_type, +8>    _ndat ;  // node indexing
+
+    char                          _mark ;
+    char                          _self ;
+
+    public  :
+/*---------------------------------------- "write" access */
+    __inline_call iptr_type      & node (
+        iptr_type  _ipos
+        )
+    {   return this->_ndat [_ipos];
+    }
+
+    __inline_call char           & mark (
+        )
+    {   return this->_mark ;
+    }
+    __inline_call char           & self (
+        )
+    {   return this->_self ;
+    }
+
+/*---------------------------------------- "const" access */
+    __inline_call iptr_type const& node (
+        iptr_type  _ipos
+        ) const
+    {   return this->_ndat[_ipos];
+    }
+
+    __inline_call char      const& mark (
+        ) const
+    {   return this->_mark ;
+    }
+    __inline_call char      const& self (
+        ) const
+    {   return this->_self ;
+    }
+
+    } ;
+
+    /*
+    --------------------------------------------------------
+     * BASE-WEDG-6: wedg-6 cell for MESH-COMPLEX-k.
+    --------------------------------------------------------
+     * IPTR-TYPE -- signed-integer typedef.
+    --------------------------------------------------------
+     */
+
+    template <
+    typename I
+             >
+    class mesh_complex_wedg_6
+    {
+/*---------------------------------------- WEDG-6 element */
+    public  :
+
+    typedef I                 iptr_type ;
+
+    iptr_type static constexpr _dims = +3 ;
+
+    containers::
+    fixed_array<iptr_type, +6>    _ndat ;  // node indexing
+
+    char                          _mark ;
+    char                          _self ;
+
+    public  :
+/*---------------------------------------- "write" access */
+    __inline_call iptr_type      & node (
+        iptr_type  _ipos
+        )
+    {   return this->_ndat [_ipos];
+    }
+
+    __inline_call char           & mark (
+        )
+    {   return this->_mark ;
+    }
+    __inline_call char           & self (
+        )
+    {   return this->_self ;
+    }
+
+/*---------------------------------------- "const" access */
+    __inline_call iptr_type const& node (
+        iptr_type  _ipos
+        ) const
+    {   return this->_ndat[_ipos];
+    }
+
+    __inline_call char      const& mark (
+        ) const
+    {   return this->_mark ;
+    }
+    __inline_call char      const& self (
+        ) const
+    {   return this->_self ;
+    }
+
+    } ;
+
+    /*
+    --------------------------------------------------------
+     * BASE-PYRA-5: pyra-5 cell for MESH-COMPLEX-k.
+    --------------------------------------------------------
+     * IPTR-TYPE -- signed-integer typedef.
+    --------------------------------------------------------
+     */
+
+    template <
+    typename I
+             >
+    class mesh_complex_pyra_5
+    {
+/*---------------------------------------- PYRA-5 element */
+    public  :
+
+    typedef I                 iptr_type ;
+
+    iptr_type static constexpr _dims = +3 ;
+
+    containers::
+    fixed_array<iptr_type, +5>    _ndat ;  // node indexing
+
+    char                          _mark ;
+    char                          _self ;
+
+    public  :
+/*---------------------------------------- "write" access */
+    __inline_call iptr_type      & node (
+        iptr_type  _ipos
+        )
+    {   return this->_ndat [_ipos];
+    }
+
+    __inline_call char           & mark (
+        )
+    {   return this->_mark ;
+    }
+    __inline_call char           & self (
+        )
+    {   return this->_self ;
+    }
+
+/*---------------------------------------- "const" access */
+    __inline_call iptr_type const& node (
+        iptr_type  _ipos
+        ) const
+    {   return this->_ndat[_ipos];
+    }
+
+    __inline_call char      const& mark (
+        ) const
+    {   return this->_mark ;
+    }
+    __inline_call char      const& self (
+        ) const
+    {   return this->_self ;
     }
 
     } ;

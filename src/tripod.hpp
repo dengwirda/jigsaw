@@ -14,9 +14,9 @@
      * TRIPOD: a "restricted" delaunay tessellator.
     --------------------------------------------------------
      *
-     * Last updated: 02 July, 2019
+     * Last updated: 01 March, 2020
      *
-     * Copyright 2013 -- 2019
+     * Copyright 2013 -- 2020
      * Darren Engwirda
      * darren.engwirda@columbia.edu
      * https://github.com/dengwirda
@@ -83,7 +83,7 @@
         typename  rdel_type ,
         typename  jlog_data
              >
-    __normal_call void_type rdel_euclidean_2d (
+    __normal_call void_type tria_euclidean_2d (
         geom_type &_geom,
         init_type &_init,
         rdel_type &_rdel,
@@ -92,7 +92,7 @@
         )
     {
         {
-    /*------------------------------ call rDEL kernel */
+    /*---------------------------------- call rDEL kernel */
             typedef mesh::rdel_make_2d  <
                 rdel_type ,
                 geom_type ,
@@ -101,12 +101,13 @@
             typedef
             jcfg_data::mesh_opts    rdel_opts ;
 
-            rdel_opts  *_opts =
+            rdel_opts *_opts =
                &_args._mesh_opts ;
 
             rdel_func::rdel_make (
-                _geom,  _init ,
-                _rdel, *_opts , _jlog ) ;
+                _geom, _init ,
+                _rdel,
+               *_opts, _jlog )   ;
         }
     }
 
@@ -122,7 +123,7 @@
         typename  rdel_type ,
         typename  jlog_data
              >
-    __normal_call void_type rdel_euclidean_3d (
+    __normal_call void_type tria_euclidean_3d (
         geom_type &_geom,
         init_type &_init,
         rdel_type &_rdel,
@@ -131,7 +132,7 @@
         )
     {
         {
-    /*------------------------------ call rDEL kernel */
+    /*---------------------------------- call rDEL kernel */
             typedef mesh::rdel_make_3d  <
                 rdel_type ,
                 geom_type ,
@@ -140,12 +141,13 @@
             typedef
             jcfg_data::mesh_opts    rdel_opts ;
 
-            rdel_opts  *_opts =
+            rdel_opts *_opts =
                &_args._mesh_opts ;
 
             rdel_func::rdel_make (
-                _geom,  _init ,
-                _rdel, *_opts , _jlog ) ;
+                _geom, _init ,
+                _rdel,
+               *_opts, _jlog )   ;
         }
     }
 
@@ -158,12 +160,12 @@
     template <
         typename  jlog_data
              >
-    __normal_call iptr_type rdel_impl (
+    __normal_call iptr_type tria_core (
         jcfg_data &_args,
         jlog_data &_jlog,
         mesh_data &_init,
         geom_data &_geom,
-        rdel_data &_rdel
+        mesh_data &_mesh
         )
     {
         iptr_type _errv = __no_error ;
@@ -175,15 +177,15 @@
                 jmsh_kind::euclidean_mesh)
             {
         /*----------- have euclidean-mesh GEOM kernel */
-                _rdel._kind  =
+                _mesh._kind  =
                 jmsh_kind::euclidean_mesh;
 
-                _rdel._ndim  = +2 ;
+                _mesh._ndim  = +2 ;
 
-                rdel_euclidean_2d (
+                tria_euclidean_2d (
                 _geom._euclidean_mesh_2d,
                 _init._euclidean_mesh_2d,
-                _rdel._euclidean_rdel_2d,
+                _mesh._euclidean_rdel_2d,
                 _args, _jlog) ;
             }
             else
@@ -192,15 +194,15 @@
                 jmsh_kind::euclidean_mesh)
             {
         /*----------- have euclidean-mesh GEOM kernel */
-                _rdel._kind  =
+                _mesh._kind  =
                 jmsh_kind::euclidean_mesh;
 
-                _rdel._ndim  = +3 ;
+                _mesh._ndim  = +3 ;
 
-                rdel_euclidean_3d (
+                tria_euclidean_3d (
                 _geom._euclidean_mesh_3d,
                 _init._euclidean_mesh_3d,
-                _rdel._euclidean_rdel_3d,
+                _mesh._euclidean_rdel_3d,
                 _args, _jlog) ;
             }
             else
@@ -208,15 +210,15 @@
                 jmsh_kind::ellipsoid_mesh)
             {
         /*----------- have ellipsoid-mesh GEOM kernel */
-                _rdel._kind  =
+                _mesh._kind  =
                 jmsh_kind::euclidean_mesh;
 
-                _rdel._ndim  = +3 ;
+                _mesh._ndim  = +3 ;
 
-                rdel_euclidean_3d (
+                tria_euclidean_3d (
                 _geom._ellipsoid_mesh_3d,
                 _init._euclidean_mesh_3d,
-                _rdel._euclidean_rdel_3d,
+                _mesh._euclidean_rdel_3d,
                 _args, _jlog) ;
             }
         }
@@ -250,10 +252,9 @@
     {
         iptr_type _retv = +0;
 
-        mesh_data _init ;               // INIT data
         geom_data _geom ;               // GEOM data
-        rdel_data _rdel ;               // TRIA data
-        jcfg_data _jcfg ;
+        mesh_data _mesh ;               // TRIA data
+        jcfg_data _jcfg ;               // CFG. data
 
 #       ifdef  __use_timers
         typename std ::chrono::
@@ -267,6 +268,9 @@
 
         __unreferenced(_time) ;
 #       endif//__use_timers
+
+    /*--------------------------------- init. geo. kernel */
+        mp_float::exactinit() ;
 
     /*--------------------------------- init. output data */
         jigsaw_init_msh_t(_mmsh) ;
@@ -331,14 +335,14 @@
 
             if ((_retv = copy_init (
                  _jcfg, _jlog,
-                 _init,*_imsh)) != __no_error)
+                 _mesh,*_imsh)) != __no_error)
             {
                 return  _retv ;
             }
 
             if ((_retv = test_init (
                  _jcfg,
-                 _jlog, _init)) != __no_error)
+                 _jlog, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -351,7 +355,7 @@
 
         if (_imsh != nullptr )
         {
-    /*--------------------------------- assemble init-con */
+    /*--------------------------------- initialise i.c.'s */
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
                 "  Forming INIT data...\n\n" ) ;
@@ -359,11 +363,6 @@
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
-
-          //_init._euclidean_mesh_2d.
-          //    _mesh.make_link();
-          //_init._euclidean_mesh_3d.
-          //    _mesh.make_link();
 
             if (_jcfg._verbosity > 0 )
             {
@@ -373,7 +372,7 @@
 
             if ((_retv = echo_init (
                  _jcfg,
-                 _jlog, _init)) != __no_error)
+                 _jlog, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -463,10 +462,10 @@
 #           endif//__use_timers
 
             if ((_retv =
-                TRIPOD ::rdel_impl  (
+                TRIPOD ::tria_core  (
                  _jcfg, _jlog ,
-                 _init,
-                 _geom, _rdel)) != __no_error)
+                 _mesh,
+                 _geom, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -493,7 +492,7 @@
 
             if ((_retv = save_rdel (
                  _jcfg, _jlog ,
-                 _rdel,*_mmsh)) != __no_error)
+                 _mesh,*_mmsh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -504,7 +503,7 @@
 
             if ((_retv = save_tria (
                  _jcfg, _jlog ,
-                 _rdel,*_mmsh)) != __no_error)
+                 _mesh,*_mmsh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -531,9 +530,8 @@
         char        **_argv
         )
     {
-        mesh_data _init ;               // INIT data
         geom_data _geom ;               // GEOM data
-        rdel_data _rdel ;               // TRIA data
+        mesh_data _mesh ;               // TRIA data
 
 #       ifdef  __use_timers
         typename std ::chrono::
@@ -547,6 +545,9 @@
 
         __unreferenced(_time) ;
 #       endif//__use_timers
+
+    /*--------------------------------- init. geo. kernel */
+        mp_float::exactinit() ;
 
     /*-------------------------- find *.JFCG file in args */
         iptr_type _retv = -1  ;
@@ -657,14 +658,14 @@
 
             if ((_retv = read_init (
                  _jcfg,
-                 _jlog, _init)) != __no_error)
+                 _jlog, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
 
             if ((_retv = test_init (
                  _jcfg,
-                 _jlog, _init)) != __no_error)
+                 _jlog, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -677,7 +678,7 @@
 
         if(!_jcfg._init_file.empty())
         {
-    /*--------------------------------- assemble init-con */
+    /*--------------------------------- initialise i.c.'s */
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
                 "  Forming INIT data...\n\n" ) ;
@@ -685,11 +686,6 @@
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
-
-          //_init._euclidean_mesh_2d.
-          //    _mesh.make_link();
-          //_init._euclidean_mesh_3d.
-          //    _mesh.make_link();
 
             if (_jcfg._verbosity > 0 )
             {
@@ -699,7 +695,7 @@
 
             if ((_retv = echo_init (
                  _jcfg,
-                 _jlog, _init)) != __no_error)
+                 _jlog, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -789,10 +785,10 @@
 #           endif//__use_timers
 
             if ((_retv =
-                TRIPOD ::rdel_impl  (
+                TRIPOD ::tria_core  (
                  _jcfg, _jlog ,
-                 _init,
-                 _geom, _rdel)) != __no_error)
+                 _mesh,
+                 _geom, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -816,7 +812,7 @@
 
             if ((_retv = save_tria (
                  _jcfg,
-                 _jlog, _rdel)) != __no_error)
+                 _jlog, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -844,7 +840,7 @@
 
             if ((_retv = save_rdel (
                  _jcfg,
-                 _jlog, _rdel)) != __no_error)
+                 _jlog, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -855,7 +851,7 @@
 
             if ((_retv = save_tria (
                  _jcfg,
-                 _jlog, _rdel)) != __no_error)
+                 _jlog, _mesh)) != __no_error)
             {
                 return  _retv ;
             }

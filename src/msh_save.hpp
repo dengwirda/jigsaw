@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 1 October, 2019
+     * Last updated: 04 March, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -58,7 +58,7 @@
     __normal_call iptr_type save_rdel (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        rdel_data &_rdel
+        mesh_data &_rdel
         )
     {
         iptr_type _errv  = __no_error  ;
@@ -69,11 +69,9 @@
         {
             containers::array<iptr_type> _nmap;
 
-            std::ofstream _file ;
+            std::ofstream  _file;
 
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
+            std::string _path, _name, _fext;
             file_part(
                 _jcfg._mesh_file,
                     _path, _name, _fext);
@@ -541,7 +539,7 @@
     __normal_call iptr_type save_rdel (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        rdel_data &_rdel ,
+        mesh_data &_rdel ,
         jigsaw_msh_t &_mmsh
         )
     {
@@ -1008,7 +1006,7 @@
     __normal_call iptr_type save_tria (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        rdel_data &_rdel
+        mesh_data &_rdel
         )
     {
         iptr_type _errv  = __no_error  ;
@@ -1019,11 +1017,9 @@
         {
             containers::array<iptr_type> _nmap;
 
-            std::ofstream _file ;
+            std::ofstream  _file;
 
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
+            std::string _path, _name, _fext;
             file_part(
                 _jcfg._tria_file,
                     _path, _name, _fext);
@@ -1254,7 +1250,7 @@
     __normal_call iptr_type save_tria (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        rdel_data &_rdel ,
+        mesh_data &_rdel ,
         jigsaw_msh_t &_mmsh
         )
     {
@@ -1547,11 +1543,9 @@
         {
             containers::array<iptr_type> _nmap;
 
-            std::ofstream _file ;
+            std::ofstream  _file;
 
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
+            std::string _path, _name, _fext;
             file_part(
                 _jcfg._mesh_file,
                     _path, _name, _fext);
@@ -1579,17 +1573,18 @@
 
             /*------------ index mapping for active nodes */
                 _nmap.set_count(_mesh.
-                    _euclidean_mesh_2d._mesh._set1.count() ,
-                        containers::tight_alloc, -1) ;
+                _euclidean_mesh_2d._mesh.node().count() ,
+                    containers::tight_alloc, -1) ;
 
-                iptr_type _nnum = +0 ;
-                iptr_type _enum = +0 ;
-                iptr_type _tnum = +0 ;
+                iptr_type _nnN1 = +0 ;
+                iptr_type _nnE2 = +0 ;
+                iptr_type _nnT3 = +0 ;
+                iptr_type _nnQ4 = +0 ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set2.head() ;
+                _euclidean_mesh_2d._mesh.edge().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set2.tend() ;
+                _euclidean_mesh_2d._mesh.edge().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -1597,14 +1592,14 @@
                     {
                     _nmap[_iter->node(0)] = +1 ;
                     _nmap[_iter->node(1)] = +1 ;
-                    _enum +=  +1 ;
+                    _nnE2 +=  +1 ;
                     }
                 }
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set3.head() ;
+                _euclidean_mesh_2d._mesh.tri3().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set3.tend() ;
+                _euclidean_mesh_2d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -1613,7 +1608,24 @@
                     _nmap[_iter->node(0)] = +1 ;
                     _nmap[_iter->node(1)] = +1 ;
                     _nmap[_iter->node(2)] = +1 ;
-                    _tnum +=  +1 ;
+                    _nnT3 +=  +1 ;
+                    }
+                }
+
+                for (auto _iter  = _mesh.
+                _euclidean_mesh_2d._mesh.quad().head() ;
+                          _iter != _mesh.
+                _euclidean_mesh_2d._mesh.quad().tend() ;
+                        ++_iter  )
+                {
+                    if (_iter->mark() >= +0 &&
+                        _iter->self() >= +1 )
+                    {
+                    _nmap[_iter->node(0)] = +1 ;
+                    _nmap[_iter->node(1)] = +1 ;
+                    _nmap[_iter->node(2)] = +1 ;
+                    _nmap[_iter->node(3)] = +1 ;
+                    _nnQ4 +=  +1 ;
                     }
                 }
 
@@ -1623,47 +1635,47 @@
                 {
                     if ( *_iter >= +0)
                     {
-                         *_iter = _nnum ++ ;
+                         *_iter = _nnN1 ++ ;
                     }
                 }
 
-                if (_nnum > +0)
+                if (_nnN1 > +0)
                 {
             /*-------------------------- write POINT data */
-                _file << "POINT=" << _nnum << "\n" ;
+                _file << "POINT=" << _nnN1 << "\n" ;
 
                 iptr_type _npos  = +0;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set1.head() ;
+                _euclidean_mesh_2d._mesh.node().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set1.tend() ;
+                _euclidean_mesh_2d._mesh.node().tend() ;
                         ++_iter, ++_npos)
                 {
                     if (_iter->mark() >= 0 &&
-                        _nmap[_npos ] >= 0)
+                        _nmap[_npos ] >= 0 )
                     {
                     _file << _iter->pval(0) << ";"
                           << _iter->pval(1) << ";"
-                          << +0 << "\n" ;
+                          <<    +0 << "\n" ;
                     }
                 }
                 }
 
-                if (_nnum > +0)
+                if (_nnN1 > +0)
                 {
             /*-------------------------- write POWER data */
                 if (_jcfg._iter_opts.dual() )
                 {
                 _file << "POWER="
-                      << _nnum << ";1" << "\n" ;
+                      << _nnN1 << ";1" << "\n" ;
 
                 iptr_type _npos  = +0;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set1.head() ;
+                _euclidean_mesh_2d._mesh.node().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set1.tend() ;
+                _euclidean_mesh_2d._mesh.node().tend() ;
                         ++_iter, ++_npos)
                 {
                     if (_iter->mark() >= 0 &&
@@ -1675,15 +1687,15 @@
                 }
                 }
 
-                if (_enum > +0)
+                if (_nnE2 > +0)
                 {
             /*-------------------------- write EDGE2 data */
-                _file << "EDGE2=" << _enum << "\n" ;
+                _file << "EDGE2=" << _nnE2 << "\n" ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set2.head() ;
+                _euclidean_mesh_2d._mesh.edge().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set2.tend() ;
+                _euclidean_mesh_2d._mesh.edge().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -1699,15 +1711,15 @@
                 }
                 }
 
-                if (_tnum > +0)
+                if (_nnT3 > +0)
                 {
             /*-------------------------- write TRIA3 data */
-                _file << "TRIA3=" << _tnum << "\n" ;
+                _file << "TRIA3=" << _nnT3 << "\n" ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set3.head() ;
+                _euclidean_mesh_2d._mesh.tri3().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set3.tend() ;
+                _euclidean_mesh_2d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -1719,6 +1731,34 @@
                     _nmap[_iter->node(1)] << ";"
                           <<
                     _nmap[_iter->node(2)] << ";"
+                          <<
+                    _iter->itag() << "\n"  ;
+                    }
+                }
+                }
+
+                if (_nnQ4 > +0)
+                {
+            /*-------------------------- write QUAD4 data */
+                _file << "QUAD4=" << _nnQ4 << "\n" ;
+
+                for (auto _iter  = _mesh.
+                _euclidean_mesh_2d._mesh.quad().head() ;
+                          _iter != _mesh.
+                _euclidean_mesh_2d._mesh.quad().tend() ;
+                        ++_iter  )
+                {
+                    if (_iter->mark() >= 0 &&
+                        _iter->self() >= 1 )
+                    {
+                    _file <<
+                    _nmap[_iter->node(0)] << ";"
+                          <<
+                    _nmap[_iter->node(1)] << ";"
+                          <<
+                    _nmap[_iter->node(2)] << ";"
+                          <<
+                    _nmap[_iter->node(3)] << ";"
                           <<
                     _iter->itag() << "\n"  ;
                     }
@@ -1744,18 +1784,19 @@
 
             /*------------ index mapping for active nodes */
                 _nmap.set_count(_mesh.
-                    _euclidean_mesh_3d._mesh._set1.count() ,
-                        containers::tight_alloc, -1) ;
+                _euclidean_mesh_3d._mesh.node().count() ,
+                    containers::tight_alloc, -1) ;
 
-                iptr_type _nnum = +0 ;
-                iptr_type _enum = +0 ;
-                iptr_type _fnum = +0 ;
-                iptr_type _tnum = +0 ;
+                iptr_type _nnN1 = +0 ;
+                iptr_type _nnE2 = +0 ;
+                iptr_type _nnT3 = +0 ;
+                iptr_type _nnQ4 = +0 ;
+                iptr_type _nnT4 = +0 ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set2.head() ;
+                _euclidean_mesh_3d._mesh.edge().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set2.tend() ;
+                _euclidean_mesh_3d._mesh.edge().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -1763,14 +1804,14 @@
                     {
                     _nmap[_iter->node(0)] = +1 ;
                     _nmap[_iter->node(1)] = +1 ;
-                    _enum +=  +1 ;
+                    _nnE2 +=  +1 ;
                     }
                 }
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set3.head() ;
+                _euclidean_mesh_3d._mesh.tri3().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set3.tend() ;
+                _euclidean_mesh_3d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -1779,14 +1820,14 @@
                     _nmap[_iter->node(0)] = +1 ;
                     _nmap[_iter->node(1)] = +1 ;
                     _nmap[_iter->node(2)] = +1 ;
-                    _fnum +=  +1 ;
+                    _nnT3 +=  +1 ;
                     }
                 }
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set4.head() ;
+                _euclidean_mesh_3d._mesh.quad().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set4.tend() ;
+                _euclidean_mesh_3d._mesh.quad().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -1796,7 +1837,24 @@
                     _nmap[_iter->node(1)] = +1 ;
                     _nmap[_iter->node(2)] = +1 ;
                     _nmap[_iter->node(3)] = +1 ;
-                    _tnum +=  +1 ;
+                    _nnQ4 +=  +1 ;
+                    }
+                }
+
+                for (auto _iter  = _mesh.
+                _euclidean_mesh_3d._mesh.tri4().head() ;
+                          _iter != _mesh.
+                _euclidean_mesh_3d._mesh.tri4().tend() ;
+                        ++_iter  )
+                {
+                    if (_iter->mark() >= +0 &&
+                        _iter->self() >= +1 )
+                    {
+                    _nmap[_iter->node(0)] = +1 ;
+                    _nmap[_iter->node(1)] = +1 ;
+                    _nmap[_iter->node(2)] = +1 ;
+                    _nmap[_iter->node(3)] = +1 ;
+                    _nnT4 +=  +1 ;
                     }
                 }
 
@@ -1806,48 +1864,48 @@
                 {
                     if ( *_iter >= +0)
                     {
-                         *_iter = _nnum ++ ;
+                         *_iter = _nnN1 ++ ;
                     }
                 }
 
-                if (_nnum > +0)
+                if (_nnN1 > +0)
                 {
             /*-------------------------- write POINT data */
-                _file << "POINT=" << _nnum << "\n" ;
+                _file << "POINT=" << _nnN1 << "\n" ;
 
                 iptr_type _npos  = +0;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set1.head() ;
+                _euclidean_mesh_3d._mesh.node().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set1.tend() ;
+                _euclidean_mesh_3d._mesh.node().tend() ;
                         ++_iter, ++_npos)
                 {
                     if (_iter->mark() >= 0 &&
-                        _nmap[_npos ] >= 0)
+                        _nmap[_npos ] >= 0 )
                     {
                     _file << _iter->pval(0) << ";"
                           << _iter->pval(1) << ";"
                           << _iter->pval(2) << ";"
-                          << +0 << "\n" ;
+                          <<    +0 << "\n" ;
                     }
                 }
                 }
 
-                if (_nnum > +0)
+                if (_nnN1 > +0)
                 {
             /*-------------------------- write POWER data */
                 if (_jcfg._iter_opts.dual() )
                 {
                 _file << "POWER="
-                      << _nnum << ";1" << "\n" ;
+                      << _nnN1 << ";1" << "\n" ;
 
                 iptr_type _npos  = +0;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set1.head() ;
+                _euclidean_mesh_3d._mesh.node().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set1.tend() ;
+                _euclidean_mesh_3d._mesh.node().tend() ;
                         ++_iter, ++_npos)
                 {
                     if (_iter->mark() >= 0 &&
@@ -1859,15 +1917,15 @@
                 }
                 }
 
-                if (_enum > +0)
+                if (_nnE2 > +0)
                 {
             /*-------------------------- write EDGE2 data */
-                _file << "EDGE2=" << _enum << "\n" ;
+                _file << "EDGE2=" << _nnE2 << "\n" ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set2.head() ;
+                _euclidean_mesh_3d._mesh.edge().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set2.tend() ;
+                _euclidean_mesh_3d._mesh.edge().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -1883,15 +1941,15 @@
                 }
                 }
 
-                if (_fnum > +0)
+                if (_nnT3 > +0)
                 {
             /*-------------------------- write TRIA3 data */
-                _file << "TRIA3=" << _fnum << "\n" ;
+                _file << "TRIA3=" << _nnT3 << "\n" ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set3.head() ;
+                _euclidean_mesh_3d._mesh.tri3().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set3.tend() ;
+                _euclidean_mesh_3d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -1909,15 +1967,43 @@
                 }
                 }
 
-                if (_tnum > +0)
+                if (_nnQ4 > +0)
                 {
-            /*-------------------------- write TRIA3 data */
-                _file << "TRIA4=" << _tnum << "\n" ;
+            /*-------------------------- write QUAD4 data */
+                _file << "QUAD4=" << _nnQ4 << "\n" ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set4.head() ;
+                _euclidean_mesh_3d._mesh.quad().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set4.tend() ;
+                _euclidean_mesh_3d._mesh.quad().tend() ;
+                        ++_iter  )
+                {
+                    if (_iter->mark() >= 0 &&
+                        _iter->self() >= 1 )
+                    {
+                    _file <<
+                    _nmap[_iter->node(0)] << ";"
+                          <<
+                    _nmap[_iter->node(1)] << ";"
+                          <<
+                    _nmap[_iter->node(2)] << ";"
+                          <<
+                    _nmap[_iter->node(3)] << ";"
+                          <<
+                    _iter->itag() << "\n"  ;
+                    }
+                }
+                }
+
+                if (_nnT4 > +0)
+                {
+            /*-------------------------- write TRIA4 data */
+                _file << "TRIA4=" << _nnT4 << "\n" ;
+
+                for (auto _iter  = _mesh.
+                _euclidean_mesh_3d._mesh.tri4().head() ;
+                          _iter != _mesh.
+                _euclidean_mesh_3d._mesh.tri4().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -1989,17 +2075,18 @@
 
             /*------------ index mapping for active nodes */
                 _nmap.set_count(_mesh.
-                    _euclidean_mesh_2d._mesh._set1.count() ,
-                        containers::tight_alloc, -1) ;
+                _euclidean_mesh_2d._mesh.node().count() ,
+                    containers::tight_alloc, -1) ;
 
-                iptr_type _nnum = +0 ;
-                iptr_type _enum = +0 ;
-                iptr_type _tnum = +0 ;
+                iptr_type _nnN1 = +0 ;
+                iptr_type _nnE2 = +0 ;
+                iptr_type _nnT3 = +0 ;
+                iptr_type _nnQ4 = +0 ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set2.head() ;
+                _euclidean_mesh_2d._mesh.edge().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set2.tend() ;
+                _euclidean_mesh_2d._mesh.edge().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2007,14 +2094,14 @@
                     {
                     _nmap[_iter->node(0)] = +1 ;
                     _nmap[_iter->node(1)] = +1 ;
-                    _enum +=  +1 ;
+                    _nnE2 +=  +1 ;
                     }
                 }
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set3.head() ;
+                _euclidean_mesh_2d._mesh.tri3().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set3.tend() ;
+                _euclidean_mesh_2d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2023,7 +2110,24 @@
                     _nmap[_iter->node(0)] = +1 ;
                     _nmap[_iter->node(1)] = +1 ;
                     _nmap[_iter->node(2)] = +1 ;
-                    _tnum +=  +1 ;
+                    _nnT3 +=  +1 ;
+                    }
+                }
+
+                for (auto _iter  = _mesh.
+                _euclidean_mesh_2d._mesh.quad().head() ;
+                          _iter != _mesh.
+                _euclidean_mesh_2d._mesh.quad().tend() ;
+                        ++_iter  )
+                {
+                    if (_iter->mark() >= +0 &&
+                        _iter->self() >= +1 )
+                    {
+                    _nmap[_iter->node(0)] = +1 ;
+                    _nmap[_iter->node(1)] = +1 ;
+                    _nmap[_iter->node(2)] = +1 ;
+                    _nmap[_iter->node(3)] = +1 ;
+                    _nnQ4 +=  +1 ;
                     }
                 }
 
@@ -2033,26 +2137,26 @@
                 {
                     if ( *_iter >= +0)
                     {
-                         *_iter = _nnum ++ ;
+                         *_iter = _nnN1 ++ ;
                     }
                 }
 
-                if (_nnum > +0)
+                if (_nnN1 > +0)
                 {
             /*-------------------------- write POINT data */
                 jigsaw_alloc_vert2 (
-                     &_mmsh._vert2, _nnum) ;
+                     &_mmsh._vert2, _nnN1) ;
 
                 jigsaw_alloc_reals (
-                     &_mmsh._power, _nnum) ;
+                     &_mmsh._power, _nnN1) ;
 
                 iptr_type _npos  = +0 ;
                 iptr_type _nout  = +0 ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set1.head() ;
+                _euclidean_mesh_2d._mesh.node().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set1.tend() ;
+                _euclidean_mesh_2d._mesh.node().tend() ;
                         ++_iter, ++_npos)
                 {
                     if (_iter->mark() >= 0 &&
@@ -2073,25 +2177,25 @@
                     }
                 }
 
-                _mesh._euclidean_mesh_2d._mesh._set1.
+                _mesh._euclidean_mesh_2d._mesh._llN1.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_2d._mesh._adj1.
+                _mesh._euclidean_mesh_2d._mesh._aaN1.
                     clear(containers::tight_alloc);
 
                 }
 
-                if (_enum > +0)
+                if (_nnE2 > +0)
                 {
             /*-------------------------- write EDGE2 data */
                 jigsaw_alloc_edge2 (
-                     &_mmsh._edge2, _enum) ;
+                     &_mmsh._edge2, _nnE2) ;
 
                 iptr_type _eout  = +0 ;
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set2.head() ;
+                _euclidean_mesh_2d._mesh.edge().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set2.tend() ;
+                _euclidean_mesh_2d._mesh.edge().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -2112,28 +2216,28 @@
                     }
                 }
 
-                _mesh._euclidean_mesh_2d._mesh._set2.
+                _mesh._euclidean_mesh_2d._mesh._llE2.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_2d._mesh._adj2.
+                _mesh._euclidean_mesh_2d._mesh._aaE2.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_2d._mesh._map2.
+                _mesh._euclidean_mesh_2d._mesh._mmE2.
                     clear(containers::tight_alloc);
 
                 }
 
-                if (_tnum > +0)
+                if (_nnT3 > +0)
                 {
             /*-------------------------- write TRIA3 data */
                 jigsaw_alloc_tria3 (
-                     &_mmsh._tria3, _tnum) ;
+                     &_mmsh._tria3, _nnT3) ;
 
                 iptr_type _tout  = +0 ;
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_2d._mesh._set3.head() ;
+                _euclidean_mesh_2d._mesh.tri3().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_2d._mesh._set3.tend() ;
+                _euclidean_mesh_2d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -2157,13 +2261,55 @@
                     }
                 }
 
-                _mesh._euclidean_mesh_2d._mesh._set3.
+                _mesh._euclidean_mesh_2d._mesh._llT3.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_2d._mesh._adj3.
+                _mesh._euclidean_mesh_2d._mesh._mmT3.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_2d._mesh._map3.
+                }
+
+                if (_nnQ4 > +0)
+                {
+            /*-------------------------- write QUAD4 data */
+                jigsaw_alloc_quad4 (
+                     &_mmsh._quad4, _nnQ4) ;
+
+                iptr_type _qout  = +0 ;
+                for (auto _iter  = _mesh.
+                _euclidean_mesh_2d._mesh.quad().head() ;
+                          _iter != _mesh.
+                _euclidean_mesh_2d._mesh.quad().tend() ;
+                        ++_iter  )
+                {
+                    if (_iter->mark() >= 0 &&
+                        _iter->self() >= 1 )
+                    {
+                    _mmsh._quad4.
+                        _data[_qout]._node[0]
+                            = _nmap[_iter->node(0)] ;
+                    _mmsh._quad4.
+                        _data[_qout]._node[1]
+                            = _nmap[_iter->node(1)] ;
+                    _mmsh._quad4.
+                        _data[_qout]._node[2]
+                            = _nmap[_iter->node(2)] ;
+                    _mmsh._quad4.
+                        _data[_qout]._node[3]
+                            = _nmap[_iter->node(3)] ;
+
+                    _mmsh._quad4.
+                        _data[_qout].
+                            _itag = _iter->itag() ;
+
+                    _qout = _qout + 1 ;
+                    }
+                }
+
+                _mesh._euclidean_mesh_2d._mesh._llQ4.
+                    clear(containers::tight_alloc);
+
+                _mesh._euclidean_mesh_2d._mesh._mmQ4.
                     clear(containers::tight_alloc);
 
                 }
@@ -2178,18 +2324,19 @@
 
             /*------------ index mapping for active nodes */
                 _nmap.set_count(_mesh.
-                    _euclidean_mesh_3d._mesh._set1.count() ,
-                        containers::tight_alloc, -1) ;
+                _euclidean_mesh_3d._mesh.node().count() ,
+                    containers::tight_alloc, -1) ;
 
-                iptr_type _nnum = +0 ;
-                iptr_type _enum = +0 ;
-                iptr_type _fnum = +0 ;
-                iptr_type _tnum = +0 ;
+                iptr_type _nnN1 = +0 ;
+                iptr_type _nnE2 = +0 ;
+                iptr_type _nnT3 = +0 ;
+                iptr_type _nnQ4 = +0 ;
+                iptr_type _nnT4 = +0 ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set2.head() ;
+                _euclidean_mesh_3d._mesh.edge().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set2.tend() ;
+                _euclidean_mesh_3d._mesh.edge().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2197,14 +2344,14 @@
                     {
                     _nmap[_iter->node(0)] = +1 ;
                     _nmap[_iter->node(1)] = +1 ;
-                    _enum +=  +1 ;
+                    _nnE2 +=  +1 ;
                     }
                 }
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set3.head() ;
+                _euclidean_mesh_3d._mesh.tri3().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set3.tend() ;
+                _euclidean_mesh_3d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2213,14 +2360,14 @@
                     _nmap[_iter->node(0)] = +1 ;
                     _nmap[_iter->node(1)] = +1 ;
                     _nmap[_iter->node(2)] = +1 ;
-                    _fnum +=  +1 ;
+                    _nnT3 +=  +1 ;
                     }
                 }
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set4.head() ;
+                _euclidean_mesh_3d._mesh.quad().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set4.tend() ;
+                _euclidean_mesh_3d._mesh.quad().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2230,7 +2377,24 @@
                     _nmap[_iter->node(1)] = +1 ;
                     _nmap[_iter->node(2)] = +1 ;
                     _nmap[_iter->node(3)] = +1 ;
-                    _tnum +=  +1 ;
+                    _nnQ4 +=  +1 ;
+                    }
+                }
+
+                for (auto _iter  = _mesh.
+                _euclidean_mesh_3d._mesh.tri4().head() ;
+                          _iter != _mesh.
+                _euclidean_mesh_3d._mesh.tri4().tend() ;
+                        ++_iter  )
+                {
+                    if (_iter->mark() >= +0 &&
+                        _iter->self() >= +1 )
+                    {
+                    _nmap[_iter->node(0)] = +1 ;
+                    _nmap[_iter->node(1)] = +1 ;
+                    _nmap[_iter->node(2)] = +1 ;
+                    _nmap[_iter->node(3)] = +1 ;
+                    _nnT4 +=  +1 ;
                     }
                 }
 
@@ -2240,26 +2404,26 @@
                 {
                     if ( *_iter >= +0)
                     {
-                         *_iter = _nnum ++ ;
+                         *_iter = _nnN1 ++ ;
                     }
                 }
 
-                if (_nnum > +0)
+                if (_nnN1 > +0)
                 {
             /*-------------------------- write POINT data */
                 jigsaw_alloc_vert3 (
-                     &_mmsh._vert3, _nnum) ;
+                     &_mmsh._vert3, _nnN1) ;
 
                 jigsaw_alloc_reals (
-                     &_mmsh._power, _nnum) ;
+                     &_mmsh._power, _nnN1) ;
 
                 iptr_type _npos  = +0 ;
                 iptr_type _nout  = +0 ;
 
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set1.head() ;
+                _euclidean_mesh_3d._mesh.node().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set1.tend() ;
+                _euclidean_mesh_3d._mesh.node().tend() ;
                         ++_iter, ++_npos)
                 {
                     if (_iter->mark() >= 0 &&
@@ -2282,25 +2446,25 @@
                     }
                 }
 
-                _mesh._euclidean_mesh_3d._mesh._set1.
+                _mesh._euclidean_mesh_3d._mesh._llN1.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_3d._mesh._adj1.
+                _mesh._euclidean_mesh_3d._mesh._aaN1.
                     clear(containers::tight_alloc);
 
                 }
 
-                if (_enum > +0)
+                if (_nnE2 > +0)
                 {
             /*-------------------------- write EDGE2 data */
                 jigsaw_alloc_edge2 (
-                     &_mmsh._edge2, _enum) ;
+                     &_mmsh._edge2, _nnE2) ;
 
                 iptr_type _eout  = +0 ;
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set2.head() ;
+                _euclidean_mesh_3d._mesh.edge().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set2.tend() ;
+                _euclidean_mesh_3d._mesh.edge().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -2321,28 +2485,28 @@
                     }
                 }
 
-                _mesh._euclidean_mesh_3d._mesh._set2.
+                _mesh._euclidean_mesh_3d._mesh._llE2.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_3d._mesh._adj2.
+                _mesh._euclidean_mesh_3d._mesh._aaE2.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_3d._mesh._map2.
+                _mesh._euclidean_mesh_3d._mesh._mmE2.
                     clear(containers::tight_alloc);
 
                 }
 
-                if (_fnum > +0)
+                if (_nnT3 > +0)
                 {
             /*-------------------------- write TRIA3 data */
                 jigsaw_alloc_tria3 (
-                     &_mmsh._tria3, _fnum) ;
+                     &_mmsh._tria3, _nnT3) ;
 
                 iptr_type _fout  = +0 ;
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set3.head() ;
+                _euclidean_mesh_3d._mesh.tri3().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set3.tend() ;
+                _euclidean_mesh_3d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -2366,28 +2530,76 @@
                     }
                 }
 
-                _mesh._euclidean_mesh_3d._mesh._set3.
+                _mesh._euclidean_mesh_3d._mesh._llT3.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_3d._mesh._adj3.
+                _mesh._euclidean_mesh_3d._mesh._aaT3.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_3d._mesh._map3.
+                _mesh._euclidean_mesh_3d._mesh._mmT3.
                     clear(containers::tight_alloc);
 
                 }
 
-                if (_tnum > +0)
+                if (_nnQ4 > +0)
                 {
-            /*-------------------------- write TRIA3 data */
+            /*-------------------------- write QUAD4 data */
+                jigsaw_alloc_quad4 (
+                     &_mmsh._quad4, _nnQ4) ;
+
+                iptr_type _fout  = +0 ;
+                for (auto _iter  = _mesh.
+                _euclidean_mesh_3d._mesh.quad().head() ;
+                          _iter != _mesh.
+                _euclidean_mesh_3d._mesh.quad().tend() ;
+                        ++_iter  )
+                {
+                    if (_iter->mark() >= 0 &&
+                        _iter->self() >= 1 )
+                    {
+                    _mmsh._quad4.
+                        _data[_fout]._node[0]
+                            = _nmap[_iter->node(0)] ;
+                    _mmsh._quad4.
+                        _data[_fout]._node[1]
+                            = _nmap[_iter->node(1)] ;
+                    _mmsh._quad4.
+                        _data[_fout]._node[2]
+                            = _nmap[_iter->node(2)] ;
+                    _mmsh._quad4.
+                        _data[_fout]._node[2]
+                            = _nmap[_iter->node(2)] ;
+
+                    _mmsh._quad4.
+                        _data[_fout].
+                            _itag = _iter->itag() ;
+
+                    _fout = _fout + 1 ;
+                    }
+                }
+
+                _mesh._euclidean_mesh_3d._mesh._llQ4.
+                    clear(containers::tight_alloc);
+
+                _mesh._euclidean_mesh_3d._mesh._aaQ4.
+                    clear(containers::tight_alloc);
+
+                _mesh._euclidean_mesh_3d._mesh._mmQ4.
+                    clear(containers::tight_alloc);
+
+                }
+
+                if (_nnT4 > +0)
+                {
+            /*-------------------------- write TRIA4 data */
                 jigsaw_alloc_tria4 (
-                     &_mmsh._tria4, _tnum) ;
+                     &_mmsh._tria4, _nnT4) ;
 
                 iptr_type _tout  = +0 ;
                 for (auto _iter  = _mesh.
-                _euclidean_mesh_3d._mesh._set4.head() ;
+                _euclidean_mesh_3d._mesh.tri4().head() ;
                           _iter != _mesh.
-                _euclidean_mesh_3d._mesh._set4.tend() ;
+                _euclidean_mesh_3d._mesh.tri4().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -2414,13 +2626,10 @@
                     }
                 }
 
-                _mesh._euclidean_mesh_3d._mesh._set4.
+                _mesh._euclidean_mesh_3d._mesh._llT4.
                     clear(containers::tight_alloc);
 
-                _mesh._euclidean_mesh_3d._mesh._adj4.
-                    clear(containers::tight_alloc);
-
-                _mesh._euclidean_mesh_3d._mesh._map4.
+                _mesh._euclidean_mesh_3d._mesh._mmT4.
                     clear(containers::tight_alloc);
 
                 }
@@ -2460,11 +2669,9 @@
 
         try
         {
-            std::ofstream _file ;
+            std::ofstream  _file;
 
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
+            std::string _path, _name, _fext ;
             file_part(
                 _jcfg._hfun_file,
                     _path, _name, _fext);
@@ -2495,9 +2702,9 @@
                 iptr_type _tnum = +0 ;
 
                 for (auto _iter  = _ffun.
-                _euclidean_mesh_2d._mesh._set1.head() ;
+                _euclidean_mesh_2d._mesh.node().head() ;
                           _iter != _ffun.
-                _euclidean_mesh_2d._mesh._set1.tend() ;
+                _euclidean_mesh_2d._mesh.node().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2508,9 +2715,9 @@
                 }
 
                 for (auto _iter  = _ffun.
-                _euclidean_mesh_2d._mesh._set3.head() ;
+                _euclidean_mesh_2d._mesh.tri3().head() ;
                           _iter != _ffun.
-                _euclidean_mesh_2d._mesh._set3.tend() ;
+                _euclidean_mesh_2d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2528,16 +2735,16 @@
                 iptr_type _npos  = +0;
 
                 for (auto _iter  = _ffun.
-                _euclidean_mesh_2d._mesh._set1.head() ;
+                _euclidean_mesh_2d._mesh.node().head() ;
                           _iter != _ffun.
-                _euclidean_mesh_2d._mesh._set1.tend() ;
+                _euclidean_mesh_2d._mesh.node().tend() ;
                         ++_iter, ++_npos)
                 {
-                    if (_iter->mark() >= 0)
+                    if (_iter->mark() >= 0 )
                     {
                     _file << _iter->pval(0) << ";"
                           << _iter->pval(1) << ";"
-                          << +0 << "\n" ;
+                          <<    +0 << "\n" ;
                     }
                 }
                 }
@@ -2564,9 +2771,9 @@
                 _file << "TRIA3=" << _tnum << "\n" ;
 
                 for (auto _iter  = _ffun.
-                _euclidean_mesh_2d._mesh._set3.head() ;
+                _euclidean_mesh_2d._mesh.tri3().head() ;
                           _iter != _ffun.
-                _euclidean_mesh_2d._mesh._set3.tend() ;
+                _euclidean_mesh_2d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -2602,9 +2809,9 @@
                 iptr_type _tnum = +0 ;
 
                 for (auto _iter  = _ffun.
-                _euclidean_mesh_3d._mesh._set1.head() ;
+                _euclidean_mesh_3d._mesh.node().head() ;
                           _iter != _ffun.
-                _euclidean_mesh_3d._mesh._set1.tend() ;
+                _euclidean_mesh_3d._mesh.node().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2615,9 +2822,9 @@
                 }
 
                 for (auto _iter  = _ffun.
-                _euclidean_mesh_3d._mesh._set4.head() ;
+                _euclidean_mesh_3d._mesh.tri4().head() ;
                           _iter != _ffun.
-                _euclidean_mesh_3d._mesh._set4.tend() ;
+                _euclidean_mesh_3d._mesh.tri4().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2635,17 +2842,17 @@
                 iptr_type _npos  = +0;
 
                 for (auto _iter  = _ffun.
-                _euclidean_mesh_3d._mesh._set1.head() ;
+                _euclidean_mesh_3d._mesh.node().head() ;
                           _iter != _ffun.
-                _euclidean_mesh_3d._mesh._set1.tend() ;
+                _euclidean_mesh_3d._mesh.node().tend() ;
                         ++_iter, ++_npos)
                 {
-                    if (_iter->mark() >= 0)
+                    if (_iter->mark() >= 0 )
                     {
                     _file << _iter->pval(0) << ";"
                           << _iter->pval(1) << ";"
                           << _iter->pval(2) << ";"
-                          << +0 << "\n" ;
+                          <<    +0 << "\n" ;
                     }
                 }
                 }
@@ -2672,9 +2879,9 @@
                 _file << "TRIA4=" << _tnum << "\n" ;
 
                 for (auto _iter  = _ffun.
-                _euclidean_mesh_3d._mesh._set4.head() ;
+                _euclidean_mesh_3d._mesh.tri4().head() ;
                           _iter != _ffun.
-                _euclidean_mesh_3d._mesh._set4.tend() ;
+                _euclidean_mesh_3d._mesh.tri4().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&
@@ -2721,9 +2928,9 @@
                 iptr_type _tnum = +0 ;
 
                 for (auto _iter  = _ffun.
-                _ellipsoid_mesh_3d._mesh._set1.head() ;
+                _ellipsoid_mesh_3d._mesh.node().head() ;
                           _iter != _ffun.
-                _ellipsoid_mesh_3d._mesh._set1.tend() ;
+                _ellipsoid_mesh_3d._mesh.node().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2734,9 +2941,9 @@
                 }
 
                 for (auto _iter  = _ffun.
-                _ellipsoid_mesh_3d._mesh._set3.head() ;
+                _ellipsoid_mesh_3d._mesh.tri3().head() ;
                           _iter != _ffun.
-                _ellipsoid_mesh_3d._mesh._set3.tend() ;
+                _ellipsoid_mesh_3d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= +0 &&
@@ -2757,9 +2964,9 @@
                 real_type _ppos[3] ;
                 real_type _apos[2] ;
                 for (auto _iter  = _ffun.
-                _ellipsoid_mesh_3d._mesh._set1.head() ;
+                _ellipsoid_mesh_3d._mesh.node().head() ;
                           _iter != _ffun.
-                _ellipsoid_mesh_3d._mesh._set1.tend() ;
+                _ellipsoid_mesh_3d._mesh.node().tend() ;
                         ++_iter, ++_npos)
                 {
                     if (_iter->mark() >= +0)
@@ -2800,9 +3007,9 @@
                 _file << "TRIA3=" << _tnum << "\n" ;
 
                 for (auto _iter  = _ffun.
-                _ellipsoid_mesh_3d._mesh._set3.head() ;
+                _ellipsoid_mesh_3d._mesh.tri3().head() ;
                           _iter != _ffun.
-                _ellipsoid_mesh_3d._mesh._set3.tend() ;
+                _ellipsoid_mesh_3d._mesh.tri3().tend() ;
                         ++_iter  )
                 {
                     if (_iter->mark() >= 0 &&

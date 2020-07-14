@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * HFUN-MESH-EUCLIDEAN-kD: unstructured H(X) in R^k.
+     * HFUN-MESH-EUCLIDEAN-3D: unstructured H(x) in E^3.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the
@@ -11,7 +11,7 @@
      * research, and institutional use is free.  You may
      * distribute modified versions of this code UNDER THE
      * CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE
-     * TO IT IN THE SAME FILE REMAengIN UNDER COPYRIGHT OF THE
+     * TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE
      * ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE
      * MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
      * NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution
@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 August, 2019
+     * Last updated: 25 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -82,13 +82,18 @@
 
     typedef mesh_complex_edge_2<I>  edge_type ;
     typedef mesh_complex_tria_3<I>  tri3_type ;
+    typedef mesh_complex_quad_4<I>  quad_type ;
     typedef mesh_complex_tria_4<I>  tri4_type ;
+    typedef mesh_complex_hexa_8<I>  hexa_type ;
+    typedef mesh_complex_wedg_6<I>  wedg_type ;
+    typedef mesh_complex_pyra_5<I>  pyra_type ;
 
-    typedef mesh::tria_complex_3<
+    typedef mesh::mesh_complex_3<
             node_type,
             edge_type,
-            tri3_type,
-            tri4_type,
+            tri3_type, quad_type,
+            tri4_type, hexa_type,
+            wedg_type, pyra_type,
             allocator           >   mesh_type ;
 
     typedef geom_tree::aabb_node_base_k
@@ -162,9 +167,9 @@
 
     /*----------------------------- calc. aabb for inputs */
         for (auto  _iter  =
-             this->_mesh._set1.head() ;
+             this->_mesh.node().head() ;
                    _iter !=
-             this->_mesh._set1.tend() ;
+             this->_mesh.node().tend() ;
                  ++_iter  )
         {
             if (_iter->mark() >= +0)
@@ -194,7 +199,7 @@
         float     static const _RTOL =
             std::pow (
             std::numeric_limits<float>
-            ::epsilon(), (float) +0.9) ;
+            ::epsilon(), (float) +0.8) ;
 
         iptr_type static
         constexpr _NBOX=(iptr_type)+8  ;
@@ -214,8 +219,8 @@
                  * _RTOL ;
 
     /*-------------------- make aabb-tree and init. bbox. */
-        aabb_mesh( this->_mesh._set1 ,
-                   this->_mesh._set4 ,
+        aabb_mesh( this->_mesh.node(),
+                   this->_mesh.tri4(),
                    this->_tree,_BTOL ,
                   _NBOX , tria_pred()) ;
     }
@@ -270,20 +275,19 @@
             allocator:: size_type,
             allocator >     _keys;
 
-        containers:: array      <
-            iptr_type ,
-            allocator >     _tset;
+        typename
+            mesh_type::connector _conn;
 
     /*-------------------- push nodes onto priority queue */
         _keys.set_count (
-            _mesh._set1.count(),
+            _mesh.node().count() ,
         containers::tight_alloc, _null) ;
 
         iptr_type _inum  = +0;
         for (auto _iter  =
-             this->_mesh._set1.head() ;
+             this->_mesh.node().head();
                   _iter !=
-             this->_mesh._set1.tend() ;
+             this->_mesh.node().tend();
                 ++_iter , ++_inum)
         {
             if (_iter->mark() >= +0 )
@@ -301,22 +305,29 @@
 
             _keys[_base] = _null ;
 
-            _tset.set_count( +0) ;
-             this->
-            _mesh.node_tri4(_base, _tset);
+            _conn.set_count( +0) ;
+             this->_mesh.
+            connect_3(_base, POINT_tag, _conn) ;
 
-            for (auto _next  = _tset.head();
-                      _next != _tset.tend();
-                    ++_next )
+            real_type _hnow  = _hval[_base];
+
+            for (auto _next  = _conn.head();
+                      _next != _conn.tend();
+                    ++_next  )
             {
+                if (_next->_kind == TRIA4_tag)
+                {
+    /*--------------------------------------- TRIA-4 case */
+                 auto _cell =_next->_cell;
+
                  auto _inod = this->
-                _mesh._set4[*_next].node(0);
+                _mesh. tri4( _cell).node(0);
                  auto _jnod = this->
-                _mesh._set4[*_next].node(1);
+                _mesh. tri4( _cell).node(1);
                  auto _knod = this->
-                _mesh._set4[*_next].node(2);
+                _mesh. tri4( _cell).node(2);
                  auto _lnod = this->
-                _mesh._set4[*_next].node(3);
+                _mesh. tri4( _cell).node(3);
 
     /*-------------------- skip any cells with null nodes */
                 if (_keys[_inod] == _null &&
@@ -328,18 +339,40 @@
                 if (_keys[_lnod] == _null &&
                     _lnod != _base) continue ;
 
+    /*-------------------- skip cells due to sorted order */
+                real_type _hmax;
+                _hmax = this->_hval[_inod] ;
+                _hmax = std::max(
+                _hmax , this->_hval[_jnod]);
+                _hmax = std::max(
+                _hmax , this->_hval[_knod]);
+                _hmax = std::max(
+                _hmax , this->_hval[_lnod]);
+
+                if (_hmax <= _hnow) continue ;
+
+    /*-------------------- solve for local |dh/dx| limits */
+                real_type _iold =
+                     this->_hval[_inod] ;
+                real_type _jold =
+                     this->_hval[_jnod] ;
+                real_type _kold =
+                     this->_hval[_knod] ;
+                real_type _lold =
+                     this->_hval[_lnod] ;
+
                 if (this->_dhdx.count() >1)
                 {
     /*-------------------- update adj. set, g = g(x) case */
                 if (eikonal_tria_3d (
                    &this->
-                _mesh._set1[ _inod].pval(0),
+                _mesh. node( _inod).pval(0),
                    &this->
-                _mesh._set1[ _jnod].pval(0),
+                _mesh. node( _jnod).pval(0),
                    &this->
-                _mesh._set1[ _knod].pval(0),
+                _mesh. node( _knod).pval(0),
                    &this->
-                _mesh._set1[ _lnod].pval(0),
+                _mesh. node( _lnod).pval(0),
                     this->_hval[_inod],
                     this->_hval[_jnod],
                     this->_hval[_knod],
@@ -351,18 +384,22 @@
                 {
 
                 if (_keys[_inod] != _null)
+                if (_hval[_inod] != _iold)
                     _sort.update(
                     _keys[_inod] ,  _inod) ;
 
                 if (_keys[_jnod] != _null)
+                if (_hval[_jnod] != _jold)
                     _sort.update(
                     _keys[_jnod] ,  _jnod) ;
 
                 if (_keys[_knod] != _null)
+                if (_hval[_knod] != _kold)
                     _sort.update(
                     _keys[_knod] ,  _knod) ;
 
                 if (_keys[_lnod] != _null)
+                if (_hval[_lnod] != _lold)
                     _sort.update(
                     _keys[_lnod] ,  _lnod) ;
 
@@ -374,13 +411,13 @@
     /*-------------------- update adj. set, const. g case */
                 if (eikonal_tria_3d (
                    &this->
-                _mesh._set1[ _inod].pval(0),
+                _mesh. node( _inod).pval(0),
                    &this->
-                _mesh._set1[ _jnod].pval(0),
+                _mesh. node( _jnod).pval(0),
                    &this->
-                _mesh._set1[ _knod].pval(0),
+                _mesh. node( _knod).pval(0),
                    &this->
-                _mesh._set1[ _lnod].pval(0),
+                _mesh. node( _lnod).pval(0),
                     this->_hval[_inod],
                     this->_hval[_jnod],
                     this->_hval[_knod],
@@ -392,22 +429,36 @@
                 {
 
                 if (_keys[_inod] != _null)
+                if (_hval[_inod] != _iold)
                     _sort.update(
                     _keys[_inod] ,  _inod) ;
 
                 if (_keys[_jnod] != _null)
+                if (_hval[_jnod] != _jold)
                     _sort.update(
                     _keys[_jnod] ,  _jnod) ;
 
                 if (_keys[_knod] != _null)
+                if (_hval[_knod] != _kold)
                     _sort.update(
                     _keys[_knod] ,  _knod) ;
 
                 if (_keys[_lnod] != _null)
+                if (_hval[_lnod] != _lold)
                     _sort.update(
                     _keys[_lnod] ,  _lnod) ;
 
                 }
+                }
+
+                }
+                else
+                if (_next->_kind == HEXA8_tag)
+                {
+    /*--------------------------------------- HEXA-8 case */
+
+
+
                 }
             }
         }
@@ -422,6 +473,7 @@
 
     class find_tria
         {
+    /*--------------------------- point-"in"-tria functor */
         public  :
         real_type              *_ppos ;
 
@@ -474,6 +526,7 @@
 
     class near_tria
         {
+    /*--------------------------- point-near-tria functor */
         public  :
         real_type              *_ppos ;
         real_type              *_qpos ;
@@ -573,18 +626,18 @@
     {
         geometry::hits_type _hits ;
         if (geometry::proj_tria_3d(_ppos,
-           &_mesh._set1[
-            _mesh._set4[
-            _tpos].node(0)].pval(0) ,
-           &_mesh._set1[
-            _mesh._set4[
-            _tpos].node(1)].pval(0) ,
-           &_mesh._set1[
-            _mesh._set4[
-            _tpos].node(2)].pval(0) ,
-           &_mesh._set1[
-            _mesh._set4[
-            _tpos].node(3)].pval(0) ,
+           &_mesh. node(
+            _mesh. tri4(
+            _tpos).node(0)).pval(0) ,
+           &_mesh. node(
+            _mesh. tri4(
+            _tpos).node(1)).pval(0) ,
+           &_mesh. node(
+            _mesh. tri4(
+            _tpos).node(2)).pval(0) ,
+           &_mesh. node(
+            _mesh. tri4(
+            _tpos).node(3)).pval(0) ,
             _qpos,_hits) )
         {
             return (_hits ==
@@ -607,11 +660,14 @@
         )
     {
     /*------------------------- test whether hint is valid */
-        return _hint >= (iptr_type)0
-         && _hint < (iptr_type)
-            this->_mesh._set4.count()
-         && this->_mesh.
-           _set4 [_hint].mark() >= 0 ;
+        iptr_type _iplo = (iptr_type)+0 ;
+
+        iptr_type _iphi = (iptr_type)
+            this->_mesh.tri4 ().count() ;
+
+        return _hint >= _iplo &&
+               _hint <  _iphi &&
+        this-> _mesh.tri4(_hint).mark() >= +0 ;
     }
 
     /*
@@ -679,7 +735,7 @@
             this->
            _tree.near(_PPOS, _func) ;
 
-           _hint =  _func._tpos ;
+           _hint =    _func. _tpos;
         }
 
         if (_hint != this->null_hint())
@@ -695,26 +751,27 @@
             face_node(_fnod, _fpos, 3, 2) ;
 
             _fnod[0] = this->_mesh.
-            _set4[_hint].node(_fnod[0]);
+             tri4(_hint).node(_fnod[0]);
             _fnod[1] = this->_mesh.
-            _set4[_hint].node(_fnod[1]);
+             tri4(_hint).node(_fnod[1]);
             _fnod[2] = this->_mesh.
-            _set4[_hint].node(_fnod[2]);
+             tri4(_hint).node(_fnod[2]);
+
             _fnod[3] = this->_mesh.
-            _set4[_hint].node(_fnod[3]);
+             tri4(_hint).node(_fnod[3]);
 
             real_type _tvol =
                 geometry::tetra_vol_3d (
                &this->_mesh.
-               _set1[_fnod[0]].pval(0) ,
+                node(_fnod[0]).pval(0) ,
                &this->_mesh.
-               _set1[_fnod[1]].pval(0) ,
+                node(_fnod[1]).pval(0) ,
                &this->_mesh.
-               _set1[_fnod[2]].pval(0) ,
+                node(_fnod[2]).pval(0) ,
                _QPOS) ;
 
             _hsum += _tvol *
-                    this->_hval[_fnod[3]] ;
+                this->_hval[_fnod [ 3]] ;
 
             _vsum += _tvol ;
         }

@@ -53,6 +53,7 @@
 #   define __ARRAY_LIST__
 
 #   include "single_list.hpp"
+#   include "array.hpp"
 #   include "block_array.hpp"
 
     namespace containers {

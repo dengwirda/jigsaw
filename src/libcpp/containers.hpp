@@ -68,6 +68,7 @@
 #   include "containers/arraylist.hpp"
 
 #   include "containers/hashtable.hpp"
+#   include "containers/hashtwice.hpp"
 
 #   include "containers/priorityset.hpp"
 #   include "containers/prioritymap.hpp"

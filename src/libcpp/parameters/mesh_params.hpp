@@ -146,7 +146,7 @@
             iptr_type _rule = +0 ;
             __setbit( _rule, offH_kind) ;
             __setbit( _rule, offC_kind) ;
-          //__setbit( _rule, offT_kind) ;
+        //  __setbit( _rule, offT_kind) ;
             __setbit( _rule, sink_kind) ;
 
             return _rule ;

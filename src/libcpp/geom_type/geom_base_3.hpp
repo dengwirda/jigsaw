@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 August, 2019
+     * Last updated: 25 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -63,6 +63,9 @@
 
     /*------------------------- types for intersect calls */
 
+    typedef
+    containers::array<real_type*>   real_ptrs ;
+
     struct line_type
         {
         real_type  _ipos[3] ;   // line endpoints
@@ -73,8 +76,7 @@
         {
         real_type  _ppos[3] ;   // point on flat
         real_type  _nvec[3] ;   // norm. to flat
-        real_type  _rmin[3] ;   // bounding-aabb
-        real_type  _rmax[3] ;
+        real_ptrs  _bnds ;      // dual vertices
         } ;
 
     struct disc_type

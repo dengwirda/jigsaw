@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 August, 2018
+     * Last updated: 10 July, 2020
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -58,6 +58,7 @@
     __normal_call iptr_type init_mesh (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
+        geom_data &_geom ,
         mesh_data &_mesh
         )
     {
@@ -72,12 +73,21 @@
         {
     /*--------------------------------- euclidean-mesh-2d */
             for (auto _iter  = _mesh.
-            _euclidean_mesh_2d._mesh._set1.head() ;
+            _euclidean_mesh_2d._mesh.node().head() ;
                       _iter != _mesh.
-            _euclidean_mesh_2d._mesh._set1.tend() ;
+            _euclidean_mesh_2d._mesh.node().tend() ;
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
+
+                if (_iter->itag () >= +0 )
+                if (_geom._kind ==
+                jmsh_kind::euclidean_mesh)
+                    _geom.
+                _euclidean_mesh_2d.projector (
+                   &_iter->pval(0) ,
+                    _iter->itag () ,
+                   &_iter->pval(0) ) ;
 
                 if (_iter->feat()
                         == mesh::null_feat)
@@ -97,15 +107,15 @@
             }
 
             for (auto _iter  = _mesh.
-            _euclidean_mesh_2d._mesh._set3.head() ;
+            _euclidean_mesh_2d._mesh.tri3().head() ;
                       _iter != _mesh.
-            _euclidean_mesh_2d._mesh._set3.tend() ;
+            _euclidean_mesh_2d._mesh.tri3().tend() ;
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
 
                  auto _head  = _mesh.
-            _euclidean_mesh_2d._mesh._set1.head() ;
+            _euclidean_mesh_2d._mesh.node().head() ;
 
                  auto _inod  =
                 _head+_iter->node( +0) ;
@@ -123,15 +133,45 @@
             }
 
             for (auto _iter  = _mesh.
-            _euclidean_mesh_2d._mesh._set2.head() ;
+            _euclidean_mesh_2d._mesh.quad().head() ;
                       _iter != _mesh.
-            _euclidean_mesh_2d._mesh._set2.tend() ;
+            _euclidean_mesh_2d._mesh.quad().tend() ;
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
 
                  auto _head  = _mesh.
-            _euclidean_mesh_2d._mesh._set1.head() ;
+            _euclidean_mesh_2d._mesh.node().head() ;
+
+                 auto _inod  =
+                _head+_iter->node( +0) ;
+                 auto _jnod  =
+                _head+_iter->node( +1) ;
+                 auto _knod  =
+                _head+_iter->node( +2) ;
+                 auto _lnod  =
+                _head+_iter->node( +3) ;
+
+                if (_inod->fdim() > 2)
+                    _inod->fdim() = 2  ;
+                if (_jnod->fdim() > 2)
+                    _jnod->fdim() = 2  ;
+                if (_knod->fdim() > 2)
+                    _knod->fdim() = 2  ;
+                if (_lnod->fdim() > 2)
+                    _lnod->fdim() = 2  ;
+            }
+
+            for (auto _iter  = _mesh.
+            _euclidean_mesh_2d._mesh.edge().head() ;
+                      _iter != _mesh.
+            _euclidean_mesh_2d._mesh.edge().tend() ;
+                    ++_iter )
+            {
+                if (_iter->mark() < 0) continue ;
+
+                 auto _head  = _mesh.
+            _euclidean_mesh_2d._mesh.node().head() ;
 
                  auto _inod  =
                 _head+_iter->node( +0) ;
@@ -151,12 +191,30 @@
         {
     /*--------------------------------- euclidean-mesh-3d */
             for (auto _iter  = _mesh.
-            _euclidean_mesh_3d._mesh._set1.head() ;
+            _euclidean_mesh_3d._mesh.node().head() ;
                       _iter != _mesh.
-            _euclidean_mesh_3d._mesh._set1.tend() ;
+            _euclidean_mesh_3d._mesh.node().tend() ;
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
+
+                if (_iter->itag () >= +0 )
+                if (_geom._kind ==
+                jmsh_kind::euclidean_mesh)
+                    _geom.
+                _euclidean_mesh_3d.projector (
+                   &_iter->pval(0) ,
+                    _iter->itag () ,
+                   &_iter->pval(0) ) ;
+
+                if (_iter->itag () >= +0 )
+                if (_geom._kind ==
+                jmsh_kind::ellipsoid_mesh)
+                    _geom.
+                _ellipsoid_mesh_3d.projector (
+                   &_iter->pval(0) ,
+                    _iter->itag () ,
+                   &_iter->pval(0) ) ;
 
                 if (_iter->feat()
                         == mesh::null_feat)
@@ -176,15 +234,15 @@
             }
 
             for (auto _iter  = _mesh.
-            _euclidean_mesh_3d._mesh._set4.head() ;
+            _euclidean_mesh_3d._mesh.tri4().head() ;
                       _iter != _mesh.
-            _euclidean_mesh_3d._mesh._set4.tend() ;
+            _euclidean_mesh_3d._mesh.tri4().tend() ;
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
 
                  auto _head  = _mesh.
-            _euclidean_mesh_3d._mesh._set1.head() ;
+            _euclidean_mesh_3d._mesh.node().head() ;
 
                  auto _inod  =
                 _head+_iter->node( +0) ;
@@ -206,15 +264,15 @@
             }
 
             for (auto _iter  = _mesh.
-            _euclidean_mesh_3d._mesh._set3.head() ;
+            _euclidean_mesh_3d._mesh.tri3().head() ;
                       _iter != _mesh.
-            _euclidean_mesh_3d._mesh._set3.tend() ;
+            _euclidean_mesh_3d._mesh.tri3().tend() ;
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
 
                  auto _head  = _mesh.
-            _euclidean_mesh_3d._mesh._set1.head() ;
+            _euclidean_mesh_3d._mesh.node().head() ;
 
                  auto _inod  =
                 _head+_iter->node( +0) ;
@@ -232,15 +290,45 @@
             }
 
             for (auto _iter  = _mesh.
-            _euclidean_mesh_3d._mesh._set2.head() ;
+            _euclidean_mesh_3d._mesh.quad().head() ;
                       _iter != _mesh.
-            _euclidean_mesh_3d._mesh._set2.tend() ;
+            _euclidean_mesh_3d._mesh.quad().tend() ;
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
 
                  auto _head  = _mesh.
-            _euclidean_mesh_3d._mesh._set1.head() ;
+            _euclidean_mesh_3d._mesh.node().head() ;
+
+                 auto _inod  =
+                _head+_iter->node( +0) ;
+                 auto _jnod  =
+                _head+_iter->node( +1) ;
+                 auto _knod  =
+                _head+_iter->node( +2) ;
+                 auto _lnod  =
+                _head+_iter->node( +3) ;
+
+                if (_inod->fdim() > 2)
+                    _inod->fdim() = 2  ;
+                if (_jnod->fdim() > 2)
+                    _jnod->fdim() = 2  ;
+                if (_knod->fdim() > 2)
+                    _knod->fdim() = 2  ;
+                if (_lnod->fdim() > 2)
+                    _lnod->fdim() = 2  ;
+            }
+
+            for (auto _iter  = _mesh.
+            _euclidean_mesh_3d._mesh.edge().head() ;
+                      _iter != _mesh.
+            _euclidean_mesh_3d._mesh.edge().tend() ;
+                    ++_iter )
+            {
+                if (_iter->mark() < 0) continue ;
+
+                 auto _head  = _mesh.
+            _euclidean_mesh_3d._mesh.node().head() ;
 
                  auto _inod  =
                 _head+_iter->node( +0) ;

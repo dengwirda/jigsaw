@@ -61,15 +61,15 @@
     typedef R                       real_type;
     typedef I                       iptr_type;
 
-    typedef mesh::delaunay_tri_node_2 <
+    typedef mesh::laguerre_tri_node_2 <
             iptr_type ,
-            real_type >             dtri_node_base ;
+            real_type >             tria_node_base ;
 
-    typedef mesh::delaunay_tri_tria_2 <
+    typedef mesh::laguerre_tri_tria_2 <
             iptr_type ,
-            real_type >             dtri_tria_base ;
+            real_type >             tria_tria_base ;
 
-    class dtri_node : public dtri_node_base
+    class tria_node : public tria_node_base
         {
         public  :
     /*---------------------------- delaunay-tri node type */
@@ -135,7 +135,7 @@
         }
         } ;
 
-    class dtri_tria : public dtri_tria_base
+    class tria_tria : public tria_tria_base
         {
         public  :
     /*---------------------------- delaunay-tri tria type */
@@ -157,14 +157,14 @@
         }
         } ;
 
-    typedef mesh::delaunay_tri_euclidean_2  <
+    typedef mesh::laguerre_tri_euclidean_2  <
                 iptr_type ,
-                real_type >       dtri_pred ;
+                real_type >       tria_core ;
 
     typedef mesh::delaunay_tri_k    <
-                dtri_node ,
-                dtri_tria ,
-                dtri_pred >       tria_type ;
+                tria_node ,
+                tria_tria ,
+                tria_core >       tria_type ;
 
 
     #define __hashscal sizeof(iptr_type)/sizeof(uint32_t)

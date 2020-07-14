@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 January, 2019
+     * Last updated: 23 February, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -121,9 +121,14 @@
         {
             _eold.set_count(  +0) ;
 
+            real_type  _PPOS[3] ;
+            _PPOS[0] = _ppos[0] ;
+            _PPOS[1] = _ppos[1] ;
+            _PPOS[2] = (real_type)+0. ; // laguerre w = 0
+
             iptr_type _node = -1;
             if(!_mesh._tria.push_node (
-                _ppos,  _node,
+                _PPOS,  _node,
                 _hint, &_tnew, &_told))
             {
         /*------------------------- bail if DT push fails */
@@ -166,17 +171,16 @@
             }
 
         /*------------------------- keep "old" rDT cavity */
-            find_rdel( _geom, _mesh ,
-                       _told, _eold ) ;
+            find_rdel(
+                _geom, _mesh, _told, _eold
+                ) ;
 
         /*------------------------- form "new" rDT cavity */
-            push_rdel( _geom, _hfun ,
-                _mesh,  true,
-                _nnew, _tnew,
+            push_rdel( _geom, _hfun,
+                _mesh,  true, _nnew, _tnew ,
                 _escr, _ecav,
                 _tscr, _tcav,
-                _bscr, _bcav,
-                _sign, _pass,
+                _bscr, _bcav, _sign, _pass ,
                    null_mode,
                 _mode, _args ) ;
 

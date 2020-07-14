@@ -48,7 +48,7 @@
 
     namespace mesh
     {
-/*-------------------------- classification of mesh items */
+/*-------------------------- classification of mesh cells */
     char_type constexpr null_item = 0 ;
     char_type constexpr void_item = 1 ;
     char_type constexpr ring_item = 2 ;

@@ -46,7 +46,7 @@
 #   ifndef __ALGORITHMS__
 #   define __ALGORITHMS__
 
-#   include "libbasic.hpp"
+#   include "basebase.hpp"
 
 #   include "algorithms/sort.hpp"
 #   include "algorithms/find.hpp"

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 June, 2019
+     * Last updated: 30 May, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * darren.engwirda@columbia.edu
      * https://github.com/dengwirda
@@ -208,6 +208,9 @@
         jigsaw_PYRA5_array_t    _pyra5;
 
         jigsaw_BOUND_array_t    _bound;
+
+        jigsaw_VERT2_array_t    _seed2;
+        jigsaw_VERT3_array_t    _seed3;
 
     /* if (_flags == ELLIPSOID_MESH) */
 

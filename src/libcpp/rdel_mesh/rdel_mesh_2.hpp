@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 August, 2019
+     * Last updated: 05 March, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -499,7 +499,7 @@
             _mesh._tria._nset.head() ;
                   _iter !=
             _mesh._tria._nset.tend() ;
-                ++_iter  , ++_npos)
+                ++_iter, ++_npos)
         {
             if (_iter->mark() >= +0)
             {
@@ -510,7 +510,7 @@
             _mesh._tria._tset.head() ;
                   _iter !=
             _mesh._tria._tset.tend() ;
-                ++_iter  , ++_tpos)
+                ++_iter, ++_tpos)
         {
             if (_iter->mark() >= +0)
             {
@@ -558,9 +558,9 @@
         _pmax[ 1] = _geom._bmax[ 1] ;
 
         for (auto _node  =
-            _init._mesh._set1.head();
+            _init._mesh.node().head() ;
                   _node !=
-            _init._mesh._set1.tend();
+            _init._mesh.node().tend() ;
                 ++_node  )
         {
         if (_node->mark() >= + 0 )
