@@ -18,7 +18,7 @@
      *
      * Copyright 2013 -- 2019
      * Darren Engwirda
-     * darren.engwirda@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda
      *
     --------------------------------------------------------

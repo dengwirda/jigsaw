@@ -44,7 +44,7 @@
  *
  * Copyright 2013-2020
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -110,7 +110,7 @@
 
     public  :
 
-    hash_type const     _hash;
+    hash_type const     _hfun;
     pred_type const     _pred;
 
     size_list           _lsiz;
@@ -256,7 +256,7 @@
             _next = _head->_next;
         /*--------------------------- calc new hash value */
             uint32_t _hash[2] ;
-            this->_hash(
+             this->_hfun(
             _head->_data, _hash[0], _hash[1]) ;
 
             _hash[0] &= this->hash_mask();
@@ -293,7 +293,7 @@
     /*----------------------------- c'tor alloc from obj. */
         ) : base_type(  _asrc),
     /*----------------------------- c'tor other from obj. */
-        _hash(_hsrc), _pred(_psrc),
+        _hfun(_hsrc), _pred(_psrc),
         _lsiz(_asrc), _load(_lsrc)
     {
         set_slots(_nsrc,
@@ -335,7 +335,7 @@
             grow_hash() ;
     /*------------------------------- evaluate hash value */
         uint32_t _hash[2] ;
-        this->_hash(_data, _hash[0], _hash[1]) ;
+        this->_hfun(_data, _hash[0], _hash[1]) ;
 
         _hash[0] &= this->hash_mask();
         _hash[1] &= this->hash_mask();
@@ -365,7 +365,7 @@
             grow_hash() ;
     /*------------------------------- evaluate hash value */
         uint32_t _hash[2] ;
-        this->_hash(_data, _hash[0], _hash[1]) ;
+        this->_hfun(_data, _hash[0], _hash[1]) ;
 
         _hash[0] &= this->hash_mask();
         _hash[1] &= this->hash_mask();
@@ -395,7 +395,7 @@
 
     /*------------------------------- evaluate hash value */
         uint32_t _hash[2] ;
-        this->_hash(_data, _hash[0], _hash[1]) ;
+        this->_hfun(_data, _hash[0], _hash[1]) ;
 
         _hash[0] &= this->hash_mask();
         _hash[1] &= this->hash_mask();
@@ -437,7 +437,7 @@
 
     /*------------------------------- evaluate hash value */
         uint32_t _hash[2] ;
-        this->_hash(_data, _hash[0], _hash[1]) ;
+        this->_hfun(_data, _hash[0], _hash[1]) ;
 
         _hash[0] &= this->hash_mask();
         _hash[1] &= this->hash_mask();
@@ -490,7 +490,7 @@
 
     /*------------------------------- evaluate hash value */
         uint32_t _hash[2] ;
-        this->_hash(_data, _hash[0], _hash[1]) ;
+        this->_hfun(_data, _hash[0], _hash[1]) ;
 
         _hash[0] &= this->hash_mask();
         _hash[1] &= this->hash_mask();
@@ -534,7 +534,7 @@
 
     /*------------------------------- evaluate hash value */
         uint32_t _hash[2] ;
-        this->_hash(_data, _hash[0], _hash[1]) ;
+        this->_hfun(_data, _hash[0], _hash[1]) ;
 
         _hash[0] &= this->hash_mask();
         _hash[1] &= this->hash_mask();
@@ -597,7 +597,7 @@
 
     /*------------------------------- evaluate hash value */
         uint32_t _hash[2] ;
-        this->_hash(_data, _hash[0], _hash[1]) ;
+        this->_hfun(_data, _hash[0], _hash[1]) ;
 
         _hash[0] &= this->hash_mask();
         _hash[1] &= this->hash_mask();
@@ -656,7 +656,7 @@
 
     /*------------------------------- evaluate hash value */
         uint32_t _hash[2] ;
-        this->_hash(_iptr->_data, _hash[0], _hash[1]);
+        this->_hfun(_iptr->_data, _hash[0], _hash[1]);
 
         _hash[0] &= this->hash_mask();
         _hash[1] &= this->hash_mask();
@@ -734,25 +734,25 @@
         {
         /*---------------------- count items in each list */
             item_type*_next =*_iter;
-            size_type _lsiz = +0;
+            size_type _lnum = +0;
             for( ; _next != nullptr;
                         _next = _next->_next)
             {
-                _lsiz += +1  ;
+                _lnum += +1  ;
             }
         /*----------------------------- update statistics */
-            if (_min_count > _lsiz)
-                _min_count = _lsiz;
-            if (_max_count < _lsiz)
-                _max_count = _lsiz;
+            if (_min_count > _lnum)
+                _min_count = _lnum;
+            if (_max_count < _lnum)
+                _max_count = _lnum;
 
-            if (_lsiz == (size_type) +0)
+            if (_lnum == (size_type) +0)
                 _nil_ratio += +1. ;
 
-            if (_bad_limit < _lsiz)
+            if (_bad_limit < _lnum)
                 _bad_ratio += +1. ;
 
-            _ave_count += (double)_lsiz;
+            _ave_count += (double)_lnum;
         }
 
         _nil_ratio /= this->_lptr.count() ;

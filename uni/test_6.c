@@ -108,7 +108,7 @@
         _jjig._geom_feat =   +1 ;
         _jjig._mesh_top1 =   +1 ;
 
-        _jjig._optm_iter =   +0 ;
+      //_jjig._optm_iter =   +0 ;
 
         _retv = jigsaw (
             &_jjig ,    // the config. opts

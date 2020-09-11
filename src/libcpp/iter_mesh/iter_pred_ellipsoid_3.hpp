@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 April, 2020
+     * Last updated: 26 July, 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -175,19 +175,17 @@
 
         __static_call
         __inline_call real_type quad_mass (
-          __const_ptr(real_type) /*_ipos*/ ,
-          __const_ptr(real_type) /*_jpos*/ ,
-          __const_ptr(real_type) /*_kpos*/ ,
-          __const_ptr(real_type) /*_lpos*/
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos ,
+          __const_ptr(real_type) _lpos
             )
-        {   /*
-            return geometry::quad_mass_3d (
+        {
+            return geometry::quad_area_3d (
                &_ipos[0] ,
                &_jpos[0] ,
                &_kpos[0] ,
                &_lpos[0] ) ;
-            */
-            return (real_type) +1. ;
         }
 
         __static_call
@@ -223,21 +221,19 @@
         __static_call
         __inline_call void_type quad_ball (
           __write_ptr(real_type) _ball ,
-          __const_ptr(real_type) /*_ipos*/ ,
-          __const_ptr(real_type) /*_jpos*/ ,
-          __const_ptr(real_type) /*_kpos*/ ,
-          __const_ptr(real_type) /*_lpos*/ ,
-                      bool_type  /*_bind = false*/
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos ,
+          __const_ptr(real_type) _lpos ,
+                      bool_type  _bind = false
             )
-        {   /*
+        {
             return geometry::quad_ball_3d (
                &_ball[0],
                &_ipos[0],
                &_jpos[0],
                &_kpos[0],
                &_lpos[0], _bind) ;
-            */
-            _ball[0] = _ball[1] = _ball[2] = _ball[3] = 0. ;
         }
 
         __static_call
@@ -262,7 +258,7 @@
             dual_kind const&
             )
         {
-            return geometry::dual_quality_3d (
+            return geometry::tria_duality_3d (
                &_ipos[0] ,
                &_jpos[0] ,
                &_kpos[0] ) ;
@@ -270,20 +266,18 @@
 
         __static_call
         __inline_call real_type quad_cost (
-          __const_ptr(real_type) /*_ipos*/ ,
-          __const_ptr(real_type) /*_jpos*/ ,
-          __const_ptr(real_type) /*_kpos*/ ,
-          __const_ptr(real_type) /*_lpos*/ ,
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos ,
+          __const_ptr(real_type) _lpos ,
             cell_kind const&
             )
-        {   /*
+        {
             return geometry::quad_quality_3d (
                &_ipos[0] ,
                &_jpos[0] ,
                &_kpos[0] ,
                &_lpos[0] ) ;
-            */
-            return (real_type) +1. ;
         }
 
         __static_call

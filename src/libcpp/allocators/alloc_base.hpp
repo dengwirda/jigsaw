@@ -42,7 +42,7 @@
      *
      * Copyright 2013-2017
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------

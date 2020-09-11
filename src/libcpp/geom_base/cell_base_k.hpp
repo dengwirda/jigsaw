@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * TRIA-ELEM-K: operations on simplexes in R^k.
+     * CELL-BASE-K: operations on linear cells in R^k.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the
@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 May, 2020
+     * Last updated: 26 July, 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -43,8 +43,8 @@
 
 #   pragma once
 
-#   ifndef __TRIA_ELEM_K__
-#   define __TRIA_ELEM_K__
+#   ifndef __CELL_BASE_K__
+#   define __CELL_BASE_K__
 
     namespace geometry {
 
@@ -110,6 +110,155 @@
     template <
     typename      data_type
              >
+    __inline_call void_type quad_axes_2d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4,
+    __write_ptr  (data_type) _x1,
+    __write_ptr  (data_type) _x2
+        ) // see VERDICT ref. manual
+    {
+        _x1[0] = (_p2[0] - _p1[0])
+               + (_p4[0] - _p3[0]);
+        _x1[1] = (_p2[1] - _p1[1])
+               + (_p4[1] - _p3[1]);
+
+        _x2[0] = (_p3[0] - _p2[0])
+               + (_p4[0] - _p1[0]);
+        _x2[1] = (_p3[1] - _p2[1])
+               + (_p4[1] - _p1[1]);
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call void_type quad_axes_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4,
+    __write_ptr  (data_type) _x1,
+    __write_ptr  (data_type) _x2
+        ) // see VERDICT ref. manual
+    {
+        _x1[0] = (_p2[0] - _p1[0])
+               + (_p4[0] - _p3[0]);
+        _x1[1] = (_p2[1] - _p1[1])
+               + (_p4[1] - _p3[1]);
+        _x1[2] = (_p2[2] - _p1[2])
+               + (_p4[2] - _p3[2]);
+
+        _x2[0] = (_p3[0] - _p2[0])
+               + (_p4[0] - _p1[0]);
+        _x2[1] = (_p3[1] - _p2[1])
+               + (_p4[1] - _p1[1]);
+        _x2[2] = (_p3[2] - _p2[2])
+               + (_p4[2] - _p1[2]);
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call data_type quad_area_2d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4
+        ) // see VERDICT ref. manual
+    {
+        data_type _a1 =
+        tria_area_2d(_p1, _p2, _p3);
+        data_type _a2 =
+        tria_area_2d(_p1, _p3, _p4);
+        data_type _a3 =
+        tria_area_2d(_p1, _p2, _p4);
+        data_type _a4 =
+        tria_area_2d(_p2, _p3, _p4);
+
+        return ((_a1+_a2) + (_a3+_a4)) / +2.;
+
+        /*
+    //  data_type _x1[2], _x2[2], _nc;
+    //  quad_axes_2d(_p1, _p2, _p3, _p4, _x1, _x2);
+
+        data_type _v1[2], _a1;
+        data_type _v2[2], _a2;
+        data_type _v3[2], _a3;
+        data_type _v4[2], _a4;
+        vector_2d(_p1, _p2, _v1);
+        vector_2d(_p2, _p3, _v2);
+        vector_2d(_p3, _p4, _v3);
+        vector_2d(_p4, _p1, _v4);
+
+        cross_2d (_v4, _v1, _a1);
+        cross_2d (_v1, _v2, _a2);
+        cross_2d (_v2, _v3, _a3);
+        cross_2d (_v3, _v4, _a4);
+
+        return (_a1 + _a2 + _a3 + _a4);
+        */
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call data_type quad_area_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4
+        ) // see VERDICT ref. manual
+    {
+        data_type _a1 =
+        tria_area_3d(_p1, _p2, _p3);
+        data_type _a2 =
+        tria_area_3d(_p1, _p3, _p4);
+        data_type _a3 =
+        tria_area_3d(_p1, _p2, _p4);
+        data_type _a4 =
+        tria_area_3d(_p2, _p3, _p4);
+
+        return ((_a1+_a2) + (_a3+_a4)) / +2.;
+
+        /*
+        data_type _x1[3], _x2[3], _nc[3];
+        quad_axes_3d(_p1, _p2, _p3, _p4, _x1, _x2);
+
+        data_type _v1[3], _n1[3];
+        data_type _v2[3], _n2[3];
+        data_type _v3[3], _n3[3];
+        data_type _v4[3], _n4[3];
+        vector_3d(_p1, _p2, _v1);
+        vector_3d(_p2, _p3, _v2);
+        vector_3d(_p3, _p4, _v3);
+        vector_3d(_p4, _p1, _v4);
+
+        cross_3d (_v4, _v1, _n1);
+        cross_3d (_v1, _v2, _n2);
+        cross_3d (_v2, _v3, _n3);
+        cross_3d (_v3, _v4, _n4);
+
+        cross_3d (_x1, _x2, _nc);
+
+        data_type _lc = length_3d(_nc);
+
+        data_type _a1 =
+            dot_3d(_nc, _n1) / _lc;
+        data_type _a2 =
+            dot_3d(_nc, _n2) / _lc;
+        data_type _a3 =
+            dot_3d(_nc, _n3) / _lc;
+        data_type _a4 =
+            dot_3d(_nc, _n4) / _lc;
+
+        return (_a1 + _a2 + _a3 + _a4);
+        */
+    }
+
+    template <
+    typename      data_type
+             >
     __inline_call void_type line_norm_2d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
@@ -145,6 +294,29 @@
     template <
     typename      data_type
              >
+    __inline_call void_type quad_norm_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4,
+    __write_ptr  (data_type) _nv
+         )
+    {
+        data_type _xx11[3], _xx22[3] ;
+        quad_axes_3d(
+        _p1, _p2, _p3, _p4, _xx11, _xx22);
+
+        _nv[0] = _xx11[1] * _xx22[2] -
+                 _xx11[2] * _xx22[1] ;
+        _nv[1] = _xx11[2] * _xx22[0] -
+                 _xx11[0] * _xx22[2] ;
+        _nv[2] = _xx11[0] * _xx22[1] -
+                 _xx11[1] * _xx22[0] ;
+    }
+
+    template <
+    typename      data_type
+             >
     __inline_call data_type tetra_vol_3d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
@@ -171,7 +343,7 @@
 
     /*
     --------------------------------------------------------
-     * tria. "quality" scores.
+     * cell "quality" scores.
     --------------------------------------------------------
      */
 
@@ -271,9 +443,93 @@
         return _scal * _tvol / _lrms ;
     }
 
+    template <
+    typename      data_type
+             >
+    __inline_call
+        data_type quad_quality_2d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4
+        )
+    {   // mean sub-tria "volume-length" metrics
+
+        data_type static // +2. / std::sqrt(+3.)
+            constexpr _scal =
+       (data_type)+1.154700538379252 ;
+
+        data_type _val1 =
+        tria_quality_2d(_p1, _p2, _p3) ;
+
+        data_type _val2 =
+        tria_quality_2d(_p1, _p3, _p4) ;
+
+        data_type _val3 =
+        tria_quality_2d(_p1, _p2, _p4) ;
+
+        data_type _val4 =
+        tria_quality_2d(_p2, _p3, _p4) ;
+
+        data_type _vmin =
+        std::min(std::min(_val1, _val2),
+                 std::min(_val3, _val4)) ;
+
+        data_type _prod =
+            _val1*_val2*_val3*_val4 ;
+
+        data_type _mean = _scal *
+        std::pow(std::abs(_prod), 1./4.) ;
+
+        return
+        (_vmin > 0.) ? +_mean : -_mean ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call
+        data_type quad_quality_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4
+        )
+    {   // mean sub-tria "volume-length" metrics
+
+        data_type static // +2. / std::sqrt(+3.)
+            constexpr _scal =
+       (data_type)+1.154700538379252 ;
+
+        data_type _val1 =
+        tria_quality_3d(_p1, _p2, _p3) ;
+
+        data_type _val2 =
+        tria_quality_3d(_p1, _p3, _p4) ;
+
+        data_type _val3 =
+        tria_quality_3d(_p1, _p2, _p4) ;
+
+        data_type _val4 =
+        tria_quality_3d(_p2, _p3, _p4) ;
+
+        data_type _vmin =
+        std::min(std::min(_val1, _val2),
+                 std::min(_val3, _val4)) ;
+
+        data_type _prod =
+            _val1*_val2*_val3*_val4 ;
+
+        data_type _mean = _scal *
+        std::pow(std::abs(_prod), 1./4.) ;
+
+        return
+        (_vmin > 0.) ? +_mean : -_mean ;
+    }
+
     /*
     --------------------------------------------------------
-     * voro. "quality" scores.
+     * dual "quality" scores.
     --------------------------------------------------------
      */
 
@@ -281,39 +537,27 @@
     typename      data_type
              >
     __normal_call
-        data_type dual_quality_2d (
+        data_type tria_duality_2d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
     __const_ptr  (data_type) _p3
         )
     {
-        data_type _ob[ +3] ;
-        geometry::perp_ball_2d(_ob,
-            _p1 , _p2, _p3);
+        data_type _ob[3];
+        perp_ball_2d(_ob, _p1, _p2, _p3);
 
-        data_type _o1[ +3] ;
-        geometry::perp_ball_2d(_o1,
-            _p1 , _p2) ;
-        data_type _o2[ +3] ;
-        geometry::perp_ball_2d(_o2,
-            _p2 , _p3) ;
-        data_type _o3[ +3] ;
-        geometry::perp_ball_2d(_o3,
-            _p3 , _p1) ;
+        data_type _o1[3], _o2[3], _o3[3];
+        perp_ball_2d(_o1, _p1, _p2) ;
+        perp_ball_2d(_o2, _p2, _p3) ;
+        perp_ball_2d(_o3, _p3, _p1) ;
 
-        data_type _mb[ +3] ;
-        geometry::mass_ball_2d(_mb,
-            _p1 , _p2, _p3);
+        data_type _mb[3];
+        mass_ball_2d(_mb, _p1, _p2, _p3);
 
-        data_type _m1[ +3] ;
-        geometry::mass_ball_2d(_m1,
-            _p1 , _p2) ;
-        data_type _m2[ +3] ;
-        geometry::mass_ball_2d(_m2,
-            _p2 , _p3) ;
-        data_type _m3[ +3] ;
-        geometry::mass_ball_2d(_m3,
-            _p3 , _p1) ;
+        data_type _m1[3], _m2[3], _m3[3];
+        mass_ball_2d(_m1, _p1, _p2) ;
+        mass_ball_2d(_m2, _p2, _p3) ;
+        mass_ball_2d(_m3, _p3, _p1) ;
 
         data_type _lb =
         geometry::lensqr_2d(_ob, _mb) ;
@@ -345,48 +589,34 @@
       ((data_type)+1.-.33) * _qb +
       ((data_type)+0.+.33) * _qe ;
 
-        _qq = (data_type)1.- _qq ;
-
-        return    _qq ;
+        return (data_type)1.-_qq ;
     }
 
     template <
     typename      data_type
              >
     __normal_call
-        data_type dual_quality_3d (
+        data_type tria_duality_3d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
     __const_ptr  (data_type) _p3
         )
     {
-        data_type _ob[ +4] ;
-        geometry::perp_ball_3d(_ob,
-            _p1 , _p2, _p3);
+        data_type _ob[4];
+        perp_ball_3d(_ob, _p1, _p2, _p3);
 
-        data_type _o1[ +4] ;
-        geometry::perp_ball_3d(_o1,
-            _p1 , _p2) ;
-        data_type _o2[ +4] ;
-        geometry::perp_ball_3d(_o2,
-            _p2 , _p3) ;
-        data_type _o3[ +4] ;
-        geometry::perp_ball_3d(_o3,
-            _p3 , _p1) ;
+        data_type _o1[4], _o2[4], _o3[4];
+        perp_ball_3d(_o1, _p1, _p2) ;
+        perp_ball_3d(_o2, _p2, _p3) ;
+        perp_ball_3d(_o3, _p3, _p1) ;
 
-        data_type _mb[ +4] ;
-        geometry::mass_ball_3d(_mb,
-            _p1 , _p2, _p3);
+        data_type _mb[4];
+        mass_ball_3d(_mb, _p1, _p2, _p3);
 
-        data_type _m1[ +4] ;
-        geometry::mass_ball_3d(_m1,
-            _p1 , _p2) ;
-        data_type _m2[ +4] ;
-        geometry::mass_ball_3d(_m2,
-            _p2 , _p3) ;
-        data_type _m3[ +4] ;
-        geometry::mass_ball_3d(_m3,
-            _p3 , _p1) ;
+        data_type _m1[4], _m2[4], _m3[4];
+        mass_ball_3d(_m1, _p1, _p2) ;
+        mass_ball_3d(_m2, _p2, _p3) ;
+        mass_ball_3d(_m3, _p3, _p1) ;
 
         data_type _lb =
         geometry::lensqr_3d(_ob, _mb) ;
@@ -418,9 +648,7 @@
       ((data_type)+1.-.33) * _qb +
       ((data_type)+0.+.33) * _qe ;
 
-        _qq = (data_type)1.- _qq ;
-
-        return    _qq ;
+        return (data_type)1.-_qq ;
     }
 
     /*
@@ -428,7 +656,7 @@
     typename      data_type
              >
     __normal_call
-        data_type dual_quality_3d (
+        data_type tria_duality_3d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,
     __const_ptr  (data_type) _p3,
@@ -443,6 +671,6 @@
 
     }
 
-#   endif//__TRIA_ELEM_K__
+#   endif//__CELL_BASE_K__
 
 

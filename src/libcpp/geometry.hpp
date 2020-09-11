@@ -35,7 +35,7 @@
  *
  * Copyright 2013-2017
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -57,8 +57,8 @@
 
 #   include "geom_base/intersect_k.hpp"
 
-#   include "geom_base/tria_ball_k.hpp"
-#   include "geom_base/tria_elem_k.hpp"
+#   include "geom_base/cell_ball_k.hpp"
+#   include "geom_base/cell_base_k.hpp"
 
 #   endif//__GEOMETRY__
 

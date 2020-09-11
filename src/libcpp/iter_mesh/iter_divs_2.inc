@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -252,11 +252,11 @@
              auto _tptr  =
             _mesh. tri3().head()+_cell->_cell ;
 
-            iptr_type _ENOD[ 3], _enum, _tnum ;
-            for(_enum = 3; _enum-- != 0; )
+            iptr_type _ENOD[ 3], _ENUM, _TNUM ;
+            for(_ENUM = 3; _ENUM-- != 0; )
             {
                 mesh_type::tri3_type::
-                face_node(_ENOD, _enum, 2, 1) ;
+                face_node(_ENOD, _ENUM, 2, 1) ;
                 _ENOD[0] =
                 _tptr->node(_ENOD[0]);
                 _ENOD[1] =
@@ -275,20 +275,20 @@
             _tdat.node(2) = _ENOD[0] ;
             _tdat.itag () = _tptr->itag () ;
 
-            _tnum = _mesh.push_tri3(_tdat) ;
+            _TNUM = _mesh.push_tri3(_tdat) ;
 
             _cnew.push_tail(typename
-        conn_list::data_type(_tnum,TRIA3_tag));
+        conn_list::data_type(_TNUM,TRIA3_tag));
 
             _tdat.node(0) = _inew;
             _tdat.node(1) = _ENOD[1] ;
             _tdat.node(2) = _ENOD[2] ;
             _tdat.itag () = _tptr->itag () ;
 
-            _tnum = _mesh.push_tri3(_tdat) ;
+            _TNUM = _mesh.push_tri3(_tdat) ;
 
             _cnew.push_tail(typename
-        conn_list::data_type(_tnum,TRIA3_tag));
+        conn_list::data_type(_TNUM,TRIA3_tag));
             }
             else
             if (_cell->_kind == QUAD4_tag)
@@ -297,11 +297,11 @@
              auto _qptr  =
             _mesh. quad().head()+_cell->_cell ;
 
-            iptr_type _ENOD[ 4], _enum, _tnum ;
-            for(_enum = 4; _enum-- != 0; )
+            iptr_type _ENOD[ 4], _ENUM, _TNUM ;
+            for(_ENUM = 4; _ENUM-- != 0; )
             {
                 mesh_type::quad_type::
-                face_node(_ENOD, _enum, 2, 1) ;
+                face_node(_ENOD, _ENUM, 2, 1) ;
                 _ENOD[0] =
                 _qptr->node(_ENOD[0]);
                 _ENOD[1] =
@@ -324,30 +324,30 @@
             _tdat.node(2) = _ENOD[0] ;
             _tdat.itag () = _qptr->itag () ;
 
-            _tnum = _mesh.push_tri3(_tdat) ;
+            _TNUM = _mesh.push_tri3(_tdat) ;
 
             _cnew.push_tail(typename
-        conn_list::data_type(_tnum,TRIA3_tag));
+        conn_list::data_type(_TNUM,TRIA3_tag));
 
             _tdat.node(0) = _inew;
             _tdat.node(1) = _ENOD[2] ;
             _tdat.node(2) = _ENOD[3] ;
             _tdat.itag () = _qptr->itag () ;
 
-            _tnum = _mesh.push_tri3(_tdat) ;
+            _TNUM = _mesh.push_tri3(_tdat) ;
 
             _cnew.push_tail(typename
-        conn_list::data_type(_tnum,TRIA3_tag));
+        conn_list::data_type(_TNUM,TRIA3_tag));
 
             _tdat.node(0) = _inew;
             _tdat.node(1) = _ENOD[1] ;
             _tdat.node(2) = _ENOD[2] ;
             _tdat.itag () = _qptr->itag () ;
 
-            _tnum = _mesh.push_tri3(_tdat) ;
+            _TNUM = _mesh.push_tri3(_tdat) ;
 
             _cnew.push_tail(typename
-        conn_list::data_type(_tnum,TRIA3_tag));
+        conn_list::data_type(_TNUM,TRIA3_tag));
             }
         }
 

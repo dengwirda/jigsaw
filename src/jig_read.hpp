@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 January, 2020
+     * Last updated: 16 July, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -277,6 +277,11 @@
                     std::string::npos ) \
                 _dest.__fun (           \
                     jcfg_data::iter_pred::cvt_dqdx) ;   \
+            else                        \
+            if (__str[1].find("H95+DQDX")!= \
+                    std::string::npos ) \
+                _dest.__fun (           \
+                    jcfg_data::iter_pred::h95_dqdx) ;   \
             else                        \
            _errs.push_tail(_line) ;     \
             }                           \

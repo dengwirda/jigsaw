@@ -35,7 +35,7 @@
  *
  * Copyright 2013-2020
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -284,6 +284,13 @@
             _mesh.node(_tnod[4])->pval(2) ,
             _mesh.node(_tnod[4])->pval(3)
                 } ;
+
+            __unreferenced(_xpos);
+            __unreferenced(_ipos);
+            __unreferenced(_jpos);
+            __unreferenced(_kpos);
+            __unreferenced(_lpos);
+            __unreferenced(_mpos);
 
             double _sign = 0.;
             /*

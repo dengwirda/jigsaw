@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -273,7 +273,7 @@
     __static_call
     __normal_call bool_type base_edge (
         mesh_type &_mesh,
-        iptr_type *_fnod,
+        iptr_type *_FNOD,
         iptr_type  _tadj,
         iptr_type  _fadj
         )
@@ -289,8 +289,8 @@
         iptr_type  _enod[ +3];
         mesh_type::tria_type::tria_type::
         face_node(_enod, _epos, 2, 1);
-        _enod[0] = _fnod[_enod[ 0]];
-        _enod[1] = _fnod[_enod[ 1]];
+        _enod[0] = _FNOD[_enod[ 0]];
+        _enod[1] = _FNOD[_enod[ 1]];
 
         _tset.set_count(0) ;
 

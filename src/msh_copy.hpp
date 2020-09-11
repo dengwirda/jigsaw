@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 March, 2020
+     * Last updated: 10 September, 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -72,7 +72,7 @@
         {
     /*---------------------------------- copy 2-dim. mesh */
         _mesh._euclidean_mesh_2d._mesh.
-            clear(containers::loose_alloc) ;
+            clear(containers::tight_alloc) ;
 
         for (auto _iter  = _mesh.
         _euclidean_rdel_2d._tria._nset.head() ;
@@ -92,6 +92,7 @@
 
             _node.hidx () = _iter->idxh () ;
 
+            _node.itag () = (iptr_type)+0;
             _node.fdim () = _iter->fdim () ;
             _node.feat () = _iter->feat () ;
 
@@ -183,7 +184,7 @@
         {
     /*---------------------------------- copy 3-dim. mesh */
         _mesh._euclidean_mesh_3d._mesh.
-            clear(containers::loose_alloc) ;
+            clear(containers::tight_alloc) ;
 
         for (auto _iter  = _mesh.
         _euclidean_rdel_3d._tria._nset.head() ;
@@ -204,6 +205,7 @@
 
             _node.hidx () = _iter->idxh () ;
 
+            _node.itag () = (iptr_type)+0;
             _node.fdim () = _iter->fdim () ;
             _node.feat () = _iter->feat () ;
 

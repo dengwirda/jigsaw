@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 July, 2020
+     * Last updated: 27 July, 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -80,7 +80,7 @@
             {
                 if (_iter->mark() < 0) continue ;
 
-                if (_iter->itag () >= +0 )
+                if (_iter->itag () > +0)
                 if (_geom._kind ==
                 jmsh_kind::euclidean_mesh)
                     _geom.
@@ -198,7 +198,7 @@
             {
                 if (_iter->mark() < 0) continue ;
 
-                if (_iter->itag () >= +0 )
+                if (_iter->itag () > +0)
                 if (_geom._kind ==
                 jmsh_kind::euclidean_mesh)
                     _geom.
@@ -207,7 +207,7 @@
                     _iter->itag () ,
                    &_iter->pval(0) ) ;
 
-                if (_iter->itag () >= +0 )
+                if (_iter->itag () > +0)
                 if (_geom._kind ==
                 jmsh_kind::ellipsoid_mesh)
                     _geom.

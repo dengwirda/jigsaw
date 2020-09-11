@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -451,14 +451,14 @@
 
     __static_call
     __inline_call void_type flip_quad (
-        geom_type &_geom ,
+        geom_type &/*_geom*/ ,
         mesh_type &_mesh ,
         iptr_type  _cell ,
         bool_type &_flip ,
         conn_list &_conn ,
         conn_list &_next ,
-        real_list &_qold ,
-        real_list &_qnew
+        real_list &/*_qold*/ ,
+        real_list &/*_qnew*/
         )
     {
         auto _coin = (std::rand() % 4) + 1  ;

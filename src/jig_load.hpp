@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 January, 2020
+     * Last updated: 16 July, 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -585,6 +585,11 @@
             _jcfg._iter_pred =
                 jcfg_data::iter_pred::cvt_dqdx ;
             else
+            if (_jjig._optm_kern ==
+                    JIGSAW_KERN_H95_DQDX)
+            _jcfg._iter_pred =
+                jcfg_data::iter_pred::h95_dqdx ;
+            else
             _errv = __invalid_useropts ;
 
             _jcfg._iter_opts.
@@ -1022,6 +1027,11 @@
          jcfg_data::iter_pred::cvt_dqdx)
         _jlog.push (
             "  OPTM-KERN = CVT+DQDX \n") ;
+        else
+        if(_jcfg._iter_pred ==
+         jcfg_data::iter_pred::h95_dqdx)
+        _jlog.push (
+            "  OPTM-KERN = H95+DQDX \n") ;
 
         __dumpINTS("OPTM-ITER",
             _jcfg._iter_opts.iter())

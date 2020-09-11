@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -710,7 +710,6 @@
             if (_iter->feat() != null_feat)
             {
     /*----------------------------- push any 'real' feat. */
-            real_type _ppos[4] ;
             _ppos[0] = _iter->pval(0) ;
             _ppos[1] = _iter->pval(1) ;
             _ppos[2] = _iter->pval(2) ;
@@ -741,7 +740,6 @@
             if (_iter->itag() <= -1 )
             {
     /*----------------------------- push any 'user' feat. */
-            real_type _ppos[4] ;
             _ppos[0] = _iter->pval(0) ;
             _ppos[1] = _iter->pval(1) ;
             _ppos[2] = _iter->pval(2) ;

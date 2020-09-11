@@ -14,11 +14,11 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * Last updated: 05 March, 2020
+     * Last updated: 16 July, 2020
      *
      * Copyright 2013 -- 2020
      * Darren Engwirda
-     * darren.engwirda@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda
      *
     --------------------------------------------------------
@@ -625,6 +625,38 @@
             iter_func::_cvt_kern ,
                *_opts, _jlog )   ;
         }
+        else
+        if (_args._iter_pred ==
+                jcfg_data::iter_pred::h95_dqdx)
+        {
+    /*-------------------------- call H95-ITER kernel */
+            typedef mesh::
+                iter_pred_euclidean_2d <
+                geom_type ,
+                typename
+                mesh_type::
+                mesh_type >         pred_type ;
+
+            typedef mesh::iter_mesh_2  <
+                geom_type ,
+                typename
+                mesh_type::
+                mesh_type ,
+                hfun_type ,
+                pred_type >         iter_func ;
+
+            typedef
+            jcfg_data::iter_opts    iter_opts ;
+
+            iter_opts *_opts =
+               &_args._iter_opts ;
+
+            iter_func::iter_mesh (
+                _geom, _hfun ,
+                _mesh. _mesh ,
+            iter_func::_h95_kern ,
+               *_opts, _jlog )   ;
+        }
     }
 
     template <
@@ -702,6 +734,38 @@
                 _geom, _hfun ,
                 _mesh. _mesh ,
             iter_func::_cvt_kern ,
+               *_opts, _jlog )   ;
+        }
+        else
+        if (_args._iter_pred ==
+                jcfg_data::iter_pred::h95_dqdx)
+        {
+    /*-------------------------- call H95-ITER kernel */
+            typedef mesh::
+                iter_pred_ellipsoid_3d <
+                geom_type ,
+                typename
+                mesh_type::
+                mesh_type >         pred_type ;
+
+            typedef mesh::iter_mesh_2  <
+                geom_type ,
+                typename
+                mesh_type::
+                mesh_type ,
+                hfun_type ,
+                pred_type >         iter_func ;
+
+            typedef
+            jcfg_data::iter_opts    iter_opts ;
+
+            iter_opts *_opts =
+               &_args._iter_opts ;
+
+            iter_func::iter_mesh (
+                _geom, _hfun ,
+                _mesh. _mesh ,
+            iter_func::_h95_kern ,
                *_opts, _jlog )   ;
         }
     }
@@ -1296,16 +1360,17 @@
         if (_gmsh != nullptr )
         {
     /*--------------------------------- call copy routine */
-            if(_jcfg._mesh_opts.iter() != +0 &&
-               _jcfg._iter_opts.iter() != +0 )
-            {
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
-                "  Pushing MESH data...\n\n" ) ;
+                "  Forming MESH data...\n\n" ) ;
 
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
+
+            if(_jcfg._mesh_opts.iter() != +0 &&
+               _jcfg._iter_opts.iter() != +0 )
+            {
 
             if ((_retv = copy_mesh (
                  _jcfg,
@@ -1314,11 +1379,30 @@
                 return  _retv ;
             }
 
+            if ((_retv = init_mesh (
+                 _jcfg, _jlog ,
+                 _geom, _mesh)) != __no_error)
+            {
+                return  _retv ;
+            }
+
+            }
+            else
+            {
+
+            if ((_retv = init_mesh (
+                 _jcfg, _jlog ,
+                 _geom, _mesh)) != __no_error)
+            {
+                return  _retv ;
+            }
+
+            }
+
 #           ifdef  __use_timers
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
 #           endif//__use_timers
-            }
         }
 
         if (_gmsh != nullptr )
@@ -1333,13 +1417,6 @@
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
-
-            if ((_retv = init_mesh (
-                 _jcfg, _jlog ,
-                 _geom, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
 
             if ((_retv =
                 JIGSAW ::iter_core (
@@ -1466,9 +1543,7 @@
                 break ;
             }
 
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
+            std::string _path , _name , _fext ;
             file_part ( _ssrc ,
                 _path , _name , _fext ) ;
 
@@ -1789,17 +1864,18 @@
 
         if(!_jcfg._geom_file.empty())
         {
-            if(_jcfg._mesh_opts.iter() != +0 &&
-               _jcfg._iter_opts.iter() != +0 )
-            {
     /*--------------------------------- call copy routine */
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
-                "  Pushing MESH data...\n\n" ) ;
+                "  Forming MESH data...\n\n" ) ;
 
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
+
+            if(_jcfg._mesh_opts.iter() != +0 &&
+               _jcfg._iter_opts.iter() != +0 )
+            {
 
             if ((_retv = copy_mesh (
                  _jcfg,
@@ -1808,49 +1884,23 @@
                 return  _retv ;
             }
 
-#           ifdef  __use_timers
-            _ttoc   = _time.now();
-            _jlog.push(dump_time(_ttic, _ttoc));
-#           endif//__use_timers
-            }
-        }
-
-        if(!_jcfg._geom_file.empty())
-        {
-    /*--------------------------------- call cull routine */
-            _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push (
-                "  Culling MESH data...\n\n" ) ;
-
-#           ifdef  __use_timers
-            _ttic   = _time.now();
-#           endif//__use_timers
-
-            if(_jcfg._mesh_opts.iter() != +0 &&
-               _jcfg._iter_opts.iter() == +0 )
-            {
-
-            /*
-            if ((_retv = cull_rdel (
+            if ((_retv = init_mesh (
                  _jcfg, _jlog ,
                  _geom, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
-            */
 
             }
             else
             {
 
-            /*
-            if ((_retv = cull_mesh (
+            if ((_retv = init_mesh (
                  _jcfg, _jlog ,
                  _geom, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
-            */
 
             }
 
@@ -1872,13 +1922,6 @@
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
-
-            if ((_retv = init_mesh (
-                 _jcfg, _jlog ,
-                 _geom, _mesh)) != __no_error)
-            {
-                return  _retv ;
-            }
 
             if ((_retv =
                 JIGSAW ::iter_core (

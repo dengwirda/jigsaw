@@ -41,11 +41,11 @@
     --------------------------------------------------------
      *
      * JIGSAW release 0.9.13.x
-     * Last updated: 08 June, 2020
+     * Last updated: 27 July, 2020
      *
      * Copyright 2013 -- 2020
      * Darren Engwirda
-     * darren.engwirda@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda
      *
     --------------------------------------------------------
@@ -365,7 +365,8 @@
             enum enum_data {
             nullkern ,
             odt_dqdx = JIGSAW_KERN_ODT_DQDX,
-            cvt_dqdx = JIGSAW_KERN_CVT_DQDX
+            cvt_dqdx = JIGSAW_KERN_CVT_DQDX,
+            h95_dqdx = JIGSAW_KERN_H95_DQDX
             } ;
             } ;
 
@@ -769,15 +770,6 @@
      */
 
     #   include "msh_copy.hpp"
-
-
-    /*
-    --------------------------------------------------------
-     * CULL-MESH: segment mesh using seeds.
-    --------------------------------------------------------
-     */
-
-    #   include "msh_cull.hpp"
 
 
     /*

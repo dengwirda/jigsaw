@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -55,6 +55,7 @@
              >
     __static_call
     __normal_call void_type _odt_tri3_k (
+        geom_type &_geom ,
         mesh_type &_mesh ,
         hfun_type &_hfun ,
         real_list &_hval ,
@@ -110,6 +111,10 @@
         _tmag = std::abs(_tmag) ;
 
     /*------------------------------------- odt weighting */
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_ball[+0]) ;
+
         real_type _lsqr = std::max(
             _ball[_last], (real_type)+0.) ;
 
@@ -158,6 +163,7 @@
              >
     __static_call
     __normal_call void_type _odt_quad_k (
+        geom_type &_geom ,
         mesh_type &_mesh ,
         hfun_type &_hfun ,
         real_list &_hval ,
@@ -218,6 +224,10 @@
         _qmag = std::abs(_qmag) ;
 
     /*------------------------------------- odt weighting */
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_ball[+0]) ;
+
         real_type _lsqr = std::max(
             _ball[_last], (real_type)+0.) ;
 
@@ -278,6 +288,7 @@
              >
     __static_call
     __normal_call void_type _odt_move_2 (
+        geom_type &_geom ,
         mesh_type &_mesh ,
         hfun_type &_hfun ,
         real_list &_hval ,
@@ -311,16 +322,16 @@
 
             if (_kind == TRIA3_tag)
             {
-                _odt_tri3_k(_mesh, _hfun, _hval,
-                    _cell , _node, _move, _wsum,
-                    _ladj ) ;
+                _odt_tri3_k(_geom, _mesh, _hfun,
+                    _hval , _cell, _node, _move,
+                    _wsum , _ladj ) ;
             }
             else
             if (_kind == QUAD4_tag)
             {
-                _odt_quad_k(_mesh, _hfun, _hval,
-                    _cell , _node, _move, _wsum,
-                    _ladj ) ;
+                _odt_quad_k(_geom, _mesh, _hfun,
+                    _hval , _cell, _node, _move,
+                    _wsum , _ladj ) ;
             }
         }
 
@@ -349,6 +360,7 @@
              >
     __static_call
     __normal_call void_type _cvt_tri3_k (
+        geom_type &_geom ,
         mesh_type &_mesh ,
         hfun_type &_hfun ,
         real_list &_hval ,
@@ -430,6 +442,18 @@
             &_2bal [+0] ) ) ;
 
     /*------------------------------------- cvt weighting */
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_0bal[ +0]);
+
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_1bal[ +0]);
+
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_2bal[ +0]);
+
         real_type _lsqr = std::max(
             _0bal[_last], (real_type) +0.);
 
@@ -447,13 +471,17 @@
                 / _hval [ _knod ] ;
 
         real_type _0rho =
-           (_irho+_jrho+_krho)
-                / (real_type) +3. ;
+            _irho * (real_type) 1./3. +
+            _jrho * (real_type) 1./3. +
+            _krho * (real_type) 1./3. ;
 
         real_type _1rho =
-           (_irho+_jrho) / (real_type)+2. ;
+            _irho * (real_type) 1./2. +
+            _jrho * (real_type) 1./2. ;
+
         real_type _2rho =
-           (_irho+_krho) / (real_type)+2. ;
+            _irho * (real_type) 1./2. +
+            _krho * (real_type) 1./2. ;
 
         _0rho = std::pow(_0rho, +3) ;
         _1rho = std::pow(_1rho, +3) ;
@@ -499,6 +527,7 @@
              >
     __static_call
     __normal_call void_type _cvt_quad_k (
+        geom_type &_geom ,
         mesh_type &_mesh ,
         hfun_type &_hfun ,
         real_list &_hval ,
@@ -594,6 +623,18 @@
             &_2bal [+0] ) ) ;
 
     /*------------------------------------- cvt weighting */
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_0bal[ +0]);
+
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_1bal[ +0]);
+
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_2bal[ +0]);
+
         real_type _lsqr = std::max(
             _0bal[_last], (real_type) +0.);
 
@@ -615,13 +656,18 @@
                 / _hval [ _lnod ] ;
 
         real_type _0rho =
-           (_irho+_jrho+_krho+_lrho)
-                / (real_type) +4. ;
+            _irho * (real_type) 1./4. +
+            _jrho * (real_type) 1./4. +
+            _krho * (real_type) 1./4. +
+            _lrho * (real_type) 1./4. ;
 
         real_type _1rho =
-           (_irho+_jrho) / (real_type)+2. ;
+            _irho * (real_type) 1./2. +
+            _jrho * (real_type) 1./2. ;
+
         real_type _2rho =
-           (_irho+_lrho) / (real_type)+2. ;
+            _irho * (real_type) 1./2. +
+            _lrho * (real_type) 1./2. ;
 
         _0rho = std::pow(_0rho, +3) ;
         _1rho = std::pow(_1rho, +3) ;
@@ -671,6 +717,7 @@
              >
     __static_call
     __normal_call void_type _cvt_move_2 (
+        geom_type &_geom ,
         mesh_type &_mesh ,
         hfun_type &_hfun ,
         real_list &_hval ,
@@ -704,16 +751,16 @@
 
             if (_kind == TRIA3_tag)
             {
-                _cvt_tri3_k(_mesh, _hfun, _hval,
-                    _cell , _node, _move, _wsum,
-                    _ladj ) ;
+                _cvt_tri3_k(_geom, _mesh, _hfun,
+                    _hval , _cell, _node, _move,
+                    _wsum , _ladj ) ;
             }
             else
             if (_kind == QUAD4_tag)
             {
-                _cvt_quad_k(_mesh, _hfun, _hval,
-                    _cell , _node, _move, _wsum,
-                    _ladj ) ;
+                _cvt_quad_k(_geom, _mesh, _hfun,
+                    _hval , _cell, _node, _move,
+                    _wsum , _ladj ) ;
             }
         }
 

@@ -18,7 +18,7 @@
      *
      * Copyright 2013 -- 2020
      * Darren Engwirda
-     * darren.engwirda@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda
      *
     --------------------------------------------------------
@@ -583,9 +583,7 @@
                 break ;
             }
 
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
+            std::string _path , _name , _fext ;
             file_part ( _ssrc ,
                 _path , _name , _fext ) ;
 

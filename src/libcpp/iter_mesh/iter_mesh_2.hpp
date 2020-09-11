@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -84,6 +84,8 @@
         constexpr _odt_kern = +1 ;
     char_type static
         constexpr _cvt_kern = +2 ;
+    char_type static
+        constexpr _h95_kern = +3 ;
     char_type static
         constexpr dqdx_kern = +5 ;
 
@@ -140,7 +142,8 @@
 
         if (_conn.count() != 2) return;
 
-        iptr_type _jcel,_jfac,_kind ;
+        iptr_type _jcel, _jfac;
+        char_type _kind;
         if ((iptr_type)
             _conn[0]._cell == _icel)
         {
@@ -424,10 +427,10 @@
 
     /*---------------------------- test move = "okay" */
         if (_0dst >= _GOOD)
+        if (_0src >= _GOOD)
         {
     /*--------------------- okay if moves unconverged */
             if (_xdel > _xtol)
-            if (_mdst > _msrc-_xdel)
                 _move = +1;
 
             if (_move > +0) return ;
@@ -680,7 +683,7 @@
         {
     /*--------------------------- ODT-style update vector */
             _odt_move_2 (
-                _mesh, _hfun, _hval,
+                _geom, _mesh, _hfun, _hval,
                 _conn, _node,
                 _line, _ladj) ;
         }
@@ -689,7 +692,7 @@
         {
     /*--------------------------- CVT-style update vector */
             _cvt_move_2 (
-                _mesh, _hfun, _hval,
+                _geom, _mesh, _hfun, _hval,
                 _conn, _node,
                 _line, _ladj) ;
         }
@@ -708,15 +711,15 @@
 
     /*---------------- scale line search direction vector */
         real_type _xeps =           // delta_x ~= 0.0
-       (real_type)+0.10*_opts.qtol() ;
+       (real_type)+0.01*_opts.qtol() ;
 
-        real_type _xtol =
-       (real_type)+10.0*_opts.qtol() ;
+        real_type _xtol =           // delta_x reltol
+       +std::sqrt(_opts.qtol()) / +10.0 ;
 
         if (_kern == dqdx_kern)     // test cost-only
         {
             _QLIM  =
-        +std::numeric_limits<real_type>::infinity() ;
+       +std::numeric_limits<real_type>::infinity() ;
         }
 
         auto _ppos = &_node->pval(0) ;
@@ -727,7 +730,7 @@
         _xtol = std::pow(_xtol, 2) ;
 
         real_type _scal =           // overrelaxation
-            (real_type) +9.0 / 8.0 ;
+            (real_type) +1.0 / 1.0 ;
 
     /*---------------- do backtracking line search iter's */
 
@@ -773,9 +776,8 @@
                 _ppos[_idim] = _proj[_idim] ;
             }
 
-            real_type _XEPS, _XTOL ;
-            _XEPS = _xeps * _scal;
-            _XTOL = _xtol * _scal;
+            real_type _XEPS = _xeps * _scal ;
+            real_type _XTOL = _xtol * _scal ;
 
             real_type _lmov =
             pred_type::length_sq(_save, _proj) ;
@@ -863,10 +865,10 @@
 
     /*---------------- scale line search direction vector */
         real_type _weps =           // delta_w ~= 0.0
-       (real_type)+0.10*_opts.qtol() ;
+       (real_type)+0.01*_opts.qtol() ;
 
         real_type _scal =           // overrelaxation
-            (real_type) +9.0 / 8.0 ;
+            (real_type) +1.0 / 1.0 ;
 
         _save = _node->pval(
             pred_type::real_dims- 1) ;
