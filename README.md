@@ -1,10 +1,10 @@
 ## `JIGSAW: An unstructured mesh generator`
 
 <p align="middle">
-  <img src = "../master/external/jigsaw/img/bunny-TRIA3-1.png" width="20%" hspace="0.25%">
-  <img src = "../master/external/jigsaw/img/bunny-TRIA3-2.png" width="20%" hspace="0.25%">
-  <img src = "../master/external/jigsaw/img/bunny-TRIA3-3.png" width="20%" hspace="0.25%">
-  <img src = "../master/external/jigsaw/img/bunny-TRIA4-3.png" width="20%" hspace="0.25%">
+  <img src = "../master/img/bunny-TRIA3-1.png" width="20%" hspace="0.25%">
+  <img src = "../master/img/bunny-TRIA3-2.png" width="20%" hspace="0.25%">
+  <img src = "../master/img/bunny-TRIA3-3.png" width="20%" hspace="0.25%">
+  <img src = "../master/img/bunny-TRIA4-3.png" width="20%" hspace="0.25%">
 </p>
 
 `JIGSAW` is an unstructured mesh generator and tessellation library; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes refinement-based algorithms for the construction of new meshes, optimisation-driven techniques for the improvement of existing grids, as well as routines to assemble (restricted) Delaunay tessellations, Voronoi complexes and Power diagrams. 
