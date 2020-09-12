@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 April, 2020
+     * Last updated: 11 Sept., 2020
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -183,7 +183,7 @@
         mesh_type &_mesh
         )
     {
-        INDX_TYPE _ipos = -1;
+        INDX_TYPE _ipos;
         if (_mesh._ffN1.count() != +0 )
         {
     /*---------------------------- recycle from free list */
@@ -215,7 +215,7 @@
         mesh_type &_mesh
         )
     {
-        INDX_TYPE _ipos = -1;
+        INDX_TYPE _ipos;
         if (_mesh._ffE2.count() != +0 )
         {
     /*---------------------------- recycle from free list */
@@ -247,7 +247,7 @@
         mesh_type &_mesh
         )
     {
-        INDX_TYPE _ipos = -1;
+        INDX_TYPE _ipos;
         if (_mesh._ffT3.count() != +0 )
         {
     /*---------------------------- recycle from free list */
@@ -279,7 +279,7 @@
         mesh_type &_mesh
         )
     {
-        INDX_TYPE _ipos = -1;
+        INDX_TYPE _ipos;
         if (_mesh._ffQ4.count() != +0 )
         {
     /*---------------------------- recycle from free list */
@@ -311,7 +311,7 @@
         mesh_type &_mesh
         )
     {
-        INDX_TYPE _ipos = -1;
+        INDX_TYPE _ipos;
         if (_mesh._ffT4.count() != +0 )
         {
     /*---------------------------- recycle from free list */
@@ -343,7 +343,7 @@
         mesh_type &_mesh
         )
     {
-        INDX_TYPE _ipos = -1;
+        INDX_TYPE _ipos;
         if (_mesh._ffH8.count() != +0 )
         {
     /*---------------------------- recycle from free list */
@@ -375,7 +375,7 @@
         mesh_type &_mesh
         )
     {
-        INDX_TYPE _ipos = -1;
+        INDX_TYPE _ipos;
         if (_mesh._ffW6.count() != +0 )
         {
     /*---------------------------- recycle from free list */
@@ -407,7 +407,7 @@
         mesh_type &_mesh
         )
     {
-        INDX_TYPE _ipos = -1;
+        INDX_TYPE _ipos;
         if (_mesh._ffP5.count() != +0 )
         {
     /*---------------------------- recycle from free list */

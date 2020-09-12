@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 September, 2020
+     * Last updated: 10 Sept., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
