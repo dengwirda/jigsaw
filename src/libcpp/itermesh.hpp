@@ -35,7 +35,7 @@
  *
  * Copyright 2013-2019
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -58,11 +58,10 @@
 #   include "iter_mesh/iter_timers.hpp"
 
 #   include "iter_mesh/iter_mesh_euclidean_2.hpp"
-#   include "iter_mesh/iter_pred_euclidean_2.hpp"
-
 #   include "iter_mesh/iter_mesh_euclidean_3.hpp"
-#   include "iter_mesh/iter_pred_euclidean_3.hpp"
 
+#   include "iter_mesh/iter_pred_euclidean_2.hpp"
+//  include "iter_mesh/iter_pred_euclidean_3.hpp"
 #   include "iter_mesh/iter_pred_ellipsoid_3.hpp"
 
 #   include "iter_mesh/iter_mesh_2.hpp"

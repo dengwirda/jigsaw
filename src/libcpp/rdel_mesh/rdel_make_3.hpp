@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 July, 2019
+     * Last updated: 05 March, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -193,7 +193,6 @@
             _edat._pass    =   +0 ;
 
         /*--------------------------- call edge predicate */
-            char_type _hits;
             real_type _fbal[ 4];
             real_type _sbal[ 4];
 
@@ -205,7 +204,6 @@
                 _edat._tadj,
                 _edat._eadj,
                 _fbal,_sbal,
-                _hits,
                 _edat._feat,
                 _edat._topo,
                 _edat._part) ;
@@ -483,9 +481,9 @@
         iptr_type _npos  = 0 ;
         tree_type _tree  ;
         for (auto _node  =
-            _init._mesh._set1.head() ;
+            _init._mesh.node().head();
                   _node !=
-            _init._mesh._set1.tend() ;
+            _init._mesh.node().tend();
                 ++_node, ++_npos)
         {
             if (_node->mark() >= +0)
@@ -543,7 +541,7 @@
                 ++_iter  )
         {
              auto _node =
-           &_init._mesh._set1 [*_iter] ;
+           &_init._mesh. node (*_iter) ;
 
             _pmid[0] +=
                 _node->pval(0);
@@ -562,7 +560,7 @@
                 ++_iter  )
         {
              auto _node =
-           &_init._mesh._set1 [*_iter] ;
+           &_init._mesh. node (*_iter) ;
 
             real_type _dsqr =
             geometry::lensqr_3d(
@@ -580,7 +578,7 @@
         if (_imid > -1)
         {
              auto _node =
-           &_init._mesh._set1 [ _imid] ;
+           &_init._mesh. node ( _imid) ;
 
             if (_node->itag () >= +0 )
                 _geom.projector(
@@ -618,7 +616,7 @@
             if (*_iter == _imid) continue ;
 
              auto _node =
-           &_init._mesh._set1 [*_iter] ;
+           &_init._mesh. node (*_iter) ;
 
             if (_node->itag () >= +0 )
                 _geom.projector(
@@ -670,9 +668,9 @@
         _pmax[ 2] = _geom._bmax[ 2] ;
 
         for (auto _node  =
-            _init._mesh._set1.head();
+            _init._mesh.node().head() ;
                   _node !=
-            _init._mesh._set1.tend();
+            _init._mesh.node().tend() ;
                 ++_node  )
         {
         if (_node->mark() >= + 0 )

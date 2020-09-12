@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2018
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -70,7 +70,7 @@
                     _iter != _list.count(); ++_iter)
         {
         /*--------- scan all faces within current element */
-            for(iptr_type _fpos = tria_pred::_dims + 1;
+            for(iptr_type _fpos = tria_pred::topo_dims + 1;
                           _fpos-- != +0 ; )
             {
             /*--------- find neighbour about current edge */

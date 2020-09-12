@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 June, 2019
+     * Last updated: 05 March, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -595,7 +595,7 @@
             _mesh._tria._nset.head() ;
                   _iter !=
             _mesh._tria._nset.tend() ;
-                ++_iter  , ++_npos)
+                ++_iter, ++_npos)
         {
             if (_iter->mark() >= +0)
             {
@@ -606,7 +606,7 @@
             _mesh._tria._tset.head() ;
                   _iter !=
             _mesh._tria._tset.tend() ;
-                ++_iter  , ++_tpos)
+                ++_iter, ++_tpos)
         {
             if (_iter->mark() >= +0)
             {
@@ -661,9 +661,9 @@
         _pmax[ 2] = _geom._bmax[ 2] ;
 
         for (auto _node  =
-            _init._mesh._set1.head();
+            _init._mesh.node().head() ;
                   _node !=
-            _init._mesh._set1.tend();
+            _init._mesh.node().tend() ;
                 ++_node  )
         {
         if (_node->mark() >= + 0 )
@@ -760,6 +760,73 @@
         _geom.
          seed_mesh(_mesh, _opts) ;
     }
+
+
+
+
+    __static_call
+    __normal_call void_type init_dual (
+        mesh_type &_mesh
+        )
+    {
+
+      //return;
+
+        iptr_list _nsum;
+        _nsum.set_count(
+            _mesh._tria._nset.count(),
+                containers::tight_alloc, +0) ;
+
+        for (auto _iter  =
+                  _mesh._eset._lptr.head() ;
+                  _iter !=
+                  _mesh._eset._lptr.tend() ;
+                ++_iter  )
+        {
+            if ( *_iter == nullptr) continue ;
+
+            for (auto _item  = *_iter ;
+                _item != nullptr;
+                _item  = _item->_next )
+            {
+            if (_item->_data._feat == mesh::hard_feat)
+            {
+             auto _inod = _item->_data._node[0] ;
+             auto _jnod = _item->_data._node[1] ;
+
+             auto _iptr =
+                & _mesh._tria._nset[_inod] ;
+             auto _jptr =
+                & _mesh._tria._nset[_jnod] ;
+
+             auto _lsqr = geometry::lensqr_3d (
+                & _iptr->pval( 0),
+                & _jptr->pval( 0)) ;
+
+            _lsqr *= (real_type) std::pow(2./3., +2) ;
+
+            _iptr->pval(3) += _lsqr ;
+            _nsum[_inod]   += +1 ;
+
+            _jptr->pval(3) += _lsqr ;
+            _nsum[_jnod]   += +1 ;
+            }
+            }
+        }
+
+        for (auto _iter  = _nsum.head() ,
+                  _npos  = +0 ;
+                  _iter != _nsum.tend() ;
+                ++_iter, ++_npos)
+        {
+            if ( *_iter != +0 )
+            _mesh._tria._nset[_npos].pval(3) /= *_iter ;
+        }
+
+    }
+
+
+
 
     /*
     --------------------------------------------------------
@@ -1078,6 +1145,8 @@
                     _epro, _fpro, _pass,
                     _mode, _args) ;
                 */
+
+              //init_dual( _mesh) ;
 
                 init_rdel( _geom, _hfun,
                     _mesh,  true,

@@ -35,7 +35,7 @@
  *
  * Copyright 2013-2018
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -68,6 +68,7 @@
 #   include "containers/arraylist.hpp"
 
 #   include "containers/hashtable.hpp"
+#   include "containers/hashtwice.hpp"
 
 #   include "containers/priorityset.hpp"
 #   include "containers/prioritymap.hpp"

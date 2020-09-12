@@ -41,7 +41,7 @@
  *
  * Copyright 2013-2017
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -97,9 +97,21 @@
         for (auto _item  =  head() ;
                   _SIZE != +0 ;
                 --_SIZE, ++_item )
-        {
-            *_item = _dsrc ;
-        }
+           *_item = __copy(data_type, _dsrc) ;
+    }
+
+    template <
+    typename      iter_type
+             >
+    __normal_call void_type copy_data (
+        iter_type _head,
+        iter_type _tend
+        )
+    {
+        for (auto _item  =  head() ;
+                  _head != _tend;
+                ++_item, ++_head )
+           *_item = __copy(data_type,*_head) ;
     }
 
 /*-------------------------------- helper - copy sequence */
@@ -108,24 +120,15 @@
              >
     __normal_call void_type copy_iter (
         iter_type _head,
-        iter_type _tail,
+        iter_type _tend,
     __cont::base_iterator_kind
-        )
-    {
-        for (auto _item  =  head() ;
-                  _head != _tail;
-                ++_item, ++_head )
-        {
-            *_item = *_head ;
-        }
-    }
+        ) { copy_data(_head, _tend) ; }
+
     __inline_call void_type copy_iter (
         size_type _SIZE,
         data_type const& _dsrc ,
     __cont::null_iterator_kind
-        )
-    {   copy_data(_SIZE, _dsrc);
-    }
+        ) { copy_data(_SIZE, _dsrc) ; }
 
     public  :
 
@@ -143,7 +146,7 @@
 
 /*--------------------------- default c'tor - initialisor */
     template <
-    typename iter_type
+        typename  iter_type
              >
     __inline_call fixed_array (
         iter_type _head,
@@ -151,7 +154,7 @@
         )
     {
         copy_iter(_head,_tail ,
-      __cont::iter_kind(_head)) ;
+            __cont::iter_kind(_head)) ;
     }
 
 /*--------------------------- default d'tor/copy/move ops */

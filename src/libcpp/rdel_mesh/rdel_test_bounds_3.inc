@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2019
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -179,18 +179,16 @@
                  ++_epos  )
         {
         /*----------------- compute restricted surf. ball */
-            char_type _hits;
             char_type _feat, _topo ;
             iptr_type _part;
             real_type _fbal[ +4] ;
             real_type _sbal[ +4] ;
-            if (!mesh_pred::edge_ball   (
+            if (!mesh_pred::edge_ball  (
                 _geom, _mesh ,
                 _epos->_tadj ,
                 _epos->_eadj ,
                 _fbal, _sbal ,
-                _hits, _feat ,
-                _topo, _part ) )
+                _feat, _topo , _part ) )
             __assert( false &&
                 "_NEW-BNDS: edge-ball" );
 
@@ -254,7 +252,7 @@
             iptr_type _part;
             real_type _fbal[ +4] ;
             real_type _sbal[ +4] ;
-            if (!mesh_pred::face_ball   (
+            if (!mesh_pred::face_ball  (
                 _geom, _mesh ,
                 _fpos->_tadj ,
                 _fpos->_fadj ,
@@ -369,18 +367,16 @@
                  ++_epos  )
         {
         /*----------------- compute restricted surf. ball */
-            char_type _hits;
             char_type _feat, _topo ;
             iptr_type _part;
             real_type _fbal[ +4] ;
             real_type _sbal[ +4] ;
-            if (!mesh_pred::edge_ball   (
+            if (!mesh_pred::edge_ball  (
                 _geom, _mesh ,
                 _epos->_tadj ,
                 _epos->_eadj ,
                 _fbal, _sbal ,
-                _hits, _feat ,
-                _topo, _part ) )
+                _feat, _topo , _part ) )
             __assert( false &&
                 "_old_bnds: edge-ball" );
 

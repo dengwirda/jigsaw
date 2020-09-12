@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2019
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -71,10 +71,10 @@
 
     /*---------------------- scan list of trias in cavity */
         iptr_type static constexpr
-            FACE_SIZE = tria_pred::_dims+1;
+            FACE_SIZE = tria_pred::topo_dims + 1 ;
 
         this->_fset.set_slots (
-            _vset.count()* tria_dims ) ;
+            _vset.count()* topo_dims ) ;
 
         __assert (
             this->_fset.count() == +0 &&
@@ -87,48 +87,48 @@
             if (__mark(*_iter)<_flag) continue ;
 
         /*-------------------------- scan for cavity face */
-            for(iptr_type _fpos = tria_dims +1 ;
+            for(iptr_type _fpos = topo_dims +1 ;
                           _fpos-- != +0 ; )
             {
                 iptr_type  _tadj, _fadj, _fmrk ;
                 find_pair(*_iter, _tadj,
                     _fpos, _fadj, _fmrk) ;
 
-            /*--------------- continue if cavity face */
+            /*------------------- continue if cavity face */
                 if (_tadj == this->null_flag() ||
                     __mark(_tadj) <    _flag )
                 {
 
                 iptr_type _tria = _get_tria () ;
 
-            /*--------------- push new tria onto list */
+            /*------------------- push new tria onto list */
                 if (_tnew != nullptr)
                 {
                     _tnew->push_tail(_tria) ;
                 }
-            /*------------------------- face indexing */
+            /*----------------------------- face indexing */
                 iptr_type _tnod[FACE_SIZE];
                 tria_type::face_node(
                     _tnod,_fpos ,
-                tria_dims-0, tria_dims-1) ;
+                topo_dims-0, topo_dims-1) ;
                 iptr_type  _inod;
-                for(_inod = tria_dims + 0 ;
+                for(_inod = topo_dims + 0 ;
                     _inod-- != +0 ; )
                 {
                     _tnod[ _inod] =
                         tria( *_iter)->
                             node(_tnod[ _inod]);
                 }
-                _tnod[ tria_dims] = _npos ;
+                _tnod[ topo_dims] = _npos ;
 
-            /*------------------------- node indexing */
-                for(_inod = tria_dims + 1 ;
+            /*----------------------------- node indexing */
+                for(_inod = topo_dims + 1 ;
                     _inod-- != +0 ; )
                 {
                     node(
                    _tnod[_inod])->next()=_tria ;
                 }
-                for(_inod = tria_dims + 1 ;
+                for(_inod = topo_dims + 1 ;
                     _inod-- != +0 ; )
                 {
                     tria(_tria)->
@@ -140,16 +140,16 @@
                           _fadj, _fmrk) ;
 
             /*---------------- face indexing for new tria */
-                for(iptr_type _posf = tria_dims + 1;
+                for(iptr_type _posf = topo_dims + 1;
                               _posf-- != +1 ; )
                 {
                     iptr_type _fnod[FACE_SIZE];
                     tria_type::face_node(
                         _fnod,_posf ,
-                    tria_dims-0, tria_dims-1) ;
+                    topo_dims-0, topo_dims-1) ;
 
                     face_ptrs _fdat, _same ;
-                    for(_inod = tria_dims + 0 ;
+                    for(_inod = topo_dims + 0 ;
                         _inod-- != +0 ; )
                     {
                         _fdat._node[_inod] =
@@ -191,12 +191,12 @@
 
                 if (_told != nullptr)
                 {
-            /*------------------ push "old" tria list */
+            /*---------------------- push "old" tria list */
                     _told->push_tail(*_iter) ;
                 }
                 else
                 {
-            /*------------------ recycle cavity trias */
+            /*---------------------- recycle cavity trias */
                     _put_tria(*_iter)  ;
                 }
             }

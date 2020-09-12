@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 March, 2019
+     * Last updated: 30 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -69,9 +69,10 @@
 
         real_type   _iter_full = (real_type)  +0. ;
 
-        real_type   _move_full = (real_type)  +0. ;
-        real_type   _topo_full = (real_type)  +0. ;
-        real_type   _zips_full = (real_type)  +0. ;
+        real_type   _move_node = (real_type)  +0. ;
+        real_type   _move_dual = (real_type)  +0. ;
+        real_type   _topo_flip = (real_type)  +0. ;
+        real_type   _topo_zips = (real_type)  +0. ;
 
         public  :
 

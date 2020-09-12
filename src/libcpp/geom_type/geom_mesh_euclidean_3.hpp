@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 December, 2019
+     * Last updated: 28 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -125,6 +125,26 @@
         __inline_call char_type const& topo (
             ) const
         {   return  this->_topo ;
+        }
+
+        } ;
+
+    class seed_type: public mesh_complex_node_3<I,R>
+        {
+    /*------------------------------------ loc. node type */
+        public  :
+        iptr_type                     _itag ;
+
+        public  :
+    /*------------------------------------ "write" access */
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+    /*------------------------------------ "const" access */
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
         }
 
         } ;
@@ -303,6 +323,10 @@
             part_bytes    = sizeof (part_item);
 
     typedef containers::array   <
+                seed_type ,
+                allocator       >   seed_list ;
+
+    typedef containers::array   <
                 iptr_type ,
                 allocator       >   iptr_list ;
 
@@ -340,6 +364,8 @@
 
     pool_base                      _pool ;
 
+    seed_list                      _seed ;
+
     part_list                      _part ;
     iptr_list                      _ptag ;
 
@@ -366,6 +392,7 @@
         allocator const&
             _asrc = allocator ()
         ) : _pool(part_bytes) ,
+            _seed(    _asrc ) ,
             _part(part_hash() ,
                   part_same() ,
         .8, (pool_wrap(&_pool))) ,
@@ -399,32 +426,40 @@
 
     /*
     --------------------------------------------------------
-     * NODE-FEAT: calc. node feature type.
+     * FEAT-LIST: extract feat. edge list.
     --------------------------------------------------------
      */
 
-    template <
-        typename  list_type
-             >
     __normal_call void_type feat_list (
-        list_type &_lsrc ,
-        list_type &_ldst
+            typename
+        mesh_type::connector &_lsrc ,
+            typename
+        mesh_type::connector &_ldst
         )
     {
         for (auto _iter  = _lsrc.head() ;
                   _iter != _lsrc.tend() ;
                 ++_iter  )
         {
-             auto _feat  =
-                this->
-            _tria._set2[ *_iter].feat() ;
+             auto _feat  = this->_tria.
+                edge(_iter->_cell).feat() ;
 
-            if (_feat != null_feat)
+             auto _self  = this->_tria.
+                edge(_iter->_cell).self() ;
+
+            if (_self >= +1 ||
+                _feat != mesh::null_feat)
             {
-                _ldst.push_tail(*_iter) ;
+                _ldst.push_tail( *_iter ) ;
             }
         }
     }
+
+    /*
+    --------------------------------------------------------
+     * NODE-FEAT: calc. node feature type.
+    --------------------------------------------------------
+     */
 
     template <
         typename  list_type ,
@@ -438,8 +473,9 @@
         geom_opts &_opts
         )
     {
+    /*------------ "sharp" geometry//topology about node? */
         real_type _DtoR =
-       (real_type) +3.1415926536 / 180.0;
+       (real_type)+3.141592653589793 / 180. ;
 
         real_type _ZERO = -1. +
             std::numeric_limits
@@ -458,7 +494,7 @@
         __unreferenced(_node) ;
 
         _feat =  null_feat ;
-        _topo = (char_type)_aset.count();
+        _topo = (char_type)_aset.count () ;
 
         for (auto _ipos  = _aset.head() ;
                   _ipos != _aset.tend() ;
@@ -469,77 +505,83 @@
                   _jpos != _aset.tend() ;
                 ++_jpos  )
         {
-            iptr_type _iedg = * _ipos ;
-            iptr_type _jedg = * _jpos ;
+    /*------------ find signed angle between edge vectors */
+             auto _iedg  = _ipos->_cell ;
+             auto _jedg  = _jpos->_cell ;
 
-            iptr_type _inod[2] ;
-            _inod[0] = this->_tria.
-                _set2[_iedg]. node(0) ;
-            _inod[1] = this->_tria.
-                _set2[_iedg]. node(1) ;
+            iptr_type _inod[2] = {
+            this->_tria.edge(_iedg).node(0) ,
+            this->_tria.edge(_iedg).node(1) ,
+                } ;
 
-            iptr_type _jnod[2] ;
-            _jnod[0] = this->_tria.
-                _set2[_jedg]. node(0) ;
-            _jnod[1] = this->_tria.
-                _set2[_jedg]. node(1) ;
+            iptr_type _jnod[2] = {
+            this->_tria.edge(_jedg).node(0) ,
+            this->_tria.edge(_jedg).node(1) ,
+                } ;
 
             real_type _ivec[3] ;
             geometry::vector_3d(
-               &this->_tria.
-               _set1[ _inod[0]].pval(0) ,
-               &this->_tria.
-               _set1[ _inod[1]].pval(0) ,
-               _ivec) ;
+               & this->_tria.
+                 node(_inod[0]).pval(0) ,
+               & this->_tria.
+                 node(_inod[1]).pval(0) ,
+                _ivec) ;
 
             real_type _jvec[3] ;
             geometry::vector_3d(
-               &this->_tria.
-               _set1[ _jnod[0]].pval(0) ,
-               &this->_tria.
-               _set1[ _jnod[1]].pval(0) ,
-               _jvec) ;
+               & this->_tria.
+                 node(_jnod[0]).pval(0) ,
+               & this->_tria.
+                 node(_jnod[1]).pval(0) ,
+                _jvec) ;
 
-            real_type _acos =
-                geometry::cosine_3d(
-                    _ivec , _jvec) ;
+            real_type _acos = geometry::
+                cosine_3d(_ivec, _jvec) ;
 
             if (_inod[0] == _jnod[1] ||
                 _inod[1] == _jnod[0] )
-                _acos *= (real_type)+1.;
+                _acos *= (real_type)+1. ;
             else
-                _acos *= (real_type)-1.;
+                _acos *= (real_type)-1. ;
 
             if (_acos >= _ZERO)
             {
+    /*------------ tag as "feature" if angle sharp enough */
             if (_acos <= _hard)
             {
                 _feat  =
-            std::max(_feat, hard_feat) ;
+            std::max (_feat, hard_feat) ;
             }
             else
             if (_acos <= _soft)
             {
                 _feat  =
-            std::max(_feat, soft_feat) ;
+            std::max (_feat, soft_feat) ;
             }
             }
             else
             {
             if (_tbad >= +  1 )
             {
-                _topo -= _tbad--;
+                _topo -= _tbad-- ;
             }
             }
         }
         }
         {
+    /*------------ tag as "feature" if topo. is irregular */
             if (_topo != +  0 )
             if (_topo != +  2 )
                 _feat =
-            std::max(_feat, soft_feat) ;
+            std::max (_feat, soft_feat) ;
         }
     }
+
+    /*
+    --------------------------------------------------------
+     * NODE-FEAT: calc. node feature type.
+    --------------------------------------------------------
+     */
 
     template <
         typename  list_type ,
@@ -552,10 +594,11 @@
         geom_opts &_opts
         )
     {
+    /*------------ "sharp" geometry//topology about node? */
         char_type _feat =   null_feat ;
 
         real_type _DtoR =
-       (real_type) +3.1415926536 / 180.0;
+       (real_type)+3.141592653589793 / 180. ;
 
         real_type _phi1 =
        (real_type)+180. - _opts.phi1();
@@ -576,22 +619,23 @@
                   _fpos != _fadj.tend() ;
                 ++_fpos  )
         {
-            iptr_type _iedg = * _epos ;
-            iptr_type _ifac = * _fpos ;
+    /*------------ find signed angle between cell vectors */
+             auto _iedg  = _epos->_cell ;
+             auto _ifac  = _fpos->_cell ;
 
             iptr_type _enod[2] ;
             _enod[0] = this->_tria.
-                _set2[_iedg]. node(0) ;
+                 edge(_iedg). node(0) ;
             _enod[1] = this->_tria.
-                _set2[_iedg]. node(1) ;
+                 edge(_iedg). node(1) ;
 
             iptr_type _fnod[3] ;
             _fnod[0] = this->_tria.
-                _fset[_ifac]. node(0) ;
+                 tri3(_ifac). node(0) ;
             _fnod[1] = this->_tria.
-                _fset[_ifac]. node(1) ;
+                 tri3(_ifac). node(1) ;
             _fnod[2] = this->_tria.
-                _fset[_ifac]. node(2) ;
+                 tri3(_ifac). node(2) ;
 
             iptr_type _same = +0 ;
             if (_fnod[0] == _enod[0])
@@ -610,34 +654,32 @@
 
             real_type _evec[3] ;
             geometry::vector_3d(
-               &this->_tria.
-               _set1[ _enod[0]].pval(0) ,
-               &this->_tria.
-               _set1[ _enod[1]].pval(0) ,
-               _evec) ;
+               & this->_tria.
+                 node(_enod[0]).pval(0) ,
+               & this->_tria.
+                 node(_enod[1]).pval(0) ,
+                _evec) ;
 
             real_type _fvec[3] ;
 
-
     //!! actually, need to project edge onto tria
 
+            real_type _acos = geometry::
+                cosine_3d(_evec, _fvec) ;
 
-            real_type _acos =
-                geometry::cosine_3d(
-                    _evec , _fvec) ;
+            _acos = std::abs(_acos) ;
 
-            _acos =std::abs(_acos) ;
-
+    /*------------ tag as "feature" if angle sharp enough */
             if (_acos <= _hard)
             {
                 _feat  =
-            std::max(_feat, hard_feat) ;
+            std::max (_feat, hard_feat) ;
             }
             else
             if (_acos <= _soft)
             {
                 _feat  =
-            std::max(_feat, soft_feat) ;
+            std::max (_feat, soft_feat) ;
             }
         }
 
@@ -662,8 +704,9 @@
         geom_opts &_opts
         )
     {
+    /*------------ "sharp" geometry//topology about edge? */
         real_type _DtoR =
-       (real_type) +3.1415926536 / 180.0;
+       (real_type)+3.141592653589793 / 180. ;
 
         real_type _ZERO = -1. +
             std::numeric_limits
@@ -680,7 +723,7 @@
             std::cos( _eta2 * _DtoR) ;
 
         _feat =  null_feat ;
-        _topo = (char_type)_aset.count();
+        _topo = (char_type)_aset.count () ;
 
         for (auto _ipos  = _aset.head() ;
                   _ipos != _aset.tend() ;
@@ -691,128 +734,121 @@
                   _jpos != _aset.tend() ;
                 ++_jpos  )
         {
-            iptr_type _itri = * _ipos ;
-            iptr_type _jtri = * _jpos ;
+    /*------------ find signed angle between cell normals */
+             auto _itri  = _ipos->_cell ;
+             auto _jtri  = _jpos->_cell ;
 
-            iptr_type _inod[3];
-            iptr_type _jnod[3];
-
-            iptr_type _iloc ;
+            iptr_type _inod[3], _iloc ;
             for (_iloc = 3; _iloc-- != 0; )
             {
-                tri3_type::face_node (
-                    _inod, _iloc, 2, 1) ;
+            tri3_type::face_node (
+            _inod, _iloc, +2, +1) ;
 
-                _inod[0] = this->_tria.
-                    _set3[_itri].
-                        node(_inod[0]);
-                _inod[1] = this->_tria.
-                    _set3[_itri].
-                        node(_inod[1]);
-                _inod[2] = this->_tria.
-                    _set3[_itri].
-                        node(_inod[2]);
+            _inod[0] = this->_tria.
+             tri3(_itri).node(_inod[0]) ;
+            _inod[1] = this->_tria.
+             tri3(_itri).node(_inod[1]) ;
+            _inod[2] = this->_tria.
+             tri3(_itri).node(_inod[2]) ;
 
-                iptr_type _same =  +0 ;
-                if (_inod[0]==_enod[0])
-                    _same += +1 ;
-                if (_inod[0]==_enod[1])
-                    _same += +1 ;
-                if (_inod[1]==_enod[0])
-                    _same += +1 ;
-                if (_inod[1]==_enod[1])
-                    _same += +1 ;
+            iptr_type _same =  +0 ;
+            if (_inod[0]==_enod[0])
+                _same += +1 ;
+            if (_inod[0]==_enod[1])
+                _same += +1 ;
+            if (_inod[1]==_enod[0])
+                _same += +1 ;
+            if (_inod[1]==_enod[1])
+                _same += +1 ;
 
-                if (_same == +2 ) break ;
+            if (_same == +2 ) break ;
             }
 
-            iptr_type _jloc ;
+            iptr_type _jnod[3], _jloc ;
             for (_jloc = 3; _jloc-- != 0; )
             {
-                tri3_type::face_node (
-                    _jnod, _jloc, 2, 1) ;
+            tri3_type::face_node (
+            _jnod, _jloc, +2, +1) ;
 
-                _jnod[0] = this->_tria.
-                    _set3[_jtri].
-                        node(_jnod[0]);
-                _jnod[1] = this->_tria.
-                    _set3[_jtri].
-                        node(_jnod[1]);
-                _jnod[2] = this->_tria.
-                    _set3[_jtri].
-                        node(_jnod[2]);
+            _jnod[0] = this->_tria.
+             tri3(_jtri).node(_jnod[0]) ;
+            _jnod[1] = this->_tria.
+             tri3(_jtri).node(_jnod[1]) ;
+            _jnod[2] = this->_tria.
+             tri3(_jtri).node(_jnod[2]) ;
 
-                iptr_type _same =  +0 ;
-                if (_jnod[0]==_enod[0])
-                    _same += +1 ;
-                if (_jnod[0]==_enod[1])
-                    _same += +1 ;
-                if (_jnod[1]==_enod[0])
-                    _same += +1 ;
-                if (_jnod[1]==_enod[1])
-                    _same += +1 ;
+            iptr_type _same =  +0 ;
+            if (_jnod[0]==_enod[0])
+                _same += +1 ;
+            if (_jnod[0]==_enod[1])
+                _same += +1 ;
+            if (_jnod[1]==_enod[0])
+                _same += +1 ;
+            if (_jnod[1]==_enod[1])
+                _same += +1 ;
 
-                if (_same == +2 ) break ;
+            if (_same == +2 ) break ;
             }
 
             real_type _ivec[3];
             geometry::tria_norm_3d (
-            &this->_tria.
-            _set1 [_inod[0]].pval(0) ,
-            &this->_tria.
-            _set1 [_inod[1]].pval(0) ,
-            &this->_tria.
-            _set1 [_inod[2]].pval(0) ,
-            _ivec) ;
+               & this->_tria.
+                 node(_inod[0]).pval(0) ,
+               & this->_tria.
+                 node(_inod[1]).pval(0) ,
+               & this->_tria.
+                 node(_inod[2]).pval(0) ,
+                _ivec) ;
 
             real_type _jvec[3];
             geometry::tria_norm_3d (
-            &this->_tria.
-            _set1 [_jnod[0]].pval(0) ,
-            &this->_tria.
-            _set1 [_jnod[1]].pval(0) ,
-            &this->_tria.
-            _set1 [_jnod[2]].pval(0) ,
-            _jvec) ;
+               & this->_tria.
+                 node(_jnod[0]).pval(0) ,
+               & this->_tria.
+                 node(_jnod[1]).pval(0) ,
+               & this->_tria.
+                 node(_jnod[2]).pval(0) ,
+                _jvec) ;
 
-            real_type _acos =
-                geometry::cosine_3d(
-                    _ivec , _jvec) ;
+            real_type _acos = geometry::
+                cosine_3d(_ivec, _jvec) ;
 
             if (_inod[0] == _jnod[1] &&
                 _inod[1] == _jnod[0] )
-                _acos *= (real_type)+1.;
+                _acos *= (real_type)+1. ;
             else
-                _acos *= (real_type)-1.;
+                _acos *= (real_type)-1. ;
 
             if (_acos >= _ZERO)
             {
+    /*------------ tag as "feature" if angle sharp enough */
             if (_acos <= _hard)
             {
                 _feat  =
-            std::max(_feat, hard_feat) ;
+            std::max (_feat, hard_feat) ;
             }
             else
             if (_acos <= _soft)
             {
                 _feat  =
-            std::max(_feat, soft_feat) ;
+            std::max (_feat, soft_feat) ;
             }
             }
             else
             {
             if (_tbad >= +  1 )
             {
-                _topo -= _tbad--;
+                _topo -= _tbad-- ;
             }
             }
         }
         }
         {
+    /*------------ tag as "feature" if topo. is irregular */
             if (_topo != +  0 )
             if (_topo != +  2 )
                 _feat =
-            std::max(_feat, soft_feat) ;
+            std::max (_feat, soft_feat) ;
         }
     }
 
@@ -829,23 +865,22 @@
         geom_opts &_opts
         )
     {
-        containers::
-            array <iptr_type> _eadj ;
-        containers::
-            array <iptr_type> _fadj ;
-        containers::
-            array <iptr_type> _ebnd ;
+        containers::array<iptr_type> _nmrk ;
+        containers::array<iptr_type> _emrk ;
 
-        containers::
-            array <iptr_type> _nmrk ;
-        containers::
-            array <iptr_type> _emrk ;
+        typename
+            mesh_type::connector _eadj ;
+        typename
+            mesh_type::connector _fadj ;
+
+        typename
+            mesh_type::connector _ebnd ;
 
     /*---------------------------------- init. geom feat. */
         for (auto _iter  =
-             this->_tria._set1.head() ;
+             this->_tria.node().head() ;
                   _iter !=
-             this->_tria._set1.tend() ;
+             this->_tria.node().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0)
@@ -856,9 +891,9 @@
             }
         }
         for (auto _iter  =
-             this->_tria._set2.head() ;
+             this->_tria.edge().head() ;
                   _iter !=
-             this->_tria._set2.tend() ;
+             this->_tria.edge().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0)
@@ -868,9 +903,9 @@
             }
         }
         for (auto _iter  =
-             this->_tria._set3.head() ;
+             this->_tria.tri3().head() ;
                   _iter !=
-             this->_tria._set3.tend() ;
+             this->_tria.tri3().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0)
@@ -882,20 +917,20 @@
 
     /*---------------------------------- find sharp feat. */
         _nmrk.set_count (
-         this->_tria._set1.count() ,
+         this->_tria.node().count(),
             containers::loose_alloc,-1) ;
 
         _emrk.set_count (
-         this->_tria._set2.count() ,
+         this->_tria.edge().count(),
             containers::loose_alloc,-1) ;
 
         iptr_type _nnum  = +0 ;
         iptr_type _enum  = +0 ;
 
         for (auto _epos  =
-             this->_tria._set2.head() ;
+             this->_tria.edge().head() ;
                   _epos !=
-             this->_tria._set2.tend() ;
+             this->_tria.edge().tend() ;
                 ++_epos, ++_enum)
         {
     /*---------------------------------- find sharp 1-dim */
@@ -908,8 +943,8 @@
     /*---------------------------------- set geo.-defined */
             _fadj.set_count (0);
 
-            this->_tria.edge_tri3 (
-               &_epos->node (0), _fadj) ;
+            this->_tria.connect_2(
+               &_epos->node (0), EDGE2_tag, _fadj) ;
 
             edge_feat (
                &_epos->node (0),
@@ -918,12 +953,21 @@
                 _epos->topo () ,
                 _opts ) ;
 
+            if (_epos->self() >= +1)
+            {
+    /*---------------------------------- set for isolated */
+            _epos->feat () =
+                std::max(_epos->feat(), soft_feat) ;
+
+            _nmrk[_epos->node(0)] = +1;
+            _nmrk[_epos->node(1)] = +1;
+            }
+
             if (_epos->itag() <= -1)
             {
     /*---------------------------------- set user-defined */
             _epos->feat () =
-                std::max(_epos->feat () ,
-                    soft_feat) ;
+                std::max(_epos->feat(), soft_feat) ;
 
             _nmrk[_epos->node(0)] = +1;
             _nmrk[_epos->node(1)] = +1;
@@ -933,9 +977,9 @@
         }
 
         for (auto _npos  =
-             this->_tria._set1.head() ;
+             this->_tria.node().head() ;
                   _npos !=
-             this->_tria._set1.tend() ;
+             this->_tria.node().tend() ;
                 ++_npos, ++_nnum)
         {
     /*---------------------------------- find sharp 0-dim */
@@ -949,11 +993,11 @@
             _eadj.set_count (0);
             _fadj.set_count (0);
 
-            this->_tria.node_edge (
-               &_npos->node (0), _eadj) ;
+            this->_tria.connect_1(
+               &_npos->node (0), POINT_tag, _eadj) ;
 
-            this->_tria.node_tri3 (
-               &_npos->node (0), _fadj) ;
+            this->_tria.connect_2(
+               &_npos->node (0), POINT_tag, _fadj) ;
 
             _ebnd.set_count (0);
 
@@ -970,35 +1014,34 @@
             {
     /*---------------------------------- set user-defined */
             _npos->feat () =
-                std::max(_npos->feat () ,
-                    soft_feat) ;
+                std::max(_npos->feat(), soft_feat) ;
             }
             }
             }
         }
 
         for (auto _iter  =
-             this->_tria._set3.head() ;
+             this->_tria.tri3().head() ;
                   _iter !=
-             this->_tria._set3.tend() ;
+             this->_tria.tri3().tend() ;
                 ++_iter  )
         {
     /*----------------------------- assign nodes to trias */
             if (_iter->mark() >= +0)
             {
-            this->_tria._set1[
-                _iter->node(0)].fdim() = 2;
-            this->_tria._set1[
-                _iter->node(1)].fdim() = 2;
-            this->_tria._set1[
-                _iter->node(2)].fdim() = 2;
+            this->_tria.node(
+                _iter->node(0)).fdim() = 2;
+            this->_tria.node(
+                _iter->node(1)).fdim() = 2;
+            this->_tria.node(
+                _iter->node(2)).fdim() = 2;
             }
         }
 
         for (auto _iter  =
-             this->_tria._set2.head() ;
+             this->_tria.edge().head() ;
                   _iter !=
-             this->_tria._set2.tend() ;
+             this->_tria.edge().tend() ;
                 ++_iter  )
         {
     /*----------------------------- assign nodes to edges */
@@ -1006,18 +1049,18 @@
             {
             if (_iter->feat() != null_feat)
             {
-            this->_tria._set1[
-                _iter->node(0)].fdim() = 1;
-            this->_tria._set1[
-                _iter->node(1)].fdim() = 1;
+            this->_tria.node(
+                _iter->node(0)).fdim() = 1;
+            this->_tria.node(
+                _iter->node(1)).fdim() = 1;
             }
             }
         }
 
         for (auto _iter  =
-             this->_tria._set1.head() ;
+             this->_tria.node().head() ;
                   _iter !=
-             this->_tria._set1.tend() ;
+             this->_tria.node().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0)
@@ -1150,18 +1193,18 @@
                 {
     /*----------------------------- expand aabb via TRIA3 */
                 auto _inod =  this->
-                    _tria._set3[_cell].node(0);
+                    _tria.tri3(_cell).node(0) ;
                 auto _jnod =  this->
-                    _tria._set3[_cell].node(1);
+                    _tria.tri3(_cell).node(1) ;
                 auto _knod =  this->
-                    _tria._set3[_cell].node(2);
+                    _tria.tri3(_cell).node(2) ;
 
-                auto _iptr = &this->
-                    _tria._set1[_inod];
-                auto _jptr = &this->
-                    _tria._set1[_jnod];
-                auto _kptr = &this->
-                    _tria._set1[_knod];
+                auto _iptr =
+               &this->_tria.node(_inod);
+                auto _jptr =
+               &this->_tria.node(_jnod);
+                auto _kptr =
+               &this->_tria.node(_knod);
 
                 real_type _xmin =
                 std::min (_iptr->pval(0) ,
@@ -1275,9 +1318,9 @@
 
     /*----------------------------- calc. aabb for inputs */
         for (auto  _iter  =
-             this->_tria._set1.head() ;
+             this->_tria.node().head() ;
                    _iter !=
-             this->_tria._set1.tend() ;
+             this->_tria.node().tend() ;
                  ++_iter  )
         {
             if (_iter->mark() >= +0)
@@ -1330,16 +1373,16 @@
         init_part (_opts);
 
     /*-------------------- make aabb-tree and init. bbox. */
-        aabb_mesh(this->_tria._set1,
-                  this->_tria._set2,
+        aabb_mesh(this->_tria.node(),
+                  this->_tria.edge(),
                   this->_ebox,
-       _BTOL,this->_nbox,edge_pred ()
+       _BTOL, this->_nbox, edge_pred()
                  ) ;
 
-        aabb_mesh(this->_tria._set1,
-                  this->_tria._set3,
+        aabb_mesh(this->_tria.node(),
+                  this->_tria.tri3(),
                   this->_tbox,
-       _BTOL,this->_nbox,tri3_pred ()
+       _BTOL, this->_nbox, tri3_pred()
                  ) ;
     }
 
@@ -1362,9 +1405,9 @@
 
     /*------------------------- push set of feature nodes */
         for (auto _iter  =
-             this->_tria._set1.head() ;
+             this->_tria.node().head() ;
                   _iter !=
-             this->_tria._set1.tend() ;
+             this->_tria.node().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0 )
@@ -1372,9 +1415,15 @@
             if (_iter->feat() != null_feat)
             {
     /*----------------------------- push any 'real' feat. */
+            real_type _ppos[4] ;
+            _ppos[0] = _iter->pval(0) ;
+            _ppos[1] = _iter->pval(1) ;
+            _ppos[2] = _iter->pval(2) ;
+            _ppos[3] = (real_type)+0. ;
+
             iptr_type _node = -1 ;
             if (_mesh._tria.push_node (
-               &_iter->pval(0), _node))
+                    &_ppos[ 0], _node))
             {
                 _mesh._tria.node
                     (_node)->fdim()
@@ -1397,9 +1446,15 @@
             if (_iter->itag() <= -1 )
             {
     /*----------------------------- push any 'user' feat. */
+            real_type _ppos[4] ;
+            _ppos[0] = _iter->pval(0) ;
+            _ppos[1] = _iter->pval(1) ;
+            _ppos[2] = _iter->pval(2) ;
+            _ppos[3] = (real_type)+0. ;
+
             iptr_type _node = -1 ;
             if (_mesh._tria.push_node (
-               &_iter->pval(0), _node))
+                    &_ppos[ 0], _node))
             {
                 _mesh._tria.node
                     (_node)->fdim()
@@ -1451,11 +1506,12 @@
             for (_fdim = 1; _fdim != 4; ++_fdim)
             {
             for (auto _ipos  =
-                 this->_tria._set1.head() ;
+                 this->_tria.node().head() ;
                       _ipos !=
-                 this->_tria._set1.tend() ;
+                 this->_tria.node().tend() ;
                     ++_ipos  )
             {
+    /*------------------------- get current furthest node */
                 if (_ipos->mark() >= 0 &&
                         _ipos->fdim () == _fdim)
                 {
@@ -1490,9 +1546,15 @@
             if (_dmax > (real_type)0.)
             {
     /*------------------------- add current furthest node */
+                real_type _ppos[4] ;
+                _ppos[0] = _best->pval(0) ;
+                _ppos[1] = _best->pval(1) ;
+                _ppos[2] = _best->pval(2) ;
+                _ppos[3] = (real_type)+0. ;
+
                 iptr_type _node = -1;
                 if (_mesh._tria.push_node(
-                   &_best->pval(0), _node) )
+                        &_ppos[ 0], _node) )
                 {
                     _mesh._tria.node
                         (_node)->fdim()
@@ -1585,21 +1647,21 @@
                 iptr_type  _epos =
                     _iptr->_data.ipos() ;
 
-                iptr_type _enod[2];
-                _enod[0] =_geom.
-                    _tria._set2[_epos].node(0) ;
-                _enod[1] =_geom.
-                    _tria._set2[_epos].node(1) ;
+                iptr_type  _enod[2] ;
+                _enod[0] = _geom.
+                    _tria.edge(_epos).node(0) ;
+                _enod[1] = _geom.
+                    _tria.edge(_epos).node(1) ;
 
-                real_type _xpos[3];
-                bool_type _okay =
+                real_type  _xpos[3] ;
+                bool_type  _okay =
                     geometry::line_flat_3d (
                      this->_pmid,
                      this->_nvec,
                     &this->_geom.
-                _tria._set1[_enod[0]].pval(0) ,
+                _tria.node( _enod[0]).pval(0) ,
                     &this->_geom.
-                _tria._set1[_enod[1]].pval(0) ,
+                _tria.node( _enod[1]).pval(0) ,
                     _xpos, true);
 
                 if (_okay)
@@ -1607,11 +1669,11 @@
             /*--------------- call output function on hit */
                     this->_hfun (_xpos, _HITS ,
                         _geom._tria .
-                        _set2[_epos].feat() ,
+                         edge(_epos).feat() ,
                         _geom._tria .
-                        _set2[_epos].topo() ,
+                         edge(_epos).topo() ,
                         _geom._tria .
-                        _set2[_epos].itag() ) ;
+                         edge(_epos).itag() ) ;
 
                     this->_hnum+= +1 ;
 
@@ -1724,23 +1786,23 @@
                     continue ;
 
                 iptr_type  _tnod[3];
-                _tnod[0] =_geom.
-                    _tria._set3[_tpos].node(0) ;
-                _tnod[1] =_geom.
-                    _tria._set3[_tpos].node(1) ;
-                _tnod[2] =_geom.
-                    _tria._set3[_tpos].node(2) ;
+                _tnod[0] = _geom.
+                    _tria.tri3(_tpos).node(0) ;
+                _tnod[1] = _geom.
+                    _tria.tri3(_tpos).node(1) ;
+                _tnod[2] = _geom.
+                    _tria.tri3(_tpos).node(2) ;
 
                 real_type  _xpos[3];
                 _HITS = geometry::line_tria_3d (
                    & this->_ipos[0],
                    & this->_jpos[0],
                    &_geom ._tria.
-                    _set1 [_tnod[0]].pval(0),
+                     node( _tnod[0] ).pval(0) ,
                    &_geom ._tria.
-                    _set1 [_tnod[1]].pval(0),
+                     node( _tnod[1] ).pval(0) ,
                    &_geom ._tria.
-                    _set1 [_tnod[2]].pval(0),
+                     node( _tnod[2] ).pval(0) ,
                     _xpos, true, 2 );
 
                 if(_HITS != geometry::null_hits)
@@ -1748,11 +1810,11 @@
             /*--------------- call output function on hit */
                     this->_hfun (_xpos, _HITS ,
                         _geom._tria .
-                        _set3[_tpos].feat() ,
+                         tri3(_tpos).feat() ,
                         _geom._tria .
-                        _set3[_tpos].topo() ,
+                         tri3(_tpos).topo() ,
                         _geom._tria .
-                        _set3[_tpos].itag() ) ;
+                         tri3(_tpos).itag() ) ;
 
                     this->_hnum+= +1 ;
 
@@ -1833,23 +1895,23 @@
                 iptr_type _epos =
                     _iptr->_data.ipos() ;
 
-                iptr_type _enod[2];
-                _enod[0] =_geom.
-                    _tria._set2[_epos].node(0) ;
-                _enod[1] =_geom.
-                    _tria._set2[_epos].node(1) ;
+                iptr_type  _enod[2] ;
+                _enod[0] = _geom.
+                    _tria.edge(_epos).node(0) ;
+                _enod[1] = _geom.
+                    _tria.edge(_epos).node(1) ;
 
-                real_type _ipos[3];
-                real_type _jpos[3];
-                size_t    _nhit =
+                real_type  _ipos[3] ;
+                real_type  _jpos[3] ;
+                size_t     _nhit =
                     geometry::ball_line_3d (
                      this->_ball,
                      this->_rsiz,
                    &_geom ._tria.
-                    _set1 [_enod[0]].pval(0) ,
+                     node( _enod[0] ).pval(0) ,
                    &_geom ._tria.
-                    _set1 [_enod[1]].pval(0) ,
-                    _ipos, _jpos ) ;
+                     node( _enod[1] ).pval(0) ,
+                    _ipos, _jpos );
 
                 switch (_nhit)
                 {
@@ -1858,11 +1920,11 @@
             /*--------------- call output function on hit */
                 this->_hfun (_jpos, _HITS ,
                     _geom._tria .
-                    _set2[_epos].feat() ,
+                     edge(_epos).feat() ,
                     _geom._tria .
-                    _set2[_epos].topo() ,
+                     edge(_epos).topo() ,
                     _geom._tria .
-                    _set2[_epos].itag() ) ;
+                     edge(_epos).itag() ) ;
 
                 this->_hnum += +1;
                     }      // falls through
@@ -1871,11 +1933,11 @@
             /*--------------- call output function on hit */
                 this->_hfun (_ipos, _HITS ,
                     _geom._tria .
-                    _set2[_epos].feat() ,
+                     edge(_epos).feat() ,
                     _geom._tria .
-                    _set2[_epos].topo() ,
+                     edge(_epos).topo() ,
                     _geom._tria .
-                    _set2[_epos].itag() ) ;
+                     edge(_epos).itag() ) ;
 
                 this->_hnum += +1;
 
@@ -1951,13 +2013,13 @@
                 iptr_type  _tpos =
                     _iptr->_data.ipos() ;
 
-                iptr_type _tnod[3];
-                _tnod[0] =_geom.
-                    _tria._set3[_tpos].node(0) ;
-                _tnod[1] =_geom.
-                    _tria._set3[_tpos].node(1) ;
-                _tnod[2] =_geom.
-                    _tria._set3[_tpos].node(2) ;
+                iptr_type  _tnod[3] ;
+                _tnod[0] = _geom.
+                    _tria.tri3(_tpos).node(0) ;
+                _tnod[1] = _geom.
+                    _tria.tri3(_tpos).node(1) ;
+                _tnod[2] = _geom.
+                    _tria.tri3(_tpos).node(2) ;
 
                 real_type  _apos[3] ;
                 real_type  _bpos[3] ;
@@ -1968,18 +2030,18 @@
                      this->_cmid ,
                      this->_nvec ,
                    &_geom ._tria.
-                    _set1 [_tnod[0]].pval(0) ,
+                     node( _tnod[0] ).pval(0) ,
                    &_geom ._tria.
-                    _set1 [_tnod[1]].pval(0) ,
+                     node( _tnod[1] ).pval(0) ,
                    &_geom ._tria.
-                    _set1 [_tnod[2]].pval(0) ,
+                     node( _tnod[2] ).pval(0) ,
                     _apos, _bpos))
             /*--------------- circ-tria intersection test */
                 _nh=geometry::ball_line_3d (
                      this->_cmid ,
                      this->_rsiz ,
                     _apos, _bpos ,
-                    _ipos, _jpos ) ;
+                    _ipos, _jpos )  ;
 
                 switch (_nh)
                 {
@@ -1988,22 +2050,22 @@
             /*--------------- call output function on hit */
                 this->_hfun (_jpos, _HITS ,
                     _geom._tria .
-                    _set3[_tpos].feat() ,
+                     tri3(_tpos).feat() ,
                     _geom._tria .
-                    _set3[_tpos].topo() ,
+                     tri3(_tpos).topo() ,
                     _geom._tria .
-                    _set3[_tpos].itag() ) ;
+                     tri3(_tpos).itag() ) ;
                     }      // falls through
                 case +1 :
                     {
             /*--------------- call output function on hit */
                 this->_hfun (_ipos, _HITS ,
                     _geom._tria .
-                    _set3[_tpos].feat() ,
+                     tri3(_tpos).feat() ,
                     _geom._tria .
-                    _set3[_tpos].topo() ,
+                     tri3(_tpos).topo() ,
                     _geom._tria .
-                    _set3[_tpos].itag() ) ;
+                     tri3(_tpos).itag() ) ;
 
                 this->_find = true ;
                     }      // falls through
@@ -2067,18 +2129,18 @@
 
                 iptr_type  _enod[+2] = {
                      this->_mesh->
-                    _set2 [_EPOS   ].node(0) ,
+                     edge (_EPOS   ).node(0) ,
                      this->_mesh->
-                    _set2 [_EPOS   ].node(1) ,
+                     edge (_EPOS   ).node(1) ,
                     } ;
 
                 if (geometry::proj_line_3d (
                            _ppos,
                     &this->_mesh->
-                    _set1 [_enod[0]].pval(0) ,
+                     node (_enod[0]).pval(0) ,
                     &this->_mesh->
-                    _set1 [_enod[1]].pval(0) ,
-                    _qtmp, _HITS) )
+                     node (_enod[1]).pval(0) ,
+                    _qtmp, _HITS)  )
                 {
                     if (_HITS !=
                         geometry::null_hits)
@@ -2164,22 +2226,22 @@
 
                 iptr_type  _tnod[+3] = {
                      this->_mesh->
-                    _set3 [_TPOS   ].node(0) ,
+                     tri3 (_TPOS   ).node(0) ,
                      this->_mesh->
-                    _set3 [_TPOS   ].node(1) ,
+                     tri3 (_TPOS   ).node(1) ,
                      this->_mesh->
-                    _set3 [_TPOS   ].node(2) ,
+                     tri3 (_TPOS   ).node(2) ,
                     } ;
 
                 if (geometry::proj_tria_3d (
                            _ppos,
                     &this->_mesh->
-                    _set1 [_tnod[0]].pval(0) ,
+                     node (_tnod[0]).pval(0) ,
                     &this->_mesh->
-                    _set1 [_tnod[1]].pval(0) ,
+                     node (_tnod[1]).pval(0) ,
                     &this->_mesh->
-                    _set1 [_tnod[2]].pval(0) ,
-                    _qtmp, _HITS) )
+                     node (_tnod[2]).pval(0) ,
+                    _qtmp, _HITS)  )
                 {
                     if (_HITS !=
                         geometry::null_hits)
@@ -2250,16 +2312,38 @@
                 } ;
 
         float           _RMIN[3] = {
-                (float) _flat. _rmin[0] ,
-                (float) _flat. _rmin[1] ,
-                (float) _flat. _rmin[2] ,
+                (float) _flat. _ppos[0] ,
+                (float) _flat. _ppos[1] ,
+                (float) _flat. _ppos[2] ,
                 } ;
 
         float           _RMAX[3] = {
-                (float) _flat. _rmax[0] ,
-                (float) _flat. _rmax[1] ,
-                (float) _flat. _rmax[2] ,
+                (float) _flat. _ppos[0] ,
+                (float) _flat. _ppos[1] ,
+                (float) _flat. _ppos[2] ,
                 } ;
+
+        for ( auto
+             _iter  = _flat._bnds.head() ;
+             _iter != _flat._bnds.tend() ;
+           ++_iter  )
+        {
+             auto _circ =  *_iter;
+
+            _RMIN[0] = std::min(
+            _RMIN[0] , (float) _circ[0]) ;
+            _RMIN[1] = std::min(
+            _RMIN[1] , (float) _circ[1]) ;
+            _RMIN[2] = std::min(
+            _RMIN[2] , (float) _circ[2]) ;
+
+            _RMAX[0] = std::max(
+            _RMAX[0] , (float) _circ[0]) ;
+            _RMAX[1] = std::max(
+            _RMAX[1] , (float) _circ[1]) ;
+            _RMAX[2] = std::max(
+            _RMAX[2] , (float) _circ[2]) ;
+        }
 
     /*------------------ call actual intersection testing */
         tree_pred _pred(_PPOS, _NVEC,

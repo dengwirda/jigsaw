@@ -1,7 +1,7 @@
 
 /*
 ------------------------------------------------------------
- * DEL-TRI-EUCLIDEAN-2: kernel for 2-dim. delaunay tria.
+ * LAG-TRI-EUCLIDEAN-2: kernel for 2-dim. laguerre tri.
 ------------------------------------------------------------
  *
  * This program may be freely redistributed under the
@@ -31,11 +31,11 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 18 February, 2019
+ * Last updated: 01 March, 2020
  *
- * Copyright 2013-2019
+ * Copyright 2013-2020
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -43,14 +43,14 @@
 
 #   pragma once
 
-#   ifndef __DELAUNAY_TRI_EUCLIDEAN_2__
-#   define __DELAUNAY_TRI_EUCLIDEAN_2__
+#   ifndef __LAGUERRE_TRI_EUCLIDEAN_2__
+#   define __LAGUERRE_TRI_EUCLIDEAN_2__
 
     namespace mesh {
 
 /*
 ------------------------------------------------------------
- * DELAUNAY-TRI-EUCLIDEAN-2: for del-tri. in R^2.
+ * LAGUERRE-TRI-EUCLIDEAN-2: for lag.-tri. in R^2.
 ------------------------------------------------------------
  * IPTR-TYPE - signed-integer typedef.
  * REAL-TYPE - floating-point typedef.
@@ -61,23 +61,18 @@
     typename I,
     typename R
              >
-    class delaunay_tri_euclidean_2
+    class laguerre_tri_euclidean_2
     {
-/*----------- predicate for delaunay triangulation in R^2 */
+/*----------- predicate for laguerre triangulation in R^2 */
     public  :
     typedef R               real_type ;
     typedef I               iptr_type ;
 
-    iptr_type static constexpr _dims = +2 ;
+    iptr_type static constexpr geom_dims = +2 ;
+    iptr_type static constexpr real_dims = +3 ;
+    iptr_type static constexpr topo_dims = +2 ;
 
     public  :
-/*----------------------- initialise geometric predicates */
-    __static_call
-    __inline_call void_type exactinit (
-        )
-    {   geompred::exactinit() ;
-    }
-
 /*----------------------- (squared) node-to-node distance */
     __static_call
     __inline_call real_type lensqr_kd (
@@ -223,25 +218,29 @@
             _mesh.tria(_tpos   )->node(2)
                 } ;
 
-            double _xpos[2] ;
+            double _xpos[3] ;
             _xpos[0] = this->_ppos[0] ;
             _xpos[1] = this->_ppos[1] ;
+            _xpos[2] = this->_ppos[2] ;
 
-            double _ipos[2] = {
+            double _ipos[3] = {
             _mesh.node(_tnod[0])->pval(0) ,
-            _mesh.node(_tnod[0])->pval(1)
+            _mesh.node(_tnod[0])->pval(1) ,
+            _mesh.node(_tnod[0])->pval(2)
                 } ;
-            double _jpos[2] = {
+            double _jpos[3] = {
             _mesh.node(_tnod[1])->pval(0) ,
-            _mesh.node(_tnod[1])->pval(1)
+            _mesh.node(_tnod[1])->pval(1) ,
+            _mesh.node(_tnod[1])->pval(2)
                 } ;
-            double _kpos[2] = {
+            double _kpos[3] = {
             _mesh.node(_tnod[2])->pval(0) ,
-            _mesh.node(_tnod[2])->pval(1)
+            _mesh.node(_tnod[2])->pval(1) ,
+            _mesh.node(_tnod[2])->pval(2)
                 } ;
 
             double _sign;
-            _sign = geompred::incircle  (
+            _sign = geompred::inball2w  (
                 &_ipos[ 0] ,
                 &_jpos[ 0] ,
                 &_kpos[ 0] ,
@@ -298,7 +297,7 @@
 
     }
 
-#   endif  //__DELAUNAY_TRI_EUCLIDEAN_2__
+#   endif  //__LAGUERRE_TRI_EUCLIDEAN_2__
 
 
 

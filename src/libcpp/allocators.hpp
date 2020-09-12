@@ -35,7 +35,7 @@
  *
  * Copyright 2013-2017
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -46,7 +46,7 @@
 #   ifndef __ALLOCATORS__
 #   define __ALLOCATORS__
 
-#   include "libbasic.hpp"
+#   include "basebase.hpp"
 
 #   include "allocators/alloc_base.hpp"
 #   include "allocators/alloc_pool.hpp"

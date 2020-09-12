@@ -1,7 +1,7 @@
 
 /*
 ------------------------------------------------------------
- * DEL-TRI-EUCLIDEAN-3: kernel for 3-dim. delaunay tria.
+ * DEL-TRI-EUCLIDEAN-2: kernel for 2-dim. delaunay tri.
 ------------------------------------------------------------
  *
  * This program may be freely redistributed under the
@@ -31,11 +31,11 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 18 February, 2019
+ * Last updated: 01 March, 2019
  *
  * Copyright 2013-2019
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -43,14 +43,14 @@
 
 #   pragma once
 
-#   ifndef __DELAUNAY_TRI_EUCLIDEAN_3__
-#   define __DELAUNAY_TRI_EUCLIDEAN_3__
+#   ifndef __DELAUNAY_TRI_EUCLIDEAN_2__
+#   define __DELAUNAY_TRI_EUCLIDEAN_2__
 
     namespace mesh {
 
 /*
 ------------------------------------------------------------
- * DELAUNAY-TRI-EUCLIDEAN-3: for del.-tri. in R^3.
+ * DELAUNAY-TRI-EUCLIDEAN-2: for del.-tri. in R^2.
 ------------------------------------------------------------
  * IPTR-TYPE - signed-integer typedef.
  * REAL-TYPE - floating-point typedef.
@@ -61,30 +61,25 @@
     typename I,
     typename R
              >
-    class delaunay_tri_euclidean_3
+    class delaunay_tri_euclidean_2
     {
 /*----------- predicate for delaunay triangulation in R^2 */
     public  :
     typedef R               real_type ;
     typedef I               iptr_type ;
 
-    iptr_type static constexpr _dims = +3 ;
+    iptr_type static constexpr geom_dims = +2 ;
+    iptr_type static constexpr real_dims = +2 ;
+    iptr_type static constexpr topo_dims = +2 ;
 
     public  :
-/*----------------------- initialise geometric predicates */
-    __static_call
-    __inline_call void_type exactinit (
-        )
-    {   geompred::exactinit() ;
-    }
-
 /*----------------------- (squared) node-to-node distance */
     __static_call
     __inline_call real_type lensqr_kd (
     __const_ptr ( real_type) _ipos,
     __const_ptr ( real_type) _jpos
         )
-    {   return  ( geometry::lensqr_3d (
+    {   return  ( geometry::lensqr_2d (
                     _ipos,
                     _jpos) ) ;
     }
@@ -106,9 +101,9 @@
             iptr_type _fpos;
             iptr_type _fadj;
             iptr_type _tadj;
-            iptr_type _fnod[4] = {0};
+            iptr_type _fnod[3] = {0};
 
-            for(_fpos = 4; _fpos-- != 0; )
+            for(_fpos = 3; _fpos-- != 0; )
             {
         /*--------------- check dist. wrt. k-th face apex */
             _tadj = _mesh.
@@ -122,23 +117,21 @@
                 continue ;
 
             mesh_type::tria_type::
-            face_node(_fnod, _fadj, 3, 2) ;
+            face_node(_fnod, _fadj, 2, 1) ;
             /*
             _fnod[0] = _mesh.
-             tria(_tpos)->node(_fnod[0]);
+             tria(_tadj)->node(_fnod[0]);
             _fnod[1] = _mesh.
-             tria(_tpos)->node(_fnod[1]);
-            _fnod[2] = _mesh.
-             tria(_tpos)->node(_fnod[2]);
+             tria(_tadj)->node(_fnod[1]);
              */
-            _fnod[3] = _mesh.
-             tria(_tadj)->node(_fnod[3]);
+            _fnod[2] = _mesh.
+             tria(_tadj)->node(_fnod[2]);
 
-            iptr_type _apex =  _fnod[3] ;
+            iptr_type _apex =  _fnod[2] ;
 
             real_type _dsqr = lensqr_kd (
                 _ppos,
-           &_mesh.node(_fnod[3])->pval(0));
+           &_mesh.node(_fnod[2])->pval(0));
 
             if (_dsqr < _dmin)
             {
@@ -164,48 +157,37 @@
             iptr_type    &_fpos
             ) const
         {
-            double     _xpos[3];
+            double     _xpos[2];
             _xpos[0] = _ppos[0];
             _xpos[1] = _ppos[1];
-            _xpos[2] = _ppos[2];
 
-            for(_fpos = 4; _fpos-- != 0; )
+            for(_fpos = 3; _fpos-- != 0; )
             {
         /*--------------- test orientation wrt. k-th face */
-            iptr_type  _fnod[ 4] ;
+            iptr_type  _fnod[ 3] ;
             mesh_type::tria_type::
-            face_node(_fnod, _fpos, 3, 2) ;
+            face_node(_fnod, _fpos, 2, 1) ;
             _fnod[0] = _mesh.
              tria(_tpos)->node(_fnod[0]);
             _fnod[1] = _mesh.
              tria(_tpos)->node(_fnod[1]);
-            _fnod[2] = _mesh.
-             tria(_tpos)->node(_fnod[2]);
 
-            double _ipos[3] = {
+            double _ipos[2] = {
             _mesh.node(_fnod[0])->pval(0) ,
-            _mesh.node(_fnod[0])->pval(1) ,
-            _mesh.node(_fnod[0])->pval(2)
+            _mesh.node(_fnod[0])->pval(1)
                 } ;
-            double _jpos[3] = {
+            double _jpos[2] = {
             _mesh.node(_fnod[1])->pval(0) ,
-            _mesh.node(_fnod[1])->pval(1) ,
-            _mesh.node(_fnod[1])->pval(2)
-                } ;
-            double _kpos[3] = {
-            _mesh.node(_fnod[2])->pval(0) ,
-            _mesh.node(_fnod[2])->pval(1) ,
-            _mesh.node(_fnod[2])->pval(2)
+            _mesh.node(_fnod[1])->pval(1)
                 } ;
 
             double _sign;
-            _sign = geompred::orient3d (
+            _sign = geompred::orient2d (
                 &_ipos[ 0] ,
                 &_jpos[ 0] ,
-                &_kpos[ 0] ,
                 &_xpos[ 0] ) ;
 
-            if (_sign > (double) +0.00 )
+            if (_sign < (double) +0.00 )
                 return false ;
             }
 
@@ -230,48 +212,37 @@
             iptr_type//_fpos
             ) const
         {
-            iptr_type _tnod[4] = {
+            iptr_type _tnod[3] = {
             _mesh.tria(_tpos   )->node(0) ,
             _mesh.tria(_tpos   )->node(1) ,
-            _mesh.tria(_tpos   )->node(2) ,
-            _mesh.tria(_tpos   )->node(3)
+            _mesh.tria(_tpos   )->node(2)
                 } ;
 
-            double _xpos[3] ;
+            double _xpos[2] ;
             _xpos[0] = this->_ppos[0] ;
             _xpos[1] = this->_ppos[1] ;
-            _xpos[2] = this->_ppos[2] ;
 
-            double _ipos[3] = {
+            double _ipos[2] = {
             _mesh.node(_tnod[0])->pval(0) ,
-            _mesh.node(_tnod[0])->pval(1) ,
-            _mesh.node(_tnod[0])->pval(2)
+            _mesh.node(_tnod[0])->pval(1)
                 } ;
-            double _jpos[3] = {
+            double _jpos[2] = {
             _mesh.node(_tnod[1])->pval(0) ,
-            _mesh.node(_tnod[1])->pval(1) ,
-            _mesh.node(_tnod[1])->pval(2)
+            _mesh.node(_tnod[1])->pval(1)
                 } ;
-            double _kpos[3] = {
+            double _kpos[2] = {
             _mesh.node(_tnod[2])->pval(0) ,
-            _mesh.node(_tnod[2])->pval(1) ,
-            _mesh.node(_tnod[2])->pval(2)
-                } ;
-            double _lpos[3] = {
-            _mesh.node(_tnod[3])->pval(0) ,
-            _mesh.node(_tnod[3])->pval(1) ,
-            _mesh.node(_tnod[3])->pval(2)
+            _mesh.node(_tnod[2])->pval(1)
                 } ;
 
             double _sign;
-            _sign = geompred::insphere  (
+            _sign = geompred::inball2d  (
                 &_ipos[ 0] ,
                 &_jpos[ 0] ,
                 &_kpos[ 0] ,
-                &_lpos[ 0] ,
                 &_xpos[ 0] ) ;
 
-            return (_sign <= (double)0.0) ;
+            return (_sign >= (double)+0.) ;
         }
         } ;
 
@@ -280,7 +251,7 @@
 /*------------------------------ face adjacency structure */
         public :
             containers::fixed_array <
-            iptr_type, +3 > _node ;
+            iptr_type, +2 > _node ;
 
             iptr_type       _tadj ;
             iptr_type       _fadj ;
@@ -298,9 +269,7 @@
             return  _fi._node[0] ==
                     _fj._node[0] &&
                     _fi._node[1] ==
-                    _fj._node[1] &&
-                    _fi._node[2] ==
-                    _fj._node[2]  ;
+                    _fj._node[1]  ;
         }
         } ;
 
@@ -314,7 +283,7 @@
         {
             return hash::hashword (
             (uint32_t*)&_ff._node[ 0],
-            +3* sizeof(iptr_type)
+            +2* sizeof(iptr_type)
               / sizeof( uint32_t),13);
         }
         } ;
@@ -322,9 +291,9 @@
     } ;
 
 
-}
+    }
 
-#   endif  //__DELAUNAY_TRI_EUCLIDEAN_3__
+#   endif  //__DELAUNAY_TRI_EUCLIDEAN_2__
 
 
 

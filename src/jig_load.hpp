@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 October, 2019
+     * Last updated: 16 July, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -439,6 +439,8 @@
             {
                 _jlog.push(
             "**parse error: " + * _iter + "\n" ) ;
+
+                _errv = __invalid_useropts ;
             }
         }
         catch (...)
@@ -488,6 +490,8 @@
                     JIGSAW_BNDS_DUALCELL)
             _jcfg._bnds_pred =
                 jcfg_data::bnds_pred::bnd_dual ;
+            else
+            _errv = __invalid_useropts ;
 
     /*------------------------------------- GEOM keywords */
             _jcfg._mesh_opts.
@@ -513,6 +517,8 @@
                     JIGSAW_HFUN_ABSOLUTE)
             _jcfg._hfun_scal =
                 jcfg_data::hfun_scal::absolute ;
+            else
+            _errv = __invalid_useropts ;
 
             _jcfg.
             _hfun_hmax = _jjig._hfun_hmax ;
@@ -534,6 +540,8 @@
                     JIGSAW_KERN_BISECTOR)
             _jcfg._mesh_pred =
                 jcfg_data::mesh_pred::bisector ;
+            else
+            _errv = __invalid_useropts ;
 
             _jcfg._mesh_opts.
                 dims() = _jjig._mesh_dims ;
@@ -576,6 +584,13 @@
                     JIGSAW_KERN_CVT_DQDX)
             _jcfg._iter_pred =
                 jcfg_data::iter_pred::cvt_dqdx ;
+            else
+            if (_jjig._optm_kern ==
+                    JIGSAW_KERN_H95_DQDX)
+            _jcfg._iter_pred =
+                jcfg_data::iter_pred::h95_dqdx ;
+            else
+            _errv = __invalid_useropts ;
 
             _jcfg._iter_opts.
                 iter() = _jjig._optm_iter ;
@@ -624,7 +639,7 @@
             if ( (__var < __vlo) ||             \
                  (__var > __vhi) )              \
             {                                   \
-                _errv = __invalid_argument ;    \
+                _errv = __invalid_useropts ;    \
                 _sstr.str("");                  \
                 _sstr.clear();                  \
                 _sstr <<                        \
@@ -640,7 +655,7 @@
             if ( (__var < __vlo) ||             \
                  (__var > __vhi) )              \
             {                                   \
-                _errv = __invalid_argument ;    \
+                _errv = __invalid_useropts ;    \
                 _sstr.str("");                  \
                 _sstr.clear();                  \
                 _sstr <<                        \
@@ -1012,6 +1027,11 @@
          jcfg_data::iter_pred::cvt_dqdx)
         _jlog.push (
             "  OPTM-KERN = CVT+DQDX \n") ;
+        else
+        if(_jcfg._iter_pred ==
+         jcfg_data::iter_pred::h95_dqdx)
+        _jlog.push (
+            "  OPTM-KERN = H95+DQDX \n") ;
 
         __dumpINTS("OPTM-ITER",
             _jcfg._iter_opts.iter())

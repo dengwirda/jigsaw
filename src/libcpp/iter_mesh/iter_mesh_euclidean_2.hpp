@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 April, 2019
+     * Last updated: 04 March, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -65,7 +65,9 @@
             iptr_type >             edge_base ;
 
     typedef mesh::mesh_complex_tria_3 <
-            iptr_type >             tria_base ;
+            iptr_type >             tri3_base ;
+    typedef mesh::mesh_complex_quad_4 <
+            iptr_type >             quad_base ;
 
     typedef mesh::mesh_complex_node_3 <
             iptr_type ,
@@ -137,9 +139,9 @@
         }
         } ;
 
-    class tria_type : public tria_base
+    class tri3_type : public tri3_base
         {
-    /*------------------------- tria type for ITER-MESH-2 */
+    /*------------------------- face type for ITER-MESH-2 */
         public  :
 
         iptr_type                     _itag ;
@@ -156,10 +158,30 @@
         }
         } ;
 
-    typedef mesh::tria_complex_2 <
+    class quad_type : public quad_base
+        {
+    /*------------------------- face type for ITER-MESH-2 */
+        public  :
+
+        iptr_type                     _itag ;
+
+        public  :
+
+        __inline_call iptr_type      & itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        } ;
+
+    typedef mesh::mesh_complex_2 <
             node_type ,
             edge_type ,
-            tria_type            >  mesh_type ;
+            tri3_type ,
+            quad_type            >  mesh_type ;
 
     public  :
 

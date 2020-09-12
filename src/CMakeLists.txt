@@ -2,7 +2,7 @@ function (cfg_compile_options OPT CFG)
   add_compile_options ("$<$<CONFIG:${CFG}>:${OPT}>")
 endfunction ()
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"   OR

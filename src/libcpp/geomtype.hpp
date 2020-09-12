@@ -31,11 +31,11 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 09 January, 2019
+ * Last updated: 20 February, 2020
  *
- * Copyright 2013-2019
+ * Copyright 2013-2020
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -49,10 +49,10 @@
     namespace mesh
     {
 /*-------------------------- classification of mesh feat. */
-    char_type null_feat = 0  ;
-    char_type user_feat = 1  ;
-    char_type soft_feat = 2  ;
-    char_type hard_feat = 3  ;
+    char_type constexpr null_feat = 0 ;
+    char_type constexpr user_feat = 1 ;
+    char_type constexpr soft_feat = 2 ;
+    char_type constexpr hard_feat = 3 ;
     }
 
 #   include "containers.hpp"
@@ -61,6 +61,8 @@
 
 #   include "aabbtree.hpp"
 #   include "meshtype.hpp"
+
+#   include "rdel_mesh/rdel_filt_k.hpp"
 
 #   include "geom_type/geom_base_2.hpp"
 #   include "geom_type/geom_base_3.hpp"

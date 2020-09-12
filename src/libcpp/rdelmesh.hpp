@@ -35,7 +35,7 @@
  *
  * Copyright 2013-2019
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -48,7 +48,7 @@
 
     namespace mesh
     {
-/*-------------------------- classification of mesh items */
+/*-------------------------- classification of mesh cells */
     char_type constexpr null_item = 0 ;
     char_type constexpr void_item = 1 ;
     char_type constexpr ring_item = 2 ;

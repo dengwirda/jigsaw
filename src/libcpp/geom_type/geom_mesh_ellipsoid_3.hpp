@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 August, 2019
+     * Last updated: 30 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -131,6 +131,26 @@
 
         } ;
 
+    class seed_type: public mesh_complex_node_3<I,R>
+        {
+    /*------------------------------------ loc. node type */
+        public  :
+        iptr_type                     _itag ;
+
+        public  :
+    /*------------------------------------ "write" access */
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+    /*------------------------------------ "const" access */
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+
+        } ;
+
     class edge_type: public mesh_complex_edge_2<I>
         {
     /*------------------------------------ loc. edge type */
@@ -175,6 +195,10 @@
                 edge_type,
                 allocator       >   mesh_type ;
 
+    typedef containers::array   <
+                seed_type ,
+                allocator       >   seed_list ;
+
     typedef geom_tree::aabb_node_base_k
                                     tree_node ;
 
@@ -190,6 +214,8 @@
     iptr_type static constexpr _nbox = +4 ;
 
     public  :
+
+    seed_list                      _seed ;
 
     containers::
         fixed_array<real_type,3>   _bmin ;
@@ -251,6 +277,256 @@
 
     /*
     --------------------------------------------------------
+     * construct geometry from alloc. etc.
+    --------------------------------------------------------
+     */
+
+    __normal_call geom_mesh_ellipsoid_3d (
+        allocator const&
+            _asrc = allocator ()
+        ) : _seed(    _asrc ) ,
+            _mesh(    _asrc ) ,
+            _ebox(    _asrc )
+        {
+        }
+
+    /*
+    --------------------------------------------------------
+     * NODE-FEAT: calc. node feature type.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  list_type ,
+        typename  geom_opts
+             >
+    __normal_call void_type node_feat (
+        iptr_type *_node ,
+        list_type &_aset ,
+        char_type &_feat ,
+        char_type &_topo ,
+        geom_opts &_opts
+        )
+    {
+    /*------------ "sharp" geometry//topology about node? */
+        real_type _DtoR =
+       (real_type)+3.141592653589793 / 180. ;
+
+        real_type _ZERO = -1. +
+            std::numeric_limits
+                <real_type>::epsilon();
+
+        real_type _phi1 =
+       (real_type)+180. - _opts.phi1();
+        real_type _eta1 =
+       (real_type)+  0. + _opts.eta1();
+
+        real_type _hard =
+            std::cos( _phi1 * _DtoR) ;
+        real_type _soft =
+            std::cos( _eta1 * _DtoR) ;
+
+        __unreferenced(_node) ;
+
+        _feat =  null_feat ;
+        _topo = (char_type)_aset.count () ;
+
+        for (auto _ipos  = _aset.head() ;
+                  _ipos != _aset.tend() ;
+                ++_ipos  )
+        {
+        char_type _tbad  = +1 ;
+        for (auto _jpos  = _ipos+1 ;
+                  _jpos != _aset.tend() ;
+                ++_jpos  )
+        {
+    /*------------ find signed angle between edge vectors */
+             auto _iedg  = _ipos->_cell ;
+             auto _jedg  = _jpos->_cell ;
+
+            iptr_type _inod[2] = {
+            this->_mesh.edge(_iedg).node(0) ,
+            this->_mesh.edge(_iedg).node(1) ,
+                } ;
+
+            iptr_type _jnod[2] = {
+            this->_mesh.edge(_jedg).node(0) ,
+            this->_mesh.edge(_jedg).node(1) ,
+                } ;
+
+            real_type _ivec[3] ;
+            geometry::vector_3d(
+               & this->_mesh.
+                 node(_inod[0]).pval(0) ,
+               & this->_mesh.
+                 node(_inod[1]).pval(0) ,
+                _ivec) ;
+
+            real_type _jvec[3] ;
+            geometry::vector_3d(
+               & this->_mesh.
+                 node(_jnod[0]).pval(0) ,
+               & this->_mesh.
+                 node(_jnod[1]).pval(0) ,
+                _jvec) ;
+
+            real_type _acos = geometry::
+                cosine_3d(_ivec, _jvec) ;
+
+            if (_inod[0] == _jnod[1] ||
+                _inod[1] == _jnod[0] )
+                _acos *= (real_type)+1. ;
+            else
+                _acos *= (real_type)-1. ;
+
+            if (_acos >= _ZERO)
+            {
+    /*------------ tag as "feature" if angle sharp enough */
+            if (_acos <= _hard)
+            {
+                _feat  =
+            std::max (_feat, hard_feat) ;
+            }
+            else
+            if (_acos <= _soft)
+            {
+                _feat  =
+            std::max (_feat, soft_feat) ;
+            }
+            }
+            else
+            {
+            if (_tbad >= +  1 )
+            {
+                _topo -= _tbad-- ;
+            }
+            }
+        }
+        }
+        {
+    /*------------ tag as "feature" if topo. is irregular */
+            if (_topo != +  0 )
+            if (_topo != +  2 )
+                _feat =
+            std::max (_feat, soft_feat) ;
+        }
+    }
+
+    /*
+    --------------------------------------------------------
+     * FIND-FEAT: scan geometry and find features.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  geom_opts
+             >
+    __normal_call void_type find_feat (
+        geom_opts &_opts
+        )
+    {
+        typename
+            mesh_type::connector _eadj ;
+
+    /*---------------------------------- init. geom feat. */
+        for (auto _iter  =
+             this->_mesh.node().head() ;
+                  _iter !=
+             this->_mesh.node().tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0)
+            {
+                _iter->fdim () = +0  ;
+                _iter->feat () = null_feat ;
+                _iter->topo () = +2  ;
+            }
+        }
+
+        for (auto _iter  =
+             this->_mesh.edge().head() ;
+                  _iter !=
+             this->_mesh.edge().tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0)
+            {
+                _iter->feat () = null_feat ;
+                _iter->topo () = +2  ;
+            }
+        }
+
+    /*---------------------------------- find sharp feat. */
+        for (auto _iter  =
+             this->_mesh.node().head() ;
+                  _iter !=
+             this->_mesh.node().tend() ;
+                ++_iter  )
+        {
+    /*---------------------------------- find sharp 0-dim */
+            if (_iter->mark() >= +0 )
+            {
+            if (_iter->itag() <= -1 ||
+                _opts .feat() )
+            {
+    /*---------------------------------- set geo.-defined */
+            _eadj.set_count (0);
+
+            this->_mesh.connect_1(
+               &_iter->node (0), POINT_tag, _eadj) ;
+
+            node_feat (
+               &_iter->node (0),
+                _eadj ,
+                _iter->feat () ,
+                _iter->topo () ,
+                _opts ) ;
+
+            if (_iter->itag() <= -1)
+            {
+    /*---------------------------------- set user-defined */
+            _iter->feat () =
+                std::max(_iter->feat(), soft_feat) ;
+            }
+            }
+            }
+        }
+
+        for (auto _iter  =
+             this->_mesh.edge().head() ;
+                  _iter !=
+             this->_mesh.edge().tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0)
+            {
+    /*----------------------------- assign nodes to edges */
+            this->_mesh.node()[
+                _iter->node(0)].fdim() = 1;
+            this->_mesh.node()[
+                _iter->node(1)].fdim() = 1;
+           }
+        }
+
+        for (auto _iter  =
+             this->_mesh.node().head() ;
+                  _iter !=
+             this->_mesh.node().tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0)
+            {
+            if (_iter->feat() != null_feat)
+            {
+    /*----------------------------- assign nodes to feat. */
+                _iter->fdim()  = +0;
+            }
+            }
+        }
+    }
+
+    /*
+    --------------------------------------------------------
      * INIT-GEOM: init. geometry data structures.
     --------------------------------------------------------
      */
@@ -275,13 +551,34 @@
 
     /*--------------------------- convert to R^3 coord.'s */
         for (auto _iter  =
-             this->_mesh._set1.head() ;
+             this->_mesh.node().head();     // POINT
                   _iter !=
-             this->_mesh._set1.tend() ;
+             this->_mesh.node().tend();
                 ++_iter  )
         {
-            if (_iter->mark() < 0)
-                continue ;
+            if (_iter->mark() < 0) continue ;
+
+            real_type _apos[2];
+            real_type _ppos[3];
+
+            _apos[0] = _iter->pval(0) ;
+            _apos[1] = _iter->pval(1) ;
+
+            toR3(_apos, _ppos);
+
+            _iter->pval(0) = _ppos[0] ;
+            _iter->pval(1) = _ppos[1] ;
+            _iter->pval(2) = _ppos[2] ;
+        }
+
+    /*--------------------------- convert to R^3 coord.'s */
+        for (auto _iter  =
+                   this->_seed. head();     // SEEDS
+                  _iter !=
+                   this->_seed. tend();
+                ++_iter  )
+        {
+            if (_iter->mark() < 0) continue ;
 
             real_type _apos[2];
             real_type _ppos[3];
@@ -301,14 +598,16 @@
             std::numeric_limits
                 <real_type>::epsilon()) ;
 
-        real_type _rBAR ;
-        _rBAR  = (real_type) +0. ;
+        real_type _rBAR = (real_type)0. ;
         _rBAR += this->_radA ;
         _rBAR += this->_radB ;
         _rBAR += this->_radC ;
-        _rBAR /= (real_type) +3. ;
+        _rBAR  = _rBAR  / (real_type)3. ;
 
         this->_rEPS *= _rBAR ;
+
+    /*--------------------------- sharp feat. in geometry */
+        find_feat (_opts);
 
     /*--------------------------- init. AABB for arc-seg. */
         containers::
@@ -317,13 +616,12 @@
         iptr_type  _inum = +0;
 
         for (auto _iter  =
-             this->_mesh._set2.head() ;
+             this->_mesh.edge().head();
                   _iter !=
-             this->_mesh._set2.tend() ;
+             this->_mesh.edge().tend();
                 ++_iter, ++_inum )
         {
-            if (_iter->mark() < 0)
-                continue ;
+            if (_iter->mark() < 0) continue ;
 
             iptr_type _enod[ +2] ;
             _enod[0] = _iter->node(0) ;
@@ -332,11 +630,11 @@
             tree_item _tdat ;
             _tdat.ipos() = _inum ;
 
-            make_aabb (
-           &this->_mesh.
-            _set1[_enod[ 0 ]].pval(0) ,
-           &this->_mesh.
-            _set1[_enod[ 1 ]].pval(0) ,
+            make_aabb (*_iter ,
+           & this->_mesh.
+             node(_enod[ 0 ]).pval(0) ,
+           & this->_mesh.
+             node(_enod[ 1 ]).pval(0) ,
            &_tdat .pmin( 0 ),
            &_tdat .pmax( 0 )) ;
 
@@ -344,8 +642,8 @@
         }
 
         this->_ebox.load (
-            _bbox.head(),
-            _bbox.tend(),this->_nbox) ;
+            _bbox.head() ,
+            _bbox.tend() , this->_nbox) ;
     }
 
     /*
@@ -369,7 +667,7 @@
 
     /*
     --------------------------------------------------------
-     * SEED-FEAT: init. "seed" vertex set on geom.
+     * SEED-FEAT: init. "seed" vertex set on feat.
     --------------------------------------------------------
      */
 
@@ -384,38 +682,108 @@
     {
         __unreferenced(_opts) ;
 
-        real_type  _ppos[3] ;
+    /*------------------------- point at ellipsoid centre */
+        real_type  _ppos[4] ;
         iptr_type  _inod;
-        _ppos[0] = (real_type) +0.0E+0;
-        _ppos[1] = (real_type) +0.0E+0;
-        _ppos[2] = (real_type) +0.0E+0;
+        _ppos[0] = (real_type) +0.0E+0 ;
+        _ppos[1] = (real_type) +0.0E+0 ;
+        _ppos[2] = (real_type) +0.0E+0 ;
+        _ppos[3] = (real_type) +0.0E+0 ;
         _rdel.
-        _tria.push_node(_ppos, _inod) ;
+        _tria.push_node(_ppos, _inod);
         _rdel.
-        _tria.node(_inod)->fdim() = +4;
+        _tria.node(_inod)->fdim() = +4 ;
         _rdel.
-        _tria.node(_inod)->feat() = +0;
+        _tria.node(_inod)->feat() = +0 ;
         _rdel.
-        _tria.node(_inod)->topo() = +0;
+        _tria.node(_inod)->topo() = +0 ;
+
+    /*------------------------- push set of feature nodes */
+        for (auto _iter  =
+             this->_mesh.node().head() ;
+                  _iter !=
+             this->_mesh.node().tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0 )
+            {
+            if (_iter->feat() != null_feat)
+            {
+    /*----------------------------- push any 'real' feat. */
+            _ppos[0] = _iter->pval(0) ;
+            _ppos[1] = _iter->pval(1) ;
+            _ppos[2] = _iter->pval(2) ;
+            _ppos[3] = (real_type)+0. ;
+
+            iptr_type _node = -1 ;
+            if (_rdel._tria.push_node (
+                    &_ppos[ 0], _node))
+            {
+                _rdel._tria.node
+                    (_node)->fdim()
+                        = _iter->fdim() ;
+
+                _rdel._tria.node
+                    (_node)->feat()
+                        = _iter->feat() ;
+
+                _rdel._tria.node
+                    (_node)->topo()
+                        = _iter->topo() ;
+
+                _rdel._tria.node
+                    (_node)->part()
+                        = _iter->itag() ;
+            }
+            }
+            else
+            if (_iter->itag() <= -1 )
+            {
+    /*----------------------------- push any 'user' feat. */
+            _ppos[0] = _iter->pval(0) ;
+            _ppos[1] = _iter->pval(1) ;
+            _ppos[2] = _iter->pval(2) ;
+            _ppos[3] = (real_type)+0. ;
+
+            iptr_type _node = -1 ;
+            if (_rdel._tria.push_node (
+                    &_ppos[ 0], _node))
+            {
+                _rdel._tria.node
+                    (_node)->fdim()
+                        = _iter->fdim() ;
+
+                _rdel._tria.node
+                    (_node)->feat()
+                        = _iter->feat() ;
+
+                _rdel._tria.node
+                    (_node)->topo()
+                        = _iter->topo() ;
+
+                _rdel._tria.node
+                    (_node)->part()
+                        = _iter->itag() ;
+            }
+            }
+            }
+        }
     }
 
     /*
     --------------------------------------------------------
-     * SEED-MESH: init. "seed" vertex set on geom.
+     * SEED-BASE: init. icosahedral "seed" vertex.
     --------------------------------------------------------
      */
 
     template <
-        typename  mesh_type ,
-        typename  geom_opts
+        typename  mesh_type
              >
-    __normal_call void_type seed_mesh (
-        mesh_type &_rdel ,
-        geom_opts &_opts
+    __normal_call void_type seed_base (
+        mesh_type &_rdel
         )
     {
-        __unreferenced(_opts) ;
-
+    /*--------------------------- init. reg.-icosahedron */
         real_type  _pi =
        (real_type)std::atan(1.0) * 4. ;
 
@@ -424,11 +792,7 @@
 
         real_type  _lo = 2.*_pi / 10. ;
 
-        if (_rdel._tria.
-                _nset.count() <= +8 )
-        {
-    /*--------------------------- init. reg.-icosahedron */
-        real_type  _ppos[3] ;
+        real_type  _ppos[4] ;
         iptr_type  _inod;
         _ppos[0] = this->_radA *
         std::cos(_pi*(real_type)+0.0) *
@@ -438,6 +802,7 @@
         std::cos(_pi*(real_type)+0.5) ;
         _ppos[2] = this->_radC *
         std::sin(_pi*(real_type)+0.5) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -455,6 +820,7 @@
         std::cos(_pi*(real_type)-0.5) ;
         _ppos[2] = this->_radC *
         std::sin(_pi*(real_type)-0.5) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -472,6 +838,7 @@
         std::cos(_la*(real_type)+1.0) ;
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)+1.0) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -489,6 +856,7 @@
         std::cos(_la*(real_type)-1.0) ;
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)-1.0) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -506,6 +874,7 @@
         std::cos(_la*(real_type)+1.0) ;
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)+1.0) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -523,6 +892,7 @@
         std::cos(_la*(real_type)-1.0) ;
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)-1.0) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -540,6 +910,7 @@
         std::cos(_la*(real_type)+1.0) ;
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)+1.0) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -557,6 +928,7 @@
         std::cos(_la*(real_type)-1.0) ;
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)-1.0) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -574,6 +946,7 @@
         std::cos(_la*(real_type)+1.0) ;
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)+1.0) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -591,6 +964,7 @@
         std::cos(_la*(real_type)-1.0) ;
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)-1.0) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -608,6 +982,7 @@
         std::cos(_la*(real_type)+1.0) ;
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)+1.0) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -625,6 +1000,7 @@
         std::cos(_la*(real_type)-1.0) ;
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)-1.0) ;
+        _ppos[3] =   (real_type)+0.0;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -633,9 +1009,100 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+    }
 
+    /*
+    --------------------------------------------------------
+     * SEED-MESH: init. "seed" vertex set on geom.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  mesh_type ,
+        typename  geom_opts
+             >
+    __normal_call void_type seed_mesh (
+        mesh_type &_rdel ,
+        geom_opts &_opts
+        )
+    {
+    /*------------------------- well-distributed sampling */
+        while (_rdel._tria._nset.count()
+                < (std::size_t)_opts.seed() + 5)
+        {
+            typename geom_type::
+                     mesh_type::
+                node_list::_write_it _best ;
+
+            real_type _dmax  = (real_type) +.0 ;
+            for (auto _ipos  =
+                 this->_mesh.node().head() ;
+                      _ipos !=
+                 this->_mesh.node().tend() ;
+                    ++_ipos  )
+            {
+    /*------------------------- get current furthest node */
+                if (_ipos->mark() >= 0)
+                {
+                real_type _dmin  =
+                   +std::numeric_limits
+                        <real_type>::infinity();
+
+                for (auto _jpos  =
+                    _rdel._tria._nset.head() ;
+                          _jpos !=
+                    _rdel._tria._nset.tend() ;
+                        ++_jpos  )
+                {
+                    real_type _dist =
+                        geometry::lensqr_3d(
+                        &_ipos->pval(+0),
+                        &_jpos->pval(+0)) ;
+
+                    _dmin = std::min(_dmin, _dist);
+                }
+
+                if (_dmax < _dmin)
+                {
+                    _dmax = _dmin;
+                    _best = _ipos;
+                }
+                }
+            }
+
+            if (_dmax > (real_type)0.)
+            {
+    /*------------------------- add current furthest node */
+                real_type _ppos[4] ;
+                _ppos[0] = _best->pval(0) ;
+                _ppos[1] = _best->pval(1) ;
+                _ppos[2] = _best->pval(2) ;
+                _ppos[3] = (real_type)+0. ;
+
+                iptr_type _node = -1;
+                if (_rdel._tria.push_node(
+                        &_ppos[ 0], _node) )
+                {
+                    _rdel._tria.node
+                        (_node)->fdim()
+                            = _best->fdim() ;
+
+                    _rdel._tria.node
+                        (_node)->feat()
+                            = _best->feat() ;
+
+                    _rdel._tria.node
+                        (_node)->topo()
+                            = _best->topo() ;
+                }
+            }
+            else break  ;
         }
 
+        if (_rdel._tria._nset.count() <= +8 )
+        {
+            seed_base(_rdel) ;
+        }
     }
 
     /*
@@ -645,6 +1112,7 @@
      */
 
     __normal_call void_type make_aabb (
+        edge_type  _edge,
         real_type *_apos,
         real_type *_bpos,
         float     *_rmin,
@@ -654,53 +1122,55 @@
     /*- build an AABB that encloses a spheroidal arc-seg. */
         real_type _rTOL = this->_rEPS ;
 
-        _rmin[0] = (float)std::min(
-            _apos[0], _bpos[0]) ;
-        _rmin[1] = (float)std::min(
-            _apos[1], _bpos[1]) ;
-        _rmin[2] = (float)std::min(
-            _apos[2], _bpos[2]) ;
-
-        _rmax[0] = (float)std::max(
-            _apos[0], _bpos[0]) ;
-        _rmax[1] = (float)std::max(
-            _apos[1], _bpos[1]) ;
-        _rmax[2] = (float)std::max(
-            _apos[2], _bpos[2]) ;
-
-        float     _rmid[3] = {
-       (float)     +.5 * _rmin[0] +
-       (float)     +.5 * _rmax[0] ,
-       (float)     +.5 * _rmin[1] +
-       (float)     +.5 * _rmax[1] ,
-       (float)     +.5 * _rmin[2] +
-       (float)     +.5 * _rmax[2] ,
-            } ;
-
-        float     _rlen =   +0. ;
-        _rlen = std::max (
-        _rlen , _rmax[0]-_rmin[0]);
-        _rlen = std::max (
-        _rlen , _rmax[1]-_rmin[1]);
-        _rlen = std::max (
-        _rlen , _rmax[2]-_rmin[2]);
-
-        _rlen*= (float)     +.5 ;
-        _rlen+= (float)   _rTOL ;
+        __unreferenced(_edge);
 
         _rmin[0] = std::min(
-        _rmin[0], _rmid[0]-_rlen) ;
+        (float)_apos[0], (float)_bpos[0]) ;
         _rmin[1] = std::min(
-        _rmin[1], _rmid[1]-_rlen) ;
+        (float)_apos[1], (float)_bpos[1]) ;
         _rmin[2] = std::min(
-        _rmin[2], _rmid[2]-_rlen) ;
+        (float)_apos[2], (float)_bpos[2]) ;
 
         _rmax[0] = std::max(
-        _rmax[0], _rmid[0]+_rlen) ;
+        (float)_apos[0], (float)_bpos[0]) ;
         _rmax[1] = std::max(
-        _rmax[1], _rmid[1]+_rlen) ;
+        (float)_apos[1], (float)_bpos[1]) ;
         _rmax[2] = std::max(
-        _rmax[2], _rmid[2]+_rlen) ;
+        (float)_apos[2], (float)_bpos[2]) ;
+
+        real_type _rlen =
+        geometry::length_3d(_apos, _bpos) ;
+
+        real_type  _rmid[3] = {
+        _apos[0] * (real_type)+.5 +
+        _bpos[0] * (real_type)+.5 ,
+        _apos[1] * (real_type)+.5 +
+        _bpos[1] * (real_type)+.5 ,
+        _apos[2] * (real_type)+.5 +
+        _bpos[2] * (real_type)+.5 ,
+            } ;
+
+        _rmin[0] = std::min(
+        _rmin[0], (float)(_rmid[0]-_rlen));
+        _rmin[1] = std::min(
+        _rmin[1], (float)(_rmid[1]-_rlen));
+        _rmin[2] = std::min(
+        _rmin[2], (float)(_rmid[2]-_rlen));
+
+        _rmax[0] = std::max(
+        _rmax[0], (float)(_rmid[0]+_rlen));
+        _rmax[1] = std::max(
+        _rmax[1], (float)(_rmid[1]+_rlen));
+        _rmax[2] = std::max(
+        _rmax[2], (float)(_rmid[2]+_rlen));
+
+        _rmin[0] = _rmin[0]-(float)_rTOL;
+        _rmin[1] = _rmin[1]-(float)_rTOL;
+        _rmin[2] = _rmin[2]-(float)_rTOL;
+
+        _rmax[0] = _rmax[0]+(float)_rTOL;
+        _rmax[1] = _rmax[1]+(float)_rTOL;
+        _rmax[2] = _rmax[2]+(float)_rTOL;
     }
 
     /*
@@ -811,6 +1281,10 @@
         _zero[1] = (real_type) +.0 ;
         _zero[2] = (real_type) +.0 ;
 
+        _pprj[0] =_psrc[0] ;
+        _pprj[1] =_psrc[1] ;
+        _pprj[2] =_psrc[2] ;
+
         real_type _ttaa, _ttbb ;
         if (line_surf(
                 _zero, _psrc, _ttaa, _ttbb) )
@@ -832,7 +1306,7 @@
         _zero[2] * (real_type) +.5
             } ;
 
-        if (_ttaa > (real_type)-1.)
+        if (_ttaa > (real_type) -1.)
         {
         _pprj[0] =
         _pmid[0] + _ttaa*_pdel[0] ;
@@ -842,7 +1316,7 @@
         _pmid[2] + _ttaa*_pdel[2] ;
         }
         else
-        if (_ttbb > (real_type)-1.)
+        if (_ttbb > (real_type) -1.)
         {
         _pprj[0] =
         _pmid[0] + _ttbb*_pdel[0] ;
@@ -993,94 +1467,95 @@
         if (_inum >= (iptr_type) +1)
         {
 
-        if (_inum == (iptr_type) +1)
-        {
+            if (_inum == (iptr_type) +1)
+            {
     /*--------------------------- call hit output functor */
-        real_type _pprj[3] ;
-        proj_surf(_ppos, _pprj) ;
+            real_type _pprj[3] ;
+            proj_surf(_ppos, _pprj) ;
 
-        real_type _plen =
-            geometry::
-        lensqr_3d(_ppos, _pprj) ;
+            real_type _plen =
+                geometry::
+            lensqr_3d(_ppos, _pprj) ;
 
-        if (_plen < this->_rEPS *
-                    this->_rEPS )
-        {
-            _hfun(&_pprj[0], _htmp ,
-                _edge.feat() ,
-                _edge.topo() ,
-                _edge.itag() )  ;
+            if (_plen < this->_rEPS *
+                        this->_rEPS )
+            {
+                _hfun(&_pprj[0], _htmp ,
+                    _edge.feat() ,
+                    _edge.topo() ,
+                    _edge.itag() )  ;
 
-            _hnum += +1 ;
+                _hnum += +1 ;
 
-            return true ;
-        }
-        }
-        else
-        if (_inum == (iptr_type) +2)
-        {
+                return true ;
+            }
+
+            }
+            else
+            if (_inum == (iptr_type) +2)
+            {
     /*--------------------------- call hit output functor */
-        real_type _pprj[3] ;
-        real_type _qprj[3] ;
-        proj_surf(_ppos, _pprj) ;
-        proj_surf(_qpos, _qprj) ;
+            real_type _pprj[3] ;
+            real_type _qprj[3] ;
+            proj_surf(_ppos, _pprj) ;
+            proj_surf(_qpos, _qprj) ;
 
-        real_type _plen =
-            geometry::
-        lensqr_3d(_ppos, _pprj) ;
+            real_type _plen =
+                geometry::
+            lensqr_3d(_ppos, _pprj) ;
 
-        real_type _qlen =
-            geometry::
-        lensqr_3d(_qpos, _qprj) ;
+            real_type _qlen =
+                geometry::
+            lensqr_3d(_qpos, _qprj) ;
 
-        real_type _xlen =
-        std::max (_plen, _qlen) ;
+            real_type _xlen =
+            std::max (_plen, _qlen) ;
 
-        if (_xlen < this->_rEPS *
-                    this->_rEPS )
-        {
-            _hfun(&_pprj[0], _htmp ,
-                _edge.feat() ,
-                _edge.topo() ,
-                _edge.itag() )  ;
+            if (_xlen < this->_rEPS *
+                        this->_rEPS )
+            {
+                _hfun(&_pprj[0], _htmp ,
+                    _edge.feat() ,
+                    _edge.topo() ,
+                    _edge.itag() )  ;
 
-            _hfun(&_qprj[0], _htmp ,
-                _edge.feat() ,
-                _edge.topo() ,
-                _edge.itag() )  ;
+                _hfun(&_qprj[0], _htmp ,
+                    _edge.feat() ,
+                    _edge.topo() ,
+                    _edge.itag() )  ;
 
-            _hnum += +2 ;
+                _hnum += +2 ;
 
-            return true ;
-        }
-        }
+                return true ;
+            }
+            }
 
     /*--------------------------- recursive arc bisection */
-        bool_type _okay = false ;
+            bool_type _okay = false ;
 
-        real_type _cpos[3] = {
-        _apos[0] * (real_type) +.5 +
-        _bpos[0] * (real_type) +.5 ,
-        _apos[1] * (real_type) +.5 +
-        _bpos[1] * (real_type) +.5 ,
-        _apos[2] * (real_type) +.5 +
-        _bpos[2] * (real_type) +.5 ,
-            } ;
+            real_type _cpos[3] = {
+            _apos[0] * (real_type) +.5 +
+            _bpos[0] * (real_type) +.5 ,
+            _apos[1] * (real_type) +.5 +
+            _bpos[1] * (real_type) +.5 ,
+            _apos[2] * (real_type) +.5 +
+            _bpos[2] * (real_type) +.5 ,
+                } ;
 
-        real_type _cprj[3] ;
-        proj_surf(_cpos, _cprj) ;
+            real_type _cprj[3] ;
+            proj_surf(_cpos, _cprj) ;
 
-        _okay = _okay |
-            ball_kern( _ball, _edge,
-                _apos, _cprj, _call,
-                _hfun, _hnum) ;
+            _okay = _okay |
+                ball_kern( _ball, _edge,
+                    _apos, _cprj, _call,
+                    _hfun, _hnum) ;
 
-        _okay = _okay |
-            ball_kern( _ball, _edge,
-                _cprj, _bpos, _call,
-                _hfun, _hnum) ;
+            _okay = _okay |
+                ball_kern( _ball, _edge,
+                    _cprj, _bpos, _call,
+                    _hfun, _hnum) ;
 
-        return  _okay ;
+            return  _okay ;
 
         }
 
@@ -1115,144 +1590,64 @@
     /*--------------------------- call linear intersector */
         real_type _xpos[3] ;
         if (geometry::line_flat_3d (
-            _flat._ppos,
-            _flat._nvec,
-            _apos,_bpos,
-            _xpos, true) )
+                _flat._ppos,
+                _flat._nvec,
+                _apos,_bpos,
+                _xpos, true) )
         {
-
     /*--------------------------- call hit output functor */
-        real_type _xprj[3] ;
-        proj_surf(_xpos, _xprj) ;
+            real_type _xprj[3] ;
+            proj_surf(_xpos, _xprj) ;
 
-        real_type _xlen =
-            geometry::
-        lensqr_3d(_xpos, _xprj) ;
+            real_type _xtmp[3] ;
+            geometry::proj_flat_3d(
+                _xprj ,
+                _flat._ppos,
+                _flat._nvec, _xtmp) ;
 
-        if (_xlen < this->_rEPS *
-                    this->_rEPS )
-        {
-            _hfun(&_xprj[0], _htmp ,
-                _edge.feat() ,
-                _edge.topo() ,
-                _edge.itag() )  ;
+            real_type _xlen =
+                geometry::
+            lensqr_3d(_xtmp, _xprj) ;
 
-            _hnum +=   +1 ;
+            if (_xlen < this->_rEPS *
+                        this->_rEPS )
+            {
+                _hfun(&_xprj[0], _htmp ,
+                    _edge.feat() ,
+                    _edge.topo() ,
+                    _edge.itag() )  ;
 
-            return   true ;
-        }
+                _hnum +=   +1 ;
+
+                return   true ;
+            }
 
     /*--------------------------- recursive arc bisection */
-        bool_type _okay = false ;
+            bool_type _okay = false ;
 
-        real_type _cpos[3] = {
-        _apos[0] * (real_type) +.5 +
-        _bpos[0] * (real_type) +.5 ,
-        _apos[1] * (real_type) +.5 +
-        _bpos[1] * (real_type) +.5 ,
-        _apos[2] * (real_type) +.5 +
-        _bpos[2] * (real_type) +.5 ,
-            } ;
+            real_type _cpos[3] = {
+            _apos[0] * (real_type) +.5 +
+            _bpos[0] * (real_type) +.5 ,
+            _apos[1] * (real_type) +.5 +
+            _bpos[1] * (real_type) +.5 ,
+            _apos[2] * (real_type) +.5 +
+            _bpos[2] * (real_type) +.5 ,
+                } ;
 
-        real_type _cprj[3] ;
-        proj_surf(_cpos, _cprj) ;
+            real_type _cprj[3] ;
+            proj_surf(_cpos, _cprj) ;
 
-        _okay = _okay |
-            flat_kern( _flat, _edge,
-                _apos, _cprj, _call,
-                _hfun, _hnum) ;
+            _okay = _okay |
+                flat_kern( _flat, _edge,
+                    _apos, _cprj, _call,
+                    _hfun, _hnum) ;
 
-        _okay = _okay |
-            flat_kern( _flat, _edge,
-                _cprj, _bpos, _call,
-                _hfun, _hnum) ;
+            _okay = _okay |
+                flat_kern( _flat, _edge,
+                    _cprj, _bpos, _call,
+                    _hfun, _hnum) ;
 
-        return  _okay ;
-
-        }
-
-        return  false ;
-    }
-
-    /*
-    --------------------------------------------------------
-     * HELPERS: predicates for intersection tests.
-    --------------------------------------------------------
-     */
-
-    template <
-        typename  hits_func
-             >
-    __normal_call bool_type disc_kern (
-        disc_type &_disc ,
-        real_type *_apos ,
-        real_type *_bpos ,
-        iptr_type  _call ,
-        hits_func &_hfun
-        )
-    {
-    /*- calc. intersection of a disc & spheroidal surface */
-        if (is_inside(_apos) !=
-            is_inside(_bpos) )
-        {
-        if (_call++ > +3 )
-        {
-    /*--------------------------- call linear intersector */
-        line_type _ldat;
-        _ldat._ipos[0] = _apos[0] ;
-        _ldat._ipos[1] = _apos[1] ;
-        _ldat._ipos[2] = _apos[2] ;
-        _ldat._jpos[0] = _bpos[0] ;
-        _ldat._jpos[1] = _bpos[1] ;
-        _ldat._jpos[2] = _bpos[2] ;
-
-        return intersect(_ldat, _hfun);
-
-        }
-        else
-        {
-    /*--------------------------- recursive arc bisection */
-        bool_type _okay = false ;
-
-        real_type _cpos[4] = {
-       (real_type) +.5 * _apos[0] +
-       (real_type) +.5 * _bpos[0] ,
-       (real_type) +.5 * _apos[1] +
-       (real_type) +.5 * _bpos[1] ,
-       (real_type) +.5 * _apos[2] +
-       (real_type) +.5 * _bpos[2]
-            } ;
-
-        real_type _cdir[4] = {
-        _cpos[0] - _disc._pmid[0] ,
-        _cpos[1] - _disc._pmid[1] ,
-        _cpos[2] - _disc._pmid[2] ,
-            } ;
-
-        _cdir[3] =
-        geometry::length_3d(_cdir);
-        _cdir[0]/= _cdir[3] ;
-        _cdir[1]/= _cdir[3] ;
-        _cdir[2]/= _cdir[3] ;
-
-        _cpos[0] = _disc._pmid[0] +
-        _cdir[0] * _disc._rrad ;
-        _cpos[1] = _disc._pmid[1] +
-        _cdir[1] * _disc._rrad ;
-        _cpos[2] = _disc._pmid[2] +
-        _cdir[2] * _disc._rrad ;
-
-        _okay = _okay |
-            disc_kern( _disc,
-        _apos , _cpos, _call, _hfun) ;
-
-        _okay = _okay |
-            disc_kern( _disc,
-        _cpos , _bpos, _call, _hfun) ;
-
-        return  _okay ;
-
-        }
+            return  _okay ;
         }
 
         return  false ;
@@ -1313,27 +1708,27 @@
             iptr_type  _epos =
                 _iptr->_data.ipos() ;
 
-            iptr_type _enod[2];
-            _enod[0] =_geom.
-                _mesh._set2[_epos].node(0) ;
-            _enod[1] =_geom.
-                _mesh._set2[_epos].node(1) ;
+            iptr_type  _enod[2] ;
+            _enod[0] = _geom.
+                _mesh.edge(_epos).node(0) ;
+            _enod[1] = _geom.
+                _mesh.edge(_epos).node(1) ;
 
         /*--------------- call output function on hit */
             _geom .flat_kern  (
                  this->_flat,
                  this->_geom.
-                _mesh ._set2[_epos] ,
+            _mesh.edge(_epos) ,
                 &this->_geom.
-            _mesh._set1[_enod[ 0]].pval(0) ,
+            _mesh.node(_enod[ 0]).pval(0) ,
                 &this->_geom.
-            _mesh._set1[_enod[ 1]].pval(0) ,
+            _mesh.node(_enod[ 1]).pval(0) ,
                     + 0 ,
                  this->_hfun,
                  this->_hnum) ;
 
             this->_find =
-            this->_find | (this->_hnum!=0) ;
+            this->_find | (this->_hnum != 0) ;
             }
         }
 
@@ -1401,26 +1796,26 @@
             iptr_type  _epos =
                 _iptr->_data.ipos() ;
 
-            iptr_type _enod[2];
-            _enod[0] =_geom.
-                _mesh._set2[_epos].node(0) ;
-            _enod[1] =_geom.
-                _mesh._set2[_epos].node(1) ;
+            iptr_type  _enod[2] ;
+            _enod[0] = _geom.
+                _mesh.edge(_epos).node(0) ;
+            _enod[1] = _geom.
+                _mesh.edge(_epos).node(1) ;
 
         /*--------------- call output function on hit */
             _geom. ball_test  (
                  this->_ball,
                  this->_geom.
-                _mesh ._set2[_epos] ,
+            _mesh.edge(_epos) ,
                 &this->_geom.
-            _mesh._set1[_enod[ 0]].pval(0) ,
+            _mesh.node(_enod[ 0]).pval(0) ,
                 &this->_geom.
-            _mesh._set1[_enod[ 1]].pval(0) ,
+            _mesh.node(_enod[ 1]).pval(0) ,
                  this->_hfun,
                  this->_hnum) ;
 
             this->_find =
-            this->_find | (this->_hnum!=0) ;
+            this->_find | (this->_hnum != 0) ;
             }
         }
 
@@ -1463,17 +1858,49 @@
                 (float) _flat. _nvec[2] ,
                 } ;
 
+        real_type _llen = +.5 *
+        geometry::length_3d(_flat._nvec) ;
+
         float           _RMIN[3] = {
-                (float) _flat. _rmin[0] ,
-                (float) _flat. _rmin[1] ,
-                (float) _flat. _rmin[2] ,
+                (float)(_flat. _ppos[0] -
+                               _llen) ,
+                (float)(_flat. _ppos[1] -
+                               _llen) ,
+                (float)(_flat. _ppos[2] -
+                               _llen) ,
                 } ;
 
         float           _RMAX[3] = {
-                (float) _flat. _rmax[0] ,
-                (float) _flat. _rmax[1] ,
-                (float) _flat. _rmax[2] ,
+                (float)(_flat. _ppos[0] +
+                               _llen) ,
+                (float)(_flat. _ppos[1] +
+                               _llen) ,
+                (float)(_flat. _ppos[2] +
+                               _llen) ,
                 } ;
+
+        for ( auto
+             _iter  = _flat._bnds.head() ;
+             _iter != _flat._bnds.tend() ;
+           ++_iter  )
+        {
+            real_type _xprj[3] ;
+            projector(*_iter, +2, _xprj) ;
+
+            _RMIN[0] = std::min(
+            _RMIN[0] , (float) _xprj[0]) ;
+            _RMIN[1] = std::min(
+            _RMIN[1] , (float) _xprj[1]) ;
+            _RMIN[2] = std::min(
+            _RMIN[2] , (float) _xprj[2]) ;
+
+            _RMAX[0] = std::max(
+            _RMAX[0] , (float) _xprj[0]) ;
+            _RMAX[1] = std::max(
+            _RMAX[1] , (float) _xprj[1]) ;
+            _RMAX[2] = std::max(
+            _RMAX[2] , (float) _xprj[2]) ;
+        }
 
     /*------------------ call actual intersection testing */
         tree_pred _pred(_PPOS, _NVEC,
@@ -1560,6 +1987,7 @@
     {
         bool_type _find = false ;
 
+    /*------------------ compute line-ellipsoid intersect */
         real_type  _ipos[3] ;
         _ipos[0] = _line._ipos[ 0];
         _ipos[1] = _line._ipos[ 1];
@@ -1573,7 +2001,6 @@
         real_type _ttaa, _ttbb;
         if (line_surf(_ipos, _jpos, _ttaa, _ttbb))
         {
-
         real_type  _pmid[3] = {
         _jpos[0] * (real_type)+.5 +
         _ipos[0] * (real_type)+.5 ,
@@ -1591,6 +2018,7 @@
         _ipos[2] * (real_type)+.5
             } ;
 
+    /*------------------ calc. XYZ pos. for intersections */
         real_type  _apos[3] = {
         _pmid[0] + _ttaa * _pdel[0] ,
         _pmid[1] + _ttaa * _pdel[1] ,
@@ -1603,8 +2031,9 @@
         _pmid[2] + _ttbb * _pdel[2]
             } ;
 
+    /*------------------ push surf.-proj. to output func. */
         char_type _hits =
-            geometry::null_hits ;
+            geometry::face_hits ;
         char_type _feat = +2;
         char_type _topo = +2;
         iptr_type _itag = +0;
@@ -1613,18 +2042,16 @@
         if (_ttaa <= (real_type)+1.)
         {
             _find  =  true  ;
-            _hfun  ( _apos, _hits ,
-                     _feat, _topo ,
-                     _itag) ;
+            _hfun( _apos,
+        _hits, _feat, _topo, _itag) ;
         }
 
         if (_ttbb >= (real_type)-1.)
         if (_ttbb <= (real_type)+1.)
         {
             _find  =  true  ;
-            _hfun  ( _bpos, _hits ,
-                     _feat, _topo ,
-                     _itag) ;
+            _hfun( _bpos,
+        _hits, _feat, _topo, _itag) ;
         }
 
         }
@@ -1647,90 +2074,50 @@
         hits_func &_hfun
         )
     {
-        bool_type _find = false ;
+    /*------------------ calc. initial dir. to surf.-ball */
+        real_type _proj[3], _vdir[3] ;
+        proj_surf(_sbal, _proj) ;
 
-        __unreferenced(_sbal) ;
+        iptr_type _iter;
+        for(_iter = 8; _iter-- != 0; )
+        {
+    /*------------------ iter. to improve dir.-to-surface */
+        geometry::vector_3d(
+            _disc._pmid, _proj, _vdir) ;
 
-        real_type  _circ[3] = {
-            (real_type) +0. ,
-            (real_type) +0. ,
-            (real_type) +0. } ;
+        geometry::normalise_3d( _vdir) ;
 
-        real_type  _pdir[4] = {
-        _disc._pmid[0] - _circ[0] ,
-        _disc._pmid[1] - _circ[1] ,
-        _disc._pmid[2] - _circ[2] ,
-            (real_type) +0. } ;
-
-        real_type  _ddir[4] ;
-        geometry::cross_3d(
-        _pdir, _disc._nvec, _ddir) ;
-
-        _pdir[3] =
-        geometry::length_3d(_pdir) ;
-        _pdir[0]/= _pdir[3] ;
-        _pdir[1]/= _pdir[3] ;
-        _pdir[2]/= _pdir[3] ;
-
-        _ddir[3] =
-        geometry::length_3d(_ddir) ;
-        _ddir[0]/= _ddir[3] ;
-        _ddir[1]/= _ddir[3] ;
-        _ddir[2]/= _ddir[3] ;
-
-        real_type  _apos[3] = {
-        _disc._pmid[0] -
-            _disc._rrad *_pdir[0] ,
-        _disc._pmid[1] -
-            _disc._rrad *_pdir[1] ,
-        _disc._pmid[2] -
-            _disc._rrad *_pdir[2]
-            } ;
-
-        real_type  _bpos[3] = {
+        real_type _xpos[3] = {
         _disc._pmid[0] +
-            _disc._rrad *_ddir[0] ,
+            _disc._rrad *_vdir[0] ,
         _disc._pmid[1] +
-            _disc._rrad *_ddir[1] ,
+            _disc._rrad *_vdir[1] ,
         _disc._pmid[2] +
-            _disc._rrad *_ddir[2]
+            _disc._rrad *_vdir[2]
             } ;
 
-        real_type  _cpos[3] = {
-        _disc._pmid[0] +
-            _disc._rrad *_pdir[0] ,
-        _disc._pmid[1] +
-            _disc._rrad *_pdir[1] ,
-        _disc._pmid[2] +
-            _disc._rrad *_pdir[2]
-            } ;
+        proj_surf(_xpos, _proj) ;
 
-        real_type  _dpos[3] = {
-        _disc._pmid[0] -
-            _disc._rrad *_ddir[0] ,
-        _disc._pmid[1] -
-            _disc._rrad *_ddir[1] ,
-        _disc._pmid[2] -
-            _disc._rrad *_ddir[2]
-            } ;
+        real_type _dsqr =
+            geometry::
+        lensqr_3d(_xpos, _proj) ;
 
-        _find = _find |
-            disc_kern(_disc,
-        _apos , _bpos, +0, _hfun) ;
+        if (_dsqr < this->_rEPS *
+                    this->_rEPS )
+            break ;
+        }
 
-        _find = _find |
-            disc_kern(_disc,
-        _bpos , _cpos, +0, _hfun) ;
+    /*------------------ push surf.-proj. to output func. */
+        char_type _hits =
+            geometry::face_hits ;
+        char_type _feat = +2;
+        char_type _topo = +2;
+        iptr_type _itag = +0;
 
-        _find = _find |
-            disc_kern(_disc,
-        _cpos , _dpos, +0, _hfun) ;
+        _hfun( _proj ,
+        _hits, _feat , _topo, _itag) ;
 
-        _find = _find |
-            disc_kern(_disc,
-        _dpos , _apos, +0, _hfun) ;
-
-        return  _find ;
+        return  true ;
     }
 
     /*
@@ -1743,6 +2130,7 @@
         real_type *_ppos
         )
     {
+    /*------------------ (x/a)^2 + (y/b)^2 + (z/c)^2 < 1? */
         real_type _xx =
             _ppos[0] / this->_radA ;
         real_type _yy =

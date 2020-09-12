@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2019
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -56,7 +56,7 @@
      */
 
     template <
-    typename      real_type
+        typename  real_type
              >
     __normal_call bool_type polyroots (
         real_type _aa,      // aa*xx^2+bb*xx+cc=0
@@ -119,51 +119,51 @@
               ((__ir)+(__ic)*(__nr))
 
     template <
-    typename      real_type,
-    typename      size_type
+        typename  real_type,
+        typename  size_type
              >
     __inline_call real_type det_2x2 (
         size_type  _la,
     __const_ptr  (real_type) _aa
         )
     {   return
-        _aa[__ij(0,0,_la)] *
-        _aa[__ij(1,1,_la)] -
-        _aa[__ij(0,1,_la)] *
-        _aa[__ij(1,0,_la)] ;
+        _aa[__ij(0, 0, _la)] *
+        _aa[__ij(1, 1, _la)] -
+        _aa[__ij(0, 1, _la)] *
+        _aa[__ij(1, 0, _la)] ;
     }
 
     template <
-    typename      real_type,
-    typename      size_type
+        typename  real_type,
+        typename  size_type
              >
     __inline_call real_type det_3x3 (
         size_type  _la,
     __const_ptr  (real_type) _aa
         )
     {   return
-        _aa[__ij(0,0,_la)] * (
-        _aa[__ij(1,1,_la)] *
-        _aa[__ij(2,2,_la)] -
-        _aa[__ij(1,2,_la)] *
-        _aa[__ij(2,1,_la)] ) -
+        _aa[__ij(0, 0, _la)] * (
+        _aa[__ij(1, 1, _la)] *
+        _aa[__ij(2, 2, _la)] -
+        _aa[__ij(1, 2, _la)] *
+        _aa[__ij(2, 1, _la)] ) -
 
-        _aa[__ij(0,1,_la)] * (
-        _aa[__ij(1,0,_la)] *
-        _aa[__ij(2,2,_la)] -
-        _aa[__ij(1,2,_la)] *
-        _aa[__ij(2,0,_la)] ) +
+        _aa[__ij(0, 1, _la)] * (
+        _aa[__ij(1, 0, _la)] *
+        _aa[__ij(2, 2, _la)] -
+        _aa[__ij(1, 2, _la)] *
+        _aa[__ij(2, 0, _la)] ) +
 
-        _aa[__ij(0,2,_la)] * (
-        _aa[__ij(1,0,_la)] *
-        _aa[__ij(2,1,_la)] -
-        _aa[__ij(1,1,_la)] *
-        _aa[__ij(2,0,_la)] ) ;
+        _aa[__ij(0, 2, _la)] * (
+        _aa[__ij(1, 0, _la)] *
+        _aa[__ij(2, 1, _la)] -
+        _aa[__ij(1, 1, _la)] *
+        _aa[__ij(2, 0, _la)] ) ;
     }
 
     template <
-    typename      real_type,
-    typename      size_type
+        typename  real_type,
+        typename  size_type
              >
     __inline_call void_type inv_2x2 (
         size_type  _la,
@@ -175,19 +175,19 @@
     {
         _da = det_2x2(_la, _aa) ;
 
-        _xx[__ij(0,0,_lx)] =
-        _aa[__ij(1,1,_la)] ;
-        _xx[__ij(1,1,_lx)] =
-        _aa[__ij(0,0,_la)] ;
-        _xx[__ij(0,1,_lx)] =
-       -_aa[__ij(0,1,_la)] ;
-        _xx[__ij(1,0,_lx)] =
-       -_aa[__ij(1,0,_la)] ;
+        _xx[__ij(0, 0, _lx)] =
+        _aa[__ij(1, 1, _la)] ;
+        _xx[__ij(1, 1, _lx)] =
+        _aa[__ij(0, 0, _la)] ;
+        _xx[__ij(0, 1, _lx)] =
+       -_aa[__ij(0, 1, _la)] ;
+        _xx[__ij(1, 0, _lx)] =
+       -_aa[__ij(1, 0, _la)] ;
     }
 
     template <
-    typename      real_type,
-    typename      size_type
+        typename  real_type,
+        typename  size_type
              >
     __inline_call void_type inv_3x3 (
         size_type  _la,
@@ -199,59 +199,59 @@
     {
         _da = det_3x3(_la, _aa) ;
 
-        _xx[__ij(0,0,_lx)] =
-        _aa[__ij(2,2,_la)] *
-        _aa[__ij(1,1,_la)] -
-        _aa[__ij(2,1,_la)] *
-        _aa[__ij(1,2,_la)] ;
+        _xx[__ij(0, 0, _lx)] =
+        _aa[__ij(2, 2, _la)] *
+        _aa[__ij(1, 1, _la)] -
+        _aa[__ij(2, 1, _la)] *
+        _aa[__ij(1, 2, _la)] ;
 
-        _xx[__ij(0,1,_lx)] =
-        _aa[__ij(2,1,_la)] *
-        _aa[__ij(0,2,_la)] -
-        _aa[__ij(2,2,_la)] *
-        _aa[__ij(0,1,_la)] ;
+        _xx[__ij(0, 1, _lx)] =
+        _aa[__ij(2, 1, _la)] *
+        _aa[__ij(0, 2, _la)] -
+        _aa[__ij(2, 2, _la)] *
+        _aa[__ij(0, 1, _la)] ;
 
-        _xx[__ij(0,2,_lx)] =
-        _aa[__ij(1,2,_la)] *
-        _aa[__ij(0,1,_la)] -
-        _aa[__ij(1,1,_la)] *
-        _aa[__ij(0,2,_la)] ;
+        _xx[__ij(0, 2, _lx)] =
+        _aa[__ij(1, 2, _la)] *
+        _aa[__ij(0, 1, _la)] -
+        _aa[__ij(1, 1, _la)] *
+        _aa[__ij(0, 2, _la)] ;
 
-        _xx[__ij(1,0,_lx)] =
-        _aa[__ij(2,0,_la)] *
-        _aa[__ij(1,2,_la)] -
-        _aa[__ij(2,2,_la)] *
-        _aa[__ij(1,0,_la)] ;
+        _xx[__ij(1, 0, _lx)] =
+        _aa[__ij(2, 0, _la)] *
+        _aa[__ij(1, 2, _la)] -
+        _aa[__ij(2, 2, _la)] *
+        _aa[__ij(1, 0, _la)] ;
 
-        _xx[__ij(1,1,_lx)] =
-        _aa[__ij(2,2,_la)] *
-        _aa[__ij(0,0,_la)] -
-        _aa[__ij(2,0,_la)] *
-        _aa[__ij(0,2,_la)] ;
+        _xx[__ij(1, 1, _lx)] =
+        _aa[__ij(2, 2, _la)] *
+        _aa[__ij(0, 0, _la)] -
+        _aa[__ij(2, 0, _la)] *
+        _aa[__ij(0, 2, _la)] ;
 
-        _xx[__ij(1,2,_lx)] =
-        _aa[__ij(1,0,_la)] *
-        _aa[__ij(0,2,_la)] -
-        _aa[__ij(1,2,_la)] *
-        _aa[__ij(0,0,_la)] ;
+        _xx[__ij(1, 2, _lx)] =
+        _aa[__ij(1, 0, _la)] *
+        _aa[__ij(0, 2, _la)] -
+        _aa[__ij(1, 2, _la)] *
+        _aa[__ij(0, 0, _la)] ;
 
-        _xx[__ij(2,0,_lx)] =
-        _aa[__ij(2,1,_la)] *
-        _aa[__ij(1,0,_la)] -
-        _aa[__ij(2,0,_la)] *
-        _aa[__ij(1,1,_la)] ;
+        _xx[__ij(2, 0, _lx)] =
+        _aa[__ij(2, 1, _la)] *
+        _aa[__ij(1, 0, _la)] -
+        _aa[__ij(2, 0, _la)] *
+        _aa[__ij(1, 1, _la)] ;
 
-        _xx[__ij(2,1,_lx)] =
-        _aa[__ij(2,0,_la)] *
-        _aa[__ij(0,1,_la)] -
-        _aa[__ij(2,1,_la)] *
-        _aa[__ij(0,0,_la)] ;
+        _xx[__ij(2, 1, _lx)] =
+        _aa[__ij(2, 0, _la)] *
+        _aa[__ij(0, 1, _la)] -
+        _aa[__ij(2, 1, _la)] *
+        _aa[__ij(0, 0, _la)] ;
 
-        _xx[__ij(2,2,_lx)] =
-        _aa[__ij(1,1,_la)] *
-        _aa[__ij(0,0,_la)] -
-        _aa[__ij(1,0,_la)] *
-        _aa[__ij(0,1,_la)] ;
+        _xx[__ij(2, 2, _lx)] =
+        _aa[__ij(1, 1, _la)] *
+        _aa[__ij(0, 0, _la)] -
+        _aa[__ij(1, 0, _la)] *
+        _aa[__ij(0, 1, _la)] ;
     }
 
 

@@ -43,11 +43,11 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 July, 2019
+ * Last updated: 27 April, 2020
  *
- * Copyright 2013-2019
+ * Copyright 2013-2020
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -258,6 +258,17 @@
         }
 
         return ( *this ) ;
+    }
+
+/*-------------------------------------- fill const. data */
+    __inline_call void_type fill (
+        data_type const& _data
+        )
+    {
+        for (auto _iter = this->head();
+                  _iter!= this->tend();
+                ++_iter )
+           *_iter = __copy(data_type, _data) ;
     }
 
     /*
@@ -802,6 +813,13 @@
      * OPERATOR[]: index into container.
     --------------------------------------------------------
      */
+
+    __inline_call bool_type bounds (    // index in bnds
+        size_type _pos
+        ) const
+    {
+        return _pos >= +0 && _pos < count() ;
+    }
 
     __inline_call data_type      &operator[] (  // write
         size_type _pos

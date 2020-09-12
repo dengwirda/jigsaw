@@ -31,11 +31,11 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 20 February, 2019
+ * Last updated: 02 March, 2020
  *
- * Copyright 2013-2019
+ * Copyright 2013-2020
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -43,11 +43,12 @@
 
 #   pragma once
 
-#   ifndef __LIBBASIC__
-#   define __LIBBASIC__
+#   ifndef __BASEBASE__
+#   define __BASEBASE__
 
 #   include <utility>
 #   include <cstddef>
+#   include <cassert>
 
 /*
 ------------------------------------------------------------
@@ -65,44 +66,17 @@
 
 #   endif
 
+#   define __assert assert
+
 /*
 ------------------------------------------------------------
  * global data type alias
 ------------------------------------------------------------
  */
 
-    typedef void        void_type ;
-    typedef bool        bool_type ;
-    typedef char        char_type ;
-
-/*
-------------------------------------------------------------
- * breakpoint-able assert!
-------------------------------------------------------------
- */
-
-#   ifdef NDEBUG
-#      define __assert(__expr) ((void) 0)
-#   else
-    std::size_t volatile __assert_holder;
-    inline void          __assert_breakp(
-        )
-    /*------------------------------ put breakpoint here! */
-    {   __assert_holder = +0;
-    }
-
-#       include <cassert>
-
-#       define __assert(__expr) \
-            do {                \
-                if(!(__expr))   \
-                {               \
-    /*------------------------------ stop for breakpoint! */ \
-              __assert_breakp ();   \
-                assert((__expr));   \
-                }               \
-            } while ( false ) ;
-#   endif
+    typedef void    void_type ;
+    typedef bool    bool_type ;
+    typedef char    char_type ;
 
 /*
 ------------------------------------------------------------
@@ -173,7 +147,7 @@
 #   define __chkbit(x,b) (!!((x)&(1ULL<<(b))) )
 
 
-#   endif   //__LIBBASIC__
+#   endif//__BASEBASE__
 
 
 

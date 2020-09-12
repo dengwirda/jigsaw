@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * TRIA-BALL-K: various circumscribing ball calc.'s.
+     * CELL-BALL-K: various circumscribing ball calc.'s.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the
@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 July, 2019
+     * Last updated: 26 July, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -43,8 +43,8 @@
 
 #   pragma once
 
-#   ifndef __TRIA_BALL_K__
-#   define __TRIA_BALL_K__
+#   ifndef __CELL_BALL_K__
+#   define __CELL_BALL_K__
 
     namespace geometry {
 
@@ -245,16 +245,14 @@
 
         real_type _xr[2*1] ;
         _xr[0] = (real_type)+.5 * (
-        _xm[__ij(0,0,2)] *
-        _xm[__ij(0,0,2)] +
-        _xm[__ij(0,1,2)] *
-        _xm[__ij(0,1,2)] ) ;
+        std::pow(_xm[__ij(0,0,2)], +2) +
+        std::pow(_xm[__ij(0,1,2)], +2)
+            ) ;
 
         _xr[1] = (real_type)+.5 * (
-        _xm[__ij(1,0,2)] *
-        _xm[__ij(1,0,2)] +
-        _xm[__ij(1,1,2)] *
-        _xm[__ij(1,1,2)] ) ;
+        std::pow(_xm[__ij(1,0,2)], +2) +
+        std::pow(_xm[__ij(1,1,2)], +2)
+            ) ;
 
         real_type _dd ;
         math::inv_2x2 (
@@ -349,20 +347,16 @@
 
         real_type _xr[3*1] ;
         _xr[0] = (real_type)+.5 * (
-        _xm[__ij(0,0,3)] *
-        _xm[__ij(0,0,3)] +
-        _xm[__ij(0,1,3)] *
-        _xm[__ij(0,1,3)] +
-        _xm[__ij(0,2,3)] *
-        _xm[__ij(0,2,3)] ) ;
+        std::pow(_xm[__ij(0,0,3)], +2) +
+        std::pow(_xm[__ij(0,1,3)], +2) +
+        std::pow(_xm[__ij(0,2,3)], +2)
+            ) ;
 
         _xr[1] = (real_type)+.5 * (
-        _xm[__ij(1,0,3)] *
-        _xm[__ij(1,0,3)] +
-        _xm[__ij(1,1,3)] *
-        _xm[__ij(1,1,3)] +
-        _xm[__ij(1,2,3)] *
-        _xm[__ij(1,2,3)] ) ;
+        std::pow(_xm[__ij(1,0,3)], +2) +
+        std::pow(_xm[__ij(1,1,3)], +2) +
+        std::pow(_xm[__ij(1,2,3)], +2)
+            ) ;
 
         _xr[2] = (real_type)+.0 ;
 
@@ -444,6 +438,80 @@
     template <
     typename      real_type
              >
+    __inline_call void_type quad_ball_2d (
+    __write_ptr  (real_type) _bb ,
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+    __const_ptr  (real_type) _p4 ,
+                  bool_type  _in
+        )
+    {
+        __unreferenced(_in);
+
+        real_type _b1[3];
+        circ_ball_2d(
+            _b1, _p1, _p2, _p3, false) ;
+        real_type _b2[3];
+        circ_ball_2d(
+            _b2, _p1, _p3, _p4, false) ;
+        real_type _b3[3];
+        circ_ball_2d(
+            _b3, _p1, _p2, _p4, false) ;
+        real_type _b4[3];
+        circ_ball_2d(
+            _b4, _p2, _p3, _p4, false) ;
+
+        _bb[0] =
+       (_b1[0]+_b2[0]+_b3[0]+_b4[0]) / +4. ;
+        _bb[1] =
+       (_b1[1]+_b2[1]+_b3[1]+_b4[1]) / +4. ;
+
+        _bb[2] = std::pow(
+        _b1[2]*_b2[2]*_b3[2]*_b4[2], 1./4.) ;
+    }
+
+    template <
+    typename      real_type
+             >
+    __inline_call void_type quad_ball_3d (
+    __write_ptr  (real_type) _bb ,
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+    __const_ptr  (real_type) _p4 ,
+                  bool_type  _in
+        )
+    {
+        __unreferenced(_in);
+
+        real_type _b1[4];
+        circ_ball_3d(
+            _b1, _p1, _p2, _p3, false) ;
+        real_type _b2[4];
+        circ_ball_3d(
+            _b2, _p1, _p3, _p4, false) ;
+        real_type _b3[4];
+        circ_ball_3d(
+            _b3, _p1, _p2, _p4, false) ;
+        real_type _b4[4];
+        circ_ball_3d(
+            _b4, _p2, _p3, _p4, false) ;
+
+        _bb[0] =
+       (_b1[0]+_b2[0]+_b3[0]+_b4[0]) / +4. ;
+        _bb[1] =
+       (_b1[1]+_b2[1]+_b3[1]+_b4[1]) / +4. ;
+        _bb[2] =
+       (_b1[2]+_b2[2]+_b3[2]+_b4[2]) / +4. ;
+
+        _bb[3] = std::pow(
+        _b1[3]*_b2[3]*_b3[3]*_b4[3], 1./4.) ;
+    }
+
+    template <
+    typename      real_type
+             >
     __normal_call void_type circ_ball_3d (
     __write_ptr  (real_type) _bb ,
     __const_ptr  (real_type) _p1 ,
@@ -469,28 +537,22 @@
 
         real_type _xr[3*1] ;
         _xr[0] = (real_type)+.5 * (
-        _xm[__ij(0,0,3)] *
-        _xm[__ij(0,0,3)] +
-        _xm[__ij(0,1,3)] *
-        _xm[__ij(0,1,3)] +
-        _xm[__ij(0,2,3)] *
-        _xm[__ij(0,2,3)] ) ;
+        std::pow(_xm[__ij(0,0,3)], +2) +
+        std::pow(_xm[__ij(0,1,3)], +2) +
+        std::pow(_xm[__ij(0,2,3)], +2)
+            ) ;
 
         _xr[1] = (real_type)+.5 * (
-        _xm[__ij(1,0,3)] *
-        _xm[__ij(1,0,3)] +
-        _xm[__ij(1,1,3)] *
-        _xm[__ij(1,1,3)] +
-        _xm[__ij(1,2,3)] *
-        _xm[__ij(1,2,3)] ) ;
+        std::pow(_xm[__ij(1,0,3)], +2) +
+        std::pow(_xm[__ij(1,1,3)], +2) +
+        std::pow(_xm[__ij(1,2,3)], +2)
+            ) ;
 
         _xr[2] = (real_type)+.5 * (
-        _xm[__ij(2,0,3)] *
-        _xm[__ij(2,0,3)] +
-        _xm[__ij(2,1,3)] *
-        _xm[__ij(2,1,3)] +
-        _xm[__ij(2,2,3)] *
-        _xm[__ij(2,2,3)] ) ;
+        std::pow(_xm[__ij(2,0,3)], +2) +
+        std::pow(_xm[__ij(2,1,3)], +2) +
+        std::pow(_xm[__ij(2,2,3)], +2)
+            ) ;
 
         real_type _dd ;
         math::inv_3x3 (
@@ -826,16 +888,14 @@
 
         real_type _xr[2*1] ;
         _xr[0] = (real_type)+.5 * (
-        _xm[__ij(0,0,2)] *
-        _xm[__ij(0,0,2)] +
-        _xm[__ij(0,1,2)] *
-        _xm[__ij(0,1,2)] ) ;
+        std::pow(_xm[__ij(0,0,2)], +2) +
+        std::pow(_xm[__ij(0,1,2)], +2)
+            ) ;
 
         _xr[1] = (real_type)+.5 * (
-        _xm[__ij(1,0,2)] *
-        _xm[__ij(1,0,2)] +
-        _xm[__ij(1,1,2)] *
-        _xm[__ij(1,1,2)] ) ;
+        std::pow(_xm[__ij(1,0,2)], +2) +
+        std::pow(_xm[__ij(1,1,2)], +2)
+            ) ;
 
         real_type _w21 = _p2[2]-_p1[2] ;
         real_type _w31 = _p3[2]-_p1[2] ;
@@ -948,20 +1008,16 @@
 
         real_type _xr[3*1] ;
         _xr[0] = (real_type)+.5 * (
-        _xm[__ij(0,0,3)] *
-        _xm[__ij(0,0,3)] +
-        _xm[__ij(0,1,3)] *
-        _xm[__ij(0,1,3)] +
-        _xm[__ij(0,2,3)] *
-        _xm[__ij(0,2,3)] ) ;
+        std::pow(_xm[__ij(0,0,3)], +2) +
+        std::pow(_xm[__ij(0,1,3)], +2) +
+        std::pow(_xm[__ij(0,2,3)], +2)
+            ) ;
 
         _xr[1] = (real_type)+.5 * (
-        _xm[__ij(1,0,3)] *
-        _xm[__ij(1,0,3)] +
-        _xm[__ij(1,1,3)] *
-        _xm[__ij(1,1,3)] +
-        _xm[__ij(1,2,3)] *
-        _xm[__ij(1,2,3)] ) ;
+        std::pow(_xm[__ij(1,0,3)], +2) +
+        std::pow(_xm[__ij(1,1,3)], +2) +
+        std::pow(_xm[__ij(1,2,3)], +2)
+            ) ;
 
         real_type _w21 = _p2[3]-_p1[3] ;
         real_type _w31 = _p3[3]-_p1[3] ;
@@ -1086,28 +1142,30 @@
 
         real_type _xr[3*1] ;
         _xr[0] = (real_type)+.5 * (
-        _xm[__ij(0,0,3)] *
-        _xm[__ij(0,0,3)] +
-        _xm[__ij(0,1,3)] *
-        _xm[__ij(0,1,3)] +
-        _xm[__ij(0,2,3)] *
-        _xm[__ij(0,2,3)] ) ;
+        std::pow(_xm[__ij(0,0,3)], +2) +
+        std::pow(_xm[__ij(0,1,3)], +2) +
+        std::pow(_xm[__ij(0,2,3)], +2)
+            ) ;
 
         _xr[1] = (real_type)+.5 * (
-        _xm[__ij(1,0,3)] *
-        _xm[__ij(1,0,3)] +
-        _xm[__ij(1,1,3)] *
-        _xm[__ij(1,1,3)] +
-        _xm[__ij(1,2,3)] *
-        _xm[__ij(1,2,3)] ) ;
+        std::pow(_xm[__ij(1,0,3)], +2) +
+        std::pow(_xm[__ij(1,1,3)], +2) +
+        std::pow(_xm[__ij(1,2,3)], +2)
+            ) ;
 
         _xr[2] = (real_type)+.5 * (
-        _xm[__ij(2,0,3)] *
-        _xm[__ij(2,0,3)] +
-        _xm[__ij(2,1,3)] *
-        _xm[__ij(2,1,3)] +
-        _xm[__ij(2,2,3)] *
-        _xm[__ij(2,2,3)] ) ;
+        std::pow(_xm[__ij(2,0,3)], +2) +
+        std::pow(_xm[__ij(2,1,3)], +2) +
+        std::pow(_xm[__ij(2,2,3)], +2)
+            ) ;
+
+        real_type _w21 = _p2[3]-_p1[3] ;
+        real_type _w31 = _p3[3]-_p1[3] ;
+        real_type _w41 = _p4[3]-_p1[3] ;
+
+        _xr[0]-= (real_type)+.5 * _w21 ;
+        _xr[1]-= (real_type)+.5 * _w31 ;
+        _xr[2]-= (real_type)+.5 * _w41 ;
 
         real_type _dd ;
         math::inv_3x3 (
@@ -1400,7 +1458,7 @@
 
     }
 
-#   endif //__TRIA_BALL_K__
+#   endif //__CELL_BALL_K__
 
 
 

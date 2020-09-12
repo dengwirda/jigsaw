@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 October, 2019
+     * Last updated: 16 July, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -190,6 +190,11 @@
                         JIGSAW_KERN_CVT_DQDX)
                 _file << "OPTM_KERN = "
                       << "CVT+DQDX\n" ;
+                else
+                if (_jcfg->_optm_kern ==
+                        JIGSAW_KERN_H95_DQDX)
+                _file << "OPTM_KERN = "
+                      << "H95+DQDX\n" ;
 
         /*--------------------------------- OPTM keywords */
                 _file << "OPTM_ITER = " <<

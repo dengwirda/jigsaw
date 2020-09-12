@@ -1,7 +1,7 @@
 
 /*
 ------------------------------------------------------------
- * multi-precision floating-point data-types...
+ * robust multi-precision floating-point expansions...
 ------------------------------------------------------------
  *
  * This program may be freely redistributed under the
@@ -31,11 +31,11 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 05 May, 2017
+ * Last updated: 11 April, 2020
  *
- * Copyright 2013-2017
+ * Copyright 2020--
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -46,18 +46,25 @@
 #   ifndef __MP_FLOATS__
 #   define __MP_FLOATS__
 
-#   include "libbasic.hpp"
+#   include "basebase.hpp"
 
-#   include "mp_floats/dd_flt.hpp"
+    namespace mp_float
+    {
+    typedef double  real_type;
+    typedef int     indx_type;
+    }
 
-    /*
+#   include <algorithm>
+#   include <cmath>
+#   include <cfenv>
 
-//!! to-do...
+//  pragma STDC FENV_ACCESS ON
 
-#   include "mp_floats/qd_flt.hpp"
-#   include "mp_floats/ap_flt.hpp"
+#   include "expansion/dd_float.hpp"
+#   include "expansion/ia_float.hpp"
+#   include "expansion/mp_float.hpp"
 
-     */
+#   include "expansion/mp_utils.hpp"
 
 #   endif//__MP_FLOATS__
 

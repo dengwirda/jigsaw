@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 July, 2019
+     * Last updated: 07 February, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -108,7 +108,7 @@
 
     namespace mesh {
 
-#   define __bias_BNDS          // preference "bnd" faces
+#   define __bias_bnds          // preference "bnd" faces
 
     template <
     typename G ,
@@ -146,26 +146,30 @@
                 real_type,
                 iptr_type      >    cosine_intersect ;
 
+    /*------------------------ max. frontal "redo" steps */
+
+    iptr_type static const _REDO = + 32 ;
+
     /*------------------------ refinement priority types */
 
     class edge_data
         {
         public  :
-        iptr_type       _mark = +0;
+        iptr_type       _mark = +0 ;
         float           _cost ;
         } ;
 
     class face_data
         {
         public  :
-        iptr_type       _mark = +0;
+        iptr_type       _mark = +0 ;
         float           _cost ;
         } ;
 
     class tria_data
         {
         public  :
-        iptr_type       _mark = +0;
+        iptr_type       _mark = +0 ;
         float           _cost ;
         } ;
 
@@ -217,7 +221,7 @@
 
     __static_call
     __inline_call uint32_t  hash_ball (
-        real_type*_ball
+    __const_ptr(real_type) _ball
         )
     {
         uint32_t  _rsiz =
@@ -266,34 +270,49 @@
     --------------------------------------------------------
      */
 
-    template <
-        typename  list_type
-             >
     __static_call
     __normal_call bool_type base_edge (
         mesh_type &_mesh,
-        iptr_type *_enod,
-        list_type &_tset
+        iptr_type *_FNOD,
+        iptr_type  _tadj,
+        iptr_type  _fadj
         )
     {
+        containers::array<iptr_type> _tset;
+
+        _tset.set_alloc(8) ;
+
+        iptr_type _epos;
+        for (_epos = +3; _epos-- != +0; )
+        {
+    /*--------------------- is any face of FPOS "frontal" */
+        iptr_type  _enod[ +3];
+        mesh_type::tria_type::tria_type::
+        face_node(_enod, _epos, 2, 1);
+        _enod[0] = _FNOD[_enod[ 0]];
+        _enod[1] = _FNOD[_enod[ 1]];
+
+        _tset.set_count(0) ;
+
+        base_type::edge_loop (_mesh ,
+            _enod, _tadj ,
+            _fadj, _tset ) ;
+
+        algorithms::isort (
+            &_enod[0], &_enod[2],
+                std::less<iptr_type>());
+
         typename mesh_type::
                  edge_data _edat;
         _edat._node[0] = _enod[0] ;
         _edat._node[1] = _enod[1] ;
 
-        algorithms::isort (
-            _edat._node.head(),
-            _edat._node.tend(),
-        std::less<iptr_type>()) ;
-
         typename mesh_type::
                  edge_list::
-             item_type *_eptr = nullptr ;
-        if (_mesh.find_edge(_edat,_eptr))
+            item_type *_eptr = nullptr ;
+        if(_mesh.find_edge(_edat,_eptr))
         {
-            if (_eptr->_data._kind
-                    ==  mesh::good_item )
-            return ( true ) ;
+            return (  true ) ;
         }
 
         iptr_type _fpos ;
@@ -357,6 +376,8 @@
         }
         }
 
+        }
+
         return ( false ) ;
     }
 
@@ -370,9 +391,13 @@
     __normal_call bool_type base_face (
         mesh_type &_mesh,
         iptr_type  _tpos,
-        iptr_type  _fpos
+        iptr_type/*_fpos*/
         )
     {
+        iptr_type _fpos;
+        for (_fpos = +4; _fpos-- != +0; )
+        {
+    /*--------------------- is any face of TPOS "frontal" */
         iptr_type _fnod[  +4] ;
         mesh_type::tria_type::tria_type::
         face_node(_fnod, _fpos, +3, +2);
@@ -401,12 +426,11 @@
             return (  true ) ;
         }
 
-        iptr_type _tadj = +0 ;
-        iptr_type _fadj = +0 ;
-        iptr_type _tmrk = +0 ;
+        iptr_type _tadj = +0 , _fadj = +0 ,
+                  _tmrk = +0 ;
         _mesh. _tria.find_pair (
-        _tpos, _tadj,
-        _fpos, _fadj, _tmrk) ;
+            _tpos, _tadj,
+                _fpos, _fadj, _tmrk) ;
 
         if (_tadj != _mesh._tria.null_flag())
         {
@@ -434,6 +458,8 @@
         else
         {
         return ( true  ) ;
+        }
+
         }
 
         return ( false ) ;
@@ -466,21 +492,20 @@
     /*--------------------------- assemble local indexing */
         iptr_type _enod[ +4] ;
         mesh_type::tria_type::tria_type::
-        face_node(_enod, _eadj, 3, 1);
+        face_node(_enod, _eadj, 3, 1) ;
         _enod[0] =_mesh._tria.
-         tria(_tadj)->node(_enod[ 0]);
+         tria(_tadj)->node(_enod[ 0]) ;
         _enod[1] =_mesh._tria.
-         tria(_tadj)->node(_enod[ 1]);
+         tria(_tadj)->node(_enod[ 1]) ;
 
     /*--------------------------------- calc. circumballs */
-        char_type _hits, _feat, _topo;
+        char_type _feat, _topo ;
         iptr_type _part;
         real_type _ebal[ +4] ;
         real_type _pmax[ +4] ;
         if (!base_type::edge_ball (
-            _geom, _mesh, _tadj,
-            _eadj, _ebal,
-            _pmax, _hits,
+            _geom, _mesh, _tadj, _eadj,
+            _ebal, _pmax,
             _feat, _topo, _part)  )
         {
     /*--------------------------------- is not restricted */
@@ -503,12 +528,20 @@
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
         {
-    /*----------------------- resort to circumball centre */
-            _ppos[0] = _pmax[0] ;
-            _ppos[1] = _pmax[1] ;
-            _ppos[2] = _pmax[2] ;
+            if (_edat._mark++ <= 0)
+            {
+        /*---------------------- reject as "void" element */
+            _kind =  rdel_opts::null_kind ;
+            }
+            else
+            {
+        /*---------------------- take circumcentre direct */
+            _ppos[ 0] = _pmax[ 0] ;
+            _ppos[ 1] = _pmax[ 1] ;
+            _ppos[ 2] = _pmax[ 2] ;
 
-            _kind  = rdel_opts::circ_kind ;
+            _kind =  rdel_opts::circ_kind ;
+            }
         }
 
     /*----------------------- report point-placement kind */
@@ -554,8 +587,8 @@
         real_type _fbal[ +4] ;
         real_type _pmax[ +4] ;
         if (!base_type::face_ball (
-            _geom, _mesh, _tadj,
-            _fadj, _fbal, _pmax,
+            _geom, _mesh, _tadj, _fadj,
+            _fbal, _pmax,
             _feat, _topo, _part)  )
         {
     /*--------------------------------- is not restricted */
@@ -586,8 +619,8 @@
         }
 
     /*--------------------------------- find min/max edge */
-        iptr_type _emin = (iptr_type)+0;
-        iptr_type _emax = (iptr_type)+0;
+        iptr_type _emin = +0;
+        iptr_type _emax = +0;
         for(_enum = +3; _enum-- != +1; )
         {
         if (_llen[_emax] < _llen[_enum])
@@ -596,34 +629,20 @@
             _emin = _enum ;
         }
 
-    /*--------------------------------- pop edge indexing */
-        iptr_type  _enod[ +3];
-        mesh_type::tria_type::tria_type::
-        face_node(_enod, _emin, 2, 1);
-        _enod[0] = _fnod[_enod[ 0]];
-        _enod[1] = _fnod[_enod[ 1]];
-        _enod[2] = _fnod[_enod[ 2]];
-
-        containers
-            ::array<iptr_type> _tset ;
-        _tset.set_alloc(8) ;
-        base_type::edge_loop ( _mesh ,
-            _enod, _tadj ,
-            _fadj, _tset ) ;
-
     /*-------------------------- ask for "frontal" status */
-        if(!base_edge(_mesh, _enod, _tset))
+        if(!base_edge(_mesh, _fnod, _tadj ,
+                      _fadj) )
         {
-            if (_fdat._mark <= +512)    // finite cycles! //
+            if (_fdat._mark <= _REDO)   // finite cycles!
             {
         /*---------------------- reject as "void" element */
-                uint32_t _hash =
-                hash_ball(_pmax) % +8u  ;
+                uint32_t _push =
+               (hash_ball(_pmax) % 8) + 1 ;
 
-                _fdat._mark +=
-                    std::max(1u, _hash) ;
+                _fdat._mark += _push;
 
-                return ( _kind ) ;
+                return
+                rdel_opts::null_kind;
             }
             else
             {
@@ -632,6 +651,13 @@
         }
 
     /*--------------------------------- eval edge metrics */
+        iptr_type  _enod[ +3];
+        mesh_type::tria_type::tria_type::
+        face_node(_enod, _emin, 2, 1) ;
+        _enod[0] = _fnod[_enod[ 0]] ;
+        _enod[1] = _fnod[_enod[ 1]] ;
+        _enod[2] = _fnod[_enod[ 2]] ;
+
         real_type  _evec[4] = {
             _mesh.
         _tria.node(_enod[1])->pval(0) -
@@ -667,24 +693,14 @@
         _pmid[ 2]*= (real_type) +.5 ;
 
         real_type _dvec[ +5] ;
-        _dvec[ 0] = _pmax[0] -
-                    _pmid[0] ;
-        _dvec[ 1] = _pmax[1] -
-                    _pmid[1] ;
-        _dvec[ 2] = _pmax[2] -
-                    _pmid[2] ;
+        geometry::
+        vector_3d( _pmid, _pmax, _dvec) ;
 
         _evec[ 3] =
-         geometry::length_3d(_evec) ;
-        _evec[ 0]/= _evec[3] ;
-        _evec[ 1]/= _evec[3] ;
-        _evec[ 2]/= _evec[3] ;
+        geometry:: normalise_3d (_evec) ;
 
         _dvec[ 3] =
-         geometry::length_3d(_dvec) ;
-        _dvec[ 0]/= _dvec[3] ;
-        _dvec[ 1]/= _dvec[3] ;
-        _dvec[ 2]/= _dvec[3] ;
+        geometry:: normalise_3d (_dvec) ;
 
     /*-------------------------- off-centre, a la "ungor" */
         _dvec[4] =
@@ -709,8 +725,7 @@
                   ::offH_kind) )
             _kind = face_offh( _geom,
                 _size , _mesh, _enod,
-                _pmid , _evec, _dvec,
-                _pmax ,
+                _evec , _dvec, _pmax,
                 _ppos , _args) ;
         }
         if (_kind == rdel_opts::null_kind ||
@@ -728,12 +743,39 @@
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
         {
-    /*----------------------- resort to circumball centre */
+            real_type static const
+                _OKAY = (real_type) +5./6.;
+
+            real_type _alen =
+                geometry::tria_quality_3d (
+                &_mesh.
+            _tria.node(_fnod[0])->pval(0) ,
+                &_mesh.
+            _tria.node(_fnod[1])->pval(0) ,
+                &_mesh.
+            _tria.node(_fnod[2])->pval(0)
+                ) ;
+
+            if (_alen <= _OKAY &&
+                    _fdat._mark <= +8)
+            {
+        /*---------------------- reject as "void" element */
+            uint32_t _push =
+                (hash_ball(_pmax) % 8) + 1;
+
+            _fdat._mark += _push ;
+
+            _kind =  rdel_opts::null_kind ;
+            }
+            else
+            {
+        /*---------------------- take circumcentre direct */
             _ppos[ 0] = _pmax[ 0] ;
             _ppos[ 1] = _pmax[ 1] ;
             _ppos[ 2] = _pmax[ 2] ;
 
-            _kind  = rdel_opts::circ_kind ;
+            _kind =  rdel_opts::circ_kind ;
+            }
         }
 
     /*----------------------- report point-placement kind */
@@ -829,8 +871,8 @@
         }
 
     /*--------------------------------- find min/max edge */
-        iptr_type _emin = (iptr_type)+0;
-        iptr_type _emax = (iptr_type)+0;
+        iptr_type _emin = +0;
+        iptr_type _emax = +0;
         for(_enum = +6; _enum-- != +1; )
         {
         if (_llen[_emax] < _llen[_enum])
@@ -868,8 +910,8 @@
         }
 
     /*--------------------------------- find min/max face */
-        iptr_type _fmin = (iptr_type)+0;
-        iptr_type _fmax = (iptr_type)+0;
+        iptr_type _fmin = +0;
+        iptr_type _fmax = +0;
         for(_fpos = +4; _fpos-- != +1; )
         {
         if (_frad[_fmax] < _frad[_fpos])
@@ -879,18 +921,18 @@
         }
 
     /*-------------------------- ask for "frontal" status */
-        if(!base_face(_mesh,_tpos,_fmin))
+        if(!base_face(_mesh, _tpos, _fmin))
         {
-            if (_tdat._mark <= +512)    // finite cycles! //
+            if (_tdat._mark <= _REDO)   // finite cycles!
             {
         /*---------------------- reject as "void" element */
-                uint32_t _hash =
-                hash_ball(_tbal) % +8u  ;
+                uint32_t _push =
+               (hash_ball(_tbal) % 8) + 1 ;
 
-                _tdat._mark +=
-                    std::max(1u, _hash) ;
+                _tdat._mark += _push;
 
-                return ( _kind ) ;
+                return
+                rdel_opts::null_kind;
             }
             else
             {
@@ -939,18 +981,11 @@
 
     /*------------------------- assemble "frontal" vector */
         real_type  _dvec[5] ;
-        _dvec[0] = _tbal[0] -
-                   _fbal[0] ;
-        _dvec[1] = _tbal[1] -
-                   _fbal[1] ;
-        _dvec[2] = _tbal[2] -
-                   _fbal[2] ;
+        geometry::
+        vector_3d( _fbal, _tbal, _dvec) ;
 
         _dvec[3] =
-            geometry::length_3d (_dvec) ;
-        _dvec[0]/= _dvec[3] ;
-        _dvec[1]/= _dvec[3] ;
-        _dvec[2]/= _dvec[3] ;
+        geometry:: normalise_3d (_dvec) ;
 
     /*------------------------- off-centre - a'la "ungor" */
         _dvec[4] =
@@ -993,15 +1028,29 @@
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
         {
-    /*----------------------- resort to circumball centre */
-            if (_tdat._mark <= +8 )
+            real_type static const
+                _OKAY = (real_type) +5./6.;
+
+            real_type _vlen =
+                geometry::tria_quality_3d (
+                &_mesh.
+            _tria.node(_tnod[0])->pval(0) ,
+                &_mesh.
+            _tria.node(_tnod[1])->pval(0) ,
+                &_mesh.
+            _tria.node(_tnod[2])->pval(0) ,
+                &_mesh.
+            _tria.node(_tnod[3])->pval(0)
+                ) ;
+
+            if (_vlen <= _OKAY &&
+                    _tdat._mark <= +8)
             {
         /*---------------------- reject as "void" element */
-            uint32_t _hash =
-            hash_ball(_tbal) % +8u;
+            uint32_t _push =
+                (hash_ball(_tbal) % 8) + 1;
 
-            _tdat._mark +=
-                std::max(1u, _hash) ;
+            _tdat._mark += _push ;
 
             _kind =  rdel_opts::null_kind ;
             }
@@ -1022,7 +1071,7 @@
 
     } ;
 
-#   undef  __bias_BNDS
+#   undef  __bias_bnds
 
 
     }

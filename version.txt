@@ -13,6 +13,17 @@
 #   JIGSAW: an unstructured mesh generation library 
 #------------------------------------------------------------
 
+  * Version 0.9.13:
+    --------------
+
+  - Better support for robust geometric computation 
+    using multi-precision floating-point operators.
+
+  - Initial support for "mixed-cell" mesh complexes
+    enabling (limited) processing of tria/quad/hexa 
+    mesh formats.
+
+
   * Version 0.9.12:
     --------------
 

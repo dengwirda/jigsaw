@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2018
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -56,7 +56,7 @@
     __static_call
     __normal_call void_type sprg_move_1 (
         mesh_type &_mesh ,
-        size_type &_hfun ,
+        hfun_type &_hfun ,
         pred_type &_pred ,
         real_list &_hval ,
         iptr_list &_eset ,

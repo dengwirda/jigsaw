@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 July, 2019
+     * Last updated: 01 March, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -110,11 +110,26 @@
 
     typedef char_type                   fptr_type ;
 
-/*------------------------- alternative to "static const" */
-
     iptr_type static constexpr null_mark =  +0 ;
-    iptr_type static constexpr tria_dims =
-                               tria_pred::_dims;
+
+    iptr_type static constexpr geom_dims =
+                               tria_pred::geom_dims;
+    iptr_type static constexpr real_dims =
+                               tria_pred::real_dims;
+    iptr_type static constexpr topo_dims =
+                               tria_pred::topo_dims;
+
+    static_assert( node_type::geom_dims >=
+                   tria_pred::geom_dims ,
+    "DELAUNAY-TRI-K: Incompatible node vs pred dims!" ) ;
+
+    static_assert( node_type::real_dims >=
+                   tria_pred::real_dims ,
+    "DELAUNAY-TRI-K: Incompatible node vs pred dims!" ) ;
+
+    static_assert( tria_type::topo_dims >=
+                   tria_pred::topo_dims ,
+    "DELAUNAY-TRI-K: Incompatible tria vs pred dims!" ) ;
 
     __static_call
     __inline_call iptr_type null_flag (
@@ -250,13 +265,13 @@
         iptr_type _ipos = -1;
         if (this->_npop.count() != +0 )
         {
-    /*------------------------ recycle from free list */
+    /*---------------------------- recycle from free list */
             this->
            _npop._pop_tail(_ipos) ;
         }
         else
         {
-    /*------------------------ alloc. from underlying */
+    /*---------------------------- alloc. from underlying */
             _ipos = (iptr_type)
                 this->_nset.count() ;
             this->_nset.push_tail() ;
@@ -279,13 +294,13 @@
         iptr_type _ipos = -1;
         if (this->_tpop.count() != +0 )
         {
-    /*------------------------ recycle from free list */
+    /*---------------------------- recycle from free list */
             this->
            _tpop._pop_tail(_ipos) ;
         }
         else
         {
-    /*------------------------ alloc. from underlying */
+    /*---------------------------- alloc. from underlying */
             _ipos = (iptr_type)
                 this->_tset.count() ;
             this->_tset.push_tail() ;
@@ -310,7 +325,7 @@
         iptr_type &_flag
         ) const
     {
-    /*---------------- unwind face adjacency pointers */
+    /*-------------------- unwind face adjacency pointers */
         _jfac = __unflip(
             tria(_ipos)->fpos(_ifac)) ;
 
@@ -336,7 +351,7 @@
         iptr_type  _flag
         )
     {
-    /*---------------- encode face adjacency pointers */
+    /*-------------------- encode face adjacency pointers */
         if (_itri != this->null_flag())
         {
             if (_flag >= +0)
@@ -400,7 +415,7 @@
     --------------------------------------------------------
      */
 
-    __inline_call  delaunay_tri_k   (
+    __inline_call  delaunay_tri_k (
         allocator const& _asrc = allocator ()
         ) : _fpol(sizeof(
       typename hash_list::item_type)) ,
@@ -413,8 +428,12 @@
             _tset( _asrc),
             _tpop( _asrc),
             _npop( _asrc),
-            _work( _asrc)
-    {   tria_pred::exactinit() ;    // init. predicates
+            _work( _asrc)  {}
+
+    __inline_call ~delaunay_tri_k (
+        )
+    {
+        clear (containers::tight_alloc);
     }
 
     /*
@@ -450,17 +469,17 @@
       __const_ptr(real_type) _pmax
         )
     {
-    /*---------------------------- de-alloc. existing */
+    /*-------------------------------- de-alloc. existing */
         this->_nset.clear() ;
         this->_tset.clear() ;
 
-    /*---------------------------- scale initial tria */
+    /*-------------------------------- scale initial tria */
         real_type static constexpr _scal =
-            (real_type)+tria_pred::_dims ;
+            (real_type)tria_pred::geom_dims ;
 
-        real_type _pmid[tria_pred::_dims];
+        real_type _pmid[real_dims] = {.0};
         real_type _pdel = (real_type)+.0 ;
-        for (auto _idim = tria_pred::_dims + 0 ;
+        for (auto _idim = tria_pred::geom_dims + 0 ;
                   _idim-- != + 0 ; )
         {
             real_type _xdel=_pmax[_idim] -
@@ -474,9 +493,9 @@
             _pmin[_idim] *(real_type)+.5 ;
         }
 
-    /*---------------------------- push tria indexing */
+    /*-------------------------------- push tria indexing */
         iptr_type _itri = _get_tria() ;
-        for (auto _inod = tria_pred::_dims + 1 ;
+        for (auto _inod = tria_pred::topo_dims + 1 ;
                   _inod-- != + 0 ; )
         {
             tria(_itri)->node(_inod) =_inod;
@@ -487,13 +506,15 @@
                 __doflip(this->null_flag());
         }
 
-    /*------------------------- push node coordinates */
-        for (auto _inod = tria_pred::_dims + 1 ;
+    /*----------------------------- push node coordinates */
+        for (auto _inod = tria_pred::topo_dims + 1 ;
                   _inod-- != + 0 ; )
         {
         iptr_type _jnod = _get_node() ;
+        node(_jnod)->pval(
+        tria_pred::real_dims - 1) = (real_type)+ 0.;
         node(_jnod)->next() = _itri;
-        for (auto _idim = tria_pred::_dims + 0 ;
+        for (auto _idim = tria_pred::geom_dims + 0 ;
                   _idim-- != + 0 ; )
         {
             if (_idim != _jnod - 1 )
@@ -557,10 +578,10 @@
         )
     {
         this->_work.clear();
-    /*--------------------------- find enclosing tria */
+    /*------------------------------- find enclosing tria */
         if (walk_mesh_node(_ppos, _elem, _hint))
         {
-    /*------------------------------ bfs about cavity */
+    /*---------------------------------- bfs about cavity */
         typename tria_pred::
         template circ_pred<
              self_type >_pred( _ppos) ;
@@ -568,7 +589,7 @@
         scan_tria_list (_elem, +1,
                         _pred, _work) ;
 
-    /*------------------------------ push index lists */
+    /*---------------------------------- push index lists */
        _list.push_tail (_work.head(),
                         _work.tend()) ;
 
@@ -620,15 +641,15 @@
 
     /*--------------------------- push new node onto list */
         _node = _get_node() ;
-        for (auto _idim = tria_pred::_dims + 0 ;
+        for (auto _idim = tria_pred::real_dims + 0 ;
                   _idim-- != +0 ; )
         {
         node(_node)->pval(_idim) = _ppos[_idim];
         }
 
     /*--------------------------- grab enclosing indexing */
-        iptr_type _tnod[ +1 + tria_pred::_dims];
-        for (auto _inod = tria_pred::_dims + 1 ;
+        iptr_type _tnod[1+tria_pred::topo_dims];
+        for (auto _inod = tria_pred::topo_dims + 1 ;
                   _inod-- != +0 ; )
         {
         _tnod[_inod] = tria(_elem)->node(_inod);
@@ -639,7 +660,7 @@
             std::numeric_limits
                 <real_type>::infinity() ;
 
-        for (auto _inod = tria_pred::_dims + 1 ;
+        for (auto _inod = tria_pred::topo_dims + 1 ;
                   _inod-- != +0 ; )
         {
         _dist = std::min(_dist,
@@ -691,13 +712,12 @@
         list_type &_told
         )
     {
-        iptr_type _npos ;
-        iptr_type _fpos ;
+        iptr_type _npos, _fpos ;
         for (auto _tpos  = _tnew.head();
                   _tpos != _tnew.tend();
                 ++_tpos )
         {
-        for (_npos = tria_pred::_dims+1;
+        for (_npos = tria_pred::topo_dims + 1;
              _npos-- != +0 ; )
         {
             node(tria(*_tpos )
@@ -710,7 +730,7 @@
                   _tpos != _told.tend();
                 ++_tpos )
         {
-        for (_npos = tria_pred::_dims+1;
+        for (_npos = tria_pred::topo_dims + 1;
              _npos-- != +0 ; )
         {
             node(tria(*_tpos )
@@ -718,7 +738,7 @@
                ->next() = *_tpos ;
         }
 
-        for (_fpos = tria_pred::_dims+1;
+        for (_fpos = tria_pred::topo_dims + 1;
              _fpos-- != +0 ; )
         {
             iptr_type  _tadj;
@@ -737,7 +757,7 @@
                   _tpos != _tnew.tend();
                 ++_tpos )
         {
-        for (_npos = tria_pred::_dims+1;
+        for (_npos = tria_pred::topo_dims + 1;
              _npos-- != +0 ; )
         {
             if (node(tria(*_tpos )

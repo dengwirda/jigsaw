@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2018
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -60,7 +60,6 @@
         rdel_opts &_args,
         edge_data &_edat,
         iptr_type &_part,
-        char_type &_hits,
         char_type &_feat,
         char_type &_topo,
         char_type &_kind,
@@ -85,7 +84,6 @@
         if (!base_type::edge_ball (
             _geom, _mesh, _tadj,
             _eadj, _ebal, _pmax,
-            _hits,
             _feat, _topo, _part)  )
     /*--------------------------------- is not restricted */
             return  ;

@@ -35,7 +35,7 @@
  *
  * Copyright 2013-2017
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -46,21 +46,21 @@
 #   ifndef __GEOMETRY__
 #   define __GEOMETRY__
 
-#   include "libbasic.hpp"
+#   include "basebase.hpp"
+
 #   include "mpfloats.hpp"
+#   include "geompred.hpp"
+
 #   include "mathutil.hpp"
 
 #   include "geom_base/vect_base_k.hpp"
 
-#   include "geom_base/predicate_k.hpp"
-
 #   include "geom_base/intersect_k.hpp"
 
-#   include "geom_base/tria_ball_k.hpp"
-#   include "geom_base/tria_elem_k.hpp"
+#   include "geom_base/cell_ball_k.hpp"
+#   include "geom_base/cell_base_k.hpp"
 
-#
-#   endif   //__GEOMETRY__
+#   endif//__GEOMETRY__
 
 
 

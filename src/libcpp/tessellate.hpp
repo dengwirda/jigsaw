@@ -31,11 +31,11 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 12 August, 2018
+ * Last updated: 30 April, 2020
  *
- * Copyright 2013-2018
+ * Copyright 2013-2020
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -54,11 +54,17 @@
 
 #   include "tessellate/delaunay_tri_type_2.hpp"
 #   include "tessellate/delaunay_tri_type_3.hpp"
+#   include "tessellate/delaunay_tri_type_4.hpp"
 
 #   include "tessellate/delaunay_tri_k.hpp"
 
-#   include "tessellate/del_tri_euclidean_2.hpp"
-#   include "tessellate/del_tri_euclidean_3.hpp"
+#   include "tessellate/delaunay_tri_pred_2.hpp"
+#   include "tessellate/delaunay_tri_pred_3.hpp"
+#   include "tessellate/delaunay_tri_pred_4.hpp"
+
+#   include "tessellate/laguerre_tri_pred_2.hpp"
+#   include "tessellate/laguerre_tri_pred_3.hpp"
+#   include "tessellate/laguerre_tri_pred_4.hpp"
 
 #   endif//__TESSELLATE__
 

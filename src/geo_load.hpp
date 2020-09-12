@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 July, 2019
+     * Last updated: 30 May, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -167,6 +167,67 @@
                _mesh.push_node(_ndat, false) ;
             }
         }
+    /*---------------------------------- parse SEEDS data */
+        __normal_call void_type push_seeds (
+            std:: size_t  _ipos ,
+            double       *_pval ,
+            std::int32_t  _itag
+            )
+        {
+            __unreferenced(_ipos) ;
+
+            if (this->_ndim == +2 &&
+                this->_kind ==
+                    jmsh_kind::euclidean_mesh)
+            {
+                typename
+                geom_data::euclidean_mesh_2d
+                    ::seed_type _sdat ;
+                _sdat.mark () = +   0 ;
+                _sdat.self () = +   1 ;
+                _sdat.pval(0) = _pval[0];
+                _sdat.pval(1) = _pval[1];
+                _sdat.itag () = _itag ;
+
+                this->_geom->_euclidean_mesh_2d.
+                   _seed.push_tail(_sdat) ;
+            }
+            else
+            if (this->_ndim == +3 &&
+                this->_kind ==
+                    jmsh_kind::euclidean_mesh)
+            {
+                typename
+                geom_data::euclidean_mesh_3d
+                    ::seed_type _sdat ;
+                _sdat.mark () = +   0 ;
+                _sdat.self () = +   1 ;
+                _sdat.pval(0) = _pval[0];
+                _sdat.pval(1) = _pval[1];
+                _sdat.pval(2) = _pval[2];
+                _sdat.itag () = _itag ;
+
+                this->_geom->_euclidean_mesh_3d.
+                   _seed.push_tail(_sdat) ;
+            }
+            else
+            if (this->_kind ==
+                    jmsh_kind::ellipsoid_mesh)
+            {
+                typename
+                geom_data::ellipsoid_mesh_3d
+                    ::seed_type _sdat ;
+                _sdat.mark () = +   0 ;
+                _sdat.self () = +   1 ;
+                _sdat.pval(0) = _pval[0];
+                _sdat.pval(1) = _pval[1];
+                _sdat.pval(2) = + 0.0 ;
+                _sdat.itag () = _itag ;
+
+                this->_geom->_ellipsoid_mesh_3d.
+                   _seed.push_tail(_sdat) ;
+            }
+        }
     /*---------------------------------- parse EDGE2 data */
         __normal_call void_type push_edge2 (
             std:: size_t  _ipos ,
@@ -282,9 +343,8 @@
                 _pdat.indx () = _inum ;
                 _pdat.kind () = _KIND ;
 
-                this->_geom->
-                   _euclidean_mesh_2d.
-                        _part.push(_pdat) ;
+                this->_geom->_euclidean_mesh_2d.
+                   _part.push  (_pdat) ;
             }
             else
             if (this->_ndim == +3 &&
@@ -298,9 +358,8 @@
                 _pdat.indx () = _inum ;
                 _pdat.kind () = _KIND ;
 
-                this->_geom->
-                   _euclidean_mesh_3d.
-                        _part.push(_pdat) ;
+                this->_geom->_euclidean_mesh_3d.
+                   _part.push  (_pdat) ;
             }
             else
             if (this->_kind ==
@@ -343,6 +402,8 @@
             {
                 _jlog.push(
             "**parse error: " + * _iter + "\n" ) ;
+
+                _errv = __invalid_argument ;
             }
         }
         catch (...)
@@ -403,6 +464,27 @@
 
                 _geom._euclidean_mesh_2d.
                 _tria.push_node(_ndat , false) ;
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _gmsh._seed2._size ;
+                    ++_ipos )
+            {
+                typename
+                geom_data::euclidean_mesh_2d
+                    ::seed_type _sdat ;
+                _sdat.pval(0) = _gmsh.
+                    _seed2._data[_ipos]._ppos[0];
+                _sdat.pval(1) = _gmsh.
+                    _seed2._data[_ipos]._ppos[1];
+                _sdat.itag () = _gmsh.
+                    _seed2._data[_ipos]._itag ;
+
+                _sdat.mark () = +   0 ;
+                _sdat.self () = +   1 ;
+
+                _geom._euclidean_mesh_2d.
+                      _seed.push_tail(_sdat);
             }
 
             for (auto _ipos = (size_t) +0 ;
@@ -468,6 +550,29 @@
 
                 _geom._euclidean_mesh_3d.
                 _tria.push_node(_ndat , false) ;
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _gmsh._seed3._size ;
+                    ++_ipos )
+            {
+                typename
+                geom_data::euclidean_mesh_3d
+                    ::seed_type _sdat ;
+                _sdat.pval(0) = _gmsh.
+                    _seed3._data[_ipos]._ppos[0];
+                _sdat.pval(1) = _gmsh.
+                    _seed3._data[_ipos]._ppos[1];
+                _sdat.pval(2) = _gmsh.
+                    _seed3._data[_ipos]._ppos[2];
+                _sdat.itag () = _gmsh.
+                    _seed3._data[_ipos]._itag ;
+
+                _sdat.mark () = +   0 ;
+                _sdat.self () = +   1 ;
+
+                _geom._euclidean_mesh_3d.
+                      _seed.push_tail(_sdat);
             }
 
             for (auto _ipos = (size_t) +0 ;
@@ -558,22 +663,44 @@
             }
 
             for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._vert3._size ;
+                _ipos != _gmsh._vert2._size ;
                     ++_ipos )
             {
                 typename
                 geom_data::ellipsoid_mesh_3d
                     ::node_type _ndat ;
                 _ndat.pval(0) = _gmsh.
-                    _vert3._data[_ipos]._ppos[0];
+                    _vert2._data[_ipos]._ppos[0];
                 _ndat.pval(1) = _gmsh.
-                    _vert3._data[_ipos]._ppos[1];
+                    _vert2._data[_ipos]._ppos[1];
                 _ndat.pval(2) = + 0.0 ;
                 _ndat.itag () = _gmsh.
-                    _vert3._data[_ipos]._itag ;
+                    _vert2._data[_ipos]._itag ;
 
                 _geom._ellipsoid_mesh_3d.
                 _mesh.push_node(_ndat , false) ;
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _gmsh._seed2._size ;
+                    ++_ipos )
+            {
+                typename
+                geom_data::ellipsoid_mesh_3d
+                    ::seed_type _sdat ;
+                _sdat.pval(0) = _gmsh.
+                    _seed2._data[_ipos]._ppos[0];
+                _sdat.pval(1) = _gmsh.
+                    _seed2._data[_ipos]._ppos[1];
+                _sdat.pval(2) = + 0.0 ;
+                _sdat.itag () = _gmsh.
+                    _seed2._data[_ipos]._itag ;
+
+                _sdat.mark () = +   0 ;
+                _sdat.self () = +   1 ;
+
+                _geom._ellipsoid_mesh_3d.
+                      _seed.push_tail(_sdat);
             }
 
             for (auto _ipos = (size_t) +0 ;
@@ -668,17 +795,17 @@
         {
     /*--------------------------------- euclidean-mesh-2d */
             iptr_type _imin =
-            std::numeric_limits<iptr_type>::max() ;
+            std::numeric_limits<iptr_type>::max () ;
             iptr_type _imax =
-            std::numeric_limits<iptr_type>::min() ;
+            std::numeric_limits<iptr_type>::min () ;
 
             iptr_type _nnPT = +0 ;
             iptr_type _nnE2 = +0 ;
 
             for (auto _iter  = _geom.
-            _euclidean_mesh_2d._tria._set1.head() ;
+            _euclidean_mesh_2d._tria.node().head() ;
                       _iter != _geom.
-            _euclidean_mesh_2d._tria._set1.tend() ;
+            _euclidean_mesh_2d._tria.node().tend() ;
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue;
@@ -687,9 +814,9 @@
             }
 
             for (auto _iter  = _geom.
-            _euclidean_mesh_2d._tria._set2.head() ;
+            _euclidean_mesh_2d._tria.edge().head() ;
                       _iter != _geom.
-            _euclidean_mesh_2d._tria._set2.tend() ;
+            _euclidean_mesh_2d._tria.edge().tend() ;
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue;
@@ -708,7 +835,7 @@
                 if (_imin < +0 ||
                         _imax >= _nnPT)
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
             }
 
@@ -740,12 +867,12 @@
                     _pptr->_data.indx() >= _nnE2
                     )
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
                 }
                 else
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
 
                 }
@@ -766,32 +893,32 @@
         {
     /*--------------------------------- euclidean-mesh-3d */
             iptr_type _imin =
-            std::numeric_limits<iptr_type>::max() ;
+            std::numeric_limits<iptr_type>::max () ;
             iptr_type _imax =
-            std::numeric_limits<iptr_type>::min() ;
+            std::numeric_limits<iptr_type>::min () ;
 
             iptr_type _nnPT = +0 ;
             iptr_type _nnE2 = +0 ;
             iptr_type _nnT3 = +0 ;
 
             for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set1.head() ;
+            _euclidean_mesh_3d._tria.node().head() ;
                       _iter != _geom.
-            _euclidean_mesh_3d._tria._set1.tend() ;
+            _euclidean_mesh_3d._tria.node().tend() ;
                     ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
+                if (_iter->mark() < 0) continue;
 
                 _nnPT += +1  ;
             }
 
             for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set2.head() ;
+            _euclidean_mesh_3d._tria.edge().head() ;
                       _iter != _geom.
-            _euclidean_mesh_3d._tria._set2.tend() ;
+            _euclidean_mesh_3d._tria.edge().tend() ;
                     ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
+                if (_iter->mark() < 0) continue;
 
                 _imin = std::min(
                     _imin, _iter->node(0)) ;
@@ -807,7 +934,7 @@
                 if (_imin < +0 ||
                         _imax >= _nnPT)
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
             }
 
@@ -820,12 +947,12 @@
             }
 
             for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set3.head() ;
+            _euclidean_mesh_3d._tria.tri3().head() ;
                       _iter != _geom.
-            _euclidean_mesh_3d._tria._set3.tend() ;
+            _euclidean_mesh_3d._tria.tri3().tend() ;
                     ++_iter  )
             {
-                if (_iter->mark() < 0) continue ;
+                if (_iter->mark() < 0) continue;
 
                 _imin = std::min(
                     _imin, _iter->node(0)) ;
@@ -845,7 +972,7 @@
                 if (_imin < +0 ||
                         _imax >= _nnPT)
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
             }
 
@@ -877,12 +1004,12 @@
                     _pptr->_data.indx() >= _nnT3
                     )
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
                 }
                 else
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
 
                 }
@@ -936,17 +1063,17 @@
             real_type _ymax =  _YMIN;
 
             iptr_type _imin =
-            std::numeric_limits<iptr_type>::max() ;
+            std::numeric_limits<iptr_type>::max () ;
             iptr_type _imax =
-            std::numeric_limits<iptr_type>::min() ;
+            std::numeric_limits<iptr_type>::min () ;
 
             iptr_type _nnPT = +0 ;
             iptr_type _nnE2 = +0 ;
 
             for (auto _iter  = _geom.
-            _ellipsoid_mesh_3d._mesh._set1.head() ;
+            _ellipsoid_mesh_3d._mesh.node().head() ;
                       _iter != _geom.
-            _ellipsoid_mesh_3d._mesh._set1.tend() ;
+            _ellipsoid_mesh_3d._mesh.node().tend() ;
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue;
@@ -983,9 +1110,9 @@
             }
 
             for (auto _iter  = _geom.
-            _ellipsoid_mesh_3d._mesh._set2.head() ;
+            _ellipsoid_mesh_3d._mesh.edge().head() ;
                       _iter != _geom.
-            _ellipsoid_mesh_3d._mesh._set2.tend() ;
+            _ellipsoid_mesh_3d._mesh.edge().tend() ;
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue;
@@ -1004,7 +1131,7 @@
                 if (_imin < +0 ||
                         _imax >= _nnPT)
                 {
-                    _errv = __invalid_argument ;
+                    _errv = __invalid_indexing ;
                 }
             }
 
@@ -1076,26 +1203,41 @@
             iptr_type _nnE2 = +0 ;
 
             for (auto _iter  = _geom.
-            _euclidean_mesh_2d._tria._set1.head() ;
+            _euclidean_mesh_2d._tria.node().head() ;
                       _iter != _geom.
-            _euclidean_mesh_2d._tria._set1.tend() ;
+            _euclidean_mesh_2d._tria.node().tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _nnPT += +1 ;
+            if (_iter->mark()>=0 ) _nnPT += +1 ;
             }
 
             __dumpINTS("|COORD.|", _nnPT)
 
             for (auto _iter  = _geom.
-            _euclidean_mesh_2d._tria._set2.head() ;
+            _euclidean_mesh_2d._tria.edge().head() ;
                       _iter != _geom.
-            _euclidean_mesh_2d._tria._set2.tend() ;
+            _euclidean_mesh_2d._tria.edge().tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _nnE2 += +1 ;
+            if (_iter->mark()>=0 ) _nnE2 += +1 ;
             }
 
             __dumpINTS("|EDGE-2|", _nnE2)
+
+            _jlog.push("\n") ;
+
+            iptr_type _nnSD = +0 ;
+
+            for (auto _iter  = _geom.
+            _euclidean_mesh_2d._seed.head() ;
+                      _iter != _geom.
+            _euclidean_mesh_2d._seed.tend() ;
+                    ++_iter )
+            {
+            if (_iter->mark()>=0 ) _nnSD += +1 ;
+            }
+
+            __dumpINTS("|SEEDS.|", _nnSD)
         }
         else
         if (_geom._ndim == +3 &&
@@ -1115,37 +1257,52 @@
             iptr_type _nnT3 = +0 ;
 
             for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set1.head() ;
+            _euclidean_mesh_3d._tria.node().head() ;
                       _iter != _geom.
-            _euclidean_mesh_3d._tria._set1.tend() ;
+            _euclidean_mesh_3d._tria.node().tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _nnPT += +1 ;
+            if (_iter->mark()>=0 ) _nnPT += +1 ;
             }
 
             __dumpINTS("|COORD.|", _nnPT)
 
             for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set2.head() ;
+            _euclidean_mesh_3d._tria.edge().head() ;
                       _iter != _geom.
-            _euclidean_mesh_3d._tria._set2.tend() ;
+            _euclidean_mesh_3d._tria.edge().tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _nnE2 += +1 ;
+            if (_iter->mark()>=0 ) _nnE2 += +1 ;
             }
 
             __dumpINTS("|EDGE-2|", _nnE2)
 
             for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set3.head() ;
+            _euclidean_mesh_3d._tria.tri3().head() ;
                       _iter != _geom.
-            _euclidean_mesh_3d._tria._set3.tend() ;
+            _euclidean_mesh_3d._tria.tri3().tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _nnT3 += +1 ;
+            if (_iter->mark()>=0 ) _nnT3 += +1 ;
             }
 
             __dumpINTS("|TRIA-3|", _nnT3)
+
+            _jlog.push("\n") ;
+
+            iptr_type _nnSD = +0 ;
+
+            for (auto _iter  = _geom.
+            _euclidean_mesh_3d._seed.head() ;
+                      _iter != _geom.
+            _euclidean_mesh_3d._seed.tend() ;
+                    ++_iter )
+            {
+            if (_iter->mark()>=0 ) _nnSD += +1 ;
+            }
+
+            __dumpINTS("|SEEDS.|", _nnSD)
         }
         else
         if (_geom._kind ==
@@ -1174,26 +1331,41 @@
             iptr_type _nnE2 = +0 ;
 
             for (auto _iter  = _geom.
-            _ellipsoid_mesh_3d._mesh._set1.head() ;
+            _ellipsoid_mesh_3d._mesh.node().head() ;
                       _iter != _geom.
-            _ellipsoid_mesh_3d._mesh._set1.tend() ;
+            _ellipsoid_mesh_3d._mesh.node().tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _nnPT += +1 ;
+            if (_iter->mark()>=0 ) _nnPT += +1 ;
             }
 
             __dumpINTS("|COORD.|", _nnPT)
 
             for (auto _iter  = _geom.
-            _ellipsoid_mesh_3d._mesh._set2.head() ;
+            _ellipsoid_mesh_3d._mesh.edge().head() ;
                       _iter != _geom.
-            _ellipsoid_mesh_3d._mesh._set2.tend() ;
+            _ellipsoid_mesh_3d._mesh.edge().tend() ;
                     ++_iter )
             {
-            if (_iter->mark()>=+0) _nnE2 += +1 ;
+            if (_iter->mark()>=0 ) _nnE2 += +1 ;
             }
 
             __dumpINTS("|EDGE-2|", _nnE2)
+
+            _jlog.push("\n") ;
+
+            iptr_type _nnSD = +0 ;
+
+            for (auto _iter  = _geom.
+            _ellipsoid_mesh_3d._seed.head() ;
+                      _iter != _geom.
+            _ellipsoid_mesh_3d._seed.tend() ;
+                    ++_iter )
+            {
+            if (_iter->mark()>=0 ) _nnSD += +1 ;
+            }
+
+            __dumpINTS("|SEEDS.|", _nnSD)
         }
 
         _jlog.push("\n") ;

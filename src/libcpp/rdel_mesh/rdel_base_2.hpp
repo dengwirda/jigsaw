@@ -31,11 +31,11 @@
      *
      --------------------------------------------------------
      *
-     * Last updated: 10 July, 2019
+     * Last updated: 08 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -133,39 +133,6 @@
     --------------------------------------------------------
      */
 
-    __static_call
-    __normal_call double half_sign (
-    __const_ptr  (double) _pp,
-    __const_ptr  (double) _pa,
-    __const_ptr  (double) _pb
-        )
-    {
-    /*-------- helper: eval. sign w.r.t. half-plane [a,b] */
-        double _pm[2];
-        _pm[0] = _pa[0] * 0.5 ;
-        _pm[1] = _pa[1] * 0.5 ;
-        _pm[0]+= _pb[0] * 0.5 ;
-        _pm[1]+= _pb[1] * 0.5 ;
-
-        double _ab[2];
-        _ab[0] = _pb[0] ;
-        _ab[1] = _pb[1] ;
-        _ab[0]-= _pa[0] ;
-        _ab[1]-= _pa[1] ;
-
-        double _mp[2];
-        _mp[0] = _pp[0] ;
-        _mp[1] = _pp[1] ;
-        _mp[0]-= _pm[0] ;
-        _mp[1]-= _pm[1] ;
-
-        double _dp =
-        _ab[0] * _mp[0] +
-        _ab[1] * _mp[1] ;
-
-        return ((double) _dp );
-    }
-
     template <
         typename  half_list
              >
@@ -191,29 +158,33 @@
             auto _anod = _hset[_hpos][0] ;
             auto _bnod = _hset[_hpos][1] ;
 
-            double _APOS[2] ;
+            double _APOS[3] ;
             _APOS[0] = _mesh.
             _tria.node(_anod)->pval(0) ;
             _APOS[1] = _mesh.
             _tria.node(_anod)->pval(1) ;
+            _APOS[2] = _mesh.
+            _tria.node(_anod)->pval(2) ;
 
-            double _BPOS[2] ;
+            double _BPOS[3] ;
             _BPOS[0] = _mesh.
             _tria.node(_bnod)->pval(0) ;
             _BPOS[1] = _mesh.
             _tria.node(_bnod)->pval(1) ;
+            _BPOS[2] = _mesh.
+            _tria.node(_bnod)->pval(2) ;
 
-            double _sign = +0.0 ;
+            double _sign = +0.0;
             if (_bnod > _anod)
-            _sign = + half_sign (
-                (double*) _PPOS,
+            _sign = +geompred::bisect2w (
                 (double*) _APOS,
-                (double*) _BPOS) ;
-            else
-            _sign = - half_sign (
-                (double*) _PPOS,
                 (double*) _BPOS,
-                (double*) _APOS) ;
+                (double*) _PPOS) ;
+            else
+            _sign = -geompred::bisect2w (
+                (double*) _BPOS,
+                (double*) _APOS,
+                (double*) _PPOS) ;
 
     /*-------- "fatten" dual cavity to filter imprecision */
             if (_sign >= -_rtol &&
@@ -247,12 +218,7 @@
     {
         real_type static const _rEPS =
             std::pow(std::numeric_limits
-                <real_type>::epsilon(),+.67);
-
-        real_type _blen =
-        _geom._bmax[0]-_geom._bmin[0]
-      + _geom._bmax[1]-_geom._bmin[1] ;
-        _blen   /= (real_type) +2. ;
+                <real_type>::epsilon(),+.85);
 
     /*--------------------------- init. output balls = 0. */
         _ebal[0] = (real_type) +0. ;
@@ -278,8 +244,8 @@
     /*--------------------------- assemble local indexing */
         if (_topp < _tadj)
         {
-        std::swap(_tadj, _topp) ;
-        std::swap(_eadj, _eopp) ;
+            std::swap(_tadj, _topp);
+            std::swap(_eadj, _eopp);
         }
 
         iptr_type _enod[ +3] ;
@@ -311,73 +277,42 @@
             &_ENOD[0], &_ENOD[2] ,
                 std::less<iptr_type>()) ;
 
-        geometry::
-            circ_ball_2d( _ebal,
-            &_mesh._tria.
-        node(_ENOD[0])->pval(0),
-            &_mesh._tria.
-        node(_ENOD[1])->pval(0)) ;
+        geometry::perp_ball_2d( _ebal ,
+           &_mesh._tria.
+             node(_ENOD[0])->pval(0),
+           &_mesh._tria.
+             node(_ENOD[1])->pval(0)) ;
+
+        real_type _nvec[2];
+        geometry::line_norm_2d(
+           &_mesh._tria.
+             node(_ENOD[0])->pval(0),
+           &_mesh._tria.
+             node(_ENOD[1])->pval(0),
+            _nvec) ;
 
     /*--------------------------- est. dual voronoi patch */
-        line_type _line;
-        _line._ipos[0] =
-             _mesh._tria.
-        tria(_tadj   )->circ(0) ;
-        _line._ipos[1] =
-             _mesh._tria.
-        tria(_tadj   )->circ(1) ;
-
-        _line._jpos[0] =
-             _mesh._tria.
-        tria(_topp   )->circ(0) ;
-        _line._jpos[1] =
-             _mesh._tria.
-        tria(_topp   )->circ(1) ;
-
-        real_type _nvec[3];
-        geometry::line_norm_2d(
-            &_mesh._tria.
-        node(_enod[0])->pval(0) ,
-            &_mesh._tria.
-        node(_enod[1])->pval(0) ,
-             _nvec) ;
-
-        _nvec[2] =
-        geometry::length_2d(_nvec) ;
-        _nvec[0]/= _nvec[2] ;
-        _nvec[1]/= _nvec[2] ;
-
         real_type  _ival, _jval;
         geometry::proj_line_2d(
-            _line. _ipos,
+           &_mesh._tria.tria(_tadj)->circ(0),
             _ebal, _nvec, _ival) ;
 
         geometry::proj_line_2d(
-            _line. _jpos,
+           &_mesh._tria.tria(_topp)->circ(0),
             _ebal, _nvec, _jval) ;
 
         real_type _diff ;
         _diff =   _jval - _ival;
 
-        if (_diff > (real_type)0.)
-        {
-            _diff =
-        std::max( _diff, +_blen) ;
-        }
-        else
-        {
-            _diff =
-        std::min( _diff, -_blen) ;
-        }
+        _ival -=  _diff * _rEPS;
 
-        _ival -=  _rEPS * _diff;
-
+        line_type _line;
         _line._ipos[0] =
         _ebal[0] + _ival*_nvec [0] ;
         _line._ipos[1] =
         _ebal[1] + _ival*_nvec [1] ;
 
-        _jval +=  _rEPS * _diff;
+        _jval +=  _diff * _rEPS;
 
         _line._jpos[0] =
         _ebal[0] + _jval*_nvec [0] ;
@@ -386,8 +321,7 @@
 
     /*--------------------------- find loc. intersections */
         mesh::keep_all_2d <
-            real_type ,
-            iptr_type > _pred ;
+            real_type, iptr_type> _pred ;
 
         if(!_geom.intersect (
             _line, _pred) )
@@ -396,7 +330,7 @@
 
     /*--------------------------- form list of halfplanes */
         containers::
-        fixed_array<half_type, +4> _hset ;
+        fixed_array<half_type, 4> _hset ;
 
         _hset[0][0] = _enod[2] ;
         _hset[0][1] = _enod[0] ;
@@ -433,14 +367,19 @@
                     _safe, _RTOL) )
             {
     /*--------------------------- prune near-degeneracies */
-                if (!_safe)
+                if(!_safe)
                 {
+                real_type _PPOS[3];
+                _PPOS[0] = _iter->pval(0) ;
+                _PPOS[1] = _iter->pval(1) ;
+                _PPOS[2] = (real_type)+0. ; // weight = 0
+
                 typename mesh_type::
                          tria_type::
                          tria_pred::
                 template circ_pred<
                 typename mesh_type::tria_type>
-                    _isDT (&_iter-> pval( 0));
+                    _isDT (&_PPOS[ +0]) ;
 
                 bool_type _okay =
                 _isDT(_mesh._tria, _tadj, 0)||

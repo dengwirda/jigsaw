@@ -43,7 +43,7 @@
  *
  * Copyright 2013-2017
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -90,7 +90,7 @@
     typedef typename
             container::_const_it        _const_it ;
 
-    size_type static const _nfan = +4;  // fan out
+    size_type static constexpr _nfan = +4;  // fan out
 
     public  :
 

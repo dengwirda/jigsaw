@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 November, 2019
+     * Last updated: 16 July, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * darren.engwirda@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda
      *
     --------------------------------------------------------
@@ -55,6 +55,9 @@
 #       define JIGSAW_FILE_NOT_CREATED +3
 
 #       define JIGSAW_INVALID_ARGUMENT +4
+#       define JIGSAW_INVALID_INDEXING +5
+#       define JIGSAW_INVALID_USEROPTS +6
+#       define JIGSAW_INVALID_ARRAYDIM +7
 
     /*
     --------------------------------------------------------
@@ -93,6 +96,7 @@
 
 #       define JIGSAW_KERN_ODT_DQDX  +404
 #       define JIGSAW_KERN_CVT_DQDX  +405
+#       define JIGSAW_KERN_H95_DQDX  +406
 
 
 

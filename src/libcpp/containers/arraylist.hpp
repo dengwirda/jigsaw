@@ -41,7 +41,7 @@
  *
  * Copyright 2013-2018
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -53,6 +53,7 @@
 #   define __ARRAY_LIST__
 
 #   include "single_list.hpp"
+#   include "array.hpp"
 #   include "block_array.hpp"
 
     namespace containers {

@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 October, 2019
+     * Last updated: 30 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -46,7 +46,233 @@
 
     /*
     --------------------------------------------------------
-     * _ODT-MOVE: optimal delaunay tessellation update.
+     * ~ODT-TRI3: optimal delaunay tessellation update.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type _odt_tri3_k (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        hfun_type &_hfun ,
+        real_list &_hval ,
+        iptr_type  _cell ,
+        node_iter  _node ,
+        real_type *_move ,
+        real_type &_wsum ,
+        real_type &_ladj
+        )
+    {
+        iptr_type static constexpr
+            _last = pred_type::geom_dims + 0;
+
+    #   define EVALHFUN( _NODE, _NPTR ) \
+        if (_hval[_NODE] < (real_type)+0.)  \
+            _hval[_NODE] = _hfun.eval ( \
+           &_NPTR->pval(0), _NPTR->hidx())  ;
+
+    #   define LOOPDIMS( _ITER )    \
+            for ( auto _idim =          \
+        pred_type::geom_dims; _idim-- != 0; )
+
+        __unreferenced(_node) ;
+
+    /*------------------------------------- cell indexing */
+        auto _tptr =
+       _mesh. tri3().head() + _cell ;
+
+        auto _inod = _tptr->node(0) ;
+        auto _jnod = _tptr->node(1) ;
+        auto _knod = _tptr->node(2) ;
+
+        auto _iptr =
+       _mesh. node().head() + _inod ;
+        auto _jptr =
+       _mesh. node().head() + _jnod ;
+        auto _kptr =
+       _mesh. node().head() + _knod ;
+
+    /*------------------------------------- dual geometry */
+        real_type _ball [_last + 1] ;
+        pred_type::tri3_ball(_ball,
+            &_iptr->pval(+0),
+            &_jptr->pval(+0),
+            &_kptr->pval(+0), true) ;
+
+        real_type _tmag =
+             pred_type::tri3_mass (
+            &_iptr->pval(+0),
+            &_jptr->pval(+0),
+            &_kptr->pval(+0)) ;
+
+        _tmag = std::abs(_tmag) ;
+
+    /*------------------------------------- odt weighting */
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_ball[+0]) ;
+
+        real_type _lsqr = std::max(
+            _ball[_last], (real_type)+0.) ;
+
+        EVALHFUN( _inod , _iptr )
+        EVALHFUN( _jnod , _jptr )
+        EVALHFUN( _knod , _kptr )
+
+        real_type _irho = (real_type)+1.
+                / _hval [ _inod ] ;
+
+        real_type _jrho = (real_type)+1.
+                / _hval [ _jnod ] ;
+
+        real_type _krho = (real_type)+1.
+                / _hval [ _knod ] ;
+
+        real_type _rbar =
+            _irho * (real_type) 1./3. +
+            _jrho * (real_type) 1./3. +
+            _krho * (real_type) 1./3. ;
+
+        real_type _wval =
+            _tmag * std::pow(_rbar, +3) ;
+
+        LOOPDIMS( _idim )
+        {
+            _move[_idim]
+               += _wval * _ball [_idim] ;
+        }
+
+        _wsum  += _wval ;
+        _ladj  += _lsqr ;
+
+    #   undef   LOOPDIMS
+    #   undef   EVALHFUN
+    }
+
+    /*
+    --------------------------------------------------------
+     * ~ODT-QUAD: optimal delaunay tessellation update.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type _odt_quad_k (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        hfun_type &_hfun ,
+        real_list &_hval ,
+        iptr_type  _cell ,
+        node_iter  _node ,
+        real_type *_move ,
+        real_type &_wsum ,
+        real_type &_ladj
+        )
+    {
+        iptr_type static constexpr
+            _last = pred_type::geom_dims + 0;
+
+    #   define EVALHFUN( _NODE, _NPTR ) \
+        if (_hval[_NODE] < (real_type)+0.)  \
+            _hval[_NODE] = _hfun.eval ( \
+           &_NPTR->pval(0), _NPTR->hidx())  ;
+
+    #   define LOOPDIMS( _ITER )    \
+            for ( auto _idim =          \
+        pred_type::geom_dims; _idim-- != 0; )
+
+        __unreferenced(_node) ;
+
+    /*------------------------------------- cell indexing */
+        auto _qptr =
+       _mesh. quad().head() + _cell ;
+
+        auto _inod = _qptr->node(0) ;
+        auto _jnod = _qptr->node(1) ;
+        auto _knod = _qptr->node(2) ;
+        auto _lnod = _qptr->node(3) ;
+
+        auto _iptr =
+       _mesh. node().head() + _inod ;
+        auto _jptr =
+       _mesh. node().head() + _jnod ;
+        auto _kptr =
+       _mesh. node().head() + _knod ;
+        auto _lptr =
+       _mesh. node().head() + _lnod ;
+
+    /*------------------------------------- dual geometry */
+        real_type _ball [_last + 1] ;
+        pred_type::quad_ball(_ball,
+            &_iptr->pval(+0),
+            &_jptr->pval(+0),
+            &_kptr->pval(+0),
+            &_lptr->pval(+0), true) ;
+
+        real_type _qmag =
+             pred_type::quad_mass (
+            &_iptr->pval(+0),
+            &_jptr->pval(+0),
+            &_kptr->pval(+0),
+            &_lptr->pval(+0)) ;
+
+        _qmag = std::abs(_qmag) ;
+
+    /*------------------------------------- odt weighting */
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_ball[+0]) ;
+
+        real_type _lsqr = std::max(
+            _ball[_last], (real_type)+0.) ;
+
+        EVALHFUN( _inod , _iptr )
+        EVALHFUN( _jnod , _jptr )
+        EVALHFUN( _knod , _kptr )
+        EVALHFUN( _lnod , _lptr )
+
+        real_type _irho = (real_type)+1.
+                / _hval [ _inod ] ;
+
+        real_type _jrho = (real_type)+1.
+                / _hval [ _jnod ] ;
+
+        real_type _krho = (real_type)+1.
+                / _hval [ _knod ] ;
+
+        real_type _lrho = (real_type)+1.
+                / _hval [ _lnod ] ;
+
+        real_type _rbar =
+            _irho * (real_type) 1./4. +
+            _jrho * (real_type) 1./4. +
+            _krho * (real_type) 1./4. +
+            _lrho * (real_type) 1./4. ;
+
+        real_type _wval =
+            _qmag * std::pow(_rbar, +3) ;
+
+        LOOPDIMS( _idim )
+        {
+            _move[_idim]
+               += _wval * _ball [_idim] ;
+        }
+
+        _wsum  += _wval ;
+        _ladj  += _lsqr ;
+
+    #   undef   LOOPDIMS
+    #   undef   EVALHFUN
+    }
+
+    /*
+    --------------------------------------------------------
+     * ~ODT-MOVE: optimal delaunay tessellation update.
     --------------------------------------------------------
      */
 
@@ -55,159 +281,425 @@
 
     // xnew <=== SUM( |t_i|_r * c_i ) / SUM( |t_i|_r )
     //
-    // with |t_i|_r = INT|i rho(x) dA
-    //
-    //              ~ |t_i| / (h_i)^3
+    // with |t_i|_r = INT|i rho(x) dA ~ |t_i| / h_i**3
 
     template <
         typename  node_iter
              >
     __static_call
     __normal_call void_type _odt_move_2 (
+        geom_type &_geom ,
         mesh_type &_mesh ,
-        size_type &_hfun ,
-        pred_type &_pred ,
+        hfun_type &_hfun ,
         real_list &_hval ,
-        iptr_list &_tset ,
+        conn_list &_conn ,
         node_iter  _node ,
         real_type *_line ,
         real_type &_ladj
         )
     {
-        real_type _move[_dims] = {
-            (real_type) +0.0 } ;
+        iptr_type static constexpr
+            _last = pred_type::geom_dims + 0;
+
+        real_type _move[_last + 0] = {
+            (real_type) +0.0} ;
 
         _ladj =
-            (real_type) +0.0 ;
-
-        __unreferenced (_pred) ; // for MSVC...
+            (real_type) +0.0  ;
 
         real_type _wsum =
-       +std::numeric_limits<real_type>::epsilon() ;
+       +std::numeric_limits<real_type>::epsilon();
 
-        iptr_type _tnum = +0 ;
+        iptr_type _cnum = +0  ;
 
-        for (auto _tria  = _tset.head() ,
-                  _tend  = _tset.tend() ;
-                  _tria != _tend ;
-                ++_tria, ++_tnum )
+        for (auto _next  = _conn.head() ,
+                  _tend  = _conn.tend() ;
+                  _next != _tend ;
+                ++_next, ++_cnum )
         {
-             auto _tptr =
-            _mesh._set3.head()+*_tria ;
+             auto _cell  = _next->_cell ;
+             auto _kind  = _next->_kind ;
 
-            iptr_type _tnod[3] ;
-            _tnod[ 0] = _tptr->node( 0) ;
-            _tnod[ 1] = _tptr->node( 1) ;
-            _tnod[ 2] = _tptr->node( 2) ;
-
-            algorithms::isort(
-                &_tnod[0], &_tnod[3],
-                    std::less<iptr_type>()) ;
-
-             auto _inod =
-            _mesh._set1.head()+_tnod[0] ;
-             auto _jnod =
-            _mesh._set1.head()+_tnod[1] ;
-             auto _knod =
-            _mesh._set1.head()+_tnod[2] ;
-
-            real_type _ball [_dims + 1] ;
-            real_type _kpos [_dims + 1] ;
-            real_type _jpos [_dims + 1] ;
-            real_type _ipos [_dims + 1] ;
-
-            _ipos[_dims] =
-                (real_type)+.75 *
-                    _inod->pval (_dims) ;
-            _jpos[_dims] =
-                (real_type)+.75 *
-                    _jnod->pval (_dims) ;
-            _kpos[_dims] =
-                (real_type)+.75 *
-                    _knod->pval (_dims) ;
-
-            for (auto _idim = _dims; _idim-- != +0; )
+            if (_kind == TRIA3_tag)
             {
-                _ipos[_idim] =
-                    _inod->pval (_idim) ;
-                _jpos[_idim] =
-                    _jnod->pval (_idim) ;
-                _kpos[_idim] =
-                    _knod->pval (_idim) ;
+                _odt_tri3_k(_geom, _mesh, _hfun,
+                    _hval , _cell, _node, _move,
+                    _wsum , _ladj ) ;
             }
-
-            _pred.perp_ball (_ball ,
-                &_ipos [+0] ,
-                &_jpos [+0] ,
-                &_kpos [+0] , true);
-
-            real_type _tmag =
-            _pred.mass_tria (
-                &_ipos [+0] ,
-                &_jpos [+0] ,
-                &_kpos [+0] ) ;
-
-            _tmag = std::abs(_tmag);
-
-            if (_hval[_tnod[0]] < (real_type)+0.)
+            else
+            if (_kind == QUAD4_tag)
             {
-                _hval[_tnod[0]] = _hfun.eval (
-                   &_inod->pval(0) ,
-                    _inod->hidx()) ;
+                _odt_quad_k(_geom, _mesh, _hfun,
+                    _hval , _cell, _node, _move,
+                    _wsum , _ladj ) ;
             }
-
-            if (_hval[_tnod[1]] < (real_type)+0.)
-            {
-                _hval[_tnod[1]] = _hfun.eval (
-                   &_jnod->pval(0) ,
-                    _jnod->hidx()) ;
-            }
-
-            if (_hval[_tnod[2]] < (real_type)+0.)
-            {
-                _hval[_tnod[2]] = _hfun.eval (
-                   &_knod->pval(0) ,
-                    _knod->hidx()) ;
-            }
-
-            real_type _tsqr = std::max(
-                (real_type) +0., _ball[_dims]);
-
-            real_type _irho = (real_type)+1.
-                            / _hval[_tnod[0]] ;
-            real_type _jrho = (real_type)+1.
-                            / _hval[_tnod[1]] ;
-            real_type _krho = (real_type)+1.
-                            / _hval[_tnod[2]] ;
-
-            real_type _rbar =
-               (_irho+_jrho+_krho) / (real_type)+3. ;
-
-            real_type _wval =
-                _tmag * std::pow(_rbar, +3) ;
-
-            for (auto _idim = _dims; _idim-- != +0; )
-            {
-                _move[_idim]
-                   += _wval * _ball [_idim] ;
-            }
-
-            _wsum  += _wval ;
-            _ladj  += _tsqr ;
         }
 
-        if (_tnum > +0)
+        if (_cnum > +0)
         {
-            for (auto _idim = _dims; _idim-- != +0; )
+            for (auto _idim =
+            pred_type::geom_dims ; _idim-- != 0; )
             {
                 _line[_idim] =
                     _move[_idim] / _wsum
                         - _node->pval(_idim) ;
             }
 
-            _ladj = std::sqrt(_ladj / _tnum) ;
+            _ladj = std::sqrt(_ladj / _cnum) ;
+        }
+    }
+
+    /*
+    --------------------------------------------------------
+     * ~CVT-TRI3: optimal delaunay tessellation update.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type _cvt_tri3_k (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        hfun_type &_hfun ,
+        real_list &_hval ,
+        iptr_type  _cell ,
+        node_iter  _node ,
+        real_type *_move ,
+        real_type &_wsum ,
+        real_type &_ladj
+        )
+    {
+        iptr_type static constexpr
+            _last = pred_type::geom_dims + 0;
+
+    #   define EVALHFUN( _NODE, _NPTR ) \
+        if (_hval[_NODE] < (real_type)+0.)  \
+            _hval[_NODE] = _hfun.eval ( \
+           &_NPTR->pval(0), _NPTR->hidx())  ;
+
+    #   define LOOPDIMS( _ITER )    \
+            for ( auto _idim =          \
+        pred_type::geom_dims; _idim-- != 0; )
+
+    /*------------------------------------- cell indexing */
+        auto _tptr =
+       _mesh. tri3().head() + _cell ;
+
+        auto _inod = _tptr->node(0) ;
+        auto _jnod = _tptr->node(1) ;
+        auto _knod = _tptr->node(2) ;
+
+        if ( _jnod ==_node->node(0) )
+        {
+           _inod   = _tptr->node(1) ;
+           _jnod   = _tptr->node(2) ;
+           _knod   = _tptr->node(0) ;
+        }
+        else
+        if ( _knod ==_node->node(0) )
+        {
+           _inod   = _tptr->node(2) ;
+           _jnod   = _tptr->node(0) ;
+           _knod   = _tptr->node(1) ;
         }
 
+        auto _iptr =
+       _mesh. node().head() + _inod ;
+        auto _jptr =
+       _mesh. node().head() + _jnod ;
+        auto _kptr =
+       _mesh. node().head() + _knod ;
+
+    /*------------------------------------- dual geometry */
+        real_type _0bal [_last + 1] ;
+        pred_type::tri3_ball(_0bal,
+            &_iptr->pval(+0),
+            &_jptr->pval(+0),
+            &_kptr->pval(+0), true) ;
+
+        real_type _1bal [_last + 1] ;
+        pred_type::edge_ball(_1bal,
+            &_iptr->pval(+0),
+            &_jptr->pval(+0), true) ;
+
+        real_type _2bal [_last + 1] ;
+        pred_type::edge_ball(_2bal,
+            &_iptr->pval(+0),
+            &_kptr->pval(+0), true) ;
+
+        real_type _1mag =
+        std::abs(pred_type::tri3_mass (
+            &_iptr->pval(+0),
+            &_1bal [+0] ,
+            &_0bal [+0] ) ) ;
+
+        real_type _2mag =
+        std::abs(pred_type::tri3_mass (
+            &_iptr->pval(+0),
+            &_0bal [+0] ,
+            &_2bal [+0] ) ) ;
+
+    /*------------------------------------- cvt weighting */
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_0bal[ +0]);
+
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_1bal[ +0]);
+
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_2bal[ +0]);
+
+        real_type _lsqr = std::max(
+            _0bal[_last], (real_type) +0.);
+
+        EVALHFUN( _inod , _iptr )
+        EVALHFUN( _jnod , _jptr )
+        EVALHFUN( _knod , _kptr )
+
+        real_type _irho = (real_type) +1.
+                / _hval [ _inod ] ;
+
+        real_type _jrho = (real_type) +1.
+                / _hval [ _jnod ] ;
+
+        real_type _krho = (real_type) +1.
+                / _hval [ _knod ] ;
+
+        real_type _0rho =
+            _irho * (real_type) 1./3. +
+            _jrho * (real_type) 1./3. +
+            _krho * (real_type) 1./3. ;
+
+        real_type _1rho =
+            _irho * (real_type) 1./2. +
+            _jrho * (real_type) 1./2. ;
+
+        real_type _2rho =
+            _irho * (real_type) 1./2. +
+            _krho * (real_type) 1./2. ;
+
+        _0rho = std::pow(_0rho, +3) ;
+        _1rho = std::pow(_1rho, +3) ;
+        _2rho = std::pow(_2rho, +3) ;
+        _irho = std::pow(_irho, +3) ;
+
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != 0; )
+        {
+            _move[_idim] +=
+        // 1st sub-tria in voro. cell
+                _1mag * (
+            _0rho * _0bal[_idim] +
+            _1rho * _1bal[_idim] +
+            _irho * _iptr->pval(_idim)
+                ) +
+
+        // 2nd sub-tria in voro. cell
+                _2mag * (
+            _0rho * _0bal[_idim] +
+            _2rho * _2bal[_idim] +
+            _irho * _iptr->pval(_idim)
+                ) ;
+        }
+
+        _wsum += _1mag*(_0rho+_1rho+_irho);
+        _wsum += _2mag*(_0rho+_2rho+_irho);
+
+        _ladj += _lsqr ;
+
+    #   undef   LOOPDIMS
+    #   undef   EVALHFUN
+    }
+
+    /*
+    --------------------------------------------------------
+     * ~CVT-QUAD: optimal delaunay tessellation update.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type _cvt_quad_k (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        hfun_type &_hfun ,
+        real_list &_hval ,
+        iptr_type  _cell ,
+        node_iter  _node ,
+        real_type *_move ,
+        real_type &_wsum ,
+        real_type &_ladj
+        )
+    {
+        iptr_type static constexpr
+            _last = pred_type::geom_dims + 0;
+
+    #   define EVALHFUN( _NODE, _NPTR ) \
+        if (_hval[_NODE] < (real_type)+0.)  \
+            _hval[_NODE] = _hfun.eval ( \
+           &_NPTR->pval(0), _NPTR->hidx())  ;
+
+    #   define LOOPDIMS( _ITER )    \
+            for ( auto _idim =          \
+        pred_type::geom_dims; _idim-- != 0; )
+
+    /*------------------------------------- cell indexing */
+        auto _qptr =
+       _mesh. quad().head() + _cell ;
+
+        auto _inod = _qptr->node(0) ;
+        auto _jnod = _qptr->node(1) ;
+        auto _knod = _qptr->node(2) ;
+        auto _lnod = _qptr->node(3) ;
+
+        if ( _jnod ==_node->node(0) )
+        {
+           _inod   = _qptr->node(1) ;
+           _jnod   = _qptr->node(2) ;
+           _knod   = _qptr->node(3) ;
+           _lnod   = _qptr->node(0) ;
+        }
+        else
+        if ( _knod ==_node->node(0) )
+        {
+           _inod   = _qptr->node(2) ;
+           _jnod   = _qptr->node(3) ;
+           _knod   = _qptr->node(0) ;
+           _lnod   = _qptr->node(1) ;
+        }
+        else
+        if ( _lnod ==_node->node(0) )
+        {
+           _inod   = _qptr->node(3) ;
+           _jnod   = _qptr->node(0) ;
+           _knod   = _qptr->node(1) ;
+           _lnod   = _qptr->node(2) ;
+        }
+
+        auto _iptr =
+       _mesh. node().head() + _inod ;
+        auto _jptr =
+       _mesh. node().head() + _jnod ;
+        auto _kptr =
+       _mesh. node().head() + _knod ;
+        auto _lptr =
+       _mesh. node().head() + _lnod ;
+
+    /*------------------------------------- dual geometry */
+        real_type _0bal [_last + 1] ;
+        pred_type::quad_ball(_0bal,
+            &_iptr->pval(+0),
+            &_jptr->pval(+0),
+            &_kptr->pval(+0),
+            &_lptr->pval(+0), true) ;
+
+        real_type _1bal [_last + 1] ;
+        pred_type::edge_ball(_1bal,
+            &_iptr->pval(+0),
+            &_jptr->pval(+0), true) ;
+
+        real_type _2bal [_last + 1] ;
+        pred_type::edge_ball(_2bal,
+            &_iptr->pval(+0),
+            &_lptr->pval(+0), true) ;
+
+        real_type _1mag =
+        std::abs(pred_type::tri3_mass (
+            &_iptr->pval(+0),
+            &_1bal [+0] ,
+            &_0bal [+0] ) ) ;
+
+        real_type _2mag =
+        std::abs(pred_type::tri3_mass (
+            &_iptr->pval(+0),
+            &_0bal [+0] ,
+            &_2bal [+0] ) ) ;
+
+    /*------------------------------------- cvt weighting */
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_0bal[ +0]);
+
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_1bal[ +0]);
+
+        pred_type::proj_node(
+            _geom ,
+           &_node->pval( +0), &_2bal[ +0]);
+
+        real_type _lsqr = std::max(
+            _0bal[_last], (real_type) +0.);
+
+        EVALHFUN( _inod , _iptr )
+        EVALHFUN( _jnod , _jptr )
+        EVALHFUN( _knod , _kptr )
+        EVALHFUN( _lnod , _lptr )
+
+        real_type _irho = (real_type) +1.
+                / _hval [ _inod ] ;
+
+        real_type _jrho = (real_type) +1.
+                / _hval [ _jnod ] ;
+
+        real_type _krho = (real_type) +1.
+                / _hval [ _knod ] ;
+
+        real_type _lrho = (real_type) +1.
+                / _hval [ _lnod ] ;
+
+        real_type _0rho =
+            _irho * (real_type) 1./4. +
+            _jrho * (real_type) 1./4. +
+            _krho * (real_type) 1./4. +
+            _lrho * (real_type) 1./4. ;
+
+        real_type _1rho =
+            _irho * (real_type) 1./2. +
+            _jrho * (real_type) 1./2. ;
+
+        real_type _2rho =
+            _irho * (real_type) 1./2. +
+            _lrho * (real_type) 1./2. ;
+
+        _0rho = std::pow(_0rho, +3) ;
+        _1rho = std::pow(_1rho, +3) ;
+        _2rho = std::pow(_2rho, +3) ;
+        _irho = std::pow(_irho, +3) ;
+
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != 0; )
+        {
+            _move[_idim] +=
+        // 1st sub-tria in voro. cell
+                _1mag * (
+            _0rho * _0bal[_idim] +
+            _1rho * _1bal[_idim] +
+            _irho * _iptr->pval(_idim)
+                ) +
+
+        // 2nd sub-tria in voro. cell
+                _2mag * (
+            _0rho * _0bal[_idim] +
+            _2rho * _2bal[_idim] +
+            _irho * _iptr->pval(_idim)
+                ) ;
+        }
+
+        _wsum += _1mag*(_0rho+_1rho+_irho);
+        _wsum += _2mag*(_0rho+_2rho+_irho);
+
+        _ladj += _lsqr ;
+
+    #   undef   LOOPDIMS
+    #   undef   EVALHFUN
     }
 
     /*
@@ -225,206 +717,468 @@
              >
     __static_call
     __normal_call void_type _cvt_move_2 (
+        geom_type &_geom ,
         mesh_type &_mesh ,
-        size_type &_hfun ,
-        pred_type &_pred ,
+        hfun_type &_hfun ,
         real_list &_hval ,
-        iptr_list &_tset ,
+        conn_list &_conn ,
         node_iter  _node ,
         real_type *_line ,
         real_type &_ladj
         )
     {
-        real_type _move[_dims] = {
-            (real_type) +0.0 } ;
+        iptr_type static constexpr
+            _last = pred_type::geom_dims + 0;
+
+        real_type _move[_last + 0] = {
+            (real_type) +0.0} ;
 
         _ladj =
-            (real_type) +0.0 ;
-
-        __unreferenced (_pred) ; // for MSVC...
+            (real_type) +0.0  ;
 
         real_type _wsum =
-       +std::numeric_limits<real_type>::epsilon() ;
+       +std::numeric_limits<real_type>::epsilon();
 
-        iptr_type _tnum = +0 ;
+        iptr_type _cnum = +0  ;
 
-        for (auto _tria  = _tset.head() ,
-                  _tend  = _tset.tend() ;
-                  _tria != _tend ;
-                ++_tria, ++_tnum )
+        for (auto _next  = _conn.head() ,
+                  _tend  = _conn.tend() ;
+                  _next != _tend ;
+                ++_next, ++_cnum )
         {
-             auto _tptr =
-            _mesh._set3.head()+*_tria ;
+             auto _cell  = _next->_cell ;
+             auto _kind  = _next->_kind ;
 
-            iptr_type _tnod[3] ;
-            _tnod[ 0] = _tptr->node( 0) ;
-            _tnod[ 1] = _tptr->node( 1) ;
-            _tnod[ 2] = _tptr->node( 2) ;
-
-            algorithms::isort(
-                &_tnod[0], &_tnod[3],
-                    std::less<iptr_type>()) ;
-
-             auto _inod =
-            _mesh._set1.head()+_tnod[0] ;
-             auto _jnod =
-            _mesh._set1.head()+_tnod[1] ;
-             auto _knod =
-            _mesh._set1.head()+_tnod[2] ;
-
-            if (_hval[_tnod[0]] < (real_type)+0.)
+            if (_kind == TRIA3_tag)
             {
-                _hval[_tnod[0]] = _hfun.eval (
-                   &_inod->pval(0) ,
-                    _inod->hidx()) ;
-            }
-
-            if (_hval[_tnod[1]] < (real_type)+0.)
-            {
-                _hval[_tnod[1]] = _hfun.eval (
-                   &_jnod->pval(0) ,
-                    _jnod->hidx()) ;
-            }
-
-            if (_hval[_tnod[2]] < (real_type)+0.)
-            {
-                _hval[_tnod[2]] = _hfun.eval (
-                   &_knod->pval(0) ,
-                    _knod->hidx()) ;
-            }
-
-            real_type _irho = (real_type)+1.
-                            / _hval[_tnod[0]] ;
-            real_type _jrho = (real_type)+1.
-                            / _hval[_tnod[1]] ;
-            real_type _krho = (real_type)+1.
-                            / _hval[_tnod[2]] ;
-
-            node_iter _anod, _bnod, _cnod;
-            real_type _arho, _brho, _crho;
-
-            if (_inod == _node)
-            {
-                _anod = _inod; _arho = _irho;
-                _bnod = _jnod; _brho = _jrho;
-                _cnod = _knod; _crho = _krho;
+                _cvt_tri3_k(_geom, _mesh, _hfun,
+                    _hval , _cell, _node, _move,
+                    _wsum , _ladj ) ;
             }
             else
-            if (_jnod == _node)
+            if (_kind == QUAD4_tag)
             {
-                _anod = _jnod; _arho = _jrho;
-                _bnod = _knod; _brho = _krho;
-                _cnod = _inod; _crho = _irho;
+                _cvt_quad_k(_geom, _mesh, _hfun,
+                    _hval , _cell, _node, _move,
+                    _wsum , _ladj ) ;
             }
-            else
-            // (_knod == _node)
-            {
-                _anod = _knod; _arho = _krho;
-                _bnod = _inod; _brho = _irho;
-                _cnod = _jnod; _crho = _jrho;
-            }
-
-            real_type _cpos [_dims + 1] ;
-            real_type _bpos [_dims + 1] ;
-            real_type _apos [_dims + 1] ;
-
-            _apos[_dims] =
-                (real_type)+.75 *
-                    _anod->pval (_dims) ;
-            _bpos[_dims] =
-                (real_type)+.75 *
-                    _bnod->pval (_dims) ;
-            _cpos[_dims] =
-                (real_type)+.75 *
-                    _cnod->pval (_dims) ;
-
-            for (auto _idim = _dims; _idim-- != +0; )
-            {
-                _apos[_idim] =
-                    _anod->pval (_idim) ;
-                _bpos[_idim] =
-                    _bnod->pval (_idim) ;
-                _cpos[_idim] =
-                    _cnod->pval (_idim) ;
-            }
-
-            real_type _0bal [_dims + 1] ;
-            _pred.perp_ball (_0bal ,
-                &_apos [+0] ,
-                &_bpos [+0] ,
-                &_cpos [+0] , true);
-
-            real_type _1bal [_dims + 1] ;
-            real_type _2bal [_dims + 1] ;
-            _pred.perp_ball (_1bal ,
-                &_apos [+0] ,
-                &_bpos [+0] , true);
-
-            _pred.perp_ball (_2bal ,
-                &_apos [+0] ,
-                &_cpos [+0] , true);
-
-            real_type _1mag =
-            std::abs(_pred.mass_tria (
-                &_apos [+0] ,
-                &_1bal [+0] ,
-                &_0bal [+0] ) ) ;
-
-            real_type _2mag =
-            std::abs(_pred.mass_tria (
-                &_apos [+0] ,
-                &_0bal [+0] ,
-                &_2bal [+0] ) ) ;
-
-            real_type _0rho =
-               (_arho+_brho+_crho) / (real_type)+3. ;
-
-            real_type _1rho =
-               (_arho+_brho) / (real_type)+2. ;
-            real_type _2rho =
-               (_arho+_crho) / (real_type)+2. ;
-
-            _0rho = std::pow(_0rho, +3) ;
-            _1rho = std::pow(_1rho, +3) ;
-            _2rho = std::pow(_2rho, +3) ;
-            _arho = std::pow(_arho, +3) ;
-
-            real_type _tsqr = std::max(
-                (real_type)+0., _0bal[_dims]) ;
-
-
-            for (auto _idim = _dims; _idim-- != +0; )
-            {
-                _move[_idim] +=
-            // 1st sub-tria in voro. cell
-                _1mag*_0rho * _0bal[_idim] +
-                _1mag*_1rho * _1bal[_idim] +
-                _1mag*_arho * _apos[_idim] +
-
-            // 2nd sub-tria in voro. cell
-                _2mag*_0rho * _0bal[_idim] +
-                _2mag*_2rho * _2bal[_idim] +
-                _2mag*_arho * _apos[_idim] ;
-            }
-
-            _wsum += _1mag*(_0rho+_1rho+_arho) ;
-            _wsum += _2mag*(_0rho+_2rho+_arho) ;
-
-            _ladj += _tsqr ;
         }
 
-        if (_tnum > +0)
+        if (_cnum > +0)
         {
-            for (auto _idim = _dims; _idim-- != +0; )
+            for (auto _idim =
+            pred_type::geom_dims ; _idim-- != 0; )
             {
                 _line[_idim] =
                     _move[_idim] / _wsum
                         - _node->pval(_idim) ;
             }
 
-            _ladj = std::sqrt(_ladj / _tnum) ;
+            _ladj = std::sqrt(_ladj / _cnum) ;
+        }
+    }
+
+    /*
+    --------------------------------------------------------
+     * DQDX-TRI3: "local-ascent" node movement vector.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type halo_tri3_k (
+        mesh_type &_mesh ,
+        iptr_type  _cell ,
+        node_iter  _node ,
+        real_type *_bmin ,
+        real_type *_bmax ,
+        real_type &_ladj
+        )
+    {
+        iptr_type static constexpr
+            _last = pred_type::geom_dims + 0;
+
+    /*------------------------------------- cell indexing */
+        auto _tptr =
+       _mesh. tri3().head() + _cell ;
+
+        auto _inod = _tptr->node(0) ;
+        auto _jnod = _tptr->node(1) ;
+        auto _knod = _tptr->node(2) ;
+
+        auto _iptr =
+       _mesh. node().head() + _inod ;
+        auto _jptr =
+       _mesh. node().head() + _jnod ;
+        auto _kptr =
+       _mesh. node().head() + _knod ;
+
+    /*------------------------------------- cell centroid */
+        real_type _pmid[_last + 0] = {
+            (real_type) +0.0} ;
+
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+            _pmid[_idim] +=
+                _iptr->pval(_idim) ;
+            _pmid[_idim] +=
+                _jptr->pval(_idim) ;
+            _pmid[_idim] +=
+                _kptr->pval(_idim) ;
+        }
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+            _pmid[_idim]
+                /= (real_type) +3. ;
         }
 
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+            _bmin[_idim] = std::min(
+                _bmin[_idim],
+                _pmid[_idim])  ;
+
+            _bmax[_idim] = std::max(
+                _bmax[_idim],
+                _pmid[_idim])  ;
+        }
+
+    /*------------------------------------- cell "length" */
+        real_type _lsqr =
+            pred_type::length_sq (
+                _pmid, &_node->pval(0))  ;
+
+        _ladj +=  _lsqr ;
+    }
+
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type dqdx_tri3_k (
+        mesh_type &_mesh ,
+        iptr_type  _cell ,
+        node_iter  _node ,
+        real_type  _COST ,
+        real_type *_bmin ,
+        real_type *_bmax ,
+        real_type *_SAVE ,
+        real_type *_DQDX
+        )
+    {
+        real_type static const _HINC =
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), .50) ;
+
+        real_type static const _RMIN =
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), .75) ;
+
+        real_type static const _RMAX =
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), .25) ;
+
+    /*------------------------------------- cell indexing */
+        auto _ppos = &_node->pval(0);
+
+        auto _tptr =
+       _mesh. tri3().head() + _cell ;
+
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+    /*------------------ local iter. on finite-diff. step */
+        real_type _binc = _bmax[_idim] -
+                          _bmin[_idim] ;
+
+        real_type _hdel = _HINC*_binc;
+
+        real_type _hsum = (real_type)0.;
+
+        real_type _sdel = (real_type)0.;
+        real_type _sabs = (real_type)0.;
+        real_type _sbar = (real_type)0.;
+
+        for (auto _iter = +0; _iter++ != +2; )
+        {
+    /*------------------ centred finite-diff. for dQ / dx */
+            _ppos[_idim] =
+                _SAVE[_idim] + _hdel;
+
+            _hsum  = (real_type)+0. ;
+            _hsum +=
+                _ppos[_idim] - _SAVE[_idim];
+
+            real_type _scr1 =
+                pred_type::tri3_cost (
+               &_mesh. node(
+                _tptr->node(0)).pval(0),
+               &_mesh. node(
+                _tptr->node(1)).pval(0),
+               &_mesh. node(
+                _tptr->node(2)).pval(0),
+                typename
+                pred_type::cell_kind ()
+                    ) ;
+
+            _ppos[_idim] =
+                _SAVE[_idim] - _hdel;
+
+            _hsum -=
+                _ppos[_idim] - _SAVE[_idim];
+
+            real_type _scr0 =
+                pred_type::tri3_cost (
+               &_mesh. node(
+                _tptr->node(0)).pval(0),
+               &_mesh. node(
+                _tptr->node(1)).pval(0),
+               &_mesh. node(
+                _tptr->node(2)).pval(0),
+                typename
+                pred_type::cell_kind ()
+                    ) ;
+
+            _sdel = _scr1 - _scr0 ;
+
+            _sbar = std::abs(_COST) ;
+            _sabs = std::abs(_sdel) ;
+
+    /*------------------ try to adjust step on rel. diff. */
+            if (_sabs > (real_type)0.)
+            {
+            if (_sabs > _RMAX * _sbar)
+            {
+                _hdel/= (real_type) +10. ;
+            }
+            else
+            if (_sabs < _RMIN * _sbar)
+            {
+                _hdel*= (real_type) +10. ;
+            }
+            else { break ; }
+            }
+            else { break ; }
+        }
+
+        _ppos[_idim]  = _SAVE  [_idim];
+
+    /*------------------ finalise gradient and accumulate */
+
+        _DQDX[_idim] += _sdel / _hsum ;
+
+        }
+    }
+
+    /*
+    --------------------------------------------------------
+     * DQDX-QUAD: "local-ascent" node movement vector.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type halo_quad_k (
+        mesh_type &_mesh ,
+        iptr_type  _cell ,
+        node_iter  _node ,
+        real_type *_bmin ,
+        real_type *_bmax ,
+        real_type &_ladj
+        )
+    {
+        iptr_type static constexpr
+            _last = pred_type::geom_dims + 0;
+
+    /*------------------------------------- cell indexing */
+        auto _qptr =
+       _mesh. quad().head() + _cell ;
+
+        auto _inod = _qptr->node(0) ;
+        auto _jnod = _qptr->node(1) ;
+        auto _knod = _qptr->node(2) ;
+        auto _lnod = _qptr->node(3) ;
+
+        auto _iptr =
+       _mesh. node().head() + _inod ;
+        auto _jptr =
+       _mesh. node().head() + _jnod ;
+        auto _kptr =
+       _mesh. node().head() + _knod ;
+        auto _lptr =
+       _mesh. node().head() + _lnod ;
+
+    /*------------------------------------- cell centroid */
+        real_type _pmid[_last + 0] = {
+            (real_type) +0.0} ;
+
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+            _pmid[_idim] +=
+                _iptr->pval(_idim) ;
+            _pmid[_idim] +=
+                _jptr->pval(_idim) ;
+            _pmid[_idim] +=
+                _kptr->pval(_idim) ;
+            _pmid[_idim] +=
+                _lptr->pval(_idim) ;
+        }
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+            _pmid[_idim]
+                /= (real_type) +4. ;
+        }
+
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+            _bmin[_idim] = std::min(
+                _bmin[_idim],
+                _pmid[_idim])  ;
+
+            _bmax[_idim] = std::max(
+                _bmax[_idim],
+                _pmid[_idim])  ;
+        }
+
+    /*------------------------------------- cell "length" */
+        real_type _lsqr =
+            pred_type::length_sq (
+                _pmid, &_node->pval(0))  ;
+
+        _ladj +=  _lsqr ;
+    }
+
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type dqdx_quad_k (
+        mesh_type &_mesh ,
+        iptr_type  _cell ,
+        node_iter  _node ,
+        real_type  _COST ,
+        real_type *_bmin ,
+        real_type *_bmax ,
+        real_type *_SAVE ,
+        real_type *_DQDX
+        )
+    {
+        real_type static const _HINC =
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), .50) ;
+
+        real_type static const _RMIN =
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), .75) ;
+
+        real_type static const _RMAX =
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), .25) ;
+
+    /*------------------------------------- cell indexing */
+        auto _ppos = &_node->pval(0);
+
+        auto _qptr =
+       _mesh. quad().head() + _cell ;
+
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+    /*------------------ local iter. on finite-diff. step */
+        real_type _binc = _bmax[_idim] -
+                          _bmin[_idim] ;
+
+        real_type _hdel = _HINC*_binc;
+
+        real_type _hsum = (real_type)0.;
+
+        real_type _sdel = (real_type)0.;
+        real_type _sabs = (real_type)0.;
+        real_type _sbar = (real_type)0.;
+
+        for (auto _iter = +0; _iter++ != +2; )
+        {
+    /*------------------ centred finite-diff. for dQ / dx */
+            _ppos[_idim] =
+                _SAVE[_idim] + _hdel;
+
+            _hsum  = (real_type)+0. ;
+            _hsum +=
+                _ppos[_idim] - _SAVE[_idim];
+
+            real_type _scr1 =
+                pred_type::quad_cost (
+               &_mesh. node(
+                _qptr->node(0)).pval(0),
+               &_mesh. node(
+                _qptr->node(1)).pval(0),
+               &_mesh. node(
+                _qptr->node(2)).pval(0),
+               &_mesh. node(
+                _qptr->node(3)).pval(0),
+                typename
+                pred_type::cell_kind ()
+                    ) ;
+
+            _ppos[_idim] =
+                _SAVE[_idim] - _hdel;
+
+            _hsum -=
+                _ppos[_idim] - _SAVE[_idim];
+
+            real_type _scr0 =
+                pred_type::quad_cost (
+               &_mesh. node(
+                _qptr->node(0)).pval(0),
+               &_mesh. node(
+                _qptr->node(1)).pval(0),
+               &_mesh. node(
+                _qptr->node(2)).pval(0),
+               &_mesh. node(
+                _qptr->node(3)).pval(0),
+                typename
+                pred_type::cell_kind ()
+                    ) ;
+
+            _sdel = _scr1 - _scr0 ;
+
+            _sbar = std::abs(_COST) ;
+            _sabs = std::abs(_sdel) ;
+
+    /*------------------ try to adjust step on rel. diff. */
+            if (_sabs > (real_type)0.)
+            {
+            if (_sabs > _RMAX * _sbar)
+            {
+                _hdel/= (real_type) +10. ;
+            }
+            else
+            if (_sabs < _RMIN * _sbar)
+            {
+                _hdel*= (real_type) +10. ;
+            }
+            else { break ; }
+            }
+            else { break ; }
+        }
+
+        _ppos[_idim]  = _SAVE  [_idim];
+
+    /*------------------ finalise gradient and accumulate */
+
+        _DQDX[_idim] += _sdel / _hsum ;
+
+        }
     }
 
     /*
@@ -433,254 +1187,131 @@
     --------------------------------------------------------
      */
 
+    // Shift vertex via gradients of quality functions
+
+    // xnew <=== xold + beta * BEST[ d./dx Q(x,w)|_i ]
+
     template <
         typename  node_iter
              >
     __static_call
     __normal_call void_type dqdx_move_2 (
         mesh_type &_mesh ,
-        size_type &_hfun ,
-        pred_type &_pred ,
-        iptr_list &_tset ,
+        conn_list &_conn ,
         node_iter  _node ,
         real_list &_cost ,
         real_type *_line ,
         real_type &_ladj
         )
     {
+        iptr_type static constexpr
+            _last = pred_type::geom_dims + 0 ;
+
         real_type static const _HINC =
             std::pow(std::numeric_limits
-                <real_type>::epsilon(), +.50) ;
+                <real_type>::epsilon(), .50) ;
 
-        real_type static const _RMIN =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), +.75) ;
-
-        real_type static const _RMAX =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), +.25) ;
-
-        __unreferenced(_hfun);
-        __unreferenced(_pred); // for MSVC...
+        _ladj = (real_type) 0. ;
 
     /*------------------ calc. local characteristic scale */
         real_type _qmin =
-            +std::numeric_limits
-                <real_type>::infinity();
+       +std::numeric_limits<real_type>::infinity();
 
-        real_type _bmin[_dims] = {
-           +std::numeric_limits
-                <real_type>::infinity()
+        real_type _bmin[_last] = {
+       +std::numeric_limits<real_type>::infinity()
             } ;
-        real_type _bmax[_dims] = {
-           -std::numeric_limits
-                <real_type>::infinity()
+        real_type _bmax[_last] = {
+       -std::numeric_limits<real_type>::infinity()
             } ;
 
-        iptr_type _tnum = +0 ;
-
-        _ladj = (real_type)0.;
-
-        real_type _dqdx[_dims] = {
-            (real_type) +0.0 } ;
-
-        real_type _save  [_dims] ;
-        for (auto _idim = _dims; _idim-- != +0; )
+        iptr_type _cnum  = + 0 ;
+        for (auto _next  = _conn.head() ,
+                  _tend  = _conn.tend() ;
+                  _next != _tend ;
+                ++_next, ++_cnum )
         {
-            _save[_idim] =
+             auto _cell  = _next->_cell ;
+             auto _kind  = _next->_kind ;
+
+            _qmin = std::min(
+                    _qmin, _cost [_cnum]) ;
+
+            if (_kind == TRIA3_tag)
+            {
+                halo_tri3_k(_mesh,
+                    _cell , _node, _bmin, _bmax,
+                    _ladj ) ;
+            }
+            else
+            if (_kind == QUAD4_tag)
+            {
+                halo_quad_k(_mesh,
+                    _cell , _node, _bmin, _bmax,
+                    _ladj ) ;
+            }
+        }
+
+        _ladj = std::sqrt (_ladj / _cnum) ;
+
+    /*------------------ adj. gradients wrt. pos: dQ / dx */
+        real_type _qlim = _qmin +
+            (real_type) +1.0E-002  ;
+
+        real_type _DQDX[_last] = {
+            (real_type) +0.0E+000} ;
+
+        real_type _qbar = (real_type) 1.;
+        real_type _qlow = (real_type) 0.;
+
+        real_type _SAVE[_last] ;
+        for (auto _idim  =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+            _SAVE[_idim] =
                 _node->pval(_idim) ;
         }
 
-        for (auto _tria  = _tset.head(),
-                  _tend  = _tset.tend();
-                  _tria != _tend;
-                ++_tria, ++_tnum)
+        iptr_type _lnum  = 0, _hnum  = 1, _nnum  = 0;
+        for (auto _next  = _conn.head() ,
+                  _tend  = _conn.tend() ;
+                  _next != _tend ;
+                ++_next, ++_nnum )
         {
-             auto _tptr  =
-            _mesh._set3.head()+*_tria ;
+             auto _cell  = _next->_cell ;
+             auto _kind  = _next->_kind ;
 
-             iptr_type _tnod[3] ;
-            _tnod[ 0] = _tptr->node( 0) ;
-            _tnod[ 1] = _tptr->node( 1) ;
-            _tnod[ 2] = _tptr->node( 2) ;
+             auto _COST  = _cost [_nnum];
 
-            algorithms::isort(
-                &_tnod[0], &_tnod[3],
-                    std::less<iptr_type>()) ;
-
-             auto _inod =
-            _mesh._set1.head()+_tnod[0] ;
-             auto _jnod =
-            _mesh._set1.head()+_tnod[1] ;
-             auto _knod =
-            _mesh._set1.head()+_tnod[2] ;
-
-            _qmin = std::min(
-                _qmin, _cost[_tnum]) ;
-
-            real_type _pmid[_dims] = {
-                (real_type) +0.0 } ;
-
-            for (auto _idim = _dims; _idim-- != +0; )
+            if (_COST <= _qlim)
             {
-                _pmid[_idim] +=
-                    _inod->pval(_idim) ;
-                _pmid[_idim] +=
-                    _jnod->pval(_idim) ;
-                _pmid[_idim] +=
-                    _knod->pval(_idim) ;
-            }
-            for (auto _idim = _dims; _idim-- != +0; )
-            {
-                _pmid[_idim]
-                    /= (real_type) +3. ;
-            }
-
-            for (auto _idim = _dims; _idim-- != +0; )
-            {
-                _bmin[_idim] = std::min(
-                    _bmin[_idim],
-                    _pmid[_idim])  ;
-
-                _bmax[_idim] = std::max(
-                    _bmax[_idim],
-                    _pmid[_idim])  ;
-            }
-
-            real_type _lsqr =
-                _pred.length_sq (
-                    _pmid, &_node->pval(0))  ;
-
-            _ladj +=  _lsqr ;
-        }
-
-        _ladj = std::sqrt (_ladj/_tnum) ;
-
-    /*------------------ adj. gradients w.r.t. W: dQ / dw */
-        real_type _qbar , _qlow ;
-        _qbar = (real_type) +1. ;
-        _qlow = (real_type) +0. ;
-
-        iptr_type _lnum =   +0  ;
-        iptr_type _hnum =   +1  ;
-
-        real_type _qlim = _qmin +
-            (real_type) +1.0E-002 ;
-
-        _tnum = (iptr_type) +0  ;
-        for (auto _tria  = _tset.head() ,
-                  _tend  = _tset.tend() ;
-                  _tria != _tend;
-                ++_tria, ++_tnum)
-        {
-             auto _tptr  =
-            _mesh._set3.head()+*_tria ;
-
-            real_type _qtri = _cost[_tnum];
-
-        /*-------------- only do gradients for 'poor' set */
-            if (_qtri <=  _qlim)
-            {
-                for (auto _idim = _dims ;
-                          _idim-- != 0; )
+                if (_kind == TRIA3_tag)
                 {
-            /*---------- local iter. on finite-diff. step */
-                real_type _binc = _bmax[_idim] -
-                                  _bmin[_idim] ;
-
-                real_type _hdel = _HINC*_binc;
-
-                real_type _hsum = (real_type)0.;
-
-                real_type _sdel = (real_type)0.;
-                real_type _sabs = (real_type)0.;
-                real_type _sbar = (real_type)0.;
-
-                for (auto _iter = +0; _iter++ != +2; )
+                dqdx_tri3_k(_mesh, _cell,
+                    _node , _COST, _bmin, _bmax,
+                    _SAVE , _DQDX) ;
+                }
+                else
+                if (_kind == QUAD4_tag)
                 {
-
-                /*------ centred finite-diff. for dQ / dw */
-                    _node->pval(_idim) =
-                       _save[_idim] + _hdel;
-
-                    _hsum  = (real_type)0. ;
-                    _hsum += _node->
-                        pval(_idim) - _save[_idim] ;
-
-                    real_type _scr1 =
-                        _pred .cost_tria (
-                       &_mesh._set1[
-                        _tptr->node(0)].pval(0),
-                       &_mesh._set1[
-                        _tptr->node(1)].pval(0),
-                       &_mesh._set1[
-                        _tptr->node(2)].pval(0)
-                            ) ;
-
-                    _node->pval(_idim) =
-                       _save[_idim] - _hdel;
-
-                    _hsum -= _node->
-                        pval(_idim) - _save[_idim] ;
-
-                    real_type _scr0 =
-                        _pred .cost_tria (
-                       &_mesh._set1[
-                        _tptr->node(0)].pval(0),
-                       &_mesh._set1[
-                        _tptr->node(1)].pval(0),
-                       &_mesh._set1[
-                        _tptr->node(2)].pval(0)
-                            ) ;
-
-                    _sbar = _cost[_tnum];
-
-                    _sdel = _scr1-_scr0 ;
-
-                    _sbar = std::abs(_sbar) ;
-                    _sabs = std::abs(_sdel) ;
-
-                    _node->pval(_idim)
-                        = _save[_idim] ;
-
-                /*------ try to adjust step on rel. diff. */
-                    if (_sabs > (real_type)0.)
-                    {
-                    if (_sabs > _RMAX * _sbar)
-                    {
-                        _hdel *=
-                            (real_type) +.10 ;
-                    }
-                    else
-                    if (_sabs < _RMIN * _sbar)
-                    {
-                        _hdel *=
-                            (real_type) +10. ;
-                    }
-                    else { break ; }
-                    }
-                    else { break ; }
+                dqdx_quad_k(_mesh, _cell,
+                    _node , _COST, _bmin, _bmax,
+                    _SAVE , _DQDX) ;
                 }
 
-            /*---------- finalise gradient and accumulate */
-                _dqdx[_idim]+= _sdel / _hsum ;
-
-                }
-
-                _qlow += _qtri ; _lnum += +1 ;
+                _qlow += _COST ; _lnum += +1 ;
             }
             else
             {
-            /*---------- accumulate metrics in 'good' set */
-                _qbar += _qtri ; _hnum += +1 ;
+                _qbar += _COST ; _hnum += +1 ;
             }
         }
 
         if (_lnum > +0)
         {
-            for (auto _idim = _dims; _idim-- != +0; )
+            for (auto _idim  =
+            pred_type::geom_dims; _idim-- != +0; )
             {
-                _dqdx[_idim]  /= _lnum ;
+                _DQDX[_idim] /= _lnum ;
             }
 
             _qlow /=  _lnum ;
@@ -689,11 +1320,12 @@
 
     /*------------------ 1st ord. Taylor-series step est. */
         real_type _scal =
-            std::sqrt(_pred.length_sq(_dqdx)) ;
+        std::sqrt (pred_type::length_sq(_DQDX));
 
         if (_scal*_ladj <= _HINC)
         {
-            for (auto _idim = _dims; _idim-- != +0; )
+            for (auto _idim  =
+            pred_type::geom_dims; _idim-- != +0; )
             {
                 _line[_idim]
                     = (real_type) +0. ;
@@ -701,20 +1333,21 @@
         }
         else
         {
-            for (auto _idim = _dims; _idim-- != +0; )
+            for (auto _idim  =
+            pred_type::geom_dims; _idim-- != +0; )
             {
                 _line[_idim] =
-                    _dqdx[_idim] / _scal ;
+                    _DQDX[_idim]/ _scal ;
             }
 
             _scal = (_qbar - _qlow) /
-            _pred .innerprod(_line, _dqdx) ;
+            pred_type::innerprod(_line, _DQDX) ;
 
-            _scal*= (real_type)+.50 ;
+            _scal = std::min(
+                _scal / (real_type)2. , _ladj) ;
 
-            _scal = std::min(_scal, _ladj) ;
-
-            for (auto _idim = _dims; _idim-- != +0; )
+            for (auto _idim  =
+            pred_type::geom_dims; _idim-- != +0; )
             {
                 _line[_idim] *= _scal ;
             }

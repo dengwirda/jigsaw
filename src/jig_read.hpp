@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 October, 2019
+     * Last updated: 16 July, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -234,8 +234,7 @@
     /*---------------------------------- read "file" data */
         #define __putFILE(__fun, __tok)     \
             if (__tok.count() == +2)    \
-           _dest.__fun(                 \
-                 trim(__tok[ 1])) ;     \
+            _dest.__fun(trim(__tok[ 1])) ;  \
             else                        \
            _errs.push_tail(_line) ;
 
@@ -247,14 +246,17 @@
             if (__str[1].find("DELAUNAY")!= \
                     std::string::npos ) \
                 _dest.__fun (           \
-                    jcfg_data           \
-               ::mesh_pred::delaunay) ; \
+                    jcfg_data::mesh_pred::delaunay) ;   \
             else                        \
             if (__str[1].find("DELFRONT")!= \
                     std::string::npos ) \
                 _dest.__fun (           \
-                    jcfg_data           \
-               ::mesh_pred::delfront) ; \
+                    jcfg_data::mesh_pred::delfront) ;   \
+            else                        \
+            if (__str[1].find("BISECTOR")!= \
+                    std::string::npos ) \
+                _dest.__fun (           \
+                    jcfg_data::mesh_pred::bisector) ;   \
             else                        \
            _errs.push_tail(_line) ;     \
             }                           \
@@ -269,14 +271,17 @@
             if (__str[1].find("ODT+DQDX")!= \
                     std::string::npos ) \
                 _dest.__fun (           \
-                    jcfg_data           \
-               ::iter_pred::odt_dqdx) ; \
+                    jcfg_data::iter_pred::odt_dqdx) ;   \
             else                        \
             if (__str[1].find("CVT+DQDX")!= \
                     std::string::npos ) \
                 _dest.__fun (           \
-                    jcfg_data           \
-               ::iter_pred::cvt_dqdx) ; \
+                    jcfg_data::iter_pred::cvt_dqdx) ;   \
+            else                        \
+            if (__str[1].find("H95+DQDX")!= \
+                    std::string::npos ) \
+                _dest.__fun (           \
+                    jcfg_data::iter_pred::h95_dqdx) ;   \
             else                        \
            _errs.push_tail(_line) ;     \
             }                           \
@@ -291,14 +296,12 @@
             if (__str[1].find("BND-TRIA")!= \
                     std::string::npos ) \
                 _dest.__fun (           \
-                    jcfg_data           \
-               ::bnds_pred::bnd_tria) ; \
+                    jcfg_data::bnds_pred::bnd_tria) ;   \
             else                        \
             if (__str[1].find("BND-DUAL")!= \
                     std::string::npos ) \
                 _dest.__fun (           \
-                    jcfg_data           \
-               ::bnds_pred::bnd_dual) ; \
+                    jcfg_data::bnds_pred::bnd_dual) ;   \
             else                        \
            _errs.push_tail(_line) ;     \
             }                           \
@@ -313,14 +316,12 @@
             if (__str[1].find("ABSOLUTE")!= \
                     std::string::npos ) \
                 _dest.__fun (           \
-                    jcfg_data           \
-               ::hfun_scal::absolute) ; \
+                    jcfg_data::hfun_scal::absolute) ;   \
             else                        \
             if (__str[1].find("RELATIVE")!= \
                     std::string::npos ) \
                 _dest.__fun (           \
-                    jcfg_data           \
-               ::hfun_scal::relative) ; \
+                    jcfg_data::hfun_scal::relative) ;   \
             else                        \
            _errs.push_tail(_line) ;     \
             }                           \

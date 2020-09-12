@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 1 October, 2019
+     * Last updated: 30 May, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -219,6 +219,88 @@
 
             this->_jmsh->
                 _power._data[_ipos] = +0.00 ;
+            }
+            else
+            {
+            this->_errv =__invalid_argument ;
+            }
+
+            }
+        }
+    /*-------------------------------- open SEEDS section */
+        __normal_call void_type open_seeds (
+            std:: size_t  _nrow
+            )
+        {
+            if (this->_kind ==
+                jmsh_kind:: euclidean_mesh)
+            {
+
+            if (this->_ndim == +2)
+            jigsaw_alloc_vert2 (
+               &this->_jmsh->_seed2, _nrow) ;
+            else
+            if (this->_ndim == +3)
+            jigsaw_alloc_vert3 (
+               &this->_jmsh->_seed3, _nrow) ;
+
+            }
+            else
+            if (this->_kind ==
+                jmsh_kind:: ellipsoid_mesh)
+            {
+
+            if (this->_ndim == +2)
+            jigsaw_alloc_vert2 (
+               &this->_jmsh->_seed2, _nrow) ;
+            else
+            if (this->_ndim == +3)
+            jigsaw_alloc_vert3 (
+               &this->_jmsh->_seed3, _nrow) ;
+
+            }
+        }
+    /*-------------------------------- read SEEDS section */
+        __normal_call void_type push_seeds (
+            std:: size_t  _ipos ,
+            double       *_pval ,
+            std::int32_t  _itag
+            )
+        {
+            if (this->_ndim == +2 )
+            {
+
+            if (_ipos < this->_jmsh->_seed2._size)
+            {
+            this->_jmsh->_seed2._data[_ipos].
+                _ppos[0] = _pval[0] ;
+            this->_jmsh->_seed2._data[_ipos].
+                _ppos[1] = _pval[1] ;
+
+            this->_jmsh->_seed2.
+                _data[_ipos]._itag  = _itag ;
+            }
+            else
+            {
+            this->_errv =__invalid_argument ;
+            }
+
+            }
+            else
+            if (this->_ndim == +3 )
+            {
+
+            if (_ipos < this->_jmsh->_seed3._size)
+            {
+            this->_jmsh->_seed3._data[_ipos].
+                _ppos[0] = _pval[0] ;
+            this->_jmsh->_seed3._data[_ipos].
+                _ppos[1] = _pval[1] ;
+            this->_jmsh->_seed3._data[_ipos].
+                _ppos[2] = _pval[2] ;
+
+            this->_jmsh->_seed3.
+                _data[_ipos]._itag  = _itag ;
             }
             else
             {

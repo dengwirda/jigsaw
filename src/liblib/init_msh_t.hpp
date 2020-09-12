@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 June, 2019
+     * Last updated: 30 May, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -98,6 +98,12 @@
         _mesh->_bound._size = +0 ;
         _mesh->_bound._data = nullptr ;
 
+        _mesh->_seed2._size = +0 ;
+        _mesh->_seed2._data = nullptr ;
+
+        _mesh->_seed3._size = +0 ;
+        _mesh->_seed3._data = nullptr ;
+
         _mesh->_value._size = +0 ;
         _mesh->_value._data = nullptr ;
 
@@ -135,47 +141,29 @@
         {
         _mesh->_flags = JIGSAW_NULL_FLAG ;
 
-        jigsaw_free_vert2(
-                &_mesh->_vert2) ;
-        jigsaw_free_vert3(
-                &_mesh->_vert3) ;
-        jigsaw_free_reals(
-                &_mesh->_power) ;
+        jigsaw_free_vert2(&_mesh->_vert2);
+        jigsaw_free_vert3(&_mesh->_vert3);
+        jigsaw_free_reals(&_mesh->_power);
 
-        jigsaw_free_reals(
-                &_mesh->_radii) ;
+        jigsaw_free_reals(&_mesh->_radii);
 
-        jigsaw_free_edge2(
-                &_mesh->_edge2) ;
+        jigsaw_free_edge2(&_mesh->_edge2);
+        jigsaw_free_tria3(&_mesh->_tria3);
+        jigsaw_free_quad4(&_mesh->_quad4);
+        jigsaw_free_tria4(&_mesh->_tria4);
+        jigsaw_free_hexa8(&_mesh->_hexa8);
+        jigsaw_free_wedg6(&_mesh->_wedg6);
+        jigsaw_free_pyra5(&_mesh->_pyra5);
 
-        jigsaw_free_tria3(
-                &_mesh->_tria3) ;
-        jigsaw_free_quad4(
-                &_mesh->_quad4) ;
+        jigsaw_free_bound(&_mesh->_bound);
 
-        jigsaw_free_tria4(
-                &_mesh->_tria4) ;
-        jigsaw_free_hexa8(
-                &_mesh->_hexa8) ;
-        jigsaw_free_wedg6(
-                &_mesh->_wedg6) ;
-        jigsaw_free_pyra5(
-                &_mesh->_pyra5) ;
+        jigsaw_free_reals(&_mesh->_xgrid);
+        jigsaw_free_reals(&_mesh->_ygrid);
+        jigsaw_free_reals(&_mesh->_zgrid);
 
-        jigsaw_free_bound(
-                &_mesh->_bound) ;
+        jigsaw_free_reals(&_mesh->_value);
+        jigsaw_free_reals(&_mesh->_slope);
 
-        jigsaw_free_reals(
-                &_mesh->_xgrid) ;
-        jigsaw_free_reals(
-                &_mesh->_ygrid) ;
-        jigsaw_free_reals(
-                &_mesh->_zgrid) ;
-
-        jigsaw_free_reals(
-                &_mesh->_value) ;
-        jigsaw_free_reals(
-                &_mesh->_slope) ;
         }
     }
 

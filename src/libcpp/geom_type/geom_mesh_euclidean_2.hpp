@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 December, 2019
+     * Last updated: 28 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -123,6 +123,26 @@
         __inline_call char_type const& topo (
             ) const
         {   return  this->_topo ;
+        }
+
+        } ;
+
+    class seed_type: public mesh_complex_node_2<I,R>
+        {
+    /*------------------------------------ loc. seed type */
+        public  :
+        iptr_type                     _itag ;
+
+        public  :
+    /*------------------------------------ "write" access */
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+    /*------------------------------------ "const" access */
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
         }
 
         } ;
@@ -262,6 +282,10 @@
             part_bytes    = sizeof (part_item);
 
     typedef containers::array   <
+                seed_type ,
+                allocator       >   seed_list ;
+
+    typedef containers::array   <
                 iptr_type ,
                 allocator       >   iptr_list ;
 
@@ -297,6 +321,8 @@
 
     pool_base                      _pool ;
 
+    seed_list                      _seed ;
+
     part_list                      _part ;
     iptr_list                      _ptag ;
 
@@ -322,6 +348,7 @@
         allocator const&
             _asrc = allocator ()
         ) : _pool(part_bytes) ,
+            _seed(    _asrc ) ,
             _part(part_hash() ,
                   part_same() ,
         .8, (pool_wrap(&_pool))) ,
@@ -367,8 +394,9 @@
         geom_opts &_opts
         )
     {
+    /*------------ "sharp" geometry//topology about node? */
         real_type _DtoR =
-       (real_type) +3.1415926536 / 180. ;
+       (real_type)+3.141592653589793 / 180. ;
 
         real_type _ZERO = -1. +
             std::numeric_limits
@@ -387,7 +415,7 @@
         __unreferenced(_node) ;
 
         _feat =  null_feat ;
-        _topo = (char_type)_aset.count();
+        _topo = (char_type)_aset.count () ;
 
         for (auto _ipos  = _aset.head() ;
                   _ipos != _aset.tend() ;
@@ -398,75 +426,75 @@
                   _jpos != _aset.tend() ;
                 ++_jpos  )
         {
-            iptr_type _iedg = * _ipos ;
-            iptr_type _jedg = * _jpos ;
+    /*------------ find signed angle between edge vectors */
+             auto _iedg  = _ipos->_cell ;
+             auto _jedg  = _jpos->_cell ;
 
-            iptr_type _inod[2] ;
-            _inod[0] = this->_tria.
-                _set2[_iedg]. node(0) ;
-            _inod[1] = this->_tria.
-                _set2[_iedg]. node(1) ;
+            iptr_type _inod[2] = {
+            this->_tria.edge(_iedg).node(0) ,
+            this->_tria.edge(_iedg).node(1) ,
+                } ;
 
-            iptr_type _jnod[2] ;
-            _jnod[0] = this->_tria.
-                _set2[_jedg]. node(0) ;
-            _jnod[1] = this->_tria.
-                _set2[_jedg]. node(1) ;
+            iptr_type _jnod[2] = {
+            this->_tria.edge(_jedg).node(0) ,
+            this->_tria.edge(_jedg).node(1) ,
+                } ;
 
             real_type _ivec[2] ;
             geometry::vector_2d(
-               &this->_tria.
-               _set1[ _inod[0]].pval(0) ,
-               &this->_tria.
-               _set1[ _inod[1]].pval(0) ,
-               _ivec) ;
+               & this->_tria.
+                 node(_inod[0]).pval(0) ,
+               & this->_tria.
+                 node(_inod[1]).pval(0) ,
+                _ivec) ;
 
             real_type _jvec[2] ;
             geometry::vector_2d(
-               &this->_tria.
-               _set1[ _jnod[0]].pval(0) ,
-               &this->_tria.
-               _set1[ _jnod[1]].pval(0) ,
-               _jvec) ;
+               & this->_tria.
+                 node(_jnod[0]).pval(0) ,
+               & this->_tria.
+                 node(_jnod[1]).pval(0) ,
+                _jvec) ;
 
-            real_type _acos =
-                geometry::cosine_2d(
-                    _ivec , _jvec) ;
+            real_type _acos = geometry::
+                cosine_2d(_ivec, _jvec) ;
 
             if (_inod[0] == _jnod[1] ||
                 _inod[1] == _jnod[0] )
-                _acos *= (real_type)+1.;
+                _acos *= (real_type)+1. ;
             else
-                _acos *= (real_type)-1.;
+                _acos *= (real_type)-1. ;
 
             if (_acos >= _ZERO)
             {
+    /*------------ tag as "feature" if angle sharp enough */
             if (_acos <= _hard)
             {
                 _feat  =
-            std::max(_feat, hard_feat) ;
+            std::max (_feat, hard_feat) ;
             }
             else
             if (_acos <= _soft)
             {
                 _feat  =
-            std::max(_feat, soft_feat) ;
+            std::max (_feat, soft_feat) ;
             }
             }
             else
             {
             if (_tbad >= +  1 )
             {
-                _topo -= _tbad--;
+                _topo -= _tbad-- ;
             }
             }
         }
         }
         {
+    /*------------ tag as "feature" if topo. is irregular */
             if (_topo != +  0 )
             if (_topo != +  2 )
                 _feat =
-            std::max(_feat, soft_feat) ;
+            std::max (_feat, soft_feat) ;
         }
     }
 
@@ -483,13 +511,14 @@
         geom_opts &_opts
         )
     {
-        containers::array<iptr_type> _eadj ;
+        typename
+            mesh_type::connector _eadj ;
 
     /*---------------------------------- init. geom feat. */
         for (auto _iter  =
-             this->_tria._set1.head() ;
+             this->_tria.node().head() ;
                   _iter !=
-             this->_tria._set1.tend() ;
+             this->_tria.node().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0)
@@ -501,9 +530,9 @@
         }
 
         for (auto _iter  =
-             this->_tria._set2.head() ;
+             this->_tria.edge().head() ;
                   _iter !=
-             this->_tria._set2.tend() ;
+             this->_tria.edge().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0)
@@ -515,9 +544,9 @@
 
     /*---------------------------------- find sharp feat. */
         for (auto _iter  =
-             this->_tria._set1.head() ;
+             this->_tria.node().head() ;
                   _iter !=
-             this->_tria._set1.tend() ;
+             this->_tria.node().tend() ;
                 ++_iter  )
         {
     /*---------------------------------- find sharp 0-dim */
@@ -529,8 +558,8 @@
     /*---------------------------------- set geo.-defined */
             _eadj.set_count (0);
 
-            this->_tria.node_edge (
-               &_iter->node (0), _eadj) ;
+            this->_tria.connect_1(
+               &_iter->node (0), POINT_tag, _eadj) ;
 
             node_feat (
                &_iter->node (0),
@@ -543,39 +572,37 @@
             {
     /*---------------------------------- set user-defined */
             _iter->feat () =
-                std::max(_iter->feat () ,
-                    soft_feat) ;
+                std::max(_iter->feat(), soft_feat) ;
             }
             }
             }
         }
 
         for (auto _iter  =
-             this->_tria._set2.head() ;
+             this->_tria.edge().head() ;
                   _iter !=
-             this->_tria._set2.tend() ;
+             this->_tria.edge().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0)
             {
     /*----------------------------- assign nodes to edges */
-            this->_tria._set1[
-           _iter->node(0)].fdim() = 1 ;
-            this->_tria._set1[
-           _iter->node(1)].fdim() = 1 ;
+            this->_tria.node()[
+                _iter->node(0)].fdim() = 1;
+            this->_tria.node()[
+                _iter->node(1)].fdim() = 1;
            }
         }
 
         for (auto _iter  =
-             this->_tria._set1.head() ;
+             this->_tria.node().head() ;
                   _iter !=
-             this->_tria._set1.tend() ;
+             this->_tria.node().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0)
             {
-            if (_iter->feat() !=
-                    mesh::null_feat)
+            if (_iter->feat() != null_feat)
             {
     /*----------------------------- assign nodes to feat. */
                 _iter->fdim()  = +0;
@@ -703,14 +730,14 @@
                 {
     /*----------------------------- expand aabb via EDGE2 */
                 auto _inod =  this->
-                    _tria._set2[_cell].node(0);
+                    _tria.edge(_cell).node(0) ;
                 auto _jnod =  this->
-                    _tria._set2[_cell].node(1);
+                    _tria.edge(_cell).node(1) ;
 
-                auto _iptr = &this->
-                    _tria._set1[_inod];
-                auto _jptr = &this->
-                    _tria._set1[_jnod];
+                auto _iptr =
+               &this->_tria.node(_inod);
+                auto _jptr =
+               &this->_tria.node(_jnod);
 
                 real_type _xmin =
                 std::min (_iptr->pval(0) ,
@@ -791,9 +818,9 @@
 
     /*----------------------------- calc. aabb for inputs */
         for (auto  _iter  =
-             this->_tria._set1.head() ;
+             this->_tria.node().head() ;
                    _iter !=
-             this->_tria._set1.tend() ;
+             this->_tria.node().tend() ;
                  ++_iter  )
         {
             if (_iter->mark() >= +0 )
@@ -836,10 +863,10 @@
         init_part (_opts);
 
     /*-------------------- make aabb-tree and init. bbox. */
-        aabb_mesh(this->_tria._set1,
-                  this->_tria._set2,
+        aabb_mesh(this->_tria.node(),
+                  this->_tria.edge(),
                   this->_ebox,
-       _BTOL,this->_nbox, edge_pred ()
+       _BTOL, this->_nbox, edge_pred()
                  ) ;
     }
 
@@ -862,9 +889,9 @@
 
     /*------------------------- push set of feature nodes */
         for (auto _iter  =
-             this->_tria._set1.head() ;
+             this->_tria.node().head() ;
                   _iter !=
-             this->_tria._set1.tend() ;
+             this->_tria.node().tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0 )
@@ -872,9 +899,14 @@
             if (_iter->feat() != null_feat)
             {
     /*----------------------------- push any 'real' feat. */
+            real_type _ppos[3] ;
+            _ppos[0] = _iter->pval(0) ;
+            _ppos[1] = _iter->pval(1) ;
+            _ppos[2] = (real_type)+0. ;
+
             iptr_type _node = -1 ;
             if (_mesh._tria.push_node (
-               &_iter->pval(0), _node))
+                    &_ppos[ 0], _node))
             {
                 _mesh._tria.node
                     (_node)->fdim()
@@ -897,9 +929,14 @@
             if (_iter->itag() <= -1 )
             {
     /*----------------------------- push any 'user' feat. */
+            real_type _ppos[3] ;
+            _ppos[0] = _iter->pval(0) ;
+            _ppos[1] = _iter->pval(1) ;
+            _ppos[2] = (real_type)+0. ;
+
             iptr_type _node = -1 ;
             if (_mesh._tria.push_node (
-               &_iter->pval(0), _node))
+                    &_ppos[ 0], _node))
             {
                 _mesh._tria.node
                     (_node)->fdim()
@@ -951,16 +988,18 @@
             for (_fdim = 1; _fdim != 3; ++_fdim)
             {
             for (auto _ipos  =
-                 this->_tria._set1.head() ;
+                 this->_tria.node().head() ;
                       _ipos !=
-                 this->_tria._set1.tend() ;
+                 this->_tria.node().tend() ;
                     ++_ipos  )
             {
+    /*------------------------- get current furthest node */
                 if (_ipos->mark() >= 0 &&
                         _ipos->fdim () == _fdim)
                 {
                 real_type _dmin  =
-            +std::numeric_limits<real_type>::infinity() ;
+                    +std::numeric_limits
+                        <real_type>::infinity();
 
                 for (auto _jpos  =
                     _mesh._tria._nset.head() ;
@@ -989,9 +1028,14 @@
             if (_dmax > (real_type)0.)
             {
     /*------------------------- add current furthest node */
+                real_type _ppos[3] ;
+                _ppos[0] = _best->pval(0) ;
+                _ppos[1] = _best->pval(1) ;
+                _ppos[2] = (real_type)+0. ;
+
                 iptr_type _node = -1;
                 if (_mesh._tria.push_node(
-                   &_best->pval(0), _node) )
+                        &_ppos[ 0], _node) )
                 {
                     _mesh._tria.node
                         (_node)->fdim()
@@ -1114,21 +1158,21 @@
                         && !have_part(_epos) )
                     continue ;
 
-                iptr_type  _enod[2];
-                _enod[0] =_geom.
-                    _tria._set2[_epos].node(0) ;
-                _enod[1] =_geom.
-                    _tria._set2[_epos].node(1) ;
+                iptr_type  _enod[2] ;
+                _enod[0] = _geom.
+                    _tria.edge(_epos).node(0) ;
+                _enod[1] = _geom.
+                    _tria.edge(_epos).node(1) ;
 
-                real_type  _xpos[2];
+                real_type  _xpos[2] ;
                 _HITS =
                      geometry::line_line_2d (
                    & this->_ipos[0],
                    & this->_jpos[0],
                    &_geom ._tria.
-                    _set1 [_enod[0]].pval(0),
+                     node( _enod[0] ).pval(0) ,
                    &_geom ._tria.
-                    _set1 [_enod[1]].pval(0),
+                     node( _enod[1] ).pval(0) ,
                     _xpos, true, 2 ) ;
 
                 if(_HITS != geometry::null_hits)
@@ -1136,11 +1180,11 @@
             /*--------------- call output function on hit */
                     this->_hfun (_xpos, _HITS ,
                     _geom._tria .
-                    _set2[_epos].feat() ,
+                     edge(_epos).feat() ,
                     _geom._tria .
-                    _set2[_epos].topo() ,
+                     edge(_epos).topo() ,
                     _geom._tria .
-                    _set2[_epos].itag() ) ;
+                     edge(_epos).itag() ) ;
 
                     this->_hnum+= +1 ;
 
@@ -1220,22 +1264,22 @@
                 iptr_type _epos =
                     _iptr->_data.ipos() ;
 
-                iptr_type _enod[2];
-                _enod[0] =_geom.
-                    _tria._set2[_epos].node(0) ;
-                _enod[1] =_geom.
-                    _tria._set2[_epos].node(1) ;
+                iptr_type  _enod[2];
+                _enod[0] = _geom.
+                    _tria.edge(_epos).node(0) ;
+                _enod[1] = _geom.
+                    _tria.edge(_epos).node(1) ;
 
-                real_type _ipos[2];
-                real_type _jpos[2];
-                size_t    _nhit =
+                real_type  _ipos[2];
+                real_type  _jpos[2];
+                size_t     _nhit =
                     geometry::ball_line_2d (
                      this->_ball,
                      this->_rsiz,
                    &_geom ._tria.
-                    _set1 [_enod[0]].pval(0) ,
+                     node (_enod[0] ).pval(0) ,
                    &_geom ._tria.
-                    _set1 [_enod[1]].pval(0) ,
+                     node (_enod[1] ).pval(0) ,
                     _ipos, _jpos ) ;
 
                 switch (_nhit)
@@ -1245,11 +1289,11 @@
             /*--------------- call output function on hit */
                 this->_hfun (_jpos, _HITS ,
                     _geom._tria .
-                    _set2[_epos].feat() ,
+                     edge(_epos).feat() ,
                     _geom._tria .
-                    _set2[_epos].topo() ,
+                     edge(_epos).topo() ,
                     _geom._tria .
-                    _set2[_epos].itag() ) ;
+                     edge(_epos).itag() ) ;
 
                 this->_hnum += +1;
                     }      // falls through
@@ -1259,11 +1303,11 @@
             /*--------------- call output function on hit */
                 this->_hfun (_ipos, _HITS ,
                     _geom._tria .
-                    _set2[_epos].feat() ,
+                     edge(_epos).feat() ,
                     _geom._tria .
-                    _set2[_epos].topo() ,
+                     edge(_epos).topo() ,
                     _geom._tria .
-                    _set2[_epos].itag() ) ;
+                     edge(_epos).itag() ) ;
 
                 this->_hnum += +1;
 
@@ -1330,17 +1374,17 @@
 
                 iptr_type  _enod[+2] = {
                      this->_mesh->
-                    _set2 [_EPOS   ].node(0) ,
+                     edge (_EPOS   ).node(0) ,
                      this->_mesh->
-                    _set2 [_EPOS   ].node(1) ,
+                     edge (_EPOS   ).node(1) ,
                     } ;
 
                 if (geometry::proj_line_2d (
                            _ppos,
                     &this->_mesh->
-                    _set1 [_enod[0]].pval(0) ,
+                     node (_enod[0]).pval(0) ,
                     &this->_mesh->
-                    _set1 [_enod[1]].pval(0) ,
+                     node (_enod[1]).pval(0) ,
                     _qtmp, _HITS) )
                 {
                     if (_HITS !=

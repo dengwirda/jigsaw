@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2019
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -220,14 +220,19 @@
         }
 
     /*------------------------- calc. refinement priority */
-        iptr_type _ebnd=_emin ;
-        real_type _best;
-        _best  =  _llen[_emax];
-        _best += (real_type)1.;
+        real_type static
+        constexpr _TRAP = (real_type)1.5 ;
 
-        _tdat._mark =  +0 ;
+        iptr_type _ebnd = _emin ;
+        real_type _best =
+            std::numeric_limits
+                <real_type>::infinity () ;
 
-    #   ifdef __bias_BNDS
+        bool_type _trap = false ;
+
+        _tdat._mark =  (iptr_type) +0;
+
+    #   ifdef __bias_bnds
         for(_enum = +3; _enum-- != +0; )
         {
             iptr_type  _enod[ +3];
@@ -257,6 +262,12 @@
                     _best = _llen[_enum];
                 }
 
+                if (_llen[_enum] >=
+                    _llen[_emin] *_TRAP )
+                {
+                    _trap =  true ;
+                }
+
                 _tdat._mark -= +1 ;
             }
         }
@@ -268,7 +279,7 @@
 
     /*------------------------- calc. refinement priority */
         _tdat._cost =
-            (float) (_erat * _tbal[2]) ;
+            (float) (_tbal[2] * _erat) ;
 
     //  scaling via node numbering seems to make slightly
     //  better (more topologically regular) meshes
@@ -286,10 +297,26 @@
         _tdat._cost/=     _enod[1] + 1 ;
 
     /*------------------------- refinement classification */
+
+    //  flag cells "trapped" between boundaries -- having
+    //  all nodes on lower dimensional facets and with at
+    //  least one boundary face.
+
+        _trap = _trap &&
+            _mesh._tria.
+        node(_tnod[0])->fdim() < +2 &&
+            _mesh._tria.
+        node(_tnod[1])->fdim() < +2 &&
+            _mesh._tria.
+        node(_tnod[2])->fdim() < +2  ;
+
         if (_erat >= _args.rad2() *
                      _args.rad2() )
         {
+        //  if (!_trap)     // don't refine trapped cells
+            {
             _kind = mesh::ring_item; return ;
+            }
         }
 
     /*------------------------- eval. size func. at _tbal */

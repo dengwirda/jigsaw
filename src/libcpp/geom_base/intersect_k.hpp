@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2019
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -875,7 +875,7 @@
                 _qq[0] =  _qt[0] ;      \
                 _qq[1] =  _qt[1] ;      \
                                         \
-                _dm = _dd;              \
+                _dm = _dd ;             \
             }                           \
         }
 
@@ -981,7 +981,7 @@
                 _qq[1] =  _qt[1] ;      \
                 _qq[2] =  _qt[2] ;      \
                                         \
-                _dm = _dd;              \
+                _dm = _dd ;             \
             }                           \
         }
 
@@ -1163,7 +1163,7 @@
                 _qq[1] =  _qt[1] ;      \
                 _qq[2] =  _qt[2] ;      \
                                         \
-                _dm = _dd;              \
+                _dm = _dd ;             \
             }                           \
         }
 

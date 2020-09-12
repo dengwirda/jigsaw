@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 June, 2016
+     * Last updated: 30 April, 2020
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -76,6 +76,21 @@
         _vv[2] = _p2[2] - _p1[2];
     }
 
+    template <
+    typename      data_type
+             >
+    __inline_call void_type vector_4d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __write_ptr  (data_type) _vv
+        )
+    {
+        _vv[0] = _p2[0] - _p1[0];
+        _vv[1] = _p2[1] - _p1[1];
+        _vv[2] = _p2[2] - _p1[2];
+        _vv[3] = _p2[3] - _p1[3];
+    }
+
 /*-------------------------------- calc. (squared) length */
     template <
     typename      data_type
@@ -96,6 +111,18 @@
     {   return _vv[0] * _vv[0] +
                _vv[1] * _vv[1] +
                _vv[2] * _vv[2] ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call data_type lensqr_4d (
+    __const_ptr  (data_type) _vv
+        )
+    {   return _vv[0] * _vv[0] +
+               _vv[1] * _vv[1] +
+               _vv[2] * _vv[2] +
+               _vv[3] * _vv[3] ;
     }
 
     template <
@@ -127,6 +154,23 @@
         return _vv[0] * _vv[0] +
                _vv[1] * _vv[1] +
                _vv[2] * _vv[2] ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call data_type lensqr_4d (
+    __const_ptr  (data_type) _p1 ,
+    __const_ptr  (data_type) _p2
+        )
+    {
+        data_type _vv[ +4];
+        vector_4d(_p1, _p2, _vv) ;
+
+        return _vv[0] * _vv[0] +
+               _vv[1] * _vv[1] +
+               _vv[2] * _vv[2] +
+               _vv[3] * _vv[3] ;
     }
 
 /*-------------------------------- calc. euclidean length */
@@ -168,6 +212,72 @@
         )
     {   return
         std::sqrt(lensqr_3d(_p1, _p2)) ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call data_type length_4d (
+    __const_ptr  (data_type) _vv
+        )
+    {   return std::sqrt(lensqr_4d(_vv)) ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call data_type length_4d (
+    __const_ptr  (data_type) _p1 ,
+    __const_ptr  (data_type) _p2
+        )
+    {   return
+        std::sqrt(lensqr_4d(_p1, _p2)) ;
+    }
+
+/*-------------------------------- scale onto unit vector */
+    template <
+    typename      data_type
+             >
+    __inline_call data_type normalise_2d (
+    __write_ptr  (data_type) _vv
+        )
+    {
+        data_type _ll = length_2d(_vv) ;
+        _vv[0] /= _ll ;
+        _vv[1] /= _ll ;
+
+        return (  _ll ) ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call data_type normalise_3d (
+    __write_ptr  (data_type) _vv
+        )
+    {
+        data_type _ll = length_3d(_vv) ;
+        _vv[0] /= _ll ;
+        _vv[1] /= _ll ;
+        _vv[2] /= _ll ;
+
+        return (  _ll ) ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call data_type normalise_4d (
+    __write_ptr  (data_type) _vv
+        )
+    {
+        data_type _ll = length_4d(_vv) ;
+        _vv[0] /= _ll ;
+        _vv[1] /= _ll ;
+        _vv[2] /= _ll ;
+        _vv[3] /= _ll ;
+
+        return (  _ll ) ;
     }
 
 /*-------------------------------- vector "cross" product */
@@ -224,6 +334,19 @@
     {   return   _v1[0] * _v2[0] +
                  _v1[1] * _v2[1] +
                  _v1[2] * _v2[2] ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call data_type dot_4d (
+    __const_ptr  (data_type) _v1 ,
+    __const_ptr  (data_type) _v2
+        )
+    {   return   _v1[0] * _v2[0] +
+                 _v1[1] * _v2[1] +
+                 _v1[2] * _v2[2] +
+                 _v1[3] * _v2[3] ;
     }
 
 /*-------------------------------- cosine between vectors */

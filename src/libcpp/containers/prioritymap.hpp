@@ -39,11 +39,11 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 17 August, 2018
+ * Last updated: 25 April, 2020
  *
- * Copyright 2013-2017
+ * Copyright 2013-2020
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -123,7 +123,7 @@
             size_type ,
             allocator         >         free_list ;
 
-    size_type static const _nfan = +4 ; // fan out
+    size_type static constexpr _nfan = +4 ; // fan out
 
     public  :
 
@@ -565,14 +565,15 @@
     --------------------------------------------------------
      */
 
-    __normal_call void_type update ( // copy
+    __inline_call void_type update ( // copy
         kptr_type _kptr,
         data_type const&_data
         )
     {/*------------------ move "hole" to updated position */
         size_type _hpos =
             this->_keys[_kptr];
-        _write_it _ipos ;
+        _write_it _ipos =
+            this->_heap.tend();
         if (this->_pred(_data ,
             this->_heap[_hpos]. _data))
         /*-------------------- push "hole" to upper level */
@@ -598,14 +599,15 @@
             _ipos - this->_heap.head()  ;
     }
 
-    __normal_call void_type update ( // move
+    __inline_call void_type update ( // move
         kptr_type _kptr,
         data_type &&_data
         )
     {/*------------------ move "hole" to updated position */
         size_type _hpos =
             this->_keys[_kptr];
-        _write_it _ipos ;
+        _write_it _ipos =
+            this->_heap.tend();
         if (this->_pred(_data ,
             this->_heap[_hpos]. _data))
         /*-------------------- push "hole" to upper level */
@@ -619,6 +621,56 @@
             this-> _heap.head(),
             this-> _heap.tail(),
             this-> _heap.head()+_hpos ,
+        __copy(data_type,_data)) ;
+
+    /*------------------------ copy this data into "hole" */
+        _ipos->_kptr =   _kptr   ;
+        _ipos->_data =
+        __move(data_type,_data)  ;
+
+    /*------------------------ copy position into mapping */
+        this->_keys[_kptr] =
+            _ipos - this->_heap.head()  ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * REDUCE: update data in heap ("lower" priority)
+    --------------------------------------------------------
+     */
+
+    __inline_call void_type reduce ( // copy
+        kptr_type _kptr,
+        data_type const&_data
+        )
+    {/*------------------ move "hole" to updated position */
+        size_type _hpos =
+            this->_keys[_kptr];
+        _write_it _ipos = push_upper (
+            this->_heap.head(),
+            this->_heap.head()+_hpos ,
+        __copy(data_type,_data)) ;
+
+    /*------------------------ copy this data into "hole" */
+        _ipos->_kptr =   _kptr   ;
+        _ipos->_data =
+        __copy(data_type,_data)  ;
+
+    /*------------------------ copy position into mapping */
+        this->_keys[_kptr] =
+            _ipos - this->_heap.head()  ;
+    }
+
+    __inline_call void_type reduce ( // move
+        kptr_type _kptr,
+        data_type &&_data
+        )
+    {/*------------------ move "hole" to updated position */
+        size_type _hpos =
+            this->_keys[_kptr];
+        _write_it _ipos = push_upper (
+            this->_heap.head(),
+            this->_heap.head()+_hpos ,
         __copy(data_type,_data)) ;
 
     /*------------------------ copy this data into "hole" */

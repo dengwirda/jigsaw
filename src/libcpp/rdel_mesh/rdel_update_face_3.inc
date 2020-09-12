@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2019
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -287,7 +287,6 @@
                 (char_type)  _fpos;
 
         /*--------------------------- call edge predicate */
-            char_type _hits;
             real_type _fbal[ 4];
             real_type _sbal[ 4];
             mesh_pred::edge_cost (
@@ -297,7 +296,6 @@
                 _edat._eadj,
                 _opts,_cdat,
                 _edat._part,
-                _hits,
                 _edat._feat,
                 _edat._topo,
                 _edat._kind,
@@ -582,7 +580,7 @@
 
     /*---------------------- calc. ball in floating-point */
         real_type _tbal[4] ;
-        geometry::circ_ball_3d (
+        geometry::perp_ball_3d (
             _tbal ,
        &_mesh._tria.
             node(_tnod[0])->pval(0) ,

@@ -1,7 +1,7 @@
 
 /*
 ------------------------------------------------------------
- * DEL-TRI-TYPE-3: data-types for 3-dim. delaunay tria.
+ * DEL-TRI-TYPE-3: 3-dim. delaunay/laguerre tria. types
 ------------------------------------------------------------
  *
  * This program may be freely redistributed under the
@@ -31,11 +31,11 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 12 May, 2017
+ * Last updated: 22 February, 2020
  *
- * Copyright 2013-2017
+ * Copyright 2013-2020
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -65,31 +65,96 @@
     {
 /*----------- node-type for delaunay triangulation in R^3 */
     public:
-    typedef R               real_type ;
-    typedef I               iptr_type ;
+    typedef R                  real_type ;
+    typedef I                  iptr_type ;
 
-    iptr_type static constexpr  _dims = +3 ;
+    iptr_type static constexpr geom_dims = +3 ;
+    iptr_type static constexpr real_dims = +3 ;
 
 /*------------------------------------ local data members */
     containers::
-    fixed_array<real_type, +3>  _pval ; // node coord
+    fixed_array<real_type, +3>    _pval ; // node coord
 
     containers::
-    fixed_array<char_type, +4>  _flag ; // kind, mark
+    fixed_array<char_type, +4>    _flag ; // kind, mark
 
-    iptr_type                   _next ;
+    iptr_type                     _next ;
 
 /*---------------------------------------- "write" access */
-    __inline_call real_type &pval (
+    __inline_call real_type      & pval (
         iptr_type  _ipos
         )
     {   return this->_pval [_ipos];
     }
-    __inline_call iptr_type &next (
+    __inline_call iptr_type      & next (
         )
     {   return this->_next;
     }
-    __inline_call char_type &mark (
+    __inline_call char_type      & mark (
+        )
+    {   return this->_flag [   +0];
+    }
+
+/*---------------------------------------- "const" access */
+    __inline_call real_type const& pval (
+        iptr_type _ipos
+        ) const
+    {   return this->_pval [_ipos];
+    }
+    __inline_call iptr_type const& next (
+        ) const
+    {   return this->_next;
+    }
+    __inline_call char_type const& mark (
+        ) const
+    {   return this->_flag [   +0];
+    }
+
+    } ;
+
+/*
+------------------------------------------------------------
+ * LAGUERRE-TRI-NODE-3: node for laguerre tria. in R^3.
+------------------------------------------------------------
+ * IPTR-TYPE - signed-integer typedef.
+ * REAL-TYPE - floating-point typedef.
+------------------------------------------------------------
+ */
+
+    template <
+    typename I,
+    typename R
+             >
+    class laguerre_tri_node_3
+    {
+/*----------- node-type for laguerre triangulation in R^3 */
+    public:
+    typedef R                  real_type ;
+    typedef I                  iptr_type ;
+
+    iptr_type static constexpr geom_dims = +3 ;
+    iptr_type static constexpr real_dims = +4 ;
+
+/*------------------------------------ local data members */
+    containers::
+    fixed_array<real_type, +4>    _pval ; // node coord
+
+    containers::
+    fixed_array<char_type, +4>    _flag ; // kind, mark
+
+    iptr_type                     _next ;
+
+/*---------------------------------------- "write" access */
+    __inline_call real_type      & pval (
+        iptr_type  _ipos
+        )
+    {   return this->_pval [_ipos];
+    }
+    __inline_call iptr_type      & next (
+        )
+    {   return this->_next;
+    }
+    __inline_call char_type      & mark (
         )
     {   return this->_flag [   +0];
     }
@@ -128,41 +193,41 @@
     {
 /*----------- tria-type for delaunay triangulation in R^3 */
     public:
-    typedef R               real_type ;
-    typedef I               iptr_type ;
+    typedef R                  real_type ;
+    typedef I                  iptr_type ;
 
-    iptr_type static constexpr  _dims = +3 ;
+    iptr_type static constexpr topo_dims = +3 ;
 
 /*------------------------------------ local data members */
     containers::
-    fixed_array<iptr_type, +4>  _ndat ;  // node indexing
+    fixed_array<iptr_type, +4>    _ndat ;  // node indexing
 
     containers::
-    fixed_array<iptr_type, +4>  _fdat ;  // edge neighbour
+    fixed_array<iptr_type, +4>    _fdat ;  // edge adjacent
 
     containers::
-    fixed_array<char_type, +4>  _fpos ;  // edge neighbour
+    fixed_array<char_type, +4>    _fpos ;  // edge adjacent
 
     containers::
-    fixed_array<char_type, +4>  _flag ;  // kind, mark
+    fixed_array<char_type, +4>    _flag ;  // kind, mark
 
 /*---------------------------------------- "write" access */
-    __inline_call iptr_type &node (
+    __inline_call iptr_type      & node (
         iptr_type  _ipos
         )
     {   return this->_ndat [_ipos];
     }
-    __inline_call iptr_type &next (
+    __inline_call iptr_type      & next (
         iptr_type  _ipos
         )
     {   return this->_fdat [_ipos];
     }
-    __inline_call char_type &fpos (
+    __inline_call char_type      & fpos (
         iptr_type  _ipos
         )
     {   return this->_fpos [_ipos];
     }
-    __inline_call char_type &mark (
+    __inline_call char_type      & mark (
         )
     {   return this->_flag [   +0];
     }
@@ -195,6 +260,7 @@
         iptr_type//_fpos
         )
     {
+/*-------------------------- return 3-cell local indexing */
         _fnod[0] = 0 ;
         _fnod[1] = 1 ;
         _fnod[2] = 2 ;
@@ -206,6 +272,7 @@
         iptr_type//_fpos
         )
     {
+/*-------------------------- return 2-face local indexing */
         _fnod[0] = 0 ;
         _fnod[1] = 1 ;
         _fnod[2] = 2 ;
@@ -216,6 +283,7 @@
         iptr_type//_fpos
         )
     {
+/*-------------------------- return 1-edge local indexing */
         _fnod[0] = 0 ;
         _fnod[1] = 1 ;
     }
@@ -225,6 +293,7 @@
         iptr_type  _fpos
         )
     {
+/*-------------------------- return 2-face local indexing */
         switch (_fpos)
             {
         case 0 :
@@ -256,7 +325,7 @@
         _fnod[3] = 1 ; break ;
             }
         default:
-            {            // suppress compiler warnings
+            {               // suppress compiler warnings
         _fnod[0] =-1 ;
         _fnod[1] =-1 ;
         _fnod[2] =-1 ;
@@ -270,6 +339,7 @@
         iptr_type  _fpos
         )
     {
+/*-------------------------- return 1-edge local indexing */
         switch (_fpos)
             {
         case 0 :
@@ -303,7 +373,7 @@
         _fnod[1] = 3 ; break ;
             }
         default:
-            {            // suppress compiler warnings
+            {               // suppress compiler warnings
         _fnod[0] =-1 ;
         _fnod[1] =-1 ; break ;
             }
@@ -315,6 +385,7 @@
         iptr_type  _fpos
         )
     {
+/*-------------------------- return 1-edge local indexing */
         switch (_fpos)
             {
         case 0 :
@@ -336,7 +407,7 @@
         _fnod[2] = 1 ; break ;
             }
         default:
-            {            // suppress compiler warnings
+            {               // suppress compiler warnings
         _fnod[0] =-1 ;
         _fnod[1] =-1 ;
         _fnod[2] =-1 ; break ;
@@ -352,21 +423,21 @@
         iptr_type  _into    // "into" dims
         )
     {
-    /* index FROM 3-dim faces */
+    /*---------------------------- index FROM 3-dim faces */
         if (_from == +3)
             {
-    /* index INTO 3-dim faces */
+    /*---------------------------- index INTO 3-dim faces */
         if (_into == +3)
             {
         faceind33(_fnod, _fpos); return ;
             }
-    /* index INTO 2-dim faces */
+    /*---------------------------- index INTO 2-dim faces */
         else
         if (_into == +2)
             {
         faceind32(_fnod, _fpos); return ;
             }
-    /* index INTO 1-dim faces */
+    /*---------------------------- index INTO 1-dim faces */
         else
         if (_into == +1)
             {
@@ -374,22 +445,22 @@
             }
         else
             {
-        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[0] =   -1;    // suppress compiler warnings
         _fnod[1] =   -1;
         _fnod[2] =   -1;
         _fnod[3] =   -1;         return ;
             }
             }
-    /* index FROM 2-dim faces */
+    /*---------------------------- index FROM 2-dim faces */
         else
         if (_from == +2)
             {
-    /* index INTO 2-dim faces */
+    /*---------------------------- index INTO 2-dim faces */
         if (_into == +2)
             {
         faceind22(_fnod, _fpos); return ;
             }
-    /* index INTO 1-dim faces */
+    /*---------------------------- index INTO 1-dim faces */
         else
         if (_into == +1)
             {
@@ -397,33 +468,48 @@
             }
         else
             {
-        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[0] =   -1;    // suppress compiler warnings
         _fnod[1] =   -1;
         _fnod[2] =   -1;         return ;
             }
             }
-    /* index FROM 1-dim faces */
+    /*---------------------------- index FROM 1-dim faces */
         else
         if (_from == +1)
             {
-    /* index INTO 1-dim faces */
+    /*---------------------------- index INTO 1-dim faces */
         if (_into == +1)
             {
         faceind11(_fnod, _fpos); return ;
             }
         else
             {
-        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[0] =   -1;    // suppress compiler warnings
         _fnod[1] =   -1;         return ;
             }
             }
         else
             {
-        _fnod[0] =   -1; // suppress compiler warnings
+        _fnod[0] =   -1;    // suppress compiler warnings
             }
     }
 
     } ;
+
+/*
+------------------------------------------------------------
+ * LAGUERRE-TRI-TRIA-3: tria for laguerre tria. in R^3.
+------------------------------------------------------------
+ * IPTR-TYPE - signed-integer typedef.
+ * REAL-TYPE - floating-point typedef.
+------------------------------------------------------------
+ */
+
+    template <
+    typename I,
+    typename R
+             >
+    using laguerre_tri_tria_3 = delaunay_tri_tria_3<I, R>;
 
 
     }

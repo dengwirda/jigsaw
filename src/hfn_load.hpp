@@ -31,11 +31,11 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 July, 2019
+     * Last updated: 26 April, 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -583,6 +583,8 @@
             {
                 _jlog.push(
             "**parse error: " + * _iter + "\n" ) ;
+
+                _errv = __invalid_argument ;
             }
         }
         catch (...)
@@ -1170,9 +1172,9 @@
             }
 
             for (auto _iter  = _hfun.
-            _euclidean_mesh_2d._mesh._set1.head() ;
+            _euclidean_mesh_2d._mesh.node().head();
                       _iter != _hfun.
-            _euclidean_mesh_2d._mesh._set1.tend() ;
+            _euclidean_mesh_2d._mesh.node().tend();
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
@@ -1181,9 +1183,9 @@
             }
 
             for (auto _iter  = _hfun.
-            _euclidean_mesh_2d._mesh._set3.head() ;
+            _euclidean_mesh_2d._mesh.tri3().head();
                       _iter != _hfun.
-            _euclidean_mesh_2d._mesh._set3.tend() ;
+            _euclidean_mesh_2d._mesh.tri3().tend();
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
@@ -1216,7 +1218,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -1240,7 +1242,7 @@
                 _jlog.push (
     "**input error: HFUN. tria. indexing is incorrect.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_indexing ;
             }
         }
         else
@@ -1317,7 +1319,7 @@
                 _jlog.push (
     "**input error: HFUN. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_gnum > +0 &&
@@ -1327,7 +1329,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -1391,9 +1393,9 @@
             }
 
             for (auto _iter  = _hfun.
-            _euclidean_mesh_3d._mesh._set1.head() ;
+            _euclidean_mesh_3d._mesh.node().head();
                       _iter != _hfun.
-            _euclidean_mesh_3d._mesh._set1.tend() ;
+            _euclidean_mesh_3d._mesh.node().tend();
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
@@ -1402,9 +1404,9 @@
             }
 
             for (auto _iter  = _hfun.
-            _euclidean_mesh_3d._mesh._set4.head() ;
+            _euclidean_mesh_3d._mesh.tri4().head();
                       _iter != _hfun.
-            _euclidean_mesh_3d._mesh._set4.tend() ;
+            _euclidean_mesh_3d._mesh.tri4().tend();
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
@@ -1441,7 +1443,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -1465,7 +1467,7 @@
                 _jlog.push (
     "**input error: HFUN. tria. indexing is incorrect.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_indexing ;
             }
         }
         else
@@ -1558,7 +1560,7 @@
                 _jlog.push (
     "**input error: HFUN. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_gnum > +0 &&
@@ -1568,7 +1570,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -1622,6 +1624,7 @@
            (real_type)std::atan(+1.0) * 4. ;
 
         //  careful with the way PI truncations onto float
+
         //  expanded range so that we don't throw warnings
         //  due to rounding issues...
 
@@ -1665,9 +1668,9 @@
             }
 
             for (auto _iter  = _hfun.
-            _ellipsoid_mesh_3d._mesh._set1.head() ;
+            _ellipsoid_mesh_3d._mesh.node().head();
                       _iter != _hfun.
-            _ellipsoid_mesh_3d._mesh._set1.tend() ;
+            _ellipsoid_mesh_3d._mesh.node().tend();
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
@@ -1686,9 +1689,9 @@
             }
 
             for (auto _iter  = _hfun.
-            _ellipsoid_mesh_3d._mesh._set3.head() ;
+            _ellipsoid_mesh_3d._mesh.tri3().head();
                       _iter != _hfun.
-            _ellipsoid_mesh_3d._mesh._set3.tend() ;
+            _ellipsoid_mesh_3d._mesh.tri3().tend();
                     ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
@@ -1739,7 +1742,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -1763,7 +1766,7 @@
                 _jlog.push (
     "**input error: HFUN. tria. indexing is incorrect.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_indexing ;
             }
         }
         else
@@ -1901,7 +1904,7 @@
                 _jlog.push (
     "**input error: HFUN. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_gnum > +0 &&
@@ -1911,7 +1914,7 @@
                 _jlog.push (
     "**input error: DHDX. matrix incorrect dimensions.\n") ;
 
-                _errv = __invalid_argument ;
+                _errv = __invalid_arraydim ;
             }
 
             if (_hmin <= (real_type) +0.)
@@ -2032,22 +2035,25 @@
 
             _jlog.push("  \n") ;
 
-            for (auto _iter  = _hfun.
-            _euclidean_mesh_2d._mesh._set1.head() ;
-                      _iter != _hfun.
-            _euclidean_mesh_2d._mesh._set1.tend() ;
-                    ++_iter )
+             auto _mptr =
+           &_hfun._euclidean_mesh_2d._mesh;
+
+            for (auto _iter  =
+                      _mptr->node().head();
+                      _iter !=
+                      _mptr->node().tend();
+                    ++_iter  )
             {
             if (_iter->mark()>=+0) _num1 += +1 ;
             }
 
             __dumpINTS("|COORD.|", _num1)
 
-            for (auto _iter  = _hfun.
-            _euclidean_mesh_2d._mesh._set3.head() ;
-                      _iter != _hfun.
-            _euclidean_mesh_2d._mesh._set3.tend() ;
-                    ++_iter )
+            for (auto _iter  =
+                      _mptr->tri3().head();
+                      _iter !=
+                      _mptr->tri3().tend();
+                    ++_iter  )
             {
             if (_iter->mark()>=+0) _num3 += +1 ;
             }
@@ -2128,22 +2134,25 @@
 
             _jlog.push("  \n") ;
 
-            for (auto _iter  = _hfun.
-            _euclidean_mesh_3d._mesh._set1.head() ;
-                      _iter != _hfun.
-            _euclidean_mesh_3d._mesh._set1.tend() ;
-                    ++_iter )
+             auto _mptr =
+           &_hfun._euclidean_mesh_3d._mesh;
+
+            for (auto _iter  =
+                      _mptr->node().head();
+                      _iter !=
+                      _mptr->node().tend();
+                    ++_iter  )
             {
             if (_iter->mark()>=+0) _num1 += +1 ;
             }
 
             __dumpINTS("|COORD.|", _num1)
 
-            for (auto _iter  = _hfun.
-            _euclidean_mesh_3d._mesh._set4.head() ;
-                      _iter != _hfun.
-            _euclidean_mesh_3d._mesh._set4.tend() ;
-                    ++_iter )
+            for (auto _iter  =
+                      _mptr->tri4().head();
+                      _iter !=
+                      _mptr->tri4().tend();
+                    ++_iter  )
             {
             if (_iter->mark()>=+0) _num4 += +1 ;
             }
@@ -2223,22 +2232,25 @@
 
             _jlog.push("  \n") ;
 
-            for (auto _iter  = _hfun.
-            _ellipsoid_mesh_3d._mesh._set1.head() ;
-                      _iter != _hfun.
-            _ellipsoid_mesh_3d._mesh._set1.tend() ;
-                    ++_iter )
+             auto _mptr =
+           &_hfun._ellipsoid_mesh_3d._mesh;
+
+            for (auto _iter  =
+                      _mptr->node().head();
+                      _iter !=
+                      _mptr->node().tend();
+                    ++_iter  )
             {
             if (_iter->mark()>=+0) _num1 += +1 ;
             }
 
             __dumpINTS("|COORD.|", _num1)
 
-            for (auto _iter  = _hfun.
-            _ellipsoid_mesh_3d._mesh._set3.head() ;
-                      _iter != _hfun.
-            _ellipsoid_mesh_3d._mesh._set3.tend() ;
-                    ++_iter )
+            for (auto _iter  =
+                      _mptr->tri3().head();
+                      _iter !=
+                      _mptr->tri3().tend();
+                    ++_iter  )
             {
             if (_iter->mark()>=+0) _num3 += +1 ;
             }
@@ -2283,7 +2295,7 @@
             _jlog.push("  \n") ;
 
             if (_hfun._ellipsoid_grid_3d._wrap)
-            _jlog.push("PERIODIC = TRUE") ;
+            _jlog.push("  PERIODIC = TRUE") ;
 
         }
 

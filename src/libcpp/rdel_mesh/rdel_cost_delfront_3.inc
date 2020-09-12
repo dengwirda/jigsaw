@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2019
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -60,7 +60,6 @@
         rdel_opts &_args,
         edge_data &_edat,
         iptr_type &_part,
-        char_type &_hits,
         char_type &_feat,
         char_type &_topo,
         char_type &_kind,
@@ -84,8 +83,7 @@
     /*--------------------------------- calc. circumballs */
         if (!base_type::edge_ball (
             _geom, _mesh, _tadj,
-            _eadj, _ebal,
-            _pmax, _hits,
+            _eadj, _ebal, _pmax,
             _feat, _topo, _part)  )
     /*--------------------------------- is not restricted */
             return  ;
@@ -228,19 +226,24 @@
         }
 
     /*------------------------- calc. refinement priority */
-        iptr_type _ebnd=_emin ;
-        real_type _best;
-        _best  =  _llen[_emax];
-        _best += (real_type)1.;
+        real_type static
+        constexpr _TRAP = (real_type)1.5 ;
 
-        _fdat._mark =  +0 ;
+        iptr_type _ebnd = _emin ;
+        real_type _best =
+            std::numeric_limits
+                <real_type>::infinity () ;
 
-    #   ifdef __bias_BNDS
+        bool_type _trap = false ;
+
+        _fdat._mark =  (iptr_type) +0;
+
+    #   ifdef __bias_bnds
         for(_enum = +3; _enum-- != +0; )
         {
+    /*------------------------- are there bnd-adj. faces? */
             iptr_type  _enod[ +3];
-            mesh_type::tria_type::
-                tria_type::
+            mesh_type::tria_type::tria_type::
             face_node(_enod, _enum, 2, 1);
             _enod[ +0] = _fnod[_enod[+0]];
             _enod[ +1] = _fnod[_enod[+1]];
@@ -265,6 +268,12 @@
                     _best = _llen[_enum];
                 }
 
+                if (_llen[_enum] >=
+                    _llen[_emin] *_TRAP )
+                {
+                    _trap =  true ;
+                }
+
                 _fdat._mark -= +1 ;
             }
         }
@@ -273,15 +282,10 @@
     /*------------------------- eval. radius--edge ratios */
         real_type _prat = _pmax[    3] /
                           _llen[_emin] ;
-        real_type _erat = _tbal[    3] /
-                          _llen[_emin] ;
-
-        __unreferenced(_prat) ;
-        __unreferenced(_erat) ;
 
     /*------------------------- calc. refinement priority */
         _fdat._cost =
-            (float) (_prat * _pmax[3]) ;
+            (float) (_pmax[3] * _prat) ;
 
     //  scaling via node numbering seems to make slightly
     //  better (more topologically regular) meshes
@@ -299,10 +303,26 @@
         _fdat._cost/=     _enod[1] + 1 ;
 
     /*------------------------- refinement classification */
+
+    //  flag cells "trapped" between boundaries -- having
+    //  all nodes on lower dimensional facets and with at
+    //  least one boundary face.
+
+        _trap = _trap &&
+            _mesh._tria.
+        node(_fnod[0])->fdim() < +2 &&
+            _mesh._tria.
+        node(_fnod[1])->fdim() < +2 &&
+            _mesh._tria.
+        node(_fnod[2])->fdim() < +2  ;
+
         if (_prat >= _args.rad2() *
                      _args.rad2() )
         {
+        //  if (!_trap)     // don't refine trapped cells
+            {
             _kind = mesh::ring_item; return ;
+            }
         }
 
     /*------------------------- eval. size func. at _fbal */
@@ -405,8 +425,7 @@
         for (_enum = +6; _enum-- != +0; )
         {
             iptr_type _enod[ +4] ;
-            mesh_type::tria_type::
-                tria_type::
+            mesh_type::tria_type::tria_type::
             face_node(_enod, _enum, 3, 1);
             _enod[0] = _mesh._tria.
              tria(_tpos)->node(_enod[ 0]);
@@ -427,8 +446,7 @@
         for(_fnum = +4; _fnum-- != +0; )
         {
             iptr_type _fnod [ +4];
-            mesh_type::tria_type::
-                tria_type::
+            mesh_type::tria_type::tria_type::
             face_node(_fnod, _fnum, 3, 2);
             _fnod[ +0] = _mesh._tria.
              tria(_tpos)->node(_fnod[ 0]);
@@ -472,19 +490,18 @@
         }
 
     /*------------------------- calc. refinement priority */
-        iptr_type _fbnd=_fmin ;
-        real_type _best;
-        _best  =  _frad[_fmax];
-        _best += (real_type)1.;
+        iptr_type _fbnd = _fmin ;
+        real_type _best =
+            std::numeric_limits
+                <real_type>::infinity () ;
 
         _tdat._mark =  +0 ;
 
-    #   ifdef __bias_BNDS
+    #   ifdef __bias_bnds
         for(_fnum = +4; _fnum-- != +0; )
         {
             iptr_type  _fnod[ +4];
-            mesh_type::tria_type::
-                tria_type::
+            mesh_type::tria_type::tria_type::
             face_node(_fnod, _fnum, 3, 2);
             _fnod[0] = _mesh._tria.
              tria(_tpos)->node(_fnod[ 0]);
@@ -530,7 +547,7 @@
 
     /*------------------------- calc. refinement priority */
         _tdat._cost =
-            (float) (_trat * _tbal[3]) ;
+            (float) (_tbal[3] * _trat) ;
 
     //  scaling via node numbering seems to make slightly
     //  better (more topologically regular) meshes
@@ -611,7 +628,8 @@
            &_mesh._tria.
              node(_tnod[2])->pval(0),
            &_mesh._tria.
-             node(_tnod[3])->pval(0)) ;
+             node(_tnod[3])->pval(0)
+            ) ;
 
         if (_vlen <= _args.vol3() )
         {

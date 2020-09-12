@@ -35,7 +35,7 @@
  *
  * Copyright 2013-2017
  * Darren Engwirda
- * de2363@columbia.edu
+ * d.engwirda@gmail.com
  * https://github.com/dengwirda/
  *
 ------------------------------------------------------------
@@ -46,7 +46,7 @@
 #   ifndef __ALGORITHMS__
 #   define __ALGORITHMS__
 
-#   include "libbasic.hpp"
+#   include "basebase.hpp"
 
 #   include "algorithms/sort.hpp"
 #   include "algorithms/find.hpp"

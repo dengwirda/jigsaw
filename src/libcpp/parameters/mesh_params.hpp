@@ -35,7 +35,7 @@
      *
      * Copyright 2013-2019
      * Darren Engwirda
-     * de2363@columbia.edu
+     * d.engwirda@gmail.com
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -146,7 +146,7 @@
             iptr_type _rule = +0 ;
             __setbit( _rule, offH_kind) ;
             __setbit( _rule, offC_kind) ;
-          //__setbit( _rule, offT_kind) ;
+        //  __setbit( _rule, offT_kind) ;
             __setbit( _rule, sink_kind) ;
 
             return _rule ;
