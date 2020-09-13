@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 12 Sept., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -399,7 +399,7 @@
             std::min(_0src, *_iter) ;
 
             _msrc += std::pow(
-            (real_type)1. / *_iter, +5);
+            (real_type)1. / *_iter, +7);
         }
         for (auto _iter  = _cdst.head(),
                   _tend  = _cdst.tend();
@@ -410,20 +410,20 @@
             std::min(_0dst, *_iter) ;
 
             _mdst += std::pow (
-            (real_type)1. / *_iter, +5);
+            (real_type)1. / *_iter, +7);
         }
 
         _qtol *= std::max(_0src, _zero);
 
         _msrc  = std::pow(
-        _csrc.count() / _msrc, +1./5.) ;
+        _csrc.count() / _msrc, +1./7.) ;
         _mdst  = std::pow(
-        _cdst.count() / _mdst, +1./5.) ;
+        _cdst.count() / _mdst, +1./7.) ;
 
         _qtol /=
-        std::pow(_csrc.count(), 1./5.) ;
+        std::pow(_csrc.count(), 1./7.) ;
         _qtol /=
-        std::pow(_cdst.count(), 1./5.) ;
+        std::pow(_cdst.count(), 1./7.) ;
 
     /*---------------------------- test move = "okay" */
         if (_0dst >= _GOOD)
@@ -663,7 +663,7 @@
     {
     /*---------------- optimise single node's coordinates */
         iptr_type static
-        constexpr _ITER = (iptr_type) +5  ;
+        constexpr _ITER = (iptr_type) +4  ;
 
         _move = (iptr_type)-1 ;
 
@@ -737,7 +737,7 @@
         if (_kern == dqdx_kern)     // "relax" dQ./dx
         {
         real_type _BIAS =
-            (real_type) +2.0 / 3.0 ;
+            (real_type) +3.0 / 4.0 ;
 
         for (auto _idim =
         pred_type::geom_dims; _idim-- != +0; )
@@ -844,7 +844,7 @@
     {
     /*---------------- optimise single node's coordinates */
         iptr_type static
-        constexpr _ITER = (iptr_type) +5  ;
+        constexpr _ITER = (iptr_type) +4  ;
 
         __unreferenced(_geom);
         __unreferenced(_hfun);
@@ -1545,13 +1545,16 @@
             {
             public  :
     /*------------------------ tuple for edge re-ordering */
-            iptr_type           _edge ;
+            iptr_type           _inod ;
+            iptr_type           _jnod ;
             float               _cost ;
             public  :
             __inline_call sort_pair (
-                iptr_type _esrc ,
+                iptr_type _isrc ,
+                iptr_type _jsrc ,
                 float     _csrc
-                ) : _edge(_esrc), _cost(_csrc) {}
+                ) : _inod(_isrc), _jnod(_jsrc),
+                    _cost(_csrc)   {}
             } ;
         class sort_less
             {
@@ -1598,138 +1601,127 @@
 
         _nzip = +0 ; _ndiv = +0 ;
 
-        for (auto _node =
-            _mesh. node().count(); _node-- != 0; )
-        {
-    /*--------------------- scan nodes and zip//div edges */
-        if (_mesh. node(_node).mark () >= 0 &&
-               std::abs (
-            _mark._node[_node]) > _imrk - 4  )
-        {
-            _conn.set_count(+0) ;
-            _sort.set_count(+0) ;
-        /*----------------------- scan edges adj. to node */
-            _mesh.connect_1(
-            (iptr_type)_node, POINT_tag, _conn) ;
+    //  assemble list of edges attached to "recent" nodes
 
-            for (auto _edge  = _conn.head() ;
-                      _edge != _conn.tend() ;
-                    ++_edge  )
+        for (auto _enum =
+            _mesh. edge().count(); _enum-- != 0; )
+        {
+             auto _eptr =&_mesh.edge(_enum) ;
+
+             auto _inod = _eptr->node(0) ;
+             auto _jnod = _eptr->node(1) ;
+
+             auto _iptr = _mesh.
+             node().head()+_eptr->node(0) ;
+             auto _jptr = _mesh.
+             node().head()+_eptr->node(1) ;
+
+            if (_eptr->mark() >= +0 &&
+               (    std::abs (
+            _mark._node[_inod]) > _imrk - 4 ||
+                    std::abs (
+            _mark._node[_jnod]) > _imrk - 4 ))
             {
-        /*----------------------- sort local edges by len */
-                 auto _enum = _edge-> _cell ;
-                 auto _eptr =
-                _mesh.edge().head() + _enum ;
-
-                 auto _iptr = _mesh.
-                node().head()+_eptr->node(0) ;
-                 auto _jptr = _mesh.
-                node().head()+_eptr->node(1) ;
-
                 float _lsqr  =
                (float)pred_type::length_sq (
                     & _iptr->pval(0) ,
                     & _jptr->pval(0) ) ;
 
                 _sort.push_tail(
-                    sort_pair(_enum, _lsqr)) ;
+                 sort_pair(_inod, _jnod, _lsqr)) ;
             }
-
-            if (_sort.empty()) continue;
-
-        /*----------------------- scan local edges by len */
-            algorithms::isort(
-                _sort.head() ,
-                _sort.tend() , sort_less());
-
-            bool_type _move = false ;
-
-            for (auto _iter  = _sort.tail();
-                      _iter != _sort.hend();
-                    --_iter  )
-            {
-        /*----------------------- try to "div" local edge */
-                 auto _eadj  = _iter->_edge;
-
-                 auto _eptr  =
-                _mesh. edge().head()+ _eadj;
-
-                iptr_type  _enod[2] ;
-                _enod[0] = _eptr->node(0);
-                _enod[1] = _eptr->node(1);
-
-                if (MARKNODE(_enod[0])>_imrk) continue ;
-                if (MARKNODE(_enod[1])>_imrk) continue ;
-
-                if (MARKNODE(_enod[0]) < +0 ||
-                    MARKNODE(_enod[1]) < +0 ) continue ;
-
-                if (_opts.div_())
-                {
-        /*----------------------- "div" for topo. + score */
-                    iptr_type  _nnew = -1;
-
-                    _div_edge( _geom, _mesh,
-                        _hfun, _hval, _opts,
-                        _imrk, _eadj,
-                        _kern, _move, _nnew,
-                        _iset, _jset,
-                        _aset, _bset,
-                        _qold, _qnew,
-                        _qtmp, _QLIM) ;
-
-                    if (_move)
-                    {
-                        PUSHMARK; _ndiv += +1; break ;
-                    }
-                }
-            }
-
-            if (_move) continue ;
-
-            for (auto _iter  = _sort.head();
-                      _iter != _sort.tend();
-                    ++_iter  )
-            {
-        /*----------------------- try to "zip" local edge */
-                 auto _eadj  = _iter->_edge;
-
-                 auto _eptr  =
-                _mesh. edge().head()+ _eadj;
-
-                iptr_type  _enod[2] ;
-                _enod[0] = _eptr->node(0);
-                _enod[1] = _eptr->node(1);
-
-                if (MARKNODE(_enod[0])>_imrk) continue ;
-                if (MARKNODE(_enod[1])>_imrk) continue ;
-
-                if (MARKNODE(_enod[0]) < +0 ||
-                    MARKNODE(_enod[1]) < +0 ) continue ;
-
-                if (_opts.zip_())
-                {
-        /*----------------------- "zip" for topo. + score */
-                    iptr_type  _nnew = -1;
-
-                    _zip_edge( _geom, _mesh,
-                        _hfun, _hval, _opts,
-                        _eadj,
-                        _kern, _move, _nnew,
-                        _iset, _jset,
-                        _aset, _bset, _cset,
-                        _qold, _qnew,
-                        _qtmp, _QLIM) ;
-
-                    if (_move)
-                    {
-                        PUSHMARK; _nzip += +1; break ;
-                    }
-                }
-            }
-
-            if (_move) continue ;
         }
+
+        if (_sort.empty()) return ;
+
+        algorithms::qsort(      // sort edge list by lsqr
+            _sort.head() ,
+            _sort.tend() , sort_less());
+
+    //  scan edges longest-to-shortest and try to div any
+    //  unvisited edges
+
+        for (auto _iter  = _sort.tail();
+                  _iter != _sort.hend();
+                --_iter  )
+        {
+    /*--------------------------- try to "div" local edge */
+            iptr_type  _eadj, _enod[2] ;
+            _enod[0] = _iter->_inod;
+            _enod[1] = _iter->_jnod;
+
+            if (MARKNODE(_enod[0])>_imrk) continue ;
+            if (MARKNODE(_enod[1])>_imrk) continue ;
+
+            if (MARKNODE(_enod[0]) < +0 ||
+                MARKNODE(_enod[1]) < +0 ) continue ;
+
+            if(!_mesh.find_edge(
+                          _enod, _eadj) ) continue ;
+
+            if (_opts.div_())
+            {
+    /*--------------------------- "div" for topo. + score */
+                iptr_type  _nnew = -1;
+
+                bool_type  _move;
+                _div_edge( _geom, _mesh,
+                    _hfun, _hval, _opts,
+                    _imrk, _eadj,
+                    _kern, _move, _nnew,
+                    _iset, _jset,
+                    _aset, _bset,
+                    _qold, _qnew,
+                    _qtmp, _QLIM) ;
+
+                if (_move)
+                {
+                    PUSHMARK; _ndiv += +1;
+                }
+            }
+        }
+
+    //  scan edges shortest-to-longest and try to zip any
+    //  unvisited edges
+
+        for (auto _iter  = _sort.head();
+                  _iter != _sort.tend();
+                ++_iter  )
+        {
+    /*--------------------------- try to "zip" local edge */
+            iptr_type  _eadj, _enod[2] ;
+            _enod[0] = _iter->_inod;
+            _enod[1] = _iter->_jnod;
+
+            if (MARKNODE(_enod[0])>_imrk) continue ;
+            if (MARKNODE(_enod[1])>_imrk) continue ;
+
+            if (MARKNODE(_enod[0]) < +0 ||
+                MARKNODE(_enod[1]) < +0 ) continue ;
+
+            if(!_mesh.find_edge(
+                          _enod, _eadj) ) continue ;
+
+            if (_opts.zip_())
+            {
+    /*--------------------------- "zip" for topo. + score */
+                iptr_type  _nnew = -1;
+
+                bool_type  _move;
+                _zip_edge( _geom, _mesh,
+                    _hfun, _hval, _opts,
+                    _eadj,
+                    _kern, _move, _nnew,
+                    _iset, _jset,
+                    _aset, _bset, _cset,
+                    _qold, _qnew,
+                    _qtmp, _QLIM) ;
+
+                if (_move)
+                {
+                    PUSHMARK; _nzip += +1;
+                }
+            }
         }
 
         for (auto _iter  = _mark._node.head() ;
@@ -1990,7 +1982,7 @@
 
             real_type _DLIM =
                 (real_type)(1. -
-            1. * std::pow(1.0-_QLIM, +2)) ;
+            .5 * std::pow(1.0-_QLIM, +2)) ;
 
     /*------------------------------ 1. CELL GEOM. PASSES */
 
