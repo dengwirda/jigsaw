@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 12 Sept., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -79,8 +79,8 @@
         iptr_type static constexpr
             _last = pred_type::geom_dims+0 ;
 
-        iptr_type static constexpr
-            _DEG_TRIA3 = (iptr_type)+6 ;
+    //  iptr_type static constexpr
+    //      _DEG_TRIA3 = (iptr_type)+6 ;
     //  iptr_type static constexpr
     //      _DEG_QUAD4 = (iptr_type)+4 ;
 
@@ -152,43 +152,8 @@
              POINT_tag, _jset) ;
 
     /*--------------------------------- calc. local topo. */
-        auto _ideg = _iset.count() ;
-        auto _ierr =
-            (iptr_type)(_ideg-_DEG_TRIA3) ;
-
-        auto _jdeg = _jset.count() ;
-        auto _jerr =
-            (iptr_type)(_jdeg-_DEG_TRIA3) ;
-
-    //  bail-out early if the topological defect would be
-    //  made worse if the zip is done
-
-        if (+1 >std::max(_ierr, _jerr))
-            return  ;
-
-        if (+0 >std::min(_ierr, _jerr))
-            return  ;
-
-        if (+1 > _ierr + _jerr)
-            return  ;
-
-    //  if more regular topo. is constructed via the edge
-    //  div, make it easier to do so!
-
-        real_type _qerr =
-            (real_type)-1./9. * _ierr +
-            (real_type)-1./9. * _jerr ;
-
-        real_type _lerr =
-            (real_type)+5./6. * _lmin ;
-
-        _qerr /= std::cbrt(_iout) ;  // no oscl. wrt. zip
-
-        if (+1 < _ierr + _jerr)
-        {
-        _qinc = std::min(_qinc, _qerr);
-        _lmin = std::min(_lmin, _lerr);
-        }
+        if (_iset.count() <= +7) return;
+        if (_jset.count() <= +7) return;
 
         }   // if (_lBIG)
 
