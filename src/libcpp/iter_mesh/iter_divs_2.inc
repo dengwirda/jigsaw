@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Sept., 2020
+     * Last updated: 14 Sept., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -79,8 +79,8 @@
         iptr_type static constexpr
             _last = pred_type::geom_dims+0 ;
 
-    //  iptr_type static constexpr
-    //      _DEG_TRIA3 = (iptr_type)+6 ;
+        iptr_type static constexpr
+            _DEG_TRIA3 = (iptr_type)+6 ;
     //  iptr_type static constexpr
     //      _DEG_QUAD4 = (iptr_type)+4 ;
 
@@ -121,7 +121,7 @@
            &_iptr->pval(0),&_jptr->pval(0)) ;
 
         real_type _hbar =
-            std::max(_isiz , _jsiz);
+            std::max(_isiz , _jsiz ) ;
 
     /*--------------------------------- exit if too small */
         if (_lsqr <= _hbar * _lmin *
@@ -130,7 +130,7 @@
 
     /*--------------------------------- split if too long */
         real_type static constexpr
-            _lBIG  = (real_type)+7./5. ;
+            _lBIG  = (real_type)+11./8.;
 
         if (_lsqr >= _hbar * _lBIG *
                      _hbar * _lBIG )
@@ -147,13 +147,21 @@
         {
     /*--------------------------------- get adjacent face */
         _mesh.connect_2(_eptr->node(+0),
-             POINT_tag, _iset) ;
+            POINT_tag , _iset) ;
         _mesh.connect_2(_eptr->node(+1),
-             POINT_tag, _jset) ;
+            POINT_tag , _jset) ;
 
     /*--------------------------------- calc. local topo. */
-        if (_iset.count() <= +7) return;
-        if (_jset.count() <= +7) return;
+        auto _ideg = _iset.count() ;
+        auto _ierr =
+            (iptr_type)(_ideg-_DEG_TRIA3) ;
+
+        auto _jdeg = _jset.count() ;
+        auto _jerr =
+            (iptr_type)(_jdeg-_DEG_TRIA3) ;
+
+        if (std::max(_ierr, _jerr) < 2)
+            return ;
 
         }   // if (_lBIG)
 
@@ -328,7 +336,7 @@
 
             real_type  _minC =
                 loop_cost( _mesh,
-                    _cset, _qtmp, cell_kind()
+                    _cnew, _qtmp, cell_kind()
                 ) ;
 
             move_node( _geom, _mesh,
