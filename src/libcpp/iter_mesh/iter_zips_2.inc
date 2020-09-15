@@ -120,9 +120,9 @@
 
     /*--------------------------------- get adjacent face */
         _mesh.connect_2(_eptr->node(+0),
-             POINT_tag, _iset) ;
+            POINT_tag , _iset) ;
         _mesh.connect_2(_eptr->node(+1),
-             POINT_tag, _jset) ;
+            POINT_tag , _jset) ;
 
     /*--------------------------------- calc. local topo. */
         auto _ndeg = _iset.count()
@@ -176,7 +176,7 @@
            &_iptr->pval(0),&_jptr->pval(0)) ;
 
         real_type _hbar =
-            std::min(_isiz , _jsiz);
+            std::min(_isiz , _jsiz ) ;
 
     /*--------------------------------- exit if too large */
         if (_lsqr >= _hbar * _lmax *
