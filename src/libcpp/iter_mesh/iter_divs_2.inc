@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 Sept., 2020
+     * Last updated: 30 Sept., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -97,10 +97,14 @@
          auto _jptr = _mesh.
          node().head() + _eptr->node(1);
 
-        _cset.set_count(+0);
-        _cnew.set_count(+0);
-        _iset.set_count(+0);
-        _jset.set_count(+0);
+        _cset.set_count(
+            0, containers::loose_alloc);
+        _cnew.set_count(
+            0, containers::loose_alloc);
+        _iset.set_count(
+            0, containers::loose_alloc);
+        _jset.set_count(
+            0, containers::loose_alloc);
 
         _mesh.connect_2(
             _enum, EDGE2_tag, _cset) ;
@@ -140,7 +144,7 @@
 
         _qinc -= (real_type)+1./2. ;
 
-        _qinc /= std::cbrt (_iout) ; // no oscl. wrt. zip
+        _qinc /= std::sqrt (_iout) ; // no oscl. wrt. zip
 
         }
         else
@@ -332,7 +336,8 @@
         for (auto _iloc = +0; _iloc != _INUM;
                 ++_iloc )
         {
-            _qtmp.set_count(0) ;
+            _qtmp.set_count(
+                +0, containers::loose_alloc);
 
             real_type  _minC =
                 loop_cost( _mesh,
@@ -350,58 +355,59 @@
         }
 
     /*--------------------------------- is cost improved? */
-        _qdst.set_count(0);
+        _qdst.set_count(
+            0, containers::loose_alloc) ;
 
         real_type  _QMIN =
         loop_cost( _mesh,
-            _cnew, _qdst,  cell_kind ()
-            ) ;
+            _cnew, _qdst,  cell_kind()) ;
 
         move_okay( _qdst, _qsrc, _move,
-            +1.0 , _qinc) ;
+        std::sqrt( _QLIM) ,
+                   _qinc) ;
 
         if((_okay = _move > 0 &&
                     _QMIN >= _qmin+_qinc))
         {
     /*--------------------------------- delete old cavity */
-        for (auto _cell  = _cset.head();
-                  _cell != _cset.tend();
+        for (auto _cell  = _cset.head() ;
+                  _cell != _cset.tend() ;
                 ++_cell  )
         {
             if (_cell->_kind == TRIA3_tag)
             {
                 _mesh.
-                _pop_tri3(_cell->_cell);
+                _pop_tri3(_cell->_cell) ;
             }
             else
             if (_cell->_kind == QUAD4_tag)
             {
                 _mesh.
-                _pop_quad(_cell->_cell);
+                _pop_quad(_cell->_cell) ;
             }
         }
         }
         else
         {
     /*--------------------------------- delete new cavity */
-        for (auto _cell  = _cnew.head();
-                  _cell != _cnew.tend();
+        for (auto _cell  = _cnew.head() ;
+                  _cell != _cnew.tend() ;
                 ++_cell  )
         {
             if (_cell->_kind == TRIA3_tag)
             {
                 _mesh.
-                _pop_tri3(_cell->_cell);
+                _pop_tri3(_cell->_cell) ;
             }
             else
             if (_cell->_kind == QUAD4_tag)
             {
                 _mesh.
-                _pop_quad(_cell->_cell);
+                _pop_quad(_cell->_cell) ;
             }
         }
 
-            _mesh._pop_node ( &_inew ) ;
+            _mesh._pop_node ( &_inew );
         }
 
     #   undef   NULLHINT

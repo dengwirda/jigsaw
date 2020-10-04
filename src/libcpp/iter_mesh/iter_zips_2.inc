@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 30 Sept., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -71,7 +71,7 @@
         real_list &_qtmp ,
         real_type  _QLIM ,
         real_type  _lmax
-            = (real_type) +7.50E-01 ,
+            = (real_type) +8.00E-01 ,
         real_type  _qinc
             = (real_type) +1.00E-02
         )
@@ -102,15 +102,23 @@
 
         _okay = false ;
 
-        _iset.set_count(+0) ;
-        _jset.set_count(+0) ;
-        _aset.set_count(+0) ;
-        _bset.set_count(+0) ;
-        _cset.set_count(+0) ;
+        _iset.set_count(
+            0, containers::loose_alloc);
+        _jset.set_count(
+            0, containers::loose_alloc);
+        _aset.set_count(
+            0, containers::loose_alloc);
+        _bset.set_count(
+            0, containers::loose_alloc);
+        _cset.set_count(
+            0, containers::loose_alloc);
 
-        _qsrc.set_count(+0) ;
-        _qdst.set_count(+0) ;
-        _qtmp.set_count(+0) ;
+        _qsrc.set_count(
+            0, containers::loose_alloc);
+        _qdst.set_count(
+            0, containers::loose_alloc);
+        _qtmp.set_count(
+            0, containers::loose_alloc);
 
     /*--------------------------------- exit if FEAT node */
         if (_iptr->feat() != null_feat)
@@ -156,7 +164,7 @@
             (real_type)-1./9. * _jerr ;
 
         real_type _lerr =
-            (real_type)+6./5. * _lmax ;
+            (real_type)+9./8. * _lmax ;
 
         if (2 * _nerr < _iabs + _jabs)
         {
@@ -460,7 +468,8 @@
         for (auto _iter = +0; _iter != _INUM;
                 ++_iter )
         {
-            _qtmp.set_count(0) ;
+            _qtmp.set_count(
+                +0, containers::loose_alloc);
 
             real_type  _minC =
                 loop_cost( _mesh,
@@ -478,77 +487,78 @@
         }
 
     /*--------------------------------- is cost improved? */
-        _qdst.set_count(0);
+        _qdst.set_count(
+            0, containers::loose_alloc) ;
 
         real_type  _QMIN =
         loop_cost( _mesh,
-            _cset, _qdst,  cell_kind ()
-            ) ;
+            _cset, _qdst,  cell_kind()) ;
 
         move_okay( _qdst, _qsrc, _move,
-            +1.0 , _qinc) ;
+        std::sqrt( _QLIM) ,
+                   _qinc) ;
 
         if((_okay = _move > 0 &&
                     _QMIN >= _qmin+_qinc))
         {
     /*--------------------------------- delete old cavity */
-        for (auto _cell  = _aset.head();
-                  _cell != _aset.tend();
+        for (auto _cell  = _aset.head() ;
+                  _cell != _aset.tend() ;
                 ++_cell  )
         {
             if (_cell->_kind == TRIA3_tag)
             {
                 _mesh.
-                _pop_tri3(_cell->_cell);
+                _pop_tri3(_cell->_cell) ;
             }
             else
             if (_cell->_kind == QUAD4_tag)
             {
                 _mesh.
-                _pop_quad(_cell->_cell);
+                _pop_quad(_cell->_cell) ;
             }
         }
-        for (auto _cell  = _jset.head();
-                  _cell != _jset.tend();
+        for (auto _cell  = _jset.head() ;
+                  _cell != _jset.tend() ;
                 ++_cell  )
         {
             if (_cell->_kind == TRIA3_tag)
             {
                 _mesh.
-                _pop_tri3(_cell->_cell);
+                _pop_tri3(_cell->_cell) ;
             }
             else
             if (_cell->_kind == QUAD4_tag)
             {
                 _mesh.
-                _pop_quad(_cell->_cell);
+                _pop_quad(_cell->_cell) ;
             }
         }
 
-            _mesh._pop_node ( &_inod ) ;
-            _mesh._pop_node ( &_jnod ) ;
+            _mesh._pop_node ( &_inod );
+            _mesh._pop_node ( &_jnod );
         }
         else
         {
     /*--------------------------------- delete new cavity */
-        for (auto _cell  = _cset.head();
-                  _cell != _cset.tend();
+        for (auto _cell  = _cset.head() ;
+                  _cell != _cset.tend() ;
                 ++_cell  )
         {
             if (_cell->_kind == TRIA3_tag)
             {
                 _mesh.
-                _pop_tri3(_cell->_cell);
+                _pop_tri3(_cell->_cell) ;
             }
             else
             if (_cell->_kind == QUAD4_tag)
             {
                 _mesh.
-                _pop_quad(_cell->_cell);
+                _pop_quad(_cell->_cell) ;
             }
         }
 
-            _mesh._pop_node ( &_nnew ) ;
+            _mesh._pop_node ( &_nnew );
         }
 
     #   undef   NULLHINT
