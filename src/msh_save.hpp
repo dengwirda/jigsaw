@@ -207,10 +207,11 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
                         "%.17g;%.17g;+0\n",
                         _iter->pval(0),
-                        _iter->pval(1)), VERT2CHUNK)
+                        _iter->pval(1)), +VERT2CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -238,9 +239,9 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%.17g\n",
-                        _iter->pval(2)), VALUECHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%.17g\n" ,
+                        _iter->pval(2)), +VALUECHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -270,11 +271,11 @@
                         _item != nullptr;
                         _item  = _item->_next )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%u;%u;%d\n",
-                    _nmap[_item->_data._node[0]] ,
-                    _nmap[_item->_data._node[1]] ,
-                    _item->_data._part), EDGE2CHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%u;%u;%d\n",
+                    _nmap[_item->_data._node[0]],
+                    _nmap[_item->_data._node[1]],
+                    _item->_data._part ), EDGE2CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -303,12 +304,12 @@
                         _item != nullptr;
                         _item  = _item->_next )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%u;%u;%u;%d\n",
-                    _nmap[_item->_data._node[0]] ,
-                    _nmap[_item->_data._node[1]] ,
-                    _nmap[_item->_data._node[2]] ,
-                    _item->_data._part), TRIA3CHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%u;%u;%u;%d\n",
+                    _nmap[_item->_data._node[0]],
+                    _nmap[_item->_data._node[1]],
+                    _nmap[_item->_data._node[2]],
+                    _item->_data._part ), TRIA3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -425,11 +426,12 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%.17g;%.17g;%.17g;+0\n" ,
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
+                        "%.17g;%.17g;%.17g;+0\n",
                         _iter->pval(0),
                         _iter->pval(1),
-                        _iter->pval(2)), VERT3CHUNK)
+                        _iter->pval(2)), +VERT3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -457,9 +459,9 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%.17g\n",
-                        _iter->pval(3)), VALUECHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%.17g\n" ,
+                        _iter->pval(3)), +VALUECHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -489,11 +491,11 @@
                         _item != nullptr;
                         _item  = _item->_next )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%u;%u;%d\n",
-                    _nmap[_item->_data._node[0]] ,
-                    _nmap[_item->_data._node[1]] ,
-                    _item->_data._part), EDGE2CHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%u;%u;%d\n",
+                    _nmap[_item->_data._node[0]],
+                    _nmap[_item->_data._node[1]],
+                    _item->_data._part ), EDGE2CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -522,12 +524,12 @@
                         _item != nullptr;
                         _item  = _item->_next )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%u;%u;%u;%d\n",
-                    _nmap[_item->_data._node[0]] ,
-                    _nmap[_item->_data._node[1]] ,
-                    _nmap[_item->_data._node[2]] ,
-                    _item->_data._part), TRIA3CHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%u;%u;%u;%d\n",
+                    _nmap[_item->_data._node[0]],
+                    _nmap[_item->_data._node[1]],
+                    _nmap[_item->_data._node[2]],
+                    _item->_data._part ), TRIA3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -556,13 +558,14 @@
                         _item != nullptr;
                         _item  = _item->_next )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, 
                         "%u;%u;%u;%u;%d\n",
-                    _nmap[_item->_data._node[0]] ,
-                    _nmap[_item->_data._node[1]] ,
-                    _nmap[_item->_data._node[2]] ,
-                    _nmap[_item->_data._node[3]] ,
-                    _item->_data._part), TRIA4CHUNK)
+                    _nmap[_item->_data._node[0]],
+                    _nmap[_item->_data._node[1]],
+                    _nmap[_item->_data._node[2]],
+                    _nmap[_item->_data._node[3]],
+                    _item->_data._part ), TRIA4CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -1153,10 +1156,11 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
                         "%.17g;%.17g;+0\n",
-                        _iter->pval(0),
-                        _iter->pval(1)), VERT2CHUNK)
+                        _iter->pval(0) ,
+                        _iter->pval(1) ), VERT2CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -1179,8 +1183,8 @@
                 {
                     if (_iter->mark() < +0) continue ;
 
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%u;%u;%u;+0\n" ,
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%u;%u;%u;+0\n",
                     _nmap[_iter->node(0)] ,
                     _nmap[_iter->node(1)] ,
                     _nmap[_iter->node(2)]),TRIA3CHUNK)
@@ -1253,11 +1257,12 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%.17g;%.17g;%.17g;+0\n" ,
-                        _iter->pval(0),
-                        _iter->pval(1),
-                        _iter->pval(2)), VERT3CHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
+                        "%.17g;%.17g;%.17g;+0\n",
+                        _iter->pval(0) ,
+                        _iter->pval(1) ,
+                        _iter->pval(2) ), VERT3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -1280,7 +1285,8 @@
                 {
                     if (_iter->mark() < +0) continue ;
 
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
                         "%u;%u;%u;%u;+0\n",
                     _nmap[_iter->node(0)] ,
                     _nmap[_iter->node(1)] ,
@@ -1725,10 +1731,11 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0 )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
                         "%.17g;%.17g;+0\n" ,
-                        _iter->pval(0),
-                        _iter->pval(1)), VERT2CHUNK)
+                        _iter->pval(0) ,
+                        _iter->pval(1) ), VERT2CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -1755,9 +1762,9 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%.17g\n" ,
-                        _iter->pval(2)), VALUECHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%.17g\n" ,
+                        _iter->pval(2) ), VALUECHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -1781,8 +1788,8 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%u;%u;%d\n",
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%d\n",
                     _nmap[_iter->node(0)] ,
                     _nmap[_iter->node(1)] ,
                           _iter->itag()), EDGE2CHUNK)
@@ -1808,8 +1815,8 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%u;%u;%u;%d\n",
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%u;%d\n",
                     _nmap[_iter->node(0)] ,
                     _nmap[_iter->node(1)] ,
                     _nmap[_iter->node(2)] ,
@@ -1836,7 +1843,8 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
                         "%u;%u;%u;%u;%d\n",
                     _nmap[_iter->node(0)] ,
                     _nmap[_iter->node(1)] ,
@@ -1965,11 +1973,12 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0 )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
                         "%.17g;%.17g;%.17g;+0\n" ,
-                        _iter->pval(0),
-                        _iter->pval(1),
-                        _iter->pval(2)), VERT3CHUNK)
+                        _iter->pval(0) ,
+                        _iter->pval(1) ,
+                        _iter->pval(2) ), VERT3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -1996,9 +2005,9 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%.17g\n" ,
-                        _iter->pval(3)), VALUECHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%.17g\n" ,
+                        _iter->pval(3) ), VALUECHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -2022,8 +2031,8 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%u;%u;%d\n",
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%d\n",
                     _nmap[_iter->node(0)] ,
                     _nmap[_iter->node(1)] ,
                           _iter->itag()), EDGE2CHUNK)
@@ -2049,8 +2058,8 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                        "%u;%u;%u;%d\n",
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%u;%d\n",
                     _nmap[_iter->node(0)] ,
                     _nmap[_iter->node(1)] ,
                     _nmap[_iter->node(2)] ,
@@ -2077,7 +2086,8 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
                         "%u;%u;%u;%u;%d\n",
                     _nmap[_iter->node(0)] ,
                     _nmap[_iter->node(1)] ,
@@ -2106,7 +2116,8 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    PRINTCHARS(std::sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
                         "%u;%u;%u;%u;%d\n",
                     _nmap[_iter->node(0)] ,
                     _nmap[_iter->node(1)] ,
@@ -2766,8 +2777,8 @@
                 ++_iter  )
         {
     /*--------------------- (apparently) faster to unroll */
-            PRINTCHARS(std::sprintf(&_fbuf[_next] ,
-                "%.17g\n", *_iter) ,
+            PRINTCHARS(snprintf(&_fbuf[_next] ,
+                PRINTCHUNK, "%.17g\n",*_iter) ,
             VALUECHUNK)
         }
         {
@@ -2864,10 +2875,11 @@
                 {
                     if (_iter->mark() >= 0 )
                     {
-                    PRINTCHARS(sprintf(&_fbuf[_next] ,
-                        "%.17g;%.17g;+0\n",
-                        _iter->pval(0),
-                        _iter->pval(1)), VERT2CHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
+                        "%.17g;%.17g;+0\n" ,
+                        _iter->pval(0) ,
+                        _iter->pval(1) ), VERT2CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -2900,11 +2912,11 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    PRINTCHARS(sprintf(&_fbuf[_next] ,
-                        "%u;%u;%u;+0\n",
-                        _iter->node(0),
-                        _iter->node(1),
-                        _iter->node(2)), TRIA3CHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%u;+0\n",
+                        _iter->node(0) ,
+                        _iter->node(1) ,
+                        _iter->node(2) ), TRIA3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -2970,11 +2982,12 @@
                 {
                     if (_iter->mark() >= 0 )
                     {
-                    PRINTCHARS(sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
                         "%.17g;%.17g;%.17g;+0\n" ,
-                        _iter->pval(0),
-                        _iter->pval(1),
-                        _iter->pval(2)), VERT3CHUNK)
+                        _iter->pval(0) ,
+                        _iter->pval(1) ,
+                        _iter->pval(2) ), VERT3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -3007,12 +3020,13 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    PRINTCHARS(sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
                         "%u;%u;%u;%u;+0\n" ,
-                        _iter->node(0),
-                        _iter->node(1),
-                        _iter->node(2),
-                        _iter->node(3)), TRIA4CHUNK)
+                        _iter->node(0) ,
+                        _iter->node(1) ,
+                        _iter->node(2) ,
+                        _iter->node(3) ), TRIA4CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -3034,7 +3048,8 @@
             /*-------------------------- write class data */
                 {
                  char _fbuf [PRINTCHUNK] ;
-                 auto _char = std::sprintf(&_fbuf[0] ,
+                 auto _char = snprintf(&_fbuf[ 0 ] ,
+                    PRINTCHUNK,
                     "%.17g;%.17g;%.17g\n",
                 _ffun._ellipsoid_mesh_3d._radA ,
                 _ffun._ellipsoid_mesh_3d._radB ,
@@ -3100,7 +3115,8 @@
                     _ffun._ellipsoid_mesh_3d.
                         toS2(_ppos, _apos);
 
-                    PRINTCHARS(sprintf(&_fbuf[_next] ,
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK ,
                         "%.17g;%.17g;+0\n",
                         _apos[ 0],
                         _apos[ 1]) , VERT2CHUNK)
@@ -3136,11 +3152,11 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    PRINTCHARS(sprintf(&_fbuf[_next] ,
-                        "%u;%u;%u;+0\n",
-                        _iter->node(0),
-                        _iter->node(1),
-                        _iter->node(2)), TRIA3CHUNK)
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%u;+0\n",
+                        _iter->node(0) ,
+                        _iter->node(1) ,
+                        _iter->node(2) ), TRIA3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -3276,7 +3292,8 @@
             /*-------------------------- write class data */
                 {
                  char _fbuf [PRINTCHUNK] ;
-                 auto _char = std::sprintf(&_fbuf[0] ,
+                 auto _char = snprintf(&_fbuf[ 0 ] ,
+                    PRINTCHUNK,
                     "%.17g;%.17g;%.17g\n",
                 _ffun._ellipsoid_grid_3d._radA ,
                 _ffun._ellipsoid_grid_3d._radB ,
