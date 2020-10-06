@@ -52,22 +52,22 @@
     --------------------------------------------------------
      */
 
-#   define PRINTCHUNK   +32768
+#   define PRINTCHUNK   (+32768)
 
-#   define VERT2CHUNK   + 512
-#   define VERT3CHUNK   + 320
+#   define VERT2CHUNK   (+ 512 )
+#   define VERT3CHUNK   (+ 320 )
 
-#   define VALUECHUNK   +1024
+#   define VALUECHUNK   (+1024 )
 
-#   define EDGE2CHUNK   + 832
-#   define TRIA3CHUNK   + 640
-#   define QUAD4CHUNK   + 512
-#   define TRIA4CHUNK   + 512
-#   define HEXA8CHUNK   + 288
-#   define WEDG6CHUNK   + 352
-#   define PYRA5CHUNK   + 416
+#   define EDGE2CHUNK   (+ 832 )
+#   define TRIA3CHUNK   (+ 640 )
+#   define QUAD4CHUNK   (+ 512 )
+#   define TRIA4CHUNK   (+ 512 )
+#   define HEXA8CHUNK   (+ 288 )
+#   define WEDG6CHUNK   (+ 352 )
+#   define PYRA5CHUNK   (+ 416 )
 
-#   define BOUNDCHUNK   + 832
+#   define BOUNDCHUNK   (+ 832 )
 
 #   define PRINTFINAL                   \
         {                           \
@@ -115,9 +115,8 @@
 
             std::ofstream  _file;
             _file.open(
-                _jcfg._mesh_file, std::ofstream:: out) ;
-
-            std::ios::sync_with_stdio( false );
+                _jcfg._mesh_file,
+            std::ofstream::out | std::ofstream::trunc) ;
 
             if (_file.is_open())
             {
@@ -210,8 +209,8 @@
                     PRINTCHARS(snprintf(&_fbuf[_next],
                         PRINTCHUNK,
                         "%.17g;%.17g;+0\n",
-                        _iter->pval(0),
-                        _iter->pval(1)), +VERT2CHUNK)
+                        _iter->pval(0) ,
+                        _iter->pval(1) ), VERT2CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -241,7 +240,7 @@
                     {
                     PRINTCHARS(snprintf(&_fbuf[_next],
                         PRINTCHUNK, "%.17g\n" ,
-                        _iter->pval(2)), +VALUECHUNK)
+                        _iter->pval(2) ), VALUECHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -429,9 +428,9 @@
                     PRINTCHARS(snprintf(&_fbuf[_next],
                         PRINTCHUNK,
                         "%.17g;%.17g;%.17g;+0\n",
-                        _iter->pval(0),
-                        _iter->pval(1),
-                        _iter->pval(2)), +VERT3CHUNK)
+                        _iter->pval(0) ,
+                        _iter->pval(1) ,
+                        _iter->pval(2) ), VERT3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -461,7 +460,7 @@
                     {
                     PRINTCHARS(snprintf(&_fbuf[_next],
                         PRINTCHUNK, "%.17g\n" ,
-                        _iter->pval(3)), +VALUECHUNK)
+                        _iter->pval(3) ), VALUECHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -559,7 +558,7 @@
                         _item  = _item->_next )
                     {
                     PRINTCHARS(snprintf(&_fbuf[_next],
-                        PRINTCHUNK, 
+                        PRINTCHUNK,
                         "%u;%u;%u;%u;%d\n",
                     _nmap[_item->_data._node[0]],
                     _nmap[_item->_data._node[1]],
@@ -580,8 +579,6 @@
             }
 
             _file.close();
-
-            std::ios::sync_with_stdio(true);
 
         }
         catch (...)
@@ -1088,9 +1085,8 @@
 
             std::ofstream  _file;
             _file.open(
-                _jcfg._tria_file, std::ofstream:: out) ;
-
-            std::ios::sync_with_stdio( false );
+                _jcfg._tria_file,
+            std::ofstream::out | std::ofstream::trunc) ;
 
             if (_file.is_open())
             {
@@ -1305,8 +1301,6 @@
             }
 
             _file.close();
-
-            std::ios::sync_with_stdio(true);
 
         }
         catch (...)
@@ -1628,9 +1622,8 @@
 
             std::ofstream  _file;
             _file.open(
-                _jcfg._mesh_file, std::ofstream:: out) ;
-
-            std::ios::sync_with_stdio( false );
+                _jcfg._mesh_file,
+            std::ofstream::out | std::ofstream::trunc) ;
 
             if (_file.is_open())
             {
@@ -2138,8 +2131,6 @@
             }
 
             _file.close();
-
-            std::ios::sync_with_stdio(true);
 
         }
         catch (...)
@@ -2772,15 +2763,33 @@
         auto _next = +0, _roll = +0 ;
         char _fbuf[PRINTCHUNK] ;
 
-        for (auto _iter  = _list.head() ;
-                  _iter != _list.tend() ;
-                ++_iter  )
+        auto _this = _list.head() ;
+
+        for (auto _iter  = _this,
+                  _last  =(_list.tend() - 4);
+                  _iter  < _last;
+                  _iter += +4,
+                  _this += +4)
+        {
+    /*--------------------- (apparently) faster to unroll */
+            PRINTCHARS(snprintf(&_fbuf[_next] ,
+                PRINTCHUNK,
+                "%.17g\n%.17g\n%.17g\n%.17g\n",
+                *(_iter + 0), *(_iter + 1) ,
+                *(_iter + 2), *(_iter + 3) )  ,
+            VALUECHUNK / +4)
+        }
+
+        for (auto _iter  = _this;
+                  _iter  < _list.tend() ;
+                  _iter += +1)
         {
     /*--------------------- (apparently) faster to unroll */
             PRINTCHARS(snprintf(&_fbuf[_next] ,
                 PRINTCHUNK, "%.17g\n",*_iter) ,
-            VALUECHUNK)
+            VALUECHUNK / +1)
         }
+
         {
     /*--------------------- ensure last buffer is written */
             PRINTFINAL;
@@ -2811,9 +2820,8 @@
 
             std::ofstream  _file;
             _file.open(
-                _jcfg._hfun_file, std::ofstream:: out) ;
-
-            std::ios::sync_with_stdio( false );
+                _jcfg._hfun_file,
+            std::ofstream::out | std::ofstream::trunc) ;
 
             if (_file.is_open())
             {
@@ -3282,7 +3290,7 @@
                 _ffun._kind ==
                 jmsh_kind::ellipsoid_grid)
             {
-            /*-------------------------- save 3-dim. mesh */
+            /*-------------------------- save 2-dim. grid */
                 _file << "# " << _name << ".msh"
                       << "; created by " ;
                 _file << __JGSWVSTR "\n" ;
@@ -3348,8 +3356,6 @@
             }
 
             _file.close();
-
-            std::ios::sync_with_stdio(true);
 
         }
         catch (...)

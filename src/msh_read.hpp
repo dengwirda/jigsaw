@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 May, 2020
+     * Last updated: 30 Sept., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -367,9 +367,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -389,41 +386,33 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
-
-            if (_tstr.count() == this->_ndim+1)
-            {
                 std:: size_t static
-                    constexpr _VMAX = +16;
+                    constexpr _VMAX = +256 ;
 
-                double _pval[_VMAX];
-                std::int32_t _itag ;
-                for (auto _ipos = this->_ndim ;
-                          _ipos-- != +0; )
+                double _pval[_VMAX] ;
+                char * _next = _line.data();
+
+                for (size_t _ipos  = +0;
+                    _ipos < this->_ndim; ++_ipos)
                 {
                     _pval[_ipos] =
-                     std::stod(_tstr[_ipos]);
+                     std::strtod(_next, &_next) ;
+
+                    _next += +1;
                 }
 
-                _itag = std::stol(
-                    _tstr[this->_ndim]);
+                std::int32_t _itag =
+                std::strtol( _next, &_next, 10) ;
 
                 _dest.push_point (
-                   _irow, _pval, _itag);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
+                   _irow, _pval, _itag) ;
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -447,9 +436,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -469,41 +455,33 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
-
-            if (_tstr.count() == this->_ndim+1)
-            {
                 std:: size_t static
-                    constexpr _VMAX = +16;
+                    constexpr _VMAX = +256 ;
 
-                double _pval[_VMAX];
-                std::int32_t _itag ;
-                for (auto _ipos = this->_ndim ;
-                          _ipos-- != +0; )
+                double _pval[_VMAX] ;
+                char * _next = _line.data();
+
+                for (size_t _ipos  = +0;
+                    _ipos < this->_ndim; ++_ipos)
                 {
                     _pval[_ipos] =
-                     std::stod(_tstr[_ipos]);
+                     std::strtod(_next, &_next) ;
+
+                    _next += +1;
                 }
 
-                _itag = std::stol(
-                    _tstr[this->_ndim]);
+                std::int32_t _itag =
+                std::strtol( _next, &_next, 10) ;
 
                 _dest.push_seeds (
                    _irow, _pval, _itag);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -551,11 +529,11 @@
             try
             {
                 _dest.push_coord ( _idim,
-                    _irow, std::stod(_line));
+                    _irow, std::stod(_line)) ;
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -579,9 +557,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _npwr = +0;
@@ -603,37 +578,29 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
-
-            if (_npwr == _tstr.count ())
-            {
                 std:: size_t static
-                    constexpr _VMAX = +16;
+                    constexpr _VMAX = +256 ;
 
-                double _vpwr[_VMAX];
-                for (auto _ipos = _npwr;
-                          _ipos-- != +0; )
+                double _vpwr[_VMAX] ;
+                char * _next = _line.data();
+
+                for (size_t _ipos  = +0;
+                    _ipos < _npwr; ++_ipos)
                 {
                     _vpwr[_ipos] =
-                     std::stod(_tstr[_ipos]);
+                     std::strtod(_next, &_next) ;
+
+                    _next += +1 ;
                 }
 
-                _dest.
-                 push_power(_irow, _vpwr);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
+                _dest.push_power(_irow,  _vpwr) ;
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -657,9 +624,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _nval = +0;
@@ -681,37 +645,29 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
-
-            if (_nval == _tstr.count ())
-            {
                 std:: size_t static
-                    constexpr _VMAX = +16;
+                    constexpr _VMAX = +256 ;
 
-                double _vval[_VMAX];
-                for (auto _ipos = _nval;
-                          _ipos-- != +0; )
+                double _vval[_VMAX] ;
+                char * _next = _line.data();
+
+                for (size_t _ipos  = +0;
+                    _ipos < _nval; ++_ipos)
                 {
                     _vval[_ipos] =
-                     std::stod(_tstr[_ipos]);
+                     std::strtod(_next, &_next) ;
+
+                    _next += +1 ;
                 }
 
-                _dest.
-                 push_value(_irow, _vval);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
+                _dest.push_value(_irow,  _vval) ;
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -735,9 +691,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _nval = +0;
@@ -759,37 +712,29 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
-
-            if (_nval == _tstr.count ())
-            {
                 std:: size_t static
-                    constexpr _VMAX = +16;
+                    constexpr _VMAX = +256 ;
 
-                double _vals[_VMAX];
-                for (auto _ipos = _nval;
-                          _ipos-- != +0; )
+                double _vval[_VMAX] ;
+                char * _next = _line.data();
+
+                for (size_t _ipos  = +0;
+                    _ipos < _nval; ++_ipos)
                 {
-                    _vals[_ipos] =
-                     std::stod(_tstr[_ipos]);
+                    _vval[_ipos] =
+                     std::strtod(_next, &_next) ;
+
+                    _next += +1 ;
                 }
 
-                _dest.
-                 push_slope(_irow, _vals);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
+                _dest.push_slope(_irow,  _vval) ;
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -813,9 +758,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -835,35 +777,28 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
+                char *_next = _line.data();
 
-            if (_tstr.count() == +3)
-            {
-                std::int32_t _node[2], _itag;
+                std::int32_t _node[2];
                 _node[0] =
-                    std::stol(_tstr[0]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[1] =
-                    std::stol(_tstr[1]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
 
-                _itag    =
-                    std::stol(_tstr[2]);
+                std::int32_t _itag =
+                std::strtol( _next, &_next, 10) ;
 
                 _dest.push_edge2 (
                    _irow, _node, _itag);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -887,9 +822,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -909,37 +841,31 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
+                char *_next = _line.data();
 
-            if (_tstr.count() == +4)
-            {
-                std::int32_t _node[3], _itag;
+                std::int32_t _node[3];
                 _node[0] =
-                    std::stol(_tstr[0]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[1] =
-                    std::stol(_tstr[1]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[2] =
-                    std::stol(_tstr[2]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
 
-                _itag    =
-                    std::stol(_tstr[3]);
+                std::int32_t _itag =
+                std::strtol( _next, &_next, 10) ;
 
                 _dest.push_tria3 (
                    _irow, _node, _itag);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -963,9 +889,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -985,39 +908,34 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
+                char *_next = _line.data();
 
-            if (_tstr.count() == +5)
-            {
-                std::int32_t _node[4], _itag;
+                std::int32_t _node[4];
                 _node[0] =
-                    std::stol(_tstr[0]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[1] =
-                    std::stol(_tstr[1]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[2] =
-                    std::stol(_tstr[2]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[3] =
-                    std::stol(_tstr[3]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
 
-                _itag    =
-                    std::stol(_tstr[4]);
+                std::int32_t _itag =
+                std::strtol( _next, &_next, 10) ;
 
                 _dest.push_quad4 (
                    _irow, _node, _itag);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -1041,9 +959,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -1063,39 +978,34 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
+                char *_next = _line.data();
 
-            if (_tstr.count() == +5)
-            {
-                std::int32_t _node[4], _itag;
+                std::int32_t _node[4];
                 _node[0] =
-                    std::stol(_tstr[0]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[1] =
-                    std::stol(_tstr[1]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[2] =
-                    std::stol(_tstr[2]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[3] =
-                    std::stol(_tstr[3]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
 
-                _itag    =
-                    std::stol(_tstr[4]);
+                std::int32_t _itag =
+                std::strtol( _next, &_next, 10) ;
 
                 _dest.push_tria4 (
                    _irow, _node, _itag);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -1119,9 +1029,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -1141,47 +1048,46 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
+                char *_next = _line.data();
 
-            if (_tstr.count() == +9)
-            {
-                std::int32_t _node[8], _itag;
+                std::int32_t _node[8];
                 _node[0] =
-                    std::stol(_tstr[0]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[1] =
-                    std::stol(_tstr[1]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[2] =
-                    std::stol(_tstr[2]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[3] =
-                    std::stol(_tstr[3]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[4] =
-                    std::stol(_tstr[4]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[5] =
-                    std::stol(_tstr[5]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[6] =
-                    std::stol(_tstr[6]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[7] =
-                    std::stol(_tstr[7]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
 
-                _itag    =
-                    std::stol(_tstr[8]);
+                std::int32_t _itag =
+                std::strtol( _next, &_next, 10) ;
 
                 _dest.push_hexa8 (
                    _irow, _node, _itag);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -1205,9 +1111,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -1227,43 +1130,40 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
+                char *_next = _line.data();
 
-            if (_tstr.count() == +7)
-            {
-                std::int32_t _node[6], _itag;
+                std::int32_t _node[6];
                 _node[0] =
-                    std::stol(_tstr[0]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[1] =
-                    std::stol(_tstr[1]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[2] =
-                    std::stol(_tstr[2]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[3] =
-                    std::stol(_tstr[3]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[4] =
-                    std::stol(_tstr[4]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[5] =
-                    std::stol(_tstr[5]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
 
-                _itag    =
-                    std::stol(_tstr[6]);
+                std::int32_t _itag =
+                std::strtol( _next, &_next, 10) ;
 
                 _dest.push_wedg6 (
                    _irow, _node, _itag);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -1287,9 +1187,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -1309,41 +1206,37 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
+                char *_next = _line.data();
 
-            if (_tstr.count() == +6)
-            {
-                std::int32_t _node[5], _itag;
+                std::int32_t _node[5];
                 _node[0] =
-                    std::stol(_tstr[0]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[1] =
-                    std::stol(_tstr[1]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[2] =
-                    std::stol(_tstr[2]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[3] =
-                    std::stol(_tstr[3]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
                 _node[4] =
-                    std::stol(_tstr[4]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
 
-                _itag    =
-                    std::stol(_tstr[5]);
+                std::int32_t _itag =
+                std::strtol( _next, &_next, 10) ;
 
                 _dest.push_pyra5 (
                    _irow, _node, _itag);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;
@@ -1367,9 +1260,6 @@
         dest_type    &_dest
         )
     {
-        containers::
-            array< std::string > _tstr ;
-
     /*----------------------------------------- read head */
         std:: size_t _nrow = +0;
         std:: size_t _irow = +0;
@@ -1389,35 +1279,29 @@
         std::string _line;
         while (std::getline(_ffid, _line))
         {
-            _tstr.clear();
-
             try
             {
-            find_toks (_line, ";", _tstr);
+                char *_next = _line.data();
 
-            if (_tstr.count() == +3)
-            {
                 std::int32_t _itag =
-                    std::stol(_tstr[0]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
 
                 std::int32_t _inum =
-                    std::stol(_tstr[1]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
 
                 std::int32_t _KIND =
-                    std::stol(_tstr[2]);
+                std::strtol( _next, &_next, 10) ;
+                _next += +1 ;
 
                 _dest.push_bound (
-                _irow,  _itag, _inum, _KIND);
-            }
-            else
-            {
-                this->_errs.push_tail(_line);
-            }
+                _irow,  _itag, _inum, _KIND) ;
 
             }
             catch (...)
             {
-                this->_errs.push_tail(_line);
+                this->_errs.push_tail(_line) ;
             }
 
             _irow += +1 ;

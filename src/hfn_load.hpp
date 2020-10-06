@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 26 April, 2020
+     * Last updated: 30 Sept., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -2295,7 +2295,7 @@
             _jlog.push("  \n") ;
 
             if (_hfun._ellipsoid_grid_3d._wrap)
-            _jlog.push("  PERIODIC = TRUE") ;
+            _jlog.push("  PERIODIC = TRUE\n"  ) ;
 
         }
 
