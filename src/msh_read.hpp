@@ -304,7 +304,7 @@
         if (_stok.count() == +2)
         {
             this->
-           _ndim = std::stoi( _stok[1]);
+           _ndim = std::stoi(_stok[ 1]);
 
            _dest.
             push_ndims (this->_ndim) ;
@@ -336,12 +336,9 @@
         double _erad[ +3] ;
         if (_stok.count() == +4)
         {
-            _erad[ 0] =
-                std::stod(_stok[ 1]) ;
-            _erad[ 1] =
-                std::stod(_stok[ 2]) ;
-            _erad[ 2] =
-                std::stod(_stok[ 3]) ;
+            _erad[0] = std::stod(_stok[1]) ;
+            _erad[1] = std::stod(_stok[2]) ;
+            _erad[2] = std::stod(_stok[3]) ;
 
             _dest.push_radii(_erad);
         }
@@ -383,7 +380,7 @@
         _dest.open_point(_nrow);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
@@ -391,8 +388,8 @@
                 std:: size_t static
                     constexpr _VMAX = +256 ;
 
-                double _pval[_VMAX] ;
-                char * _next = _line.data();
+                double _pval [_VMAX] ;
+                char  *_next =(char*)_line.data() ;
 
                 for (size_t _ipos  = +0;
                     _ipos < this->_ndim; ++_ipos)
@@ -452,7 +449,7 @@
         _dest.open_seeds(_nrow);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
@@ -460,8 +457,8 @@
                 std:: size_t static
                     constexpr _VMAX = +256 ;
 
-                double _pval[_VMAX] ;
-                char * _next = _line.data();
+                double _pval [_VMAX] ;
+                char  *_next =(char*)_line.data() ;
 
                 for (size_t _ipos  = +0;
                     _ipos < this->_ndim; ++_ipos)
@@ -523,7 +520,7 @@
         _dest.open_coord(_idim, _nrow) ;
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
@@ -575,7 +572,7 @@
         _dest.open_power(_nrow , _npwr);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
@@ -583,8 +580,8 @@
                 std:: size_t static
                     constexpr _VMAX = +256 ;
 
-                double _vpwr[_VMAX] ;
-                char * _next = _line.data();
+                double _vpwr [_VMAX] ;
+                char  *_next =(char*)_line.data() ;
 
                 for (size_t _ipos  = +0;
                     _ipos < _npwr; ++_ipos)
@@ -642,7 +639,7 @@
         _dest.open_value (_nrow, _nval);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
@@ -650,8 +647,8 @@
                 std:: size_t static
                     constexpr _VMAX = +256 ;
 
-                double _vval[_VMAX] ;
-                char * _next = _line.data();
+                double _vval [_VMAX] ;
+                char  *_next =(char*)_line.data() ;
 
                 for (size_t _ipos  = +0;
                     _ipos < _nval; ++_ipos)
@@ -709,7 +706,7 @@
         _dest.open_slope (_nrow, _nval);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
@@ -717,8 +714,8 @@
                 std:: size_t static
                     constexpr _VMAX = +256 ;
 
-                double _vval[_VMAX] ;
-                char * _next = _line.data();
+                double _vval [_VMAX] ;
+                char  *_next =(char*)_line.data() ;
 
                 for (size_t _ipos  = +0;
                     _ipos < _nval; ++_ipos)
@@ -774,12 +771,12 @@
         _dest.open_edge2(_nrow);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
             {
-                char *_next = _line.data();
+                char *_next =(char *)_line.data() ;
 
                 std::int32_t _node[2];
                 _node[0] =
@@ -838,12 +835,12 @@
         _dest.open_tria3(_nrow);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
             {
-                char *_next = _line.data();
+                char *_next =(char *)_line.data() ;
 
                 std::int32_t _node[3];
                 _node[0] =
@@ -905,12 +902,12 @@
         _dest.open_quad4(_nrow);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
             {
-                char *_next = _line.data();
+                char *_next =(char *)_line.data() ;
 
                 std::int32_t _node[4];
                 _node[0] =
@@ -975,12 +972,12 @@
         _dest.open_tria4(_nrow);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
             {
-                char *_next = _line.data();
+                char *_next =(char *)_line.data() ;
 
                 std::int32_t _node[4];
                 _node[0] =
@@ -1045,12 +1042,12 @@
         _dest.open_hexa8(_nrow);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
             {
-                char *_next = _line.data();
+                char *_next =(char *)_line.data() ;
 
                 std::int32_t _node[8];
                 _node[0] =
@@ -1127,12 +1124,12 @@
         _dest.open_wedg6(_nrow);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
             {
-                char *_next = _line.data();
+                char *_next =(char *)_line.data() ;
 
                 std::int32_t _node[6];
                 _node[0] =
@@ -1203,12 +1200,12 @@
         _dest.open_pyra5(_nrow);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
             {
-                char *_next = _line.data();
+                char *_next =(char *)_line.data() ;
 
                 std::int32_t _node[5];
                 _node[0] =
@@ -1276,12 +1273,12 @@
         _dest.open_bound(_nrow);
 
     /*----------------------------------------- read data */
-        std::string _line;
+        std::string _line ;
         while (std::getline(_ffid, _line))
         {
             try
             {
-                char *_next = _line.data();
+                char *_next =(char *)_line.data() ;
 
                 std::int32_t _itag =
                 std::strtol( _next, &_next, 10) ;
@@ -1356,111 +1353,93 @@
 
             if (_stok[0] == "MSHID")
                 {
-                read_mshid(_ffid, _stok,
-                           _dest) ;
+            read_mshid(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "NDIMS")
                 {
-                read_ndims(_ffid, _stok,
-                           _dest) ;
+            read_ndims(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "RADII")
                 {
-                read_radii(_ffid, _stok,
-                           _dest) ;
+            read_radii(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "POINT")
                 {
-                read_point(_ffid, _stok,
-                           _dest) ;
+            read_point(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "SEEDS")
                 {
-                read_seeds(_ffid, _stok,
-                           _dest) ;
+            read_seeds(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "COORD")
                 {
-                read_coord(_ffid, _stok,
-                           _dest) ;
+            read_coord(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "POWER")
                 {
-                read_power(_ffid, _stok,
-                           _dest) ;
+            read_power(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "VALUE")
                 {
-                read_value(_ffid, _stok,
-                           _dest) ;
+            read_value(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "SLOPE")
                 {
-                read_slope(_ffid, _stok,
-                           _dest) ;
+            read_slope(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "EDGE2")
                 {
-                read_edge2(_ffid, _stok,
-                           _dest) ;
+            read_edge2(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "TRIA3")
                 {
-                read_tria3(_ffid, _stok,
-                           _dest) ;
+            read_tria3(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "QUAD4")
                 {
-                read_quad4(_ffid, _stok,
-                           _dest) ;
+            read_quad4(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "TRIA4")
                 {
-                read_tria4(_ffid, _stok,
-                           _dest) ;
+            read_tria4(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "HEXA8")
                 {
-                read_hexa8(_ffid, _stok,
-                           _dest) ;
+            read_hexa8(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "WEDG6")
                 {
-                read_wedg6(_ffid, _stok,
-                           _dest) ;
+            read_wedg6(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "PYRA5")
                 {
-                read_pyra5(_ffid, _stok,
-                           _dest) ;
+            read_pyra5(_ffid, _stok, _dest) ;
                 }
             else
             if (_stok[0] == "BOUND")
                 {
-                read_bound(_ffid, _stok,
-                           _dest) ;
+            read_bound (_ffid, _stok, _dest) ;
                 }
 
             }
             catch (...)
             {
-                this->
-               _errs.push_tail (_line) ;
+                this->_errs.push_tail(_line) ;
             }
         }
     }
