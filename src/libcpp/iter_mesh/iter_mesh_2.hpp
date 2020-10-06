@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Sept., 2020
+     * Last updated: 30 Sept., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -399,7 +399,7 @@
             std::min(_0src, *_iter) ;
 
             _msrc += std::pow(
-            (real_type)1. / *_iter, +7);
+            (real_type)1. / *_iter, +9);
         }
         for (auto _iter  = _cdst.head(),
                   _tend  = _cdst.tend();
@@ -410,20 +410,20 @@
             std::min(_0dst, *_iter) ;
 
             _mdst += std::pow (
-            (real_type)1. / *_iter, +7);
+            (real_type)1. / *_iter, +9);
         }
 
         _qtol *= std::max(_0src, _zero);
 
         _msrc  = std::pow(
-        _csrc.count() / _msrc, +1./7.) ;
+        _csrc.count() / _msrc, +1./9.0);
         _mdst  = std::pow(
-        _cdst.count() / _mdst, +1./7.) ;
+        _cdst.count() / _mdst, +1./9.0);
 
         _qtol /=
-        std::pow(_csrc.count(), 1./7.) ;
+        std::pow(_csrc.count(), 1./9.0);
         _qtol /=
-        std::pow(_cdst.count(), 1./7.) ;
+        std::pow(_cdst.count(), 1./9.0);
 
     /*---------------------------- test move = "okay" */
         if (_0dst >= _GOOD)
@@ -1653,7 +1653,7 @@
             if (MARKNODE(_enod[0])>_imrk) continue ;
             if (MARKNODE(_enod[1])>_imrk) continue ;
 
-            if (MARKNODE(_enod[0]) < +0 ||
+            if (MARKNODE(_enod[0]) < +0 &&
                 MARKNODE(_enod[1]) < +0 ) continue ;
 
             if(!_mesh.find_edge(

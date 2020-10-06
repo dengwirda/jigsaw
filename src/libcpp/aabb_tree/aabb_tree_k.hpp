@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 02 April, 2020
+ * Last updated: 28 Sept., 2020
  *
  * Copyright 2013-2020
  * Darren Engwirda
@@ -589,23 +589,29 @@
                     _rnod->_pmin[_idim] ;
                 }
 
-                if (_voll + _volr <= this->_vtol * _volp)
+                if (_voll + _volr <= _volp * this->_vtol)
                 {
         /*--------------- push children due to vol. ratio */
+                if (_lnum < _cnum && _rnum < _cnum)
+                {
                     this->_work
                        .push_tail(_rnod);
                     this->_work
                        .push_tail(_lnod);
+                }
                 }
 
             }
             else
             {
         /*--------------- push children due to items cap. */
+                if (_lnum < _cnum && _rnum < _cnum)
+                {
                     this->_work
                        .push_tail(_rnod);
                     this->_work
                        .push_tail(_lnod);
+                }
             }
         }
 

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 March, 2020
+     * Last updated: 30 Sept., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -45,6 +45,46 @@
 
 #   ifndef __MSH_SAVE__
 #   define __MSH_SAVE__
+
+    /*
+    --------------------------------------------------------
+     * for C-style sprintf to C++ stream.
+    --------------------------------------------------------
+     */
+
+#   define PRINTCHUNK   (+32768)
+
+#   define VERT2CHUNK   (+ 512 )
+#   define VERT3CHUNK   (+ 320 )
+
+#   define VALUECHUNK   (+1024 )
+
+#   define EDGE2CHUNK   (+ 832 )
+#   define TRIA3CHUNK   (+ 640 )
+#   define QUAD4CHUNK   (+ 512 )
+#   define TRIA4CHUNK   (+ 512 )
+#   define HEXA8CHUNK   (+ 288 )
+#   define WEDG6CHUNK   (+ 352 )
+#   define PYRA5CHUNK   (+ 416 )
+
+#   define BOUNDCHUNK   (+ 832 )
+
+#   define PRINTFINAL                   \
+        {                           \
+            _fbuf[_next] ='\0';     \
+            _file << _fbuf;         \
+            _roll = _next = 0 ;     \
+        }
+
+#   define PRINTCHARS(_char, _size) \
+        {                           \
+            _next +=  _char;        \
+                                    \
+            if ((_roll++) >= _size)     \
+            {                       \
+                PRINTFINAL ;        \
+            }                       \
+        }
 
     /*
     --------------------------------------------------------
@@ -69,16 +109,14 @@
         {
             containers::array<iptr_type> _nmap;
 
-            std::ofstream  _file;
-
             std::string _path, _name, _fext;
             file_part(
-                _jcfg._mesh_file,
-                    _path, _name, _fext);
+                _jcfg._mesh_file, _path, _name, _fext) ;
 
+            std::ofstream  _file;
             _file.open(
                 _jcfg._mesh_file,
-                    std::ofstream::out );
+            std::ofstream::out | std::ofstream::trunc) ;
 
             if (_file.is_open())
             {
@@ -92,10 +130,6 @@
                 _file << __JGSWVSTR "\n" ;
                 _file << "MSHID=2;EUCLIDEAN-MESH \n" ;
                 _file << "NDIMS=2 \n" ;
-
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
 
             /*------------ index mapping for active nodes */
                 _nmap.set_count(_rdel.
@@ -159,7 +193,9 @@
             /*-------------------------- write POINT data */
                 _file << "POINT=" << _last << "\n" ;
 
-                iptr_type _npos  = +0 ;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_2d._tria._nset.head();
@@ -170,11 +206,14 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    _file << _iter->pval(0) << ";"
-                          << _iter->pval(1) << ";"
-                          << +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
+                        "%.17g;%.17g;+0\n",
+                        _iter->pval(0) ,
+                        _iter->pval(1) ), VERT2CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_jcfg._iter_opts.dual() )
@@ -186,7 +225,9 @@
                 _file << "POWER="
                       << _last << ";1" << "\n" ;
 
-                iptr_type _npos  = +0 ;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_2d._tria._nset.head();
@@ -197,9 +238,12 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    _file << (real_type)0. << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%.17g\n" ,
+                        _iter->pval(2) ), VALUECHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
                 }
 
@@ -210,6 +254,9 @@
                 _file << "EDGE2=" <<
                     _rdel._euclidean_rdel_2d.
                         _eset.count() << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_2d._eset._lptr.head();
@@ -223,14 +270,14 @@
                         _item != nullptr;
                         _item  = _item->_next )
                     {
-                    _file <<
-                    _nmap[_item->_data._node[0]]
-                          << ";" <<
-                    _nmap[_item->_data._node[1]]
-                          << ";" <<
-                    _item->_data._part << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%u;%u;%d\n",
+                    _nmap[_item->_data._node[0]],
+                    _nmap[_item->_data._node[1]],
+                    _item->_data._part ), EDGE2CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_rdel._euclidean_rdel_2d.
@@ -240,6 +287,9 @@
                 _file << "TRIA3=" <<
                     _rdel._euclidean_rdel_2d.
                         _tset.count() << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_2d._tset._lptr.head();
@@ -253,16 +303,15 @@
                         _item != nullptr;
                         _item  = _item->_next )
                     {
-                    _file <<
-                    _nmap[_item->_data._node[0]]
-                          << ";" <<
-                    _nmap[_item->_data._node[1]]
-                          << ";" <<
-                    _nmap[_item->_data._node[2]]
-                          << ";" <<
-                    _item->_data._part << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%u;%u;%u;%d\n",
+                    _nmap[_item->_data._node[0]],
+                    _nmap[_item->_data._node[1]],
+                    _nmap[_item->_data._node[2]],
+                    _item->_data._part ), TRIA3CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
             }
@@ -277,10 +326,6 @@
                 _file << __JGSWVSTR "\n" ;
                 _file << "MSHID=2;EUCLIDEAN-MESH \n" ;
                 _file << "NDIMS=3 \n" ;
-
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
 
             /*------------ index mapping for active nodes */
                 _nmap.set_count(_rdel.
@@ -367,7 +412,9 @@
             /*-------------------------- write POINT data */
                 _file << "POINT=" << _last << "\n" ;
 
-                iptr_type _npos  = +0 ;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_3d._tria._nset.head();
@@ -378,12 +425,15 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    _file << _iter->pval(0) << ";"
-                          << _iter->pval(1) << ";"
-                          << _iter->pval(2) << ";"
-                          << +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
+                        "%.17g;%.17g;%.17g;+0\n",
+                        _iter->pval(0) ,
+                        _iter->pval(1) ,
+                        _iter->pval(2) ), VERT3CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_jcfg._iter_opts.dual() )
@@ -395,7 +445,9 @@
                 _file << "POWER="
                       << _last << ";1" << "\n" ;
 
-                iptr_type _npos  = +0 ;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_3d._tria._nset.head();
@@ -406,9 +458,12 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    _file << (real_type)0. << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%.17g\n" ,
+                        _iter->pval(3) ), VALUECHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
                 }
 
@@ -419,6 +474,9 @@
                 _file << "EDGE2=" <<
                     _rdel._euclidean_rdel_3d.
                         _eset.count() << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_3d._eset._lptr.head();
@@ -432,14 +490,14 @@
                         _item != nullptr;
                         _item  = _item->_next )
                     {
-                    _file <<
-                    _nmap[_item->_data._node[0]]
-                          << ";" <<
-                    _nmap[_item->_data._node[1]]
-                          << ";" <<
-                    _item->_data._part << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%u;%u;%d\n",
+                    _nmap[_item->_data._node[0]],
+                    _nmap[_item->_data._node[1]],
+                    _item->_data._part ), EDGE2CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_rdel._euclidean_rdel_3d.
@@ -449,6 +507,9 @@
                 _file << "TRIA3=" <<
                     _rdel._euclidean_rdel_3d.
                         _fset.count() << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_3d._fset._lptr.head();
@@ -462,16 +523,15 @@
                         _item != nullptr;
                         _item  = _item->_next )
                     {
-                    _file <<
-                    _nmap[_item->_data._node[0]]
-                          << ";" <<
-                    _nmap[_item->_data._node[1]]
-                          << ";" <<
-                    _nmap[_item->_data._node[2]]
-                          << ";" <<
-                    _item->_data._part << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%u;%u;%u;%d\n",
+                    _nmap[_item->_data._node[0]],
+                    _nmap[_item->_data._node[1]],
+                    _nmap[_item->_data._node[2]],
+                    _item->_data._part ), TRIA3CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_rdel._euclidean_rdel_3d.
@@ -481,6 +541,9 @@
                 _file << "TRIA4=" <<
                     _rdel._euclidean_rdel_3d.
                         _tset.count() << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_3d._tset._lptr.head();
@@ -494,18 +557,17 @@
                         _item != nullptr;
                         _item  = _item->_next )
                     {
-                    _file <<
-                    _nmap[_item->_data._node[0]]
-                          << ";" <<
-                    _nmap[_item->_data._node[1]]
-                          << ";" <<
-                    _nmap[_item->_data._node[2]]
-                          << ";" <<
-                    _nmap[_item->_data._node[3]]
-                          << ";" <<
-                    _item->_data._part << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
+                        "%u;%u;%u;%u;%d\n",
+                    _nmap[_item->_data._node[0]],
+                    _nmap[_item->_data._node[1]],
+                    _nmap[_item->_data._node[2]],
+                    _nmap[_item->_data._node[3]],
+                    _item->_data._part ), TRIA4CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
             }
@@ -1017,16 +1079,14 @@
         {
             containers::array<iptr_type> _nmap;
 
-            std::ofstream  _file;
-
             std::string _path, _name, _fext;
             file_part(
-                _jcfg._tria_file,
-                    _path, _name, _fext);
+                _jcfg._tria_file, _path, _name, _fext) ;
 
+            std::ofstream  _file;
             _file.open(
                 _jcfg._tria_file,
-                    std::ofstream::out );
+            std::ofstream::out | std::ofstream::trunc) ;
 
             if (_file.is_open())
             {
@@ -1040,10 +1100,6 @@
                 _file << __JGSWVSTR "\n" ;
                 _file << "MSHID=2;EUCLIDEAN-MESH \n" ;
                 _file << "NDIMS=2 \n" ;
-
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
 
             /*------------ index mapping for active nodes */
                 _nmap.set_count(_rdel.
@@ -1083,7 +1139,10 @@
             /*-------------------------- write POINT data */
                 _file << "POINT=" << _last << "\n" ;
 
-                iptr_type _npos  = +0 ;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
+
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_2d._tria._nset.head();
                           _iter != _rdel.
@@ -1093,11 +1152,14 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    _file << _iter->pval(0) << ";"
-                          << _iter->pval(1) << ";"
-                          << +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
+                        "%.17g;%.17g;+0\n",
+                        _iter->pval(0) ,
+                        _iter->pval(1) ), VERT2CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_rdel._euclidean_rdel_2d.
@@ -1105,6 +1167,9 @@
                 {
             /*-------------------------- write TRIA3 data */
                 _file << "TRIA3=" << _ntri << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_2d._tria._tset.head();
@@ -1114,12 +1179,13 @@
                 {
                     if (_iter->mark() < +0) continue ;
 
-                    _file <<
-                    _nmap[_iter->node(0)] << ";" <<
-                    _nmap[_iter->node(1)] << ";" <<
-                    _nmap[_iter->node(2)] << ";" <<
-                       +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK, "%u;%u;%u;+0\n",
+                    _nmap[_iter->node(0)] ,
+                    _nmap[_iter->node(1)] ,
+                    _nmap[_iter->node(2)]),TRIA3CHUNK)
                 }
+                    PRINTFINAL;
                 }
 
             }
@@ -1134,10 +1200,6 @@
                 _file << __JGSWVSTR "\n" ;
                 _file << "MSHID=2;EUCLIDEAN-MESH \n" ;
                 _file << "NDIMS=3 \n" ;
-
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
 
             /*------------ index mapping for active nodes */
                 _nmap.set_count(_rdel.
@@ -1178,7 +1240,10 @@
             /*-------------------------- write POINT data */
                 _file << "POINT=" << _last << "\n" ;
 
-                iptr_type _npos  = +0 ;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
+
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_3d._tria._nset.head();
                           _iter != _rdel.
@@ -1188,12 +1253,15 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    _file << _iter->pval(0) << ";"
-                          << _iter->pval(1) << ";"
-                          << _iter->pval(2) << ";"
-                          << +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
+                        "%.17g;%.17g;%.17g;+0\n",
+                        _iter->pval(0) ,
+                        _iter->pval(1) ,
+                        _iter->pval(2) ), VERT3CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_rdel._euclidean_rdel_3d.
@@ -1201,6 +1269,9 @@
                 {
             /*-------------------------- write TRIA3 data */
                 _file << "TRIA4=" << _ntri << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_3d._tria._tset.head();
@@ -1210,13 +1281,15 @@
                 {
                     if (_iter->mark() < +0) continue ;
 
-                    _file <<
-                    _nmap[_iter->node(0)] << ";" <<
-                    _nmap[_iter->node(1)] << ";" <<
-                    _nmap[_iter->node(2)] << ";" <<
-                    _nmap[_iter->node(3)] << ";" <<
-                       +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next],
+                        PRINTCHUNK,
+                        "%u;%u;%u;%u;+0\n",
+                    _nmap[_iter->node(0)] ,
+                    _nmap[_iter->node(1)] ,
+                    _nmap[_iter->node(2)] ,
+                    _nmap[_iter->node(3)]),TRIA4CHUNK)
                 }
+                    PRINTFINAL;
                 }
 
             }
@@ -1543,16 +1616,14 @@
         {
             containers::array<iptr_type> _nmap;
 
-            std::ofstream  _file;
-
             std::string _path, _name, _fext;
             file_part(
-                _jcfg._mesh_file,
-                    _path, _name, _fext);
+                _jcfg._mesh_file, _path, _name, _fext) ;
 
+            std::ofstream  _file;
             _file.open(
                 _jcfg._mesh_file,
-                    std::ofstream::out );
+            std::ofstream::out | std::ofstream::trunc) ;
 
             if (_file.is_open())
             {
@@ -1566,10 +1637,6 @@
                 _file << __JGSWVSTR "\n" ;
                 _file << "MSHID=3;EUCLIDEAN-MESH \n" ;
                 _file << "NDIMS=2 \n" ;
-
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
 
             /*------------ index mapping for active nodes */
                 _nmap.set_count(_mesh.
@@ -1644,7 +1711,9 @@
             /*-------------------------- write POINT data */
                 _file << "POINT=" << _nnN1 << "\n" ;
 
-                iptr_type _npos  = +0;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_2d._mesh.node().head() ;
@@ -1655,11 +1724,14 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0 )
                     {
-                    _file << _iter->pval(0) << ";"
-                          << _iter->pval(1) << ";"
-                          <<    +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
+                        "%.17g;%.17g;+0\n" ,
+                        _iter->pval(0) ,
+                        _iter->pval(1) ), VERT2CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_nnN1 > +0)
@@ -1670,7 +1742,9 @@
                 _file << "POWER="
                       << _nnN1 << ";1" << "\n" ;
 
-                iptr_type _npos  = +0;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_2d._mesh.node().head() ;
@@ -1681,9 +1755,12 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    _file << _iter->pval(2) << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%.17g\n" ,
+                        _iter->pval(2) ), VALUECHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
                 }
 
@@ -1691,6 +1768,9 @@
                 {
             /*-------------------------- write EDGE2 data */
                 _file << "EDGE2=" << _nnE2 << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_2d._mesh.edge().head() ;
@@ -1701,20 +1781,23 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    _file <<
-                    _nmap[_iter->node(0)] << ";"
-                          <<
-                    _nmap[_iter->node(1)] << ";"
-                          <<
-                    _iter->itag() << "\n"  ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%d\n",
+                    _nmap[_iter->node(0)] ,
+                    _nmap[_iter->node(1)] ,
+                          _iter->itag()), EDGE2CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_nnT3 > +0)
                 {
             /*-------------------------- write TRIA3 data */
                 _file << "TRIA3=" << _nnT3 << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_2d._mesh.tri3().head() ;
@@ -1725,22 +1808,24 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    _file <<
-                    _nmap[_iter->node(0)] << ";"
-                          <<
-                    _nmap[_iter->node(1)] << ";"
-                          <<
-                    _nmap[_iter->node(2)] << ";"
-                          <<
-                    _iter->itag() << "\n"  ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%u;%d\n",
+                    _nmap[_iter->node(0)] ,
+                    _nmap[_iter->node(1)] ,
+                    _nmap[_iter->node(2)] ,
+                          _iter->itag()), TRIA3CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_nnQ4 > +0)
                 {
             /*-------------------------- write QUAD4 data */
                 _file << "QUAD4=" << _nnQ4 << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_2d._mesh.quad().head() ;
@@ -1751,18 +1836,17 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    _file <<
-                    _nmap[_iter->node(0)] << ";"
-                          <<
-                    _nmap[_iter->node(1)] << ";"
-                          <<
-                    _nmap[_iter->node(2)] << ";"
-                          <<
-                    _nmap[_iter->node(3)] << ";"
-                          <<
-                    _iter->itag() << "\n"  ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
+                        "%u;%u;%u;%u;%d\n",
+                    _nmap[_iter->node(0)] ,
+                    _nmap[_iter->node(1)] ,
+                    _nmap[_iter->node(2)] ,
+                    _nmap[_iter->node(3)] ,
+                          _iter->itag()), QUAD4CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
             }
@@ -1777,10 +1861,6 @@
                 _file << __JGSWVSTR "\n" ;
                 _file << "MSHID=3;EUCLIDEAN-MESH \n" ;
                 _file << "NDIMS=3 \n" ;
-
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
 
             /*------------ index mapping for active nodes */
                 _nmap.set_count(_mesh.
@@ -1873,7 +1953,9 @@
             /*-------------------------- write POINT data */
                 _file << "POINT=" << _nnN1 << "\n" ;
 
-                iptr_type _npos  = +0;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_3d._mesh.node().head() ;
@@ -1884,12 +1966,15 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0 )
                     {
-                    _file << _iter->pval(0) << ";"
-                          << _iter->pval(1) << ";"
-                          << _iter->pval(2) << ";"
-                          <<    +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
+                        "%.17g;%.17g;%.17g;+0\n" ,
+                        _iter->pval(0) ,
+                        _iter->pval(1) ,
+                        _iter->pval(2) ), VERT3CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_nnN1 > +0)
@@ -1900,7 +1985,9 @@
                 _file << "POWER="
                       << _nnN1 << ";1" << "\n" ;
 
-                iptr_type _npos  = +0;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_3d._mesh.node().head() ;
@@ -1911,9 +1998,12 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0)
                     {
-                    _file << _iter->pval(3) << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%.17g\n" ,
+                        _iter->pval(3) ), VALUECHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
                 }
 
@@ -1921,6 +2011,9 @@
                 {
             /*-------------------------- write EDGE2 data */
                 _file << "EDGE2=" << _nnE2 << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_3d._mesh.edge().head() ;
@@ -1931,20 +2024,23 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    _file <<
-                    _nmap[_iter->node(0)] << ";"
-                          <<
-                    _nmap[_iter->node(1)] << ";"
-                          <<
-                    _iter->itag() << "\n"  ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%d\n",
+                    _nmap[_iter->node(0)] ,
+                    _nmap[_iter->node(1)] ,
+                          _iter->itag()), EDGE2CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_nnT3 > +0)
                 {
             /*-------------------------- write TRIA3 data */
                 _file << "TRIA3=" << _nnT3 << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_3d._mesh.tri3().head() ;
@@ -1955,22 +2051,24 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    _file <<
-                    _nmap[_iter->node(0)] << ";"
-                          <<
-                    _nmap[_iter->node(1)] << ";"
-                          <<
-                    _nmap[_iter->node(2)] << ";"
-                          <<
-                    _iter->itag() << "\n"  ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%u;%d\n",
+                    _nmap[_iter->node(0)] ,
+                    _nmap[_iter->node(1)] ,
+                    _nmap[_iter->node(2)] ,
+                          _iter->itag()), TRIA3CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_nnQ4 > +0)
                 {
             /*-------------------------- write QUAD4 data */
                 _file << "QUAD4=" << _nnQ4 << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_3d._mesh.quad().head() ;
@@ -1981,24 +2079,26 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    _file <<
-                    _nmap[_iter->node(0)] << ";"
-                          <<
-                    _nmap[_iter->node(1)] << ";"
-                          <<
-                    _nmap[_iter->node(2)] << ";"
-                          <<
-                    _nmap[_iter->node(3)] << ";"
-                          <<
-                    _iter->itag() << "\n"  ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
+                        "%u;%u;%u;%u;%d\n",
+                    _nmap[_iter->node(0)] ,
+                    _nmap[_iter->node(1)] ,
+                    _nmap[_iter->node(2)] ,
+                    _nmap[_iter->node(3)] ,
+                          _iter->itag()), QUAD4CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_nnT4 > +0)
                 {
             /*-------------------------- write TRIA4 data */
                 _file << "TRIA4=" << _nnT4 << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_3d._mesh.tri4().head() ;
@@ -2009,18 +2109,17 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    _file <<
-                    _nmap[_iter->node(0)] << ";"
-                          <<
-                    _nmap[_iter->node(1)] << ";"
-                          <<
-                    _nmap[_iter->node(2)] << ";"
-                          <<
-                    _nmap[_iter->node(3)] << ";"
-                          <<
-                    _iter->itag() << "\n"  ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
+                        "%u;%u;%u;%u;%d\n",
+                    _nmap[_iter->node(0)] ,
+                    _nmap[_iter->node(1)] ,
+                    _nmap[_iter->node(2)] ,
+                    _nmap[_iter->node(3)] ,
+                          _iter->itag()), TRIA4CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
             }
@@ -2652,6 +2751,52 @@
      */
 
     template <
+    typename      file_type ,
+    typename      list_type
+             >
+    __normal_call void_type save_vals (
+        file_type &_file,
+        list_type &_list
+        )
+    {
+    /*--------------------- save msh_t REALS data to file */
+        auto _next = +0, _roll = +0 ;
+        char _fbuf[PRINTCHUNK] ;
+
+        auto _this = _list.head() ;
+
+        for (auto _iter  = _this,
+                  _last  =(_list.tend() - 4);
+                  _iter  < _last;
+                  _iter += +4,
+                  _this += +4)
+        {
+    /*--------------------- (apparently) faster to unroll */
+            PRINTCHARS(snprintf(&_fbuf[_next] ,
+                PRINTCHUNK,
+                "%.17g\n%.17g\n%.17g\n%.17g\n",
+                *(_iter + 0), *(_iter + 1) ,
+                *(_iter + 2), *(_iter + 3) )  ,
+            VALUECHUNK / +4)
+        }
+
+        for (auto _iter  = _this;
+                  _iter  < _list.tend() ;
+                  _iter += +1)
+        {
+    /*--------------------- (apparently) faster to unroll */
+            PRINTCHARS(snprintf(&_fbuf[_next] ,
+                PRINTCHUNK, "%.17g\n",*_iter) ,
+            VALUECHUNK / +1)
+        }
+
+        {
+    /*--------------------- ensure last buffer is written */
+            PRINTFINAL;
+        }
+    }
+
+    template <
     typename      jlog_data
              >
     __normal_call iptr_type save_hfun (
@@ -2669,16 +2814,14 @@
 
         try
         {
-            std::ofstream  _file;
-
-            std::string _path, _name, _fext ;
+            std::string _path, _name, _fext;
             file_part(
-                _jcfg._hfun_file,
-                    _path, _name, _fext);
+                _jcfg._hfun_file, _path, _name, _fext) ;
 
+            std::ofstream  _file;
             _file.open(
                 _jcfg._hfun_file,
-                    std::ofstream::out );
+            std::ofstream::out | std::ofstream::trunc) ;
 
             if (_file.is_open())
             {
@@ -2692,10 +2835,6 @@
                 _file << __JGSWVSTR "\n" ;
                 _file << "MSHID=3;EUCLIDEAN-MESH \n" ;
                 _file << "NDIMS=2 \n" ;
-
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
 
             /*-------------------------- count mesh items */
                 iptr_type _nnum = +0 ;
@@ -2732,7 +2871,9 @@
             /*-------------------------- write POINT data */
                 _file << "POINT=" << _nnum << "\n" ;
 
-                iptr_type _npos  = +0;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _ffun.
                 _euclidean_mesh_2d._mesh.node().head() ;
@@ -2742,11 +2883,14 @@
                 {
                     if (_iter->mark() >= 0 )
                     {
-                    _file << _iter->pval(0) << ";"
-                          << _iter->pval(1) << ";"
-                          <<    +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
+                        "%.17g;%.17g;+0\n" ,
+                        _iter->pval(0) ,
+                        _iter->pval(1) ), VERT2CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_nnum > +0)
@@ -2755,20 +2899,17 @@
                 _file << "VALUE="
                       << _nnum << ";1" << "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _euclidean_mesh_2d._hval.head() ;
-                          _iter != _ffun.
-                    _euclidean_mesh_2d._hval.tend() ;
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._euclidean_mesh_2d._hval);
                 }
 
                 if (_tnum > +0)
                 {
             /*-------------------------- write TRIA3 data */
                 _file << "TRIA3=" << _tnum << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _ffun.
                 _euclidean_mesh_2d._mesh.tri3().head() ;
@@ -2779,12 +2920,14 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    _file << _iter->node(0) << ";"
-                          << _iter->node(1) << ";"
-                          << _iter->node(2) << ";"
-                          <<    +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%u;+0\n",
+                        _iter->node(0) ,
+                        _iter->node(1) ,
+                        _iter->node(2) ), TRIA3CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
             }
@@ -2800,10 +2943,6 @@
                 _file << "MSHID=3;EUCLIDEAN-MESH \n" ;
                 _file << "NDIMS=3 \n" ;
 
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
-
             /*-------------------------- count mesh items */
                 iptr_type _nnum = +0 ;
                 iptr_type _tnum = +0 ;
@@ -2839,7 +2978,9 @@
             /*-------------------------- write POINT data */
                 _file << "POINT=" << _nnum << "\n" ;
 
-                iptr_type _npos  = +0;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _ffun.
                 _euclidean_mesh_3d._mesh.node().head() ;
@@ -2849,12 +2990,15 @@
                 {
                     if (_iter->mark() >= 0 )
                     {
-                    _file << _iter->pval(0) << ";"
-                          << _iter->pval(1) << ";"
-                          << _iter->pval(2) << ";"
-                          <<    +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
+                        "%.17g;%.17g;%.17g;+0\n" ,
+                        _iter->pval(0) ,
+                        _iter->pval(1) ,
+                        _iter->pval(2) ), VERT3CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_nnum > +0)
@@ -2863,20 +3007,17 @@
                 _file << "VALUE="
                       << _nnum << ";1" << "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _euclidean_mesh_3d._hval.head() ;
-                          _iter != _ffun.
-                    _euclidean_mesh_3d._hval.tend() ;
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._euclidean_mesh_3d._hval);
                 }
 
                 if (_tnum > +0)
                 {
             /*-------------------------- write TRIA3 data */
                 _file << "TRIA4=" << _tnum << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _ffun.
                 _euclidean_mesh_3d._mesh.tri4().head() ;
@@ -2887,13 +3028,16 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    _file << _iter->node(0) << ";"
-                          << _iter->node(1) << ";"
-                          << _iter->node(2) << ";"
-                          << _iter->node(3) << ";"
-                          <<    +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK,
+                        "%u;%u;%u;%u;+0\n" ,
+                        _iter->node(0) ,
+                        _iter->node(1) ,
+                        _iter->node(2) ,
+                        _iter->node(3) ), TRIA4CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
             }
@@ -2909,19 +3053,19 @@
                 _file << "MSHID=3;ELLIPSOID-MESH \n" ;
                 _file << "NDIMS=2 \n" ;
 
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
-
             /*-------------------------- write class data */
+                {
+                 char _fbuf [PRINTCHUNK] ;
+                 auto _char = snprintf(&_fbuf[ 0 ] ,
+                    PRINTCHUNK,
+                    "%.17g;%.17g;%.17g\n",
+                _ffun._ellipsoid_mesh_3d._radA ,
+                _ffun._ellipsoid_mesh_3d._radB ,
+                _ffun._ellipsoid_mesh_3d._radC) ;
 
-                _file << "RADII=" <<
-                _ffun._ellipsoid_mesh_3d._radA
-                      << ";" <<
-                _ffun._ellipsoid_mesh_3d._radB
-                      << ";" <<
-                _ffun._ellipsoid_mesh_3d._radC
-                      << "\n" ;
+                _file << "RADII="
+                      << std::string(_fbuf, _char) ;
+                }
 
             /*-------------------------- count mesh items */
                 iptr_type _nnum = +0 ;
@@ -2958,11 +3102,10 @@
             /*-------------------------- write POINT data */
                 _file << "POINT=" << _nnum << "\n" ;
 
-                iptr_type _npos = +0 ;
-                iptr_type _itag = +0 ;
+                 auto _next = +0, _roll = +0,
+                      _npos = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
-                real_type _ppos[3] ;
-                real_type _apos[2] ;
                 for (auto _iter  = _ffun.
                 _ellipsoid_mesh_3d._mesh.node().head() ;
                           _iter != _ffun.
@@ -2971,18 +3114,23 @@
                 {
                     if (_iter->mark() >= +0)
                     {
+                    real_type _ppos[3] ;
                     _ppos[0] =_iter->pval(0);
                     _ppos[1] =_iter->pval(1);
                     _ppos[2] =_iter->pval(2);
 
+                    real_type _apos[2] ;
                     _ffun._ellipsoid_mesh_3d.
                         toS2(_ppos, _apos);
 
-                    _file << _apos[0] << ";"
-                          << _apos[1] << ";"
-                          << _itag    <<"\n";
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK ,
+                        "%.17g;%.17g;+0\n",
+                        _apos[ 0],
+                        _apos[ 1]) , VERT2CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
                 if (_nnum > +0)
@@ -2991,20 +3139,17 @@
                 _file << "VALUE="
                       << _nnum << ";1" << "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _ellipsoid_mesh_3d._hval.head() ;
-                          _iter != _ffun.
-                    _ellipsoid_mesh_3d._hval.tend() ;
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._ellipsoid_mesh_3d._hval);
                 }
 
                 if (_tnum > +0)
                 {
             /*-------------------------- write TRIA3 data */
                 _file << "TRIA3=" << _tnum << "\n" ;
+
+                 auto _next = +0, _roll = +0;
+                 char _fbuf[PRINTCHUNK] ;
 
                 for (auto _iter  = _ffun.
                 _ellipsoid_mesh_3d._mesh.tri3().head() ;
@@ -3015,12 +3160,14 @@
                     if (_iter->mark() >= 0 &&
                         _iter->self() >= 1 )
                     {
-                    _file << _iter->node(0) << ";"
-                          << _iter->node(1) << ";"
-                          << _iter->node(2) << ";"
-                          <<    +0 << "\n" ;
+                    PRINTCHARS(snprintf(&_fbuf[_next] ,
+                        PRINTCHUNK, "%u;%u;%u;+0\n",
+                        _iter->node(0) ,
+                        _iter->node(1) ,
+                        _iter->node(2) ), TRIA3CHUNK)
                     }
                 }
+                    PRINTFINAL;
                 }
 
             }
@@ -3036,10 +3183,6 @@
                 _file << "MSHID=3;EUCLIDEAN-GRID \n" ;
                 _file << "NDIMS=2 \n" ;
 
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
-
             /*-------------------------- write class data */
 
                 if (_ffun._euclidean_grid_2d.
@@ -3050,14 +3193,8 @@
                     _ffun._euclidean_grid_2d.
                         _xpos.count() << "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _euclidean_grid_2d._xpos.head();
-                          _iter != _ffun.
-                    _euclidean_grid_2d._xpos.tend();
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._euclidean_grid_2d._xpos);
                 }
 
                 if (_ffun._euclidean_grid_2d.
@@ -3068,14 +3205,8 @@
                     _ffun._euclidean_grid_2d.
                         _ypos.count() << "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _euclidean_grid_2d._ypos.head();
-                          _iter != _ffun.
-                    _euclidean_grid_2d._ypos.tend();
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._euclidean_grid_2d._ypos);
                 }
 
                 if (_ffun._euclidean_grid_2d.
@@ -3086,14 +3217,8 @@
                     _ffun._euclidean_grid_2d.
                         _hmat.count() << ";1" "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _euclidean_grid_2d._hmat.head();
-                          _iter != _ffun.
-                    _euclidean_grid_2d._hmat.tend();
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._euclidean_grid_2d._hmat);
                 }
 
             }
@@ -3109,10 +3234,6 @@
                 _file << "MSHID=3;EUCLIDEAN-GRID \n" ;
                 _file << "NDIMS=3 \n" ;
 
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
-
             /*-------------------------- write class data */
 
                 if (_ffun._euclidean_grid_3d.
@@ -3123,14 +3244,8 @@
                     _ffun._euclidean_grid_3d.
                         _xpos.count() << "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _euclidean_grid_3d._xpos.head();
-                          _iter != _ffun.
-                    _euclidean_grid_3d._xpos.tend();
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._euclidean_grid_3d._xpos);
                 }
 
                 if (_ffun._euclidean_grid_3d.
@@ -3141,14 +3256,8 @@
                     _ffun._euclidean_grid_3d.
                         _ypos.count() << "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _euclidean_grid_3d._ypos.head();
-                          _iter != _ffun.
-                    _euclidean_grid_3d._ypos.tend();
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._euclidean_grid_3d._ypos);
                 }
 
                 if (_ffun._euclidean_grid_3d.
@@ -3159,14 +3268,8 @@
                     _ffun._euclidean_grid_3d.
                         _zpos.count() << "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _euclidean_grid_3d._zpos.head();
-                          _iter != _ffun.
-                    _euclidean_grid_3d._zpos.tend();
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._euclidean_grid_3d._zpos);
                 }
 
                 if (_ffun._euclidean_grid_3d.
@@ -3177,14 +3280,8 @@
                     _ffun._euclidean_grid_3d.
                         _hmat.count() << ";1" "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _euclidean_grid_3d._hmat.head();
-                          _iter != _ffun.
-                    _euclidean_grid_3d._hmat.tend();
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._euclidean_grid_3d._hmat);
                 }
 
             }
@@ -3193,26 +3290,26 @@
                 _ffun._kind ==
                 jmsh_kind::ellipsoid_grid)
             {
-            /*-------------------------- save 3-dim. mesh */
+            /*-------------------------- save 2-dim. grid */
                 _file << "# " << _name << ".msh"
                       << "; created by " ;
                 _file << __JGSWVSTR "\n" ;
                 _file << "MSHID=3;ELLIPSOID-GRID \n" ;
                 _file << "NDIMS=2 \n" ;
 
-                _file << std::scientific ;
-                _file <<
-                    std::setprecision(16);
-
             /*-------------------------- write class data */
+                {
+                 char _fbuf [PRINTCHUNK] ;
+                 auto _char = snprintf(&_fbuf[ 0 ] ,
+                    PRINTCHUNK,
+                    "%.17g;%.17g;%.17g\n",
+                _ffun._ellipsoid_grid_3d._radA ,
+                _ffun._ellipsoid_grid_3d._radB ,
+                _ffun._ellipsoid_grid_3d._radC) ;
 
-                _file << "RADII=" <<
-                _ffun._ellipsoid_grid_3d._radA
-                      << ";" <<
-                _ffun._ellipsoid_grid_3d._radB
-                      << ";" <<
-                _ffun._ellipsoid_grid_3d._radC
-                      << "\n" ;
+                _file << "RADII="
+                      << std::string(_fbuf, _char) ;
+                }
 
                 if (_ffun._ellipsoid_grid_3d.
                         _xpos.count() > +0)
@@ -3222,14 +3319,8 @@
                     _ffun._ellipsoid_grid_3d.
                         _xpos.count() << "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _ellipsoid_grid_3d._xpos.head();
-                          _iter != _ffun.
-                    _ellipsoid_grid_3d._xpos.tend();
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._ellipsoid_grid_3d._xpos);
                 }
 
                 if (_ffun._ellipsoid_grid_3d.
@@ -3240,14 +3331,8 @@
                     _ffun._ellipsoid_grid_3d.
                         _ypos.count() << "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _ellipsoid_grid_3d._ypos.head();
-                          _iter != _ffun.
-                    _ellipsoid_grid_3d._ypos.tend();
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._ellipsoid_grid_3d._ypos);
                 }
 
                 if (_ffun._ellipsoid_grid_3d.
@@ -3258,14 +3343,8 @@
                     _ffun._ellipsoid_grid_3d.
                         _hmat.count() << ";1" "\n" ;
 
-                for (auto _iter  = _ffun.
-                    _ellipsoid_grid_3d._hmat.head();
-                          _iter != _ffun.
-                    _ellipsoid_grid_3d._hmat.tend();
-                        ++_iter  )
-                {
-                    _file << *_iter << "\n" ;
-                }
+                save_vals(_file,
+                    _ffun._ellipsoid_grid_3d._hmat);
                 }
 
             }

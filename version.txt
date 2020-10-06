@@ -13,6 +13,19 @@
 #   JIGSAW: an unstructured mesh generation library 
 #------------------------------------------------------------
 
+  * Version 0.9.14:
+    --------------
+
+  - Improved "float-preserving" I/O: print using C-
+    style "%.17g" format to ensure all double-prec.
+    bits are written.
+
+  - Fix a precision-bug in the aabb-tree splitters.
+
+  - Revisions to the edge-"zip"/"div" optimisation
+    predicates.
+
+
   * Version 0.9.13:
     --------------
 

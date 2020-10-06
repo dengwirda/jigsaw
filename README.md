@@ -32,7 +32,7 @@ The first step is to compile and configure the code! `JIGSAW` can either be buil
 
 ### `Building from src`
 
-The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>. It has been built using various `c++11` conforming versions of the `g++`, `clang++` and `msvc` compilers.
+The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>. It has been built using various `c++17` conforming versions of the `g++`, `clang++` and `msvc` compilers.
 
 `JIGSAW` is a `header-only` package - the single main `jigsaw.cpp` file simply `#include`'s the rest of the library directly. `JIGSAW` does not currently dependent on any external packages or libraries.
 
