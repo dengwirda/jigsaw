@@ -1,0 +1,32 @@
+language: cpp
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+      script:
+        - export CC=gcc-8
+        - export CXX=g++-8
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Release
+        - cmake --build . --config Release --target install
+         
+    - os: osx
+      osx_image: xcode11
+      script:
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Release
+        - cmake --build . --config Release --target install
+      
+    - os: windows
+      script:
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Release
+        - cmake --build . --config Release --target install
