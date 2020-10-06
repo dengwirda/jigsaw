@@ -66,20 +66,20 @@ matrix:
         - cmake --build . --config Release --target install
         - cd ..
         - ls
-        - .\bin\jigsaw.exe example.jig
-        - copy .\lib\jigsaw.dll .\uni
+        - ./bin/jigsaw.exe example.jig
+        - copy ./lib/jigsaw.dll ./uni
         - cd uni
         - mkdir build
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Debug
         - cmake --build . --config Debug --target install
         - cd ..
-        - .\test_1.exe
-        - .\test_2.exe
-        - .\test_3.exe
-        - .\test_4.exe
-        - .\test_5.exe
-        - .\test_6.exe
-        - .\test_7.exe
-        - .\test_8.exe
-        - .\test_9.exe
+        - ./test_1.exe
+        - ./test_2.exe
+        - ./test_3.exe
+        - ./test_4.exe
+        - ./test_5.exe
+        - ./test_6.exe
+        - ./test_7.exe
+        - ./test_8.exe
+        - ./test_9.exe
