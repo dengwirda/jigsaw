@@ -15,6 +15,23 @@ matrix:
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Release
         - cmake --build . --config Release --target install
+        - cd ..
+        - ./bin/jigsaw example.jig
+        - cd uni
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Debug
+        - cmake --build . --config Debug --target install
+        - cd ..
+        - ./test_1
+        - ./test_2
+        - ./test_3
+        - ./test_4
+        - ./test_5
+        - ./test_6
+        - ./test_7
+        - ./test_8
+        - ./test_9
          
     - os: osx
       osx_image: xcode11
@@ -23,6 +40,23 @@ matrix:
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Release
         - cmake --build . --config Release --target install
+        - cd ..
+        - ./bin/jigsaw example.jig
+        - cd uni
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Debug
+        - cmake --build . --config Debug --target install
+        - cd ..
+        - ./test_1
+        - ./test_2
+        - ./test_3
+        - ./test_4
+        - ./test_5
+        - ./test_6
+        - ./test_7
+        - ./test_8
+        - ./test_9
       
     - os: windows
       script:
@@ -30,3 +64,21 @@ matrix:
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Release
         - cmake --build . --config Release --target install
+        - cd ..
+        - .\bin\jigsaw.exe example.jig
+        - copy \lib\jigsaw.dll \uni
+        - cd uni
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Debug
+        - cmake --build . --config Debug --target install
+        - cd ..
+        - ./test_1
+        - ./test_2
+        - ./test_3
+        - ./test_4
+        - ./test_5
+        - ./test_6
+        - ./test_7
+        - ./test_8
+        - ./test_9
