@@ -65,9 +65,8 @@ matrix:
         - cmake .. -DCMAKE_BUILD_TYPE=Release
         - cmake --build . --config Release --target install
         - cd ..
-        - ls
         - ./bin/jigsaw.exe example.jig
-        - copy ./lib/jigsaw.dll ./uni
+        - cp /lib/jigsaw.dll /uni
         - cd uni
         - mkdir build
         - cd build
