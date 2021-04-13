@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 April, 2020
+     * Last updated: 08 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -49,8 +49,9 @@
     namespace mesh {
 
     template <
-    typename I ,
     typename R ,
+    typename V ,
+    typename I ,
     typename A = allocators::basic_alloc
              >
     class hfun_grid_ellipsoid_3d
@@ -61,12 +62,14 @@
     /*-------------- lat.-lon. spheroidal size-fun in R^3 */
 
     typedef R                       real_type ;
+    typedef V                       vals_type ;
     typedef I                       iptr_type ;
     typedef A                       allocator ;
 
     typedef hfun_grid_ellipsoid_3d  <
-            iptr_type ,
-            real_type >             hfun_type ;
+            real_type ,
+            vals_type ,
+            iptr_type >             hfun_type ;
 
     typedef typename  hfun_base_kd  <
             iptr_type ,
@@ -75,6 +78,10 @@
     typedef containers::array   <
             real_type ,
             allocator >             real_list ;
+
+    typedef containers::array   <
+            vals_type ,
+            allocator >             vals_list ;
 
     public  :
 
@@ -90,13 +97,22 @@
         real_type, allocator>      _ypos ;
 
     containers::array <
-        real_type, allocator>      _hmat ;
-
-    real_type                      _htop ;  // mean at poles
-    real_type                      _hbot ;
+        real_type, allocator>      _sinx ;  // to precompute
+    containers::array <
+        real_type, allocator>      _siny ;
+    containers::array <
+        real_type, allocator>      _cosx ;
+    containers::array <
+        real_type, allocator>      _cosy ;
 
     containers::array <
-        real_type, allocator>      _dhdx ;
+        vals_type, allocator>      _hmat ;
+
+    vals_type                      _htop ;  // mean at poles
+    vals_type                      _hbot ;
+
+    containers::array <
+        vals_type, allocator>      _dhdx ;
 
     bool_type                      _xvar ;
     bool_type                      _yvar ;
@@ -247,8 +263,7 @@
             std::abs(_xdel) < _FTOL ;
 
     /*-------------------------- sum for extrap. at poles */
-        this->_htop = (real_type)0. ;
-        this->_hbot = (real_type)0. ;
+        double _xtop = 0., _xbot = 0. ;
 
         iptr_type _indx, _jpos = +0 ;
         for (auto _iter  = _xpos.head() ;
@@ -261,16 +276,18 @@
             indx_from_subs(
                 +0, _jpos, _indx) ;
 
-            _htop += this->_hmat[_indx] ;
+            _xtop += this->_hmat[_indx] ;
 
             indx_from_subs(
                 _n, _jpos, _indx) ;
 
-            _hbot += this->_hmat[_indx] ;
+            _xbot += this->_hmat[_indx] ;
         }
 
-        this->_htop/= this->_xpos.count() ;
-        this->_hbot/= this->_xpos.count() ;
+        this->_htop =
+            (_xtop / this->_xpos.count()) ;
+        this->_hbot =
+            (_xbot / this->_xpos.count()) ;
     }
 
     /*
@@ -287,12 +304,12 @@
     /*-------------------- "LESS-THAN" operator for queue */
         public  :
             typename
-            real_list::_write_it _hptr;
+            vals_list::_write_it _hptr;
 
         public  :
         __inline_call less_than  (
             typename
-            real_list::_write_it _hsrc
+            vals_list::_write_it _hsrc
             ) : _hptr(_hsrc) {}
 
         __inline_call
@@ -347,7 +364,7 @@
             indx_from_subs(
                 _inum,  JEND, _pair);
 
-            real_type _hmin = std::min(
+            vals_type _hmin = std::min(
                 this->_hmat[_left],
                 this->_hmat[_pair]) ;
 
@@ -361,6 +378,7 @@
             _hmat.count(),
         containers::tight_alloc, _null) ;
 
+        {
         iptr_type _inum  = +0;
         for (auto _iter  =
                    this->_hmat.head() ;
@@ -368,10 +386,49 @@
                    this->_hmat.tend() ;
                 ++_iter , ++_inum)
         {
-            {
-                _keys[_inum] =
-                    _sort.push(_inum) ;
-            }
+            _keys[_inum] = _sort.push(_inum);
+        }
+        }
+
+    /*-------------------- prebuild lon-lat to R^3 coeff. */
+        this->_sinx.set_count(_xpos.count (),
+            containers::tight_alloc, 0.) ;
+        this->_cosx.set_count(_xpos.count (),
+            containers::tight_alloc, 0.) ;
+
+        {
+        iptr_type _inum  = +0;
+        for (auto _iter  =
+                   this->_xpos.head() ;
+                  _iter !=
+                   this->_xpos.tend() ;
+                ++_iter , ++_inum)
+        {
+            this->_sinx[_inum] =
+                std::sin(this->_xpos[_inum]);
+            this->_cosx[_inum] =
+                std::cos(this->_xpos[_inum]);
+        }
+        }
+
+        this->_siny.set_count(_ypos.count (),
+            containers::tight_alloc, 0.) ;
+        this->_cosy.set_count(_ypos.count (),
+            containers::tight_alloc, 0.) ;
+
+        {
+        iptr_type _inum  = +0;
+        for (auto _iter  =
+                   this->_ypos.head() ;
+                  _iter !=
+                   this->_ypos.tend() ;
+                ++_iter , ++_inum)
+        {
+            this->_siny[_inum] =
+                std::sin(this->_ypos[_inum]);
+            this->_cosy[_inum] =
+                std::cos(this->_ypos[_inum]);
+        }
         }
 
     /*-------------------- compute h(x) via fast-marching */
@@ -386,7 +443,7 @@
             subs_from_indx(
                 _base, _ipos, _jpos);
 
-            real_type _hnow = _hmat[_base] ;
+            vals_type _hnow = _hmat[_base] ;
 
             for (auto _IPOS = _ipos - 1 ;
                       _IPOS < _ipos + 1 ;
@@ -438,7 +495,7 @@
                     _lnod != _base) continue ;
 
     /*-------------------- skip cells due to sorted order */
-                real_type _hmax;
+                vals_type _hmax;
                 _hmax = this->_hmat[_inod] ;
                 _hmax = std::max(
                 _hmax , this->_hmat[_jnod]);
@@ -450,63 +507,54 @@
                 if (_hmax <= _hnow) continue ;
 
     /*-------------------- set-up cell vertex coordinates */
-                real_type  _alon, _alat ;
                 real_type  _IXYZ[3] ;
-                _alon = this->_xpos[_ipjj];
-                _alat = this->_ypos[_ipii];
                 _IXYZ[0] =  this->_radA *
-                    std::cos(_alon) *
-                    std::cos(_alat) ;
+                    this->_cosx[_ipjj] *
+                    this->_cosy[_ipii] ;
                 _IXYZ[1] =  this->_radB *
-                    std::sin(_alon) *
-                    std::cos(_alat) ;
+                    this->_sinx[_ipjj] *
+                    this->_cosy[_ipii] ;
                 _IXYZ[2] =  this->_radC *
-                    std::sin(_alat) ;
+                    this->_siny[_ipii] ;
 
                 real_type  _JXYZ[3] ;
-                _alon = this->_xpos[_jpjj];
-                _alat = this->_ypos[_jpii];
                 _JXYZ[0] =  this->_radA *
-                    std::cos(_alon) *
-                    std::cos(_alat) ;
+                    this->_cosx[_jpjj] *
+                    this->_cosy[_jpii] ;
                 _JXYZ[1] =  this->_radB *
-                    std::sin(_alon) *
-                    std::cos(_alat) ;
+                    this->_sinx[_jpjj] *
+                    this->_cosy[_jpii] ;
                 _JXYZ[2] =  this->_radC *
-                    std::sin(_alat) ;
+                    this->_siny[_jpii] ;
 
                 real_type  _KXYZ[3] ;
-                _alon = this->_xpos[_kpjj];
-                _alat = this->_ypos[_kpii];
                 _KXYZ[0] =  this->_radA *
-                    std::cos(_alon) *
-                    std::cos(_alat) ;
+                    this->_cosx[_kpjj] *
+                    this->_cosy[_kpii] ;
                 _KXYZ[1] =  this->_radB *
-                    std::sin(_alon) *
-                    std::cos(_alat) ;
+                    this->_sinx[_kpjj] *
+                    this->_cosy[_kpii] ;
                 _KXYZ[2] =  this->_radC *
-                    std::sin(_alat) ;
+                    this->_siny[_kpii] ;
 
                 real_type  _LXYZ[3] ;
-                _alon = this->_xpos[_lpjj];
-                _alat = this->_ypos[_lpii];
                 _LXYZ[0] =  this->_radA *
-                    std::cos(_alon) *
-                    std::cos(_alat) ;
+                    this->_cosx[_lpjj] *
+                    this->_cosy[_lpii] ;
                 _LXYZ[1] =  this->_radB *
-                    std::sin(_alon) *
-                    std::cos(_alat) ;
+                    this->_sinx[_lpjj] *
+                    this->_cosy[_lpii] ;
                 _LXYZ[2] =  this->_radC *
-                    std::sin(_alat) ;
+                    this->_siny[_lpii] ;
 
     /*-------------------- solve for local |dh/dx| limits */
-                real_type _iold =
+                vals_type _iold =
                      this->_hmat[_inod] ;
-                real_type _jold =
+                vals_type _jold =
                      this->_hmat[_jnod] ;
-                real_type _kold =
+                vals_type _kold =
                      this->_hmat[_knod] ;
-                real_type _lold =
+                vals_type _lold =
                      this->_hmat[_lnod] ;
 
                 if (this->_dhdx.count() >1)

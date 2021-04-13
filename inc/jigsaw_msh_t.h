@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 May, 2020
+     * Last updated: 08 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -183,6 +183,12 @@
         real_t                 *_data ;
         } jigsaw_REALS_array_t ;
 
+    typedef struct
+        {
+        size_t                  _size ;
+        fp32_t                 *_data ;
+        } jigsaw_FLT32_array_t ;
+
 /*------------------------------------------- "msh" class */
 
     typedef struct
@@ -228,11 +234,11 @@
     /* OR (_flags == ELLIPSOID_MESH) */
     /* OR (_flags == ELLIPSOID_GRID) */
 
-        jigsaw_REALS_array_t    _value;
+        jigsaw_FLT32_array_t    _value;
 
     /* for |dfdx| limiting in MARCHE */
 
-        jigsaw_REALS_array_t    _slope;
+        jigsaw_FLT32_array_t    _slope;
 
     /* if (_flags == EUCLIDEAN_DUAL) */
 

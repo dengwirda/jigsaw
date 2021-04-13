@@ -13,6 +13,25 @@
 #   JIGSAW: an unstructured mesh generation library 
 #------------------------------------------------------------
 
+  * Version 0.9.15:
+    --------------
+
+  - Use of "symmetric" Gauss-Seidel sweeping within
+    mesh optimisation kernels.
+
+  - Fix a point-location bug wrt. unstructured h(x)
+    data types.
+
+  - Modify refinement rules to "defer" insertion of
+    points that encroach on boundaries. (Typically)
+    leads to slightly sparser tessellatons. 
+
+  - Support ellipsoidal-type initial conditions.
+
+  - BREAKING: encode h(x) values as 32-bit floating
+    point data, to support "very-large" h(x) types.
+
+
   * Version 0.9.14:
     --------------
 

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 April, 2020
+     * Last updated: 01 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -463,14 +463,14 @@
 
     template <
         typename  list_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type node_feat (
         iptr_type *_node ,
         list_type &_aset ,
         char_type &_feat ,
         char_type &_topo ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
     /*------------ "sharp" geometry//topology about node? */
@@ -585,13 +585,13 @@
 
     template <
         typename  list_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call char_type node_feat (
         iptr_type *_node ,
         list_type &_eadj ,
         list_type &_fadj ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
     /*------------ "sharp" geometry//topology about node? */
@@ -694,14 +694,14 @@
 
     template <
         typename  list_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type edge_feat (
         iptr_type *_enod ,
         list_type &_aset ,
         char_type &_feat ,
         char_type &_topo ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
     /*------------ "sharp" geometry//topology about edge? */
@@ -859,10 +859,10 @@
      */
 
     template <
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type find_feat (
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
         containers::array<iptr_type> _nmrk ;
@@ -1081,10 +1081,10 @@
      */
 
     template <
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type init_part (
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
         containers::array <
@@ -1273,10 +1273,10 @@
      */
 
     template <
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type init_geom (
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
         class edge_pred
@@ -1394,11 +1394,11 @@
 
     template <
         typename  mesh_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type seed_feat (
         mesh_type &_mesh ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
         __unreferenced(_opts) ;
@@ -1485,11 +1485,11 @@
 
     template <
         typename  mesh_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type seed_mesh (
         mesh_type &_mesh ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
     /*------------------------- well-distributed sampling */
@@ -1567,6 +1567,10 @@
                     _mesh._tria.node
                         (_node)->topo()
                             = _best->topo() ;
+
+                    _mesh._tria.node
+                        (_node)->part()
+                            = _best->itag() ;
                 }
             }
             else break  ;

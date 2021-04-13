@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 November, 2019
+     * Last updated: 07 Apr., 2021
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -179,7 +179,7 @@
 
             _near(real_type(1.E-8)) ,
 
-            _dims(iptr_type(+   3)) ,
+            _dims(iptr_type(+   2)) ,
 
             _iter(init_iter())  ,
 

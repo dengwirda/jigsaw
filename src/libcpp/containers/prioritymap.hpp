@@ -177,7 +177,7 @@
         )
     {
         if (_head == _tail) return _ipos ;
-    /*-- find position of root of last partial sub - tree */
+    /*-- find position of root of last partial (sub)-tree */
         _write_it _cpos ;
         _write_it _imin ;
         _write_it _iend =  _head;

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 01 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -298,14 +298,14 @@
 
     template <
         typename  list_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type node_feat (
         iptr_type *_node ,
         list_type &_aset ,
         char_type &_feat ,
         char_type &_topo ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
     /*------------ "sharp" geometry//topology about node? */
@@ -419,10 +419,10 @@
      */
 
     template <
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type find_feat (
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
         typename
@@ -532,10 +532,10 @@
      */
 
     template <
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type init_geom (
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
         __unreferenced(_opts) ;
@@ -673,15 +673,15 @@
 
     template <
         typename  mesh_type ,
-        typename  geom_opts
+        typename  user_opts
              >
-    __normal_call void_type seed_feat (
+    __normal_call void_type seed_root (
         mesh_type &_rdel ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
-        __unreferenced(_opts) ;
-
+        if (_opts.dims() < +3)
+        {
     /*------------------------- point at ellipsoid centre */
         real_type  _ppos[4] ;
         iptr_type  _inod;
@@ -697,6 +697,21 @@
         _tria.node(_inod)->feat() = +0 ;
         _rdel.
         _tria.node(_inod)->topo() = +0 ;
+        _rdel.
+        _tria.node(_inod)->part() = +0 ;
+        }
+    }
+
+    template <
+        typename  mesh_type ,
+        typename  user_opts
+             >
+    __normal_call void_type seed_feat (
+        mesh_type &_rdel ,
+        user_opts &_opts
+        )
+    {
+        __unreferenced(_opts) ;
 
     /*------------------------- push set of feature nodes */
         for (auto _iter  =
@@ -710,6 +725,7 @@
             if (_iter->feat() != null_feat)
             {
     /*----------------------------- push any 'real' feat. */
+            real_type  _ppos[4] ;
             _ppos[0] = _iter->pval(0) ;
             _ppos[1] = _iter->pval(1) ;
             _ppos[2] = _iter->pval(2) ;
@@ -740,6 +756,7 @@
             if (_iter->itag() <= -1 )
             {
     /*----------------------------- push any 'user' feat. */
+            real_type  _ppos[4] ;
             _ppos[0] = _iter->pval(0) ;
             _ppos[1] = _iter->pval(1) ;
             _ppos[2] = _iter->pval(2) ;
@@ -811,6 +828,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_pi*(real_type)+0.0) *
@@ -829,6 +848,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+0.0) *
@@ -847,6 +868,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+1.0) *
@@ -865,6 +888,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+2.0) *
@@ -883,6 +908,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+3.0) *
@@ -901,6 +928,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+4.0) *
@@ -919,6 +948,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+5.0) *
@@ -937,6 +968,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+6.0) *
@@ -955,6 +988,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+7.0) *
@@ -973,6 +1008,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+8.0) *
@@ -991,6 +1028,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+9.0) *
@@ -1009,6 +1048,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
     }
 
     /*
@@ -1019,11 +1060,11 @@
 
     template <
         typename  mesh_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type seed_mesh (
         mesh_type &_rdel ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
     /*------------------------- well-distributed sampling */
@@ -1094,6 +1135,10 @@
                     _rdel._tria.node
                         (_node)->topo()
                             = _best->topo() ;
+
+                    _rdel._tria.node
+                        (_node)->part()
+                            = _best->itag() ;
                 }
             }
             else break  ;

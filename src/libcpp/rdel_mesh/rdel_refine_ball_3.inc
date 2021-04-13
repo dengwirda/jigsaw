@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 10 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -108,9 +108,9 @@
             _dsqr = geometry::lensqr_3d (  \
                &_pptr->pval(0),     \
                &_qptr->pval(0)) ;   \
-            if (this->_dist > _dsqr)    \
+            if (this->_dist >= _dsqr)   \
             {                       \
-                this->_dist = _dsqr;    \
+                this->_dist =  _dsqr;   \
                 return true ;       \
             }                       \
 
@@ -434,11 +434,10 @@
         __unreferenced(_fpro) ;
 
         iptr_list _mark  ;
-        for (auto _bpos  =
-            _mesh._bset._lptr.head () ;
-                  _bpos !=
-            _mesh._bset._lptr.tend () ;
-                ++_bpos  )
+        for (auto
+            _bpos  = _mesh._bset._lptr.head();
+            _bpos != _mesh._bset._lptr.tend();
+          ++_bpos  )
         {
             if ( *_bpos == nullptr) continue ;
 
@@ -546,11 +545,10 @@
         __unreferenced(_args) ;
         __unreferenced(_epro) ;
 
-        for (auto _epos  =
-            _mesh._eset._lptr.head () ;
-                  _epos !=
-            _mesh._eset._lptr.tend () ;
-                ++_epos  )
+        for (auto
+            _epos  = _mesh._eset._lptr.head();
+            _epos != _mesh._eset._lptr.tend();
+          ++_epos  )
         {
             if ( *_epos == nullptr) continue ;
 
@@ -601,10 +599,8 @@
             _geom.intersect(_hdat, _junk, _halo) ;
 
 
-            for (auto _iter  =
-                      _halo._list.head() ;
-                      _iter !=
-                      _halo._list.tend() ;
+            for (auto _iter  = _halo._list.head() ;
+                      _iter != _halo._list.tend() ;
                     ++_iter  )
             {
                 iptr_type _hint =

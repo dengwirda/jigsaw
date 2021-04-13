@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Sept., 2020
+     * Last updated: 24 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -208,9 +208,10 @@
                     {
                     PRINTCHARS(snprintf(&_fbuf[_next],
                         PRINTCHUNK,
-                        "%.17g;%.17g;+0\n",
+                        "%.17g;%.17g;%d\n",
                         _iter->pval(0) ,
-                        _iter->pval(1) ), VERT2CHUNK)
+                        _iter->pval(1) ,
+                        _iter->part()) , VERT2CHUNK )
                     }
                 }
                     PRINTFINAL;
@@ -427,10 +428,11 @@
                     {
                     PRINTCHARS(snprintf(&_fbuf[_next],
                         PRINTCHUNK,
-                        "%.17g;%.17g;%.17g;+0\n",
+                        "%.17g;%.17g;%.17g;%d\n",
                         _iter->pval(0) ,
                         _iter->pval(1) ,
-                        _iter->pval(2) ), VERT3CHUNK)
+                        _iter->pval(2) ,
+                        _iter->part()) , VERT3CHUNK )
                     }
                 }
                     PRINTFINAL;
@@ -697,11 +699,11 @@
                     _mmsh._vert2._data[_nout].
                         _ppos[1] = _iter->pval(1) ;
 
-                    _mmsh._vert2.
-                        _data[_nout]._itag = 0 ;
+                    _mmsh._vert2._data[_nout].
+                        _itag    = _iter->part () ;
 
                     _mmsh._power.
-                    _data[_nout] = (real_type)+0. ;
+                    _data[_nout] = _iter->pval(2) ;
 
                     _nout = _nout + 1 ;
                     }
@@ -901,11 +903,11 @@
                     _mmsh._vert3._data[_nout].
                         _ppos[2] = _iter->pval(2) ;
 
-                    _mmsh._vert3.
-                        _data[_nout]._itag = 0 ;
+                    _mmsh._vert3._data[_nout].
+                        _itag    = _iter->part () ;
 
                     _mmsh._power.
-                    _data[_nout] = (real_type)+0. ;
+                    _data[_nout] = _iter->pval(3) ;
 
                     _nout = _nout + 1 ;
                     }
@@ -1726,9 +1728,10 @@
                     {
                     PRINTCHARS(snprintf(&_fbuf[_next] ,
                         PRINTCHUNK,
-                        "%.17g;%.17g;+0\n" ,
+                        "%.17g;%.17g;%d\n" ,
                         _iter->pval(0) ,
-                        _iter->pval(1) ), VERT2CHUNK)
+                        _iter->pval(1) ,
+                        _iter->itag()) , VERT2CHUNK )
                     }
                 }
                     PRINTFINAL;
@@ -1968,10 +1971,11 @@
                     {
                     PRINTCHARS(snprintf(&_fbuf[_next] ,
                         PRINTCHUNK,
-                        "%.17g;%.17g;%.17g;+0\n" ,
+                        "%.17g;%.17g;%.17g;%d\n" ,
                         _iter->pval(0) ,
                         _iter->pval(1) ,
-                        _iter->pval(2) ), VERT3CHUNK)
+                        _iter->pval(2) ,
+                        _iter->itag()) , VERT3CHUNK )
                     }
                 }
                     PRINTFINAL;
@@ -2266,8 +2270,8 @@
                     _mmsh._vert2._data[_nout].
                         _ppos[1] = _iter->pval(1) ;
 
-                    _mmsh._vert2.
-                        _data[_nout]._itag = 0 ;
+                    _mmsh._vert2._data[_nout].
+                        _itag    = _iter->itag () ;
 
                     _mmsh._power.
                     _data[_nout] = _iter->pval(2) ;
@@ -2535,8 +2539,8 @@
                     _mmsh._vert3._data[_nout].
                         _ppos[2] = _iter->pval(2) ;
 
-                    _mmsh._vert3.
-                        _data[_nout]._itag = 0 ;
+                    _mmsh._vert3._data[_nout].
+                        _itag    = _iter->itag () ;
 
                     _mmsh._power.
                     _data[_nout] = _iter->pval(3) ;
@@ -2774,7 +2778,7 @@
     /*--------------------- (apparently) faster to unroll */
             PRINTCHARS(snprintf(&_fbuf[_next] ,
                 PRINTCHUNK,
-                "%.17g\n%.17g\n%.17g\n%.17g\n",
+                "%.9g\n%.9g\n%.9g\n%.9g\n" ,
                 *(_iter + 0), *(_iter + 1) ,
                 *(_iter + 2), *(_iter + 3) )  ,
             VALUECHUNK / +4)
@@ -2786,7 +2790,7 @@
         {
     /*--------------------- (apparently) faster to unroll */
             PRINTCHARS(snprintf(&_fbuf[_next] ,
-                PRINTCHUNK, "%.17g\n",*_iter) ,
+                PRINTCHUNK, "%.9g\n", *_iter) ,
             VALUECHUNK / +1)
         }
 

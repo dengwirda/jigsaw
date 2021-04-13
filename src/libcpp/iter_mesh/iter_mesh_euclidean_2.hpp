@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 March, 2020
+     * Last updated: 24 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -78,11 +78,11 @@
     /*------------------------- node type for ITER-MESH-2 */
         public  :
 
-        iptr_type                     _hidx ;
-        iptr_type                     _itag ;
+        iptr_type                     _hidx = 0 ;
+        iptr_type                     _itag = 0 ;
 
-        char_type                     _fdim ;
-        char_type                     _feat ;
+        char_type                     _fdim = 0 ;
+        char_type                     _feat = 0 ;
 
         public  :
 

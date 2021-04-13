@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Sept., 2020
+     * Last updated: 08 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -357,7 +357,7 @@
     /*-------------------------------- read VALUE section */
         __normal_call void_type push_value (
             std:: size_t  _ipos ,
-            double       *_vval
+            float        *_vval
             )
         {
             if (this->_ndim == +2 &&
@@ -475,7 +475,7 @@
     /*-------------------------------- read SLOPE section */
         __normal_call void_type push_slope (
             std:: size_t  _ipos ,
-            double       *_vval
+            float        *_vval
             )
         {
             if (this->_ndim == +2 &&
@@ -1058,7 +1058,7 @@
             }
 
             for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._value._size ;
+                _ipos != _hmsh._slope._size ;
                     ++_ipos )
             {
                 _hfun._ellipsoid_grid_3d.
@@ -1141,10 +1141,10 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-2d */
-            real_type _hmin =
-            std::numeric_limits<real_type>::max() ;
-            real_type _smin =
-            std::numeric_limits<real_type>::max() ;
+            fp32_type _hmin =
+            std::numeric_limits<fp32_type>::max() ;
+            fp32_type _smin =
+            std::numeric_limits<fp32_type>::max() ;
 
             iptr_type _imin =
             std::numeric_limits<iptr_type>::max() ;
@@ -1221,18 +1221,18 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <= (real_type) +0.)
+            if (_hmin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <= (real_type) +0.)
+            if (_smin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be strictly +ve.\n") ;
+    "**input error: DHDX. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
@@ -1251,10 +1251,10 @@
              jmsh_kind::euclidean_grid)
         {
     /*--------------------------------- euclidean-grid-2d */
-            real_type _hmin =
-            std::numeric_limits<real_type>::infinity();
-            real_type _smin =
-            std::numeric_limits<real_type>::infinity();
+            fp32_type _hmin =
+            std::numeric_limits<fp32_type>::infinity();
+            fp32_type _smin =
+            std::numeric_limits<fp32_type>::infinity();
 
             for (auto _iter  = _hfun.
             _euclidean_grid_2d._hmat.head();
@@ -1332,18 +1332,18 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <= (real_type) +0.)
+            if (_hmin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <= (real_type) +0.)
+            if (_smin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be strictly +ve.\n") ;
+    "**input error: DHDX. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
@@ -1362,10 +1362,10 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-3d */
-            real_type _hmin =
-            std::numeric_limits<real_type>::max() ;
-            real_type _smin =
-            std::numeric_limits<real_type>::max() ;
+            fp32_type _hmin =
+            std::numeric_limits<fp32_type>::max() ;
+            fp32_type _smin =
+            std::numeric_limits<fp32_type>::max() ;
 
             iptr_type _imin =
             std::numeric_limits<iptr_type>::max() ;
@@ -1446,18 +1446,18 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <= (real_type) +0.)
+            if (_hmin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <= (real_type) +0.)
+            if (_smin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be strictly +ve.\n") ;
+    "**input error: DHDX. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
@@ -1476,10 +1476,10 @@
              jmsh_kind::euclidean_grid)
         {
     /*--------------------------------- euclidean-grid-3d */
-            real_type _hmin =
-            std::numeric_limits<real_type>::infinity();
-            real_type _smin =
-            std::numeric_limits<real_type>::infinity();
+            fp32_type _hmin =
+            std::numeric_limits<fp32_type>::infinity();
+            fp32_type _smin =
+            std::numeric_limits<fp32_type>::infinity();
 
             for (auto _iter  = _hfun.
             _euclidean_grid_3d._hmat.head();
@@ -1573,18 +1573,18 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <= (real_type) +0.)
+            if (_hmin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <= (real_type) +0.)
+            if (_smin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be strictly +ve.\n") ;
+    "**input error: DHDX. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
@@ -1615,10 +1615,10 @@
                 _errv = __invalid_argument ;
             }
 
-            real_type _hmin =
-            std::numeric_limits<real_type>::max() ;
-            real_type _smin =
-            std::numeric_limits<real_type>::max() ;
+            fp32_type _hmin =
+            std::numeric_limits<fp32_type>::max() ;
+            fp32_type _smin =
+            std::numeric_limits<fp32_type>::max() ;
 
             real_type static const _PI   =
            (real_type)std::atan(+1.0) * 4. ;
@@ -1745,18 +1745,18 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <= (real_type) +0.)
+            if (_hmin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <= (real_type) +0.)
+            if (_smin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be strictly +ve.\n") ;
+    "**input error: DHDX. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
@@ -1787,10 +1787,10 @@
                 _errv = __invalid_argument ;
             }
 
-            real_type _hmin =
-            std::numeric_limits<real_type>::infinity();
-            real_type _smin =
-            std::numeric_limits<real_type>::infinity();
+            fp32_type _hmin =
+            std::numeric_limits<fp32_type>::infinity();
+            fp32_type _smin =
+            std::numeric_limits<fp32_type>::infinity();
 
             real_type static const _PI   =
            (real_type)std::atan(+1.0) * 4. ;
@@ -1917,18 +1917,18 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <= (real_type) +0.)
+            if (_hmin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <= (real_type) +0.)
+            if (_smin <  (fp32_type) +0.)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be strictly +ve.\n") ;
+    "**input error: DHDX. values must be non-negative.\n") ;
 
                 _errv = __invalid_argument ;
             }
@@ -1984,11 +1984,11 @@
 
         __unreferenced(_jcfg) ;
 
-        real_type _hmin =
+        fp32_type _hmin =
             +std::numeric_limits
                 <real_type>::infinity() ;
 
-        real_type _hmax =
+        fp32_type _hmax =
             -std::numeric_limits
                 <real_type>::infinity() ;
 

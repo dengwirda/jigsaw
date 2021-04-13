@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 June, 2019
+     * Last updated: 09 Feb., 2021
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -50,6 +50,7 @@
 
     template <
     typename R ,
+    typename V ,
     typename I ,
     typename A = allocators::basic_alloc
              >
@@ -61,16 +62,26 @@
     /*---------------------- "grid"-based size-fun in R^3 */
 
     typedef R                       real_type ;
+    typedef V                       vals_type ;
     typedef I                       iptr_type ;
     typedef A                       allocator ;
 
     typedef hfun_grid_euclidean_3d  <
             real_type ,
+            vals_type ,
             iptr_type >             hfun_type ;
 
     typedef typename  hfun_base_kd  <
             iptr_type ,
             real_type >::hint_type  hint_type ;
+
+    typedef containers::array   <
+            real_type ,
+            allocator >             real_list ;
+
+    typedef containers::array   <
+            vals_type ,
+            allocator >             vals_list ;
 
 
     containers::array <
@@ -81,10 +92,10 @@
         real_type, allocator>      _zpos;
 
     containers::array <
-        real_type, allocator>      _hmat;
+        vals_type, allocator>      _hmat;
 
     containers::array <
-        real_type, allocator>      _dhdx;
+        vals_type, allocator>      _dhdx;
 
     bool_type                      _xvar;
     bool_type                      _yvar;

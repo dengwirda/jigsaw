@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 August, 2019
+     * Last updated: 01 Feb., 2021
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -82,10 +82,10 @@
      */
 
     template <
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type init_geom (
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
         __unreferenced(_opts) ;
@@ -114,11 +114,11 @@
 
     template <
         typename  mesh_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type seed_mesh (
         mesh_type &_mesh,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
         __unreferenced(_mesh) ;
@@ -133,11 +133,30 @@
 
     template <
         typename  mesh_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type seed_feat (
         mesh_type &_mesh,
-        geom_opts &_opts
+        user_opts &_opts
+        )
+    {
+        __unreferenced(_mesh) ;
+        __unreferenced(_opts) ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * SEED-ROOT: init. "seed" vertex set on geom.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  mesh_type ,
+        typename  user_opts
+             >
+    __normal_call void_type seed_root (
+        mesh_type &_mesh,
+        user_opts &_opts
         )
     {
         __unreferenced(_mesh) ;

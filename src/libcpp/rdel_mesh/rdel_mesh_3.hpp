@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 March, 2020
+     * Last updated: 02 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -742,8 +742,8 @@
         _tria.node(+3)->topo() = +0 ;
 
     /*------------------------------ seed feat from geom. */
-        _geom.
-         seed_feat(_mesh, _opts) ;
+        _geom.seed_root(_mesh, _opts) ;
+        _geom.seed_feat(_mesh, _opts) ;
 
     /*------------------------------ seed node from init. */
          real_type _NEAR =
@@ -757,8 +757,7 @@
                    _NEAR) ;
 
     /*------------------------------ seed mesh from geom. */
-        _geom.
-         seed_mesh(_mesh, _opts) ;
+        _geom.seed_mesh(_mesh, _opts) ;
     }
 
 

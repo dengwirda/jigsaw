@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 30 Mar., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -88,6 +88,8 @@
         auto _jnod = _tptr->node(1) ;
         auto _knod = _tptr->node(2) ;
 
+        auto _imid = _node->node(0) ;
+
         auto _iptr =
        _mesh. node().head() + _inod ;
         auto _jptr =
@@ -122,30 +124,28 @@
         EVALHFUN( _jnod , _jptr )
         EVALHFUN( _knod , _kptr )
 
-        real_type _irho = (real_type)+1.
-                / _hval [ _inod ] ;
+        real_type _irho =
+            _hval[_imid] / _hval[_inod] ;
+        real_type _jrho =
+            _hval[_imid] / _hval[_jnod] ;
+        real_type _krho =
+            _hval[_imid] / _hval[_knod] ;
 
-        real_type _jrho = (real_type)+1.
-                / _hval [ _jnod ] ;
+        real_type _hrho =
+            _irho * (real_type)1./3. +
+            _jrho * (real_type)1./3. +
+            _krho * (real_type)1./3. ;
 
-        real_type _krho = (real_type)+1.
-                / _hval [ _knod ] ;
-
-        real_type _rbar =
-            _irho * (real_type) 1./3. +
-            _jrho * (real_type) 1./3. +
-            _krho * (real_type) 1./3. ;
-
-        real_type _wval =
-            _tmag * std::pow(_rbar, +3) ;
+        _hrho =
+            _tmag * std::pow(_hrho, +3) ;
 
         LOOPDIMS( _idim )
         {
             _move[_idim]
-               += _wval * _ball [_idim] ;
+               += _hrho * _ball [_idim] ;
         }
 
-        _wsum  += _wval ;
+        _wsum  += _hrho ;
         _ladj  += _lsqr ;
 
     #   undef   LOOPDIMS
@@ -197,6 +197,8 @@
         auto _knod = _qptr->node(2) ;
         auto _lnod = _qptr->node(3) ;
 
+        auto _imid = _node->node(0) ;
+
         auto _iptr =
        _mesh. node().head() + _inod ;
         auto _jptr =
@@ -236,34 +238,31 @@
         EVALHFUN( _knod , _kptr )
         EVALHFUN( _lnod , _lptr )
 
-        real_type _irho = (real_type)+1.
-                / _hval [ _inod ] ;
+        real_type _irho =
+            _hval[_imid] / _hval[_inod] ;
+        real_type _jrho =
+            _hval[_imid] / _hval[_jnod] ;
+        real_type _krho =
+            _hval[_imid] / _hval[_knod] ;
+        real_type _lrho =
+            _hval[_imid] / _hval[_lnod] ;
 
-        real_type _jrho = (real_type)+1.
-                / _hval [ _jnod ] ;
+        real_type _hrho =
+            _irho * (real_type)1./4. +
+            _jrho * (real_type)1./4. +
+            _krho * (real_type)1./4. +
+            _lrho * (real_type)1./4. ;
 
-        real_type _krho = (real_type)+1.
-                / _hval [ _knod ] ;
-
-        real_type _lrho = (real_type)+1.
-                / _hval [ _lnod ] ;
-
-        real_type _rbar =
-            _irho * (real_type) 1./4. +
-            _jrho * (real_type) 1./4. +
-            _krho * (real_type) 1./4. +
-            _lrho * (real_type) 1./4. ;
-
-        real_type _wval =
-            _qmag * std::pow(_rbar, +3) ;
+        _hrho =
+            _qmag * std::pow(_hrho, +3) ;
 
         LOOPDIMS( _idim )
         {
             _move[_idim]
-               += _wval * _ball [_idim] ;
+               += _hrho * _ball [_idim] ;
         }
 
-        _wsum  += _wval ;
+        _wsum  += _hrho ;
         _ladj  += _lsqr ;
 
     #   undef   LOOPDIMS
@@ -461,32 +460,26 @@
         EVALHFUN( _jnod , _jptr )
         EVALHFUN( _knod , _kptr )
 
-        real_type _irho = (real_type) +1.
-                / _hval [ _inod ] ;
-
-        real_type _jrho = (real_type) +1.
-                / _hval [ _jnod ] ;
-
-        real_type _krho = (real_type) +1.
-                / _hval [ _knod ] ;
-
+        real_type _irho =  (real_type)1. ;
         real_type _0rho =
-            _irho * (real_type) 1./3. +
-            _jrho * (real_type) 1./3. +
-            _krho * (real_type) 1./3. ;
+            _hval[_inod] * (real_type)1./3. +
+            _hval[_jnod] * (real_type)1./3. +
+            _hval[_knod] * (real_type)1./3. ;
 
         real_type _1rho =
-            _irho * (real_type) 1./2. +
-            _jrho * (real_type) 1./2. ;
+            _hval[_inod] * (real_type)1./2. +
+            _hval[_jnod] * (real_type)1./2. ;
 
         real_type _2rho =
-            _irho * (real_type) 1./2. +
-            _krho * (real_type) 1./2. ;
+            _hval[_inod] * (real_type)1./2. +
+            _hval[_knod] * (real_type)1./2. ;
 
-        _0rho = std::pow(_0rho, +3) ;
-        _1rho = std::pow(_1rho, +3) ;
-        _2rho = std::pow(_2rho, +3) ;
-        _irho = std::pow(_irho, +3) ;
+        _0rho = std::pow(
+            _hval[_inod] / _0rho, +3) ;
+        _1rho = std::pow(
+            _hval[_inod] / _1rho, +3) ;
+        _2rho = std::pow(
+            _hval[_inod] / _2rho, +3) ;
 
         for (auto _idim =
         pred_type::geom_dims; _idim-- != 0; )
@@ -507,8 +500,8 @@
                 ) ;
         }
 
-        _wsum += _1mag*(_0rho+_1rho+_irho);
-        _wsum += _2mag*(_0rho+_2rho+_irho);
+        _wsum += _1mag * (_0rho+_1rho+_irho);
+        _wsum += _2mag * (_0rho+_2rho+_irho);
 
         _ladj += _lsqr ;
 
@@ -643,36 +636,27 @@
         EVALHFUN( _knod , _kptr )
         EVALHFUN( _lnod , _lptr )
 
-        real_type _irho = (real_type) +1.
-                / _hval [ _inod ] ;
-
-        real_type _jrho = (real_type) +1.
-                / _hval [ _jnod ] ;
-
-        real_type _krho = (real_type) +1.
-                / _hval [ _knod ] ;
-
-        real_type _lrho = (real_type) +1.
-                / _hval [ _lnod ] ;
-
+        real_type _irho =  (real_type)1. ;
         real_type _0rho =
-            _irho * (real_type) 1./4. +
-            _jrho * (real_type) 1./4. +
-            _krho * (real_type) 1./4. +
-            _lrho * (real_type) 1./4. ;
+            _hval[_inod] * (real_type)1./4. +
+            _hval[_jnod] * (real_type)1./4. +
+            _hval[_knod] * (real_type)1./4. +
+            _hval[_lnod] * (real_type)1./4. ;
 
         real_type _1rho =
-            _irho * (real_type) 1./2. +
-            _jrho * (real_type) 1./2. ;
+            _hval[_inod] * (real_type)1./2. +
+            _hval[_jnod] * (real_type)1./2. ;
 
         real_type _2rho =
-            _irho * (real_type) 1./2. +
-            _lrho * (real_type) 1./2. ;
+            _hval[_inod] * (real_type)1./2. +
+            _hval[_lnod] * (real_type)1./2. ;
 
-        _0rho = std::pow(_0rho, +3) ;
-        _1rho = std::pow(_1rho, +3) ;
-        _2rho = std::pow(_2rho, +3) ;
-        _irho = std::pow(_irho, +3) ;
+        _0rho = std::pow(
+            _hval[_inod] / _0rho, +3) ;
+        _1rho = std::pow(
+            _hval[_inod] / _1rho, +3) ;
+        _2rho = std::pow(
+            _hval[_inod] / _2rho, +3) ;
 
         for (auto _idim =
         pred_type::geom_dims; _idim-- != 0; )
@@ -693,8 +677,8 @@
                 ) ;
         }
 
-        _wsum += _1mag*(_0rho+_1rho+_irho);
-        _wsum += _2mag*(_0rho+_2rho+_irho);
+        _wsum += _1mag * (_0rho+_1rho+_irho);
+        _wsum += _2mag * (_0rho+_2rho+_irho);
 
         _ladj += _lsqr ;
 

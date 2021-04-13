@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 10 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -105,9 +105,9 @@
             _dsqr = geometry::lensqr_2d (  \
                &_pptr->pval(0),     \
                &_qptr->pval(0)) ;   \
-            if (this->_dist > _dsqr)    \
+            if (this->_dist >= _dsqr)   \
             {                       \
-                this->_dist = _dsqr;    \
+                this->_dist =  _dsqr;   \
                 return true ;       \
             }                       \
 
@@ -417,11 +417,10 @@
         __unreferenced(_pass) ;
 
         iptr_list _mark  ;
-        for (auto _bpos  =
-            _mesh._bset._lptr.head () ;
-                  _bpos !=
-            _mesh._bset._lptr.tend () ;
-                ++_bpos  )
+        for (auto
+            _bpos  = _mesh._bset._lptr.head();
+            _bpos != _mesh._bset._lptr.tend();
+          ++_bpos  )
         {
             if ( *_bpos == nullptr) continue ;
 
@@ -448,8 +447,8 @@
 
             _geom.intersect( _hdat, _halo) ;
 
-            mark_feat(_mesh,
-                _base,_halo, _mark, _args) ;
+          //mark_feat(_mesh,
+          //    _base,_halo, _mark, _args) ;
 
             iptr_type _inum  = +0 ;
             for (auto _iter  = _halo._list.head() ;
@@ -457,7 +456,7 @@
                     ++_iter, ++_inum)
             {
     /*--------------------- push nodes + constraint faces */
-                if (_mark[_inum] <= +0) continue;
+              //if (_mark[_inum] <= +0) continue;
 
                 iptr_type _hint =
                     _mesh._tria.node(_base)->next() ;

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Sept., 2020
+     * Last updated: 24 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -88,11 +88,11 @@
             _node.pval(0) = _iter->pval(0) ;
             _node.pval(1) = _iter->pval(1) ;
 
-            _node.pval(2) = (real_type)+0. ;
+            _node.pval(2) = _iter->pval(2) ;
 
             _node.hidx () = _iter->idxh () ;
 
-            _node.itag () = (iptr_type)+0;
+            _node.itag () = _iter->part () ;
             _node.fdim () = _iter->fdim () ;
             _node.feat () = _iter->feat () ;
 
@@ -201,11 +201,11 @@
             _node.pval(1) = _iter->pval(1) ;
             _node.pval(2) = _iter->pval(2) ;
 
-            _node.pval(3) = (real_type)+0. ;
+            _node.pval(3) = _iter->pval(3) ;
 
             _node.hidx () = _iter->idxh () ;
 
-            _node.itag () = (iptr_type)+0;
+            _node.itag () = _iter->part () ;
             _node.fdim () = _iter->fdim () ;
             _node.feat () = _iter->feat () ;
 

@@ -1,6 +1,5 @@
 
-//  gcc -Wall test_7.c
-//  -Xlinker -rpath=../lib
+//  gcc -Wall -Wextra test_7.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test_7
 
 //  Use MARCHE to set "gradient-limits" on mesh-spacing data
@@ -9,10 +8,7 @@
 
 #   include "stdio.h"
 
-    int main (
-        int          _argc ,
-        char       **_argv
-        )
+    int main ()
     {
         int _retv = 0;
 
@@ -56,11 +52,11 @@
             { {+3, +0, +4}, +0 }
             } ;
 
-        real_t _hfun_value[5] = {
+        fp32_t _hfun_value[5] = {
             2., 2., 2., 2., 1.
             } ;
 
-        real_t _hfun_slope[1] = {
+        fp32_t _hfun_slope[1] = {
             .1
             } ;
 
@@ -91,7 +87,7 @@
 
         printf("\n VALUE: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _hfun._value._size ;
                    ++_ipos )
         {

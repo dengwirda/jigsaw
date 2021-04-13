@@ -1,6 +1,5 @@
 
-//  gcc -Wall test_4.c
-//  -Xlinker -rpath=../lib
+//  gcc -Wall -Wextra test_4.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test_4
 
 //  An example that uses JIGSAW to mesh "multiply-connected"
@@ -10,10 +9,7 @@
 
 #   include "stdio.h"
 
-    int main (
-        int          _argc ,
-        char       **_argv
-        )
+    int main ()
     {
         int _retv = 0;
 
@@ -112,7 +108,7 @@
 
         printf("\n VERT2: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _mesh._vert2._size ;
                    ++_ipos )
         {
@@ -126,7 +122,7 @@
 
         printf("\n TRIA3: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _mesh._tria3._size ;
                    ++_ipos )
         {

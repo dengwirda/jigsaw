@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 August, 2019
+     * Last updated: 28 Dec., 2020
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2020
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -136,10 +136,23 @@
                 _ebal, _pmax)/(_esiz * _esiz) ;
 
     /*------------------------- refinement classification */
-        if (_eave >= _args.siz1() *
-                     _args.siz1() ||
-            _srat >= _args.eps1() *
-                     _args.eps1() )
+
+    //  flag cells "trapped" between boundaries -- having
+    //  all nodes on lower dimensional facets and with at
+    //  least one boundary face.
+
+        bool_type _trap =
+            _mesh._tria.
+        node(_enod[0])->fdim() < +1 &&
+            _mesh._tria.
+        node(_enod[1])->fdim() < +1  ;
+
+        real_type _scal = 1. + _trap * .125 ;
+
+        if (_eave >= _args.siz1() * _scal *
+                     _args.siz1() * _scal ||
+            _srat >= _args.eps1() * _scal *
+                     _args.eps1() * _scal )
         {
             _kind = mesh::ring_item; return ;
         }
@@ -220,9 +233,6 @@
         }
 
     /*------------------------- calc. refinement priority */
-        real_type static
-        constexpr _TRAP = (real_type)1.5 ;
-
         iptr_type _ebnd = _emin ;
         real_type _best =
             std::numeric_limits
@@ -258,14 +268,9 @@
             {
                 if (_best > _llen[_enum])
                 {
+                    _trap =  true ;
                     _ebnd = _enum ;
                     _best = _llen[_enum];
-                }
-
-                if (_llen[_enum] >=
-                    _llen[_emin] *_TRAP )
-                {
-                    _trap =  true ;
                 }
 
                 _tdat._mark -= +1 ;
@@ -310,13 +315,12 @@
             _mesh._tria.
         node(_tnod[2])->fdim() < +2  ;
 
-        if (_erat >= _args.rad2() *
-                     _args.rad2() )
+        real_type _scal = 1. ;
+
+        if (_erat >= _args.rad2() * _scal *
+                     _args.rad2() * _scal )
         {
-        //  if (!_trap)     // don't refine trapped cells
-            {
             _kind = mesh::ring_item; return ;
-            }
         }
 
     /*------------------------- eval. size func. at _tbal */
@@ -350,8 +354,10 @@
         _eave *= (real_type)+3.0 ;
 
     /*------------------------- refinement classification */
-        if (_eave >= _args.siz2() *
-                     _args.siz2() )
+        _scal += (real_type)(_trap * 0.125) ;
+
+        if (_eave >= _args.siz2() * _scal *
+                     _args.siz2() * _scal )
         {
             _kind = mesh::ring_item; return ;
         }

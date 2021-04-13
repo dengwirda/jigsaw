@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 February, 2020
+     * Last updated: 24 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -175,6 +175,8 @@
              node(_node)->feat() = 0  ;
             _mesh._tria.
              node(_node)->topo() = 0  ;
+            _mesh._tria.
+             node(_node)->part() = 0  ;
 
             iptr_type _sign   = -1 ;
             if (_told.count() > +0 )

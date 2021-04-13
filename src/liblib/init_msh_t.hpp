@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 May, 2020
+     * Last updated: 08 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -161,9 +161,8 @@
         jigsaw_free_reals(&_mesh->_ygrid);
         jigsaw_free_reals(&_mesh->_zgrid);
 
-        jigsaw_free_reals(&_mesh->_value);
-        jigsaw_free_reals(&_mesh->_slope);
-
+        jigsaw_free_flt32(&_mesh->_value);
+        jigsaw_free_flt32(&_mesh->_slope);
         }
     }
 
@@ -461,8 +460,7 @@
     {
         _index->_size = _size ;
         _index->_data = (indx_t *)
-            std::malloc (
-                _size * sizeof (indx_t)) ;
+            std::malloc(_size * sizeof (indx_t)) ;
 
         for (size_t _item  = (size_t) +0 ;
                     _item != _size ;
@@ -480,8 +478,7 @@
     {
         _reals->_size = _size ;
         _reals->_data = (real_t *)
-            std::malloc (
-                _size * sizeof (real_t)) ;
+            std::malloc(_size * sizeof (real_t)) ;
 
         for (size_t _item  = (size_t) +0 ;
                     _item != _size ;
@@ -489,6 +486,24 @@
         {
             _reals->
               _data[_item] = (real_t) +0.;
+        }
+    }
+
+    void jigsaw_alloc_flt32 (               // _new-alloc
+        jigsaw_FLT32_array_t *_flt32 ,
+        size_t _size
+        )
+    {
+        _flt32->_size = _size ;
+        _flt32->_data = (fp32_t *)
+            std::malloc(_size * sizeof (fp32_t)) ;
+
+        for (size_t _item  = (size_t) +0 ;
+                    _item != _size ;
+                  ++_item  )
+        {
+            _flt32->
+              _data[_item] = (fp32_t) +0.;
         }
     }
 
@@ -643,6 +658,18 @@
         {
             _reals->_size = 0 ;
             std::free(_reals->_data) ;
+        }
+    }
+
+    void jigsaw_free_flt32 (               // free-alloc
+        jigsaw_FLT32_array_t *_flt32
+        )
+    {
+        if (_flt32 != nullptr &&
+            _flt32->_size > 0 )
+        {
+            _flt32->_size = 0 ;
+            std::free(_flt32->_data) ;
         }
     }
 

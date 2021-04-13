@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Sept., 2020
+     * Last updated: 31 Mar., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -432,6 +432,8 @@
     /*--------------------- okay if moves unconverged */
             if (_xdel > _xtol)
                 _move = +1;
+            else
+                _move = +0;     // no iter; too short
 
             if (_move > +0) return ;
         }
@@ -730,14 +732,14 @@
         _xtol = std::pow(_xtol, 2) ;
 
         real_type _scal =           // overrelaxation
-            (real_type) +1.0 / 1.0 ;
+       (real_type) std::sqrt( 2.0 );
 
     /*---------------- do backtracking line search iter's */
 
         if (_kern == dqdx_kern)     // "relax" dQ./dx
         {
         real_type _BIAS =
-            (real_type) +3.0 / 4.0 ;
+       (real_type) std::sqrt( 0.5 );
 
         for (auto _idim =
         pred_type::geom_dims; _idim-- != +0; )
@@ -800,7 +802,7 @@
                 _QLIM, _opts.qtol(),
                 _lmov, _XTOL ) ;
 
-            if (_move > +0) break  ;
+            if (_move >= +0) break ;
         }
 
     /*---------------- swap with the saved coord. if fail */
@@ -868,7 +870,7 @@
        (real_type)+0.01*_opts.qtol() ;
 
         real_type _scal =           // overrelaxation
-            (real_type) +1.0 / 1.0 ;
+       (real_type) std::sqrt( 2.0 );
 
         _save = _node->pval(
             pred_type::real_dims- 1) ;
@@ -907,7 +909,7 @@
             move_okay( _dnew, _dold, _move,
                 +1.  , _opts.qtol()) ;
 
-            if (_move > +0) break  ;
+            if (_move >= +0) break ;
         }
 
     /*---------------- swap with the saved coord. if fail */
@@ -1214,6 +1216,16 @@
     {
     #   define MARK(_NODE) _mark._node[_NODE]
 
+    #   define HEAD(_PASS)(_PASS == +0 ?    \
+                           _aset.head() :   \
+                           _aset.tail())
+
+    #   define STOP(_PASS)(_PASS == +0 ?    \
+                           _aset.tend() :   \
+                           _aset.hend())
+
+    #   define ITER(_PASS)(_PASS == +0 ? +1 : -1)
+
         iptr_list _aset;
         conn_list _conn;
         real_list _qold, _qnew, _dold, _dnew;
@@ -1225,12 +1237,13 @@
 
         _nmov = (iptr_type) +0;
 
-    /*-------------------- GAUSS-SEIDEL iteration on CELL */
+    /*-------------------- SYMMETRIC GAUSS-SEIDEL on CELL */
         if (_opts .tria())
         {
-        for (auto _apos  = _aset.head() ;
-                  _apos != _aset.tend() ;
-                ++_apos  )
+        for (auto _pass  = 0; _pass < 2; ++_pass)
+        for (auto _apos  = HEAD(_pass) ;
+                  _apos != STOP(_pass) ;
+                  _apos += ITER(_pass) )
         {
              auto _node  =
             _mesh.node().head()+ *_apos ;
@@ -1287,6 +1300,9 @@
         }
         }
     #   undef   MARK
+    #   undef   HEAD
+    #   undef   STOP
+    #   undef   ITER
     }
 
     /*
@@ -1313,6 +1329,16 @@
     {
     #   define MARK(_NODE) _mark._node[_NODE]
 
+    #   define HEAD(_PASS)(_PASS == +0 ?    \
+                           _aset.head() :   \
+                           _aset.tail())
+
+    #   define STOP(_PASS)(_PASS == +0 ?    \
+                           _aset.tend() :   \
+                           _aset.hend())
+
+    #   define ITER(_PASS)(_PASS == +0 ? +1 : -1)
+
         iptr_list _aset;
         conn_list _conn;
         real_list _qold, _qnew, _dold, _dnew;
@@ -1324,12 +1350,13 @@
 
         _nmov = (iptr_type) +0;
 
-    /*-------------------- GAUSS-SEIDEL iteration on DUAL */
+    /*-------------------- SYMMETRIC GAUSS-SEIDEL on DUAL */
         if (_opts .dual())
         {
-        for (auto _apos  = _aset.head() ;
-                  _apos != _aset.tend() ;
-                ++_apos  )
+        for (auto _pass  = 0; _pass < 2; ++_pass)
+        for (auto _apos  = HEAD(_pass) ;
+                  _apos != STOP(_pass) ;
+                  _apos += ITER(_pass) )
         {
              auto _node  =
             _mesh.node().head()+ *_apos ;
@@ -1381,6 +1408,9 @@
         }
         }
     #   undef   MARK
+    #   undef   HEAD
+    #   undef   STOP
+    #   undef   ITER
     }
 
     /*
@@ -1885,7 +1915,7 @@
         static constexpr ITER_FLIP = true;
 
         iptr_type
-        static constexpr ITER_MIN_ =  +4 ;
+        static constexpr ITER_MIN_ =  +1 ;
         iptr_type
         static constexpr ITER_MAX_ =  +8 ;
 
@@ -2007,6 +2037,8 @@
                     _iter, _isub,
                     _opts, _nloc, _QLIM ) ;
 
+                _nloc = _nloc / 2 ;
+
                 _nmov = std::max (_nmov ,
                                   _nloc ) ;
             }
@@ -2067,6 +2099,8 @@
                     _nset, _amrk, _mark ,
                     _iter, _isub,
                     _opts, _nloc, _DLIM ) ;
+
+                _nloc = _nloc / 2 ;
 
                 _nmov = std::max (_nmov ,
                                   _nloc ) ;

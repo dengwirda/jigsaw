@@ -64,48 +64,48 @@
      */
 
     template <
-    typename      data_type
+    typename      real_type
              >
     __normal_call size_t ball_line_2d (
-    __const_ptr  (data_type) _pc, // ball BB(pc,rc)
-        data_type            _rc,
-    __const_ptr  (data_type) _pa, // line
-    __const_ptr  (data_type) _pb,
-    __write_ptr  (data_type) _qa, // intersections
-    __write_ptr  (data_type) _qb
+    __const_ptr  (real_type) _pc, // ball BB(pc,rc)
+        real_type            _rc,
+    __const_ptr  (real_type) _pa, // line
+    __const_ptr  (real_type) _pb,
+    __write_ptr  (real_type) _qa, // intersections
+    __write_ptr  (real_type) _qb
         )
     {
-        data_type _vv[2] ;
+        real_type _vv[2] ;
         _vv[0] = _pb[0] -_pa[0] ;
         _vv[1] = _pb[1] -_pa[1] ;
 
-        data_type _ca[2] ;
+        real_type _ca[2] ;
         _ca[0] = _pa[0] -_pc[0] ;
         _ca[1] = _pa[1] -_pc[1] ;
 
-        data_type _aa =
+        real_type _aa =
             geometry::dot_2d(_vv, _vv) ;
-        data_type _bb =
+        real_type _bb =
             geometry::dot_2d(_vv, _ca) *
-                       (data_type) +2. ;
-        data_type _cc =
+                       (real_type) +2. ;
+        real_type _cc =
             geometry::dot_2d(_ca, _ca) ;
         _cc -= _rc * _rc ;
 
         size_t _nn = +0  ;
-        data_type _tt[2] ;
+        real_type _tt[2] ;
         if ( math::
         polyroots(_aa, _bb, _cc, _tt))
         {
-        if (_tt[0] >= (data_type)+0. &&
-            _tt[0] <= (data_type)+1. )
+        if (_tt[0] >= (real_type)+0. &&
+            _tt[0] <= (real_type)+1. )
         {
     /*----------------------- compute 1st-root intersect. */
-            data_type _WB =
-           (data_type)+0.+_tt[0] ;
+            real_type _WB =
+           (real_type)+0.+_tt[0] ;
 
-            data_type _WA =
-           (data_type)+1.-_tt[0] ;
+            real_type _WA =
+           (real_type)+1.-_tt[0] ;
 
             _nn += +1 ;
 
@@ -134,15 +134,15 @@
             _qb[1]=_QQ[1] ;
             }
         }
-        if (_tt[1] >= (data_type)+0. &&
-            _tt[1] <= (data_type)+1. )
+        if (_tt[1] >= (real_type)+0. &&
+            _tt[1] <= (real_type)+1. )
         {
     /*----------------------- compute 2nd-root intersect. */
-            data_type _WB =
-           (data_type)+0.+_tt[1] ;
+            real_type _WB =
+           (real_type)+0.+_tt[1] ;
 
-            data_type _WA =
-           (data_type)+1.-_tt[1] ;
+            real_type _WA =
+           (real_type)+1.-_tt[1] ;
 
             _nn += +1 ;
 
@@ -177,50 +177,50 @@
     }
 
     template <
-    typename      data_type
+    typename      real_type
              >
     __normal_call size_t ball_line_3d (
-    __const_ptr  (data_type) _pc, // ball BB(pc,rc)
-        data_type            _rc,
-    __const_ptr  (data_type) _pa, // line
-    __const_ptr  (data_type) _pb,
-    __write_ptr  (data_type) _qa, // intersections
-    __write_ptr  (data_type) _qb
+    __const_ptr  (real_type) _pc, // ball BB(pc,rc)
+        real_type            _rc,
+    __const_ptr  (real_type) _pa, // line
+    __const_ptr  (real_type) _pb,
+    __write_ptr  (real_type) _qa, // intersections
+    __write_ptr  (real_type) _qb
         )
     {
-        data_type _vv[3] ;
+        real_type _vv[3] ;
         _vv[0] = _pb[0] -_pa[0] ;
         _vv[1] = _pb[1] -_pa[1] ;
         _vv[2] = _pb[2] -_pa[2] ;
 
-        data_type _ca[3] ;
+        real_type _ca[3] ;
         _ca[0] = _pa[0] -_pc[0] ;
         _ca[1] = _pa[1] -_pc[1] ;
         _ca[2] = _pa[2] -_pc[2] ;
 
-        data_type _aa =
+        real_type _aa =
             geometry::dot_3d(_vv, _vv) ;
-        data_type _bb =
+        real_type _bb =
             geometry::dot_3d(_vv, _ca) *
-                       (data_type) +2. ;
-        data_type _cc =
+                       (real_type) +2. ;
+        real_type _cc =
             geometry::dot_3d(_ca, _ca) ;
         _cc -= _rc * _rc ;
 
         size_t _nn = +0  ;
-        data_type _tt[2] ;
+        real_type _tt[2] ;
         if ( math::
         polyroots(_aa, _bb, _cc, _tt))
         {
-        if (_tt[0] >= (data_type)+0. &&
-            _tt[0] <= (data_type)+1. )
+        if (_tt[0] >= (real_type)+0. &&
+            _tt[0] <= (real_type)+1. )
         {
     /*----------------------- compute 1st-root intersect. */
-            data_type _WB =
-           (data_type)+0.+_tt[0] ;
+            real_type _WB =
+           (real_type)+0.+_tt[0] ;
 
-            data_type _WA =
-           (data_type)+1.-_tt[0] ;
+            real_type _WA =
+           (real_type)+1.-_tt[0] ;
 
             _nn += +1 ;
 
@@ -255,15 +255,15 @@
             _qb[2]=_QQ[2] ;
             }
         }
-        if (_tt[1] >= (data_type)+0. &&
-            _tt[1] <= (data_type)+1. )
+        if (_tt[1] >= (real_type)+0. &&
+            _tt[1] <= (real_type)+1. )
         {
     /*----------------------- compute 2nd-root intersect. */
-            data_type _WB =
-           (data_type)+0.+_tt[1] ;
+            real_type _WB =
+           (real_type)+0.+_tt[1] ;
 
-            data_type _WA =
-           (data_type)+1.-_tt[1] ;
+            real_type _WA =
+           (real_type)+1.-_tt[1] ;
 
             _nn += +1 ;
 
@@ -310,12 +310,12 @@
      */
 
     template <
-    typename      data_type
+    typename      real_type
              >
     __inline_call bool node_rect_2d (
-    __const_ptr  (data_type) _pp, // node
-    __const_ptr  (data_type) _b0, // min. rect. B
-    __const_ptr  (data_type) _b1  // max.
+    __const_ptr  (real_type) _pp, // node
+    __const_ptr  (real_type) _b0, // min. rect. B
+    __const_ptr  (real_type) _b1  // max.
         )
     {
         if (_pp[0] >= _b0[0] &&
@@ -332,12 +332,12 @@
     }
 
     template <
-    typename      data_type
+    typename      real_type
              >
     __inline_call bool node_rect_3d (
-    __const_ptr  (data_type) _pp, // node
-    __const_ptr  (data_type) _b0, // min. rect. B
-    __const_ptr  (data_type) _b1  // max.
+    __const_ptr  (real_type) _pp, // node
+    __const_ptr  (real_type) _b0, // min. rect. B
+    __const_ptr  (real_type) _b1  // max.
         )
     {
         if (_pp[0] >= _b0[0] &&
@@ -356,13 +356,13 @@
     }
 
     template <
-    typename      data_type
+    typename      real_type
              >
     __inline_call bool rect_rect_2d (
-    __const_ptr  (data_type) _a0, // min. rect. A
-    __const_ptr  (data_type) _a1, // max.
-    __const_ptr  (data_type) _b0, // min. rect. B
-    __const_ptr  (data_type) _b1  // max.
+    __const_ptr  (real_type) _a0, // min. rect. A
+    __const_ptr  (real_type) _a1, // max.
+    __const_ptr  (real_type) _b0, // min. rect. B
+    __const_ptr  (real_type) _b1  // max.
         )
     {
         if (_a0[0] <= _b1[0] &&
@@ -379,13 +379,13 @@
     }
 
     template <
-    typename      data_type
+    typename      real_type
              >
     __inline_call bool rect_rect_3d (
-    __const_ptr  (data_type) _a0, // min. rect. A
-    __const_ptr  (data_type) _a1, // max.
-    __const_ptr  (data_type) _b0, // min. rect. B
-    __const_ptr  (data_type) _b1  // max.
+    __const_ptr  (real_type) _a0, // min. rect. A
+    __const_ptr  (real_type) _a1, // max.
+    __const_ptr  (real_type) _b0, // min. rect. B
+    __const_ptr  (real_type) _b1  // max.
         )
     {
         if (_a0[0] <= _b1[0] &&
@@ -482,14 +482,14 @@
      */
 
     template <
-    typename      data_type
+    typename      real_type
              >
     __normal_call bool line_flat_3d (
-    __const_ptr  (data_type) _pp, // (xx-pp).nv=0
-    __const_ptr  (data_type) _nv,
-    __const_ptr  (data_type) _pa, // line
-    __const_ptr  (data_type) _pb,
-    __write_ptr  (data_type) _qq, // intersection
+    __const_ptr  (real_type) _pp, // (xx-pp).nv=0
+    __const_ptr  (real_type) _nv,
+    __const_ptr  (real_type) _pa, // line
+    __const_ptr  (real_type) _pb,
+    __write_ptr  (real_type) _qq, // intersection
         bool _bind =   true
         )
     {
@@ -528,45 +528,45 @@
         else
         {
 
-        data_type _ab[3];
+        real_type _ab[3];
         _ab[0] = _pb[0] - _pa[0] ;
         _ab[1] = _pb[1] - _pa[1] ;
         _ab[2] = _pb[2] - _pa[2] ;
 
-        data_type _ap[3];
+        real_type _ap[3];
         _ap[0] = _pp[0] - _pa[0] ;
         _ap[1] = _pp[1] - _pa[1] ;
         _ap[2] = _pp[2] - _pa[2] ;
 
-        data_type _ep = + 1.0 *
-        std::numeric_limits<data_type>::epsilon() ;
+        real_type _ep = + 1.0 *
+        std::numeric_limits<real_type>::epsilon() ;
 
-        data_type _d1 =
+        real_type _d1 =
         geometry::dot_3d(_ap, _nv) ;
-        data_type _d2 =
+        real_type _d2 =
         geometry::dot_3d(_ab, _nv) ;
 
         if (std::abs(_d2) <= _ep * std::abs(_d1))
             return ( false ) ;
 
-        data_type _tt =  _d1 / _d2 ;
+        real_type _tt =  _d1 / _d2 ;
 
         if (_bind)
         {
-        if (_tt  < (data_type)+0.)
+        if (_tt  < (real_type)+0.)
             return ( false ) ;
-        if (_tt  > (data_type)+1.)
+        if (_tt  > (real_type)+1.)
             return ( false ) ;
         }
 
-        if (_tt == (data_type)+0.)
+        if (_tt == (real_type)+0.)
         {
             _qq[0] = _pa[0] ;
             _qq[1] = _pa[1] ;
             _qq[2] = _pa[2] ;
         }
         else
-        if (_tt == (data_type)+1.)
+        if (_tt == (real_type)+1.)
         {
             _qq[0] = _pb[0] ;
             _qq[1] = _pb[1] ;
@@ -607,16 +607,16 @@
      */
 
     template <
-    typename      data_type
+    typename      real_type
              >
     __normal_call size_t tria_flat_3d (
-    __const_ptr  (data_type) _pp, // (xx-pp).nv=0
-    __const_ptr  (data_type) _nv,
-    __const_ptr  (data_type) _pa, // tria
-    __const_ptr  (data_type) _pb,
-    __const_ptr  (data_type) _pc,
-    __write_ptr  (data_type) _qa, // intersection
-    __write_ptr  (data_type) _qb
+    __const_ptr  (real_type) _pp, // (xx-pp).nv=0
+    __const_ptr  (real_type) _nv,
+    __const_ptr  (real_type) _pa, // tria
+    __const_ptr  (real_type) _pb,
+    __const_ptr  (real_type) _pc,
+    __write_ptr  (real_type) _qa, // intersection
+    __write_ptr  (real_type) _qb
         )
     {
         size_t _ni = +0;

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 April, 2020
+     * Last updated: 09. Feb, 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -50,6 +50,7 @@
 
     template <
     typename R ,
+    typename V ,
     typename I ,
     typename A = allocators::basic_alloc
              >
@@ -61,11 +62,13 @@
     /*---------------------- "grid"-based size-fun in R^2 */
 
     typedef R                       real_type ;
+    typedef V                       vals_type ;
     typedef I                       iptr_type ;
     typedef A                       allocator ;
 
     typedef hfun_grid_euclidean_2d  <
             real_type ,
+            vals_type ,
             iptr_type >             hfun_type ;
 
     typedef typename  hfun_base_kd  <
@@ -76,6 +79,10 @@
             real_type ,
             allocator >             real_list ;
 
+    typedef containers::array   <
+            vals_type ,
+            allocator >             vals_list ;
+
 
     containers::array <
         real_type, allocator>      _xpos;
@@ -83,10 +90,10 @@
         real_type, allocator>      _ypos;
 
     containers::array <
-        real_type, allocator>      _hmat;
+        vals_type, allocator>      _hmat;
 
     containers::array <
-        real_type, allocator>      _dhdx;
+        vals_type, allocator>      _dhdx;
 
     bool_type                      _xvar;
     bool_type                      _yvar;
@@ -134,12 +141,12 @@
     /*-------------------- "LESS-THAN" operator for queue */
         public  :
             typename
-            real_list::_write_it _hptr;
+            vals_list::_write_it _hptr;
 
         public  :
         __inline_call less_than  (
             typename
-            real_list::_write_it _hsrc
+            vals_list::_write_it _hsrc
             ) : _hptr(_hsrc) {}
 
         __inline_call
@@ -182,10 +189,7 @@
                    this->_hmat.tend() ;
                 ++_iter , ++_inum)
         {
-            {
-                _keys[_inum] =
-                    _sort.push(_inum) ;
-            }
+            _keys[_inum] = _sort.push (_inum) ;
         }
 
     /*-------------------- compute h(x) via fast-marching */
@@ -208,7 +212,7 @@
             subs_from_indx(
                 _base, _ipos, _jpos);
 
-            real_type _hnow = _hmat[_base] ;
+            vals_type _hnow = _hmat[_base] ;
 
             for (auto _IPOS = _ipos - 1 ;
                       _IPOS < _ipos + 1 ;
@@ -260,7 +264,7 @@
                     _lnod != _base) continue ;
 
     /*-------------------- skip cells due to sorted order */
-                real_type _hmax;
+                vals_type _hmax;
                 _hmax = this->_hmat[_inod] ;
                 _hmax = std::max(
                 _hmax , this->_hmat[_jnod]);
@@ -289,13 +293,13 @@
                 _LXYZ[1] = this->_ypos[_lpii];
 
     /*-------------------- solve for local |dh/dx| limits */
-                real_type _iold =
+                vals_type _iold =
                      this->_hmat[_inod] ;
-                real_type _jold =
+                vals_type _jold =
                      this->_hmat[_jnod] ;
-                real_type _kold =
+                vals_type _kold =
                      this->_hmat[_knod] ;
-                real_type _lold =
+                vals_type _lold =
                      this->_hmat[_lnod] ;
 
                 if (this->_dhdx.count() >1)

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 June, 2019
+     * Last updated: 09 Feb., 2021
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -151,10 +151,10 @@
            *_iter = _scal *  *_iter;
 
            *_iter = std::min(*_iter,
-                    _scal *_jcfg._hfun_hmax) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmax));
 
            *_iter = std::max(*_iter,
-                    _scal *_jcfg._hfun_hmin) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmin));
         }
 
         }
@@ -171,10 +171,10 @@
            *_iter = _scal *  *_iter;
 
            *_iter = std::min(*_iter,
-                    _scal *_jcfg._hfun_hmax) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmax));
 
            *_iter = std::max(*_iter,
-                    _scal *_jcfg._hfun_hmin) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmin));
         }
 
         }
@@ -195,10 +195,10 @@
            *_iter = _scal *  *_iter;
 
            *_iter = std::min(*_iter,
-                    _scal *_jcfg._hfun_hmax) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmax));
 
            *_iter = std::max(*_iter,
-                    _scal *_jcfg._hfun_hmin) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmin));
         }
 
         }
@@ -215,10 +215,10 @@
            *_iter = _scal *  *_iter;
 
            *_iter = std::min(*_iter,
-                    _scal *_jcfg._hfun_hmax) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmax));
 
            *_iter = std::max(*_iter,
-                    _scal *_jcfg._hfun_hmin) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmin));
         }
 
         }
@@ -237,10 +237,10 @@
            *_iter = _scal *  *_iter;
 
            *_iter = std::min(*_iter,
-                    _scal *_jcfg._hfun_hmax) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmax));
 
            *_iter = std::max(*_iter,
-                    _scal *_jcfg._hfun_hmin) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmin));
         }
 
         }
@@ -258,10 +258,10 @@
            *_iter = _scal *  *_iter;
 
            *_iter = std::min(*_iter,
-                    _scal *_jcfg._hfun_hmax) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmax));
 
            *_iter = std::max(*_iter,
-                    _scal *_jcfg._hfun_hmin) ;
+        (fp32_t) (_scal *_jcfg._hfun_hmin));
         }
 
         }
