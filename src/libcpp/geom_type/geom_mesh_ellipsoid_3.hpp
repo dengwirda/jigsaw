@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 Feb., 2021
+     * Last updated: 14 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -2044,59 +2044,80 @@
         _jpos[2] = _line._jpos[ 2];
 
         real_type _ttaa, _ttbb;
-        if (line_surf(_ipos, _jpos, _ttaa, _ttbb))
+        if(line_surf(_ipos, _jpos, _ttaa, _ttbb))
         {
-        real_type  _pmid[3] = {
-        _jpos[0] * (real_type)+.5 +
-        _ipos[0] * (real_type)+.5 ,
-        _jpos[1] * (real_type)+.5 +
-        _ipos[1] * (real_type)+.5 ,
-        _jpos[2] * (real_type)+.5 +
-        _ipos[2] * (real_type)+.5
-            } ;
-        real_type  _pdel[3] = {
-        _jpos[0] * (real_type)+.5 -
-        _ipos[0] * (real_type)+.5 ,
-        _jpos[1] * (real_type)+.5 -
-        _ipos[1] * (real_type)+.5 ,
-        _jpos[2] * (real_type)+.5 -
-        _ipos[2] * (real_type)+.5
-            } ;
+        dd_flt     _pmid[3] ;
+        _pmid[0].
+            from_add(_jpos[0], _ipos[0]);
+        _pmid[0] *= +0.5 ;
+        _pmid[1].
+            from_add(_jpos[1], _ipos[1]);
+        _pmid[1] *= +0.5 ;
+        _pmid[2].
+            from_add(_jpos[2], _ipos[2]);
+        _pmid[2] *= +0.5 ;
 
-    /*------------------ calc. XYZ pos. for intersections */
-        real_type  _apos[3] = {
-        _pmid[0] + _ttaa * _pdel[0] ,
-        _pmid[1] + _ttaa * _pdel[1] ,
-        _pmid[2] + _ttaa * _pdel[2]
-            } ;
-
-        real_type  _bpos[3] = {
-        _pmid[0] + _ttbb * _pdel[0] ,
-        _pmid[1] + _ttbb * _pdel[1] ,
-        _pmid[2] + _ttbb * _pdel[2]
-            } ;
-
-    /*------------------ push surf.-proj. to output func. */
-        char_type _hits =
-            geometry::face_hits ;
-        char_type _feat = +2;
-        char_type _topo = +2;
-        iptr_type _itag = +0;
+        dd_flt     _pdel[3] ;
+        _pdel[0].
+            from_sub(_jpos[0], _ipos[0]);
+        _pdel[0] *= +0.5 ;
+        _pdel[1].
+            from_sub(_jpos[1], _ipos[1]);
+        _pdel[1] *= +0.5 ;
+        _pdel[2].
+            from_sub(_jpos[2], _ipos[2]);
+        _pdel[2] *= +0.5 ;
 
         if (_ttaa >= (real_type)-1.)
         if (_ttaa <= (real_type)+1.)
         {
+    /*------------------ push surf.-proj. to output func. */
+            dd_flt    _APOS[3] = {
+            _pmid[0] + _ttaa * _pdel[0] ,
+            _pmid[1] + _ttaa * _pdel[1] ,
+            _pmid[2] + _ttaa * _pdel[2]
+                } ;
+
+            char_type _hits =
+                geometry::face_hits ;
+            char_type _feat = +2;
+            char_type _topo = +2;
+            iptr_type _itag = +0;
+
+            real_type  _apos[3] ;
+            _apos[0] = _APOS[0] ;
+            _apos[1] = _APOS[1] ;
+            _apos[2] = _APOS[2] ;
+
             _find  =  true  ;
             _hfun( _apos,
-        _hits, _feat, _topo, _itag) ;
+            _hits, _feat, _topo, _itag) ;
         }
 
         if (_ttbb >= (real_type)-1.)
         if (_ttbb <= (real_type)+1.)
         {
+    /*------------------ push surf.-proj. to output func. */
+            dd_flt    _BPOS[3] = {
+            _pmid[0] + _ttbb * _pdel[0] ,
+            _pmid[1] + _ttbb * _pdel[1] ,
+            _pmid[2] + _ttbb * _pdel[2]
+                } ;
+
+            char_type _hits =
+                geometry::face_hits ;
+            char_type _feat = +2;
+            char_type _topo = +2;
+            iptr_type _itag = +0;
+
+            real_type  _bpos[3] ;
+            _bpos[0] = _BPOS[0] ;
+            _bpos[1] = _BPOS[1] ;
+            _bpos[2] = _BPOS[2] ;
+
             _find  =  true  ;
             _hfun( _bpos,
-        _hits, _feat, _topo, _itag) ;
+            _hits, _feat, _topo, _itag) ;
         }
 
         }
@@ -2119,6 +2140,8 @@
         hits_func &_hfun
         )
     {
+        bool_type _find = true  ;
+
     /*------------------ calc. initial dir. to surf.-ball */
         real_type _proj[3], _vdir[3] ;
         proj_surf(_sbal, _proj) ;
@@ -2149,20 +2172,20 @@
 
         if (_dsqr < this->_rEPS *
                     this->_rEPS )
-            break ;
+        {
+    /*------------------ push surf.-proj. to output func. */
+            char_type _hits =
+                geometry::face_hits ;
+            char_type _feat = +2;
+            char_type _topo = +2;
+            iptr_type _itag = +0;
+
+            _hfun( _proj ,
+            _hits, _feat , _topo, _itag) ;
+        }
         }
 
-    /*------------------ push surf.-proj. to output func. */
-        char_type _hits =
-            geometry::face_hits ;
-        char_type _feat = +2;
-        char_type _topo = +2;
-        iptr_type _itag = +0;
-
-        _hfun( _proj ,
-        _hits, _feat , _topo, _itag) ;
-
-        return  true ;
+        return ( _find ) ;
     }
 
     /*

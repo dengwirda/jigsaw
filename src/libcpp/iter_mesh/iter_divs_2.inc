@@ -73,7 +73,7 @@
         real_type  _lmin
             = (real_type) +1.00E+00 ,
         real_type  _qinc
-            = (real_type) +1.00E-04
+            = (real_type) +1.00E-02
         )
     {
         iptr_type static constexpr
