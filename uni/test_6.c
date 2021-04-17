@@ -1,6 +1,5 @@
 
-//  gcc -Wall test_6.c
-//  -Xlinker -rpath=../lib
+//  gcc -Wall -Wextra test_6.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test_6
 
 //  Use JIGSAW to mesh a simple domain, but starting from
@@ -10,10 +9,7 @@
 
 #   include "stdio.h"
 
-    int main (
-        int          _argc ,
-        char       **_argv
-        )
+    int main ()
     {
         int _retv = 0;
 
@@ -121,7 +117,7 @@
 
         printf("\n VERT2: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _mesh._vert2._size ;
                    ++_ipos )
         {
@@ -135,7 +131,7 @@
 
         printf("\n TRIA3: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _mesh._tria3._size ;
                    ++_ipos )
         {

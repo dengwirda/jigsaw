@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 July, 2019
+     * Last updated: 09 Feb., 2021
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -49,22 +49,23 @@
     namespace mesh {
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type EIKONAL_edge_2d (
     __const_ptr  (real_type) _p1 ,
-                  real_type  _h1 ,
-                  real_type  _g1 ,
+                  vals_type  _h1 ,
+                  vals_type  _g1 ,
     __const_ptr  (real_type) _p2 ,
-                  real_type& _h2 ,
-                  real_type  _g2
+                  vals_type& _h2 ,
+                  vals_type  _g2
         )
     {
-        real_type _gg =
-            (_g1 + _g2) / (real_type)2. ;
+        vals_type _gg =
+            (_g1 + _g2) / (vals_type)2. ;
 
     /*---------------------- form "limited" extrap. to P2 */
-        real_type _hn = _h1 + _gg *
+        vals_type _hn = _h1 + _gg *
             std::sqrt(
         geometry::lensqr_2d(_p1, _p2) ) ;
 
@@ -76,22 +77,23 @@
     }
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type EIKONAL_edge_3d (
     __const_ptr  (real_type) _p1 ,
-                  real_type  _h1 ,
-                  real_type  _g1 ,
+                  vals_type  _h1 ,
+                  vals_type  _g1 ,
     __const_ptr  (real_type) _p2 ,
-                  real_type& _h2 ,
-                  real_type  _g2
+                  vals_type& _h2 ,
+                  vals_type  _g2
         )
     {
-        real_type _gg =
-            (_g1 + _g2) / (real_type)2. ;
+        vals_type _gg =
+            (_g1 + _g2) / (vals_type)2. ;
 
     /*---------------------- form "limited" extrap. to P2 */
-        real_type _hn = _h1 + _gg *
+        vals_type _hn = _h1 + _gg *
             std::sqrt(
         geometry::lensqr_3d(_p1, _p2) ) ;
 
@@ -103,22 +105,23 @@
     }
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type EIKONAL_tria_2d (
     __const_ptr  (real_type) _p1 ,
-                  real_type  _h1 ,
-                  real_type  _g1 ,
+                  vals_type  _h1 ,
+                  vals_type  _g1 ,
     __const_ptr  (real_type) _p2 ,
-                  real_type  _h2 ,
-                  real_type  _g2 ,
+                  vals_type  _h2 ,
+                  vals_type  _g2 ,
     __const_ptr  (real_type) _p3 ,
-                  real_type& _h3 ,
-                  real_type  _g3
+                  vals_type& _h3 ,
+                  vals_type  _g3
         )
     {
-        real_type _gg =
-            (_g1+_g2+_g3)/(real_type)3. ;
+        vals_type _gg =
+            (_g1+_g2+_g3)/(vals_type)3. ;
 
     /*---------------------- form "limited" extrap. to P3 */
         real_type _d1[2];
@@ -128,7 +131,7 @@
         geometry::
             vector_2d (_p3, _p1, _d3) ;
 
-        real_type _dh =_h2- _h1;
+        vals_type _dh =_h2- _h1;
 
         real_type _aa =
         geometry::   dot_2d(_d1, _d3) ;
@@ -146,9 +149,9 @@
         real_type _ct =
             _aa * _aa - _rr * _cc;
 
-        real_type _hn =
+        vals_type _hn =
             std::numeric_limits
-                <real_type>::infinity() ;
+                <vals_type>::infinity() ;
 
         real_type _tt[2] ;
         if (!math::
@@ -188,13 +191,13 @@
         real_type _lp = std::sqrt(
             geometry::lensqr_2d(_vp)) ;
 
-        real_type _hp =
+        vals_type _hp =
         _h1 + _tt[0]*_dh + _gg*_lp ;
 
         real_type _lm = std::sqrt(
             geometry::lensqr_2d(_vm)) ;
 
-        real_type _hm =
+        vals_type _hm =
         _h1 + _tt[1]*_dh + _gg*_lm ;
 
         _hn = std::min(_hp, _hm) ;
@@ -209,22 +212,23 @@
     }
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type EIKONAL_tria_3d (
     __const_ptr  (real_type) _p1 ,
-                  real_type  _h1 ,
-                  real_type  _g1 ,
+                  vals_type  _h1 ,
+                  vals_type  _g1 ,
     __const_ptr  (real_type) _p2 ,
-                  real_type  _h2 ,
-                  real_type  _g2 ,
+                  vals_type  _h2 ,
+                  vals_type  _g2 ,
     __const_ptr  (real_type) _p3 ,
-                  real_type& _h3 ,
-                  real_type  _g3
+                  vals_type& _h3 ,
+                  vals_type  _g3
         )
     {
-        real_type _gg =
-            (_g1+_g2+_g3)/(real_type)3. ;
+        vals_type _gg =
+            (_g1+_g2+_g3)/(vals_type)3. ;
 
     /*---------------------- form "limited" extrap. to P3 */
         real_type _d1[3];
@@ -234,7 +238,7 @@
         geometry::
             vector_3d (_p3, _p1, _d3) ;
 
-        real_type _dh =_h2- _h1;
+        vals_type _dh =_h2- _h1;
 
         real_type _aa =
         geometry::   dot_3d(_d1, _d3) ;
@@ -252,9 +256,9 @@
         real_type _ct =
             _aa * _aa - _rr * _cc;
 
-        real_type _hn =
+        vals_type _hn =
             std::numeric_limits
-                <real_type>::infinity() ;
+                <vals_type>::infinity() ;
 
         real_type _tt[2] ;
         if (!math::
@@ -296,13 +300,13 @@
         real_type _lp = std::sqrt(
             geometry::lensqr_3d(_vp)) ;
 
-        real_type _hp =
+        vals_type _hp =
         _h1 + _tt[0]*_dh + _gg*_lp ;
 
         real_type _lm = std::sqrt(
             geometry::lensqr_3d(_vm)) ;
 
-        real_type _hm =
+        vals_type _hm =
         _h1 + _tt[1]*_dh + _gg*_lm ;
 
         _hn = std::min(_hp, _hm) ;
@@ -317,21 +321,22 @@
     }
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type eikonal_edge_2d (
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
-                  real_type& _h1 ,
-                  real_type& _h2 ,
-                  real_type  _g1 ,
-                  real_type  _g2
+                  vals_type& _h1 ,
+                  vals_type& _h2 ,
+                  vals_type  _g1 ,
+                  vals_type  _g2
         )
     {
     /*---------------------- limit h-values within EDGE-2 */
         bool_type _clip = false ;
 
-        real_type _h0 = std::min(_h1,_h2) ;
+        vals_type _h0 = std::min(_h1,_h2) ;
 
         if (_h2 > _h0)
     /*--------------------------------- 1st node ordering */
@@ -351,21 +356,22 @@
     }
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type eikonal_edge_3d (
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
-                  real_type& _h1 ,
-                  real_type& _h2 ,
-                  real_type  _g1 ,
-                  real_type  _g2
+                  vals_type& _h1 ,
+                  vals_type& _h2 ,
+                  vals_type  _g1 ,
+                  vals_type  _g2
         )
     {
     /*---------------------- limit h-values within EDGE-2 */
         bool_type _clip = false ;
 
-        real_type _h0 = std::min(_h1,_h2) ;
+        vals_type _h0 = std::min(_h1,_h2) ;
 
         if (_h2 > _h0)
     /*--------------------------------- 1st node ordering */
@@ -385,24 +391,25 @@
     }
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type eikonal_tria_2d (
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
-                  real_type& _h1 ,
-                  real_type& _h2 ,
-                  real_type& _h3 ,
-                  real_type  _g1 ,
-                  real_type  _g2 ,
-                  real_type  _g3
+                  vals_type& _h1 ,
+                  vals_type& _h2 ,
+                  vals_type& _h3 ,
+                  vals_type  _g1 ,
+                  vals_type  _g2 ,
+                  vals_type  _g3
         )
     {
     /*---------------------- limit h-values within TRIA-3 */
         bool_type _clip = false ;
 
-        real_type _h0 =
+        vals_type _h0 =
         std::min( _h3, std::min(_h1,_h2)) ;
 
         if (_h3 > _h0)
@@ -433,24 +440,25 @@
     }
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type eikonal_tria_3d (
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
-                  real_type& _h1 ,
-                  real_type& _h2 ,
-                  real_type& _h3 ,
-                  real_type  _g1 ,
-                  real_type  _g2 ,
-                  real_type  _g3
+                  vals_type& _h1 ,
+                  vals_type& _h2 ,
+                  vals_type& _h3 ,
+                  vals_type  _g1 ,
+                  vals_type  _g2 ,
+                  vals_type  _g3
         )
     {
     /*---------------------- limit h-values within TRIA-3 */
         bool_type _clip = false ;
 
-        real_type _h0 =
+        vals_type _h0 =
         std::min( _h3, std::min(_h1,_h2)) ;
 
         if (_h3 > _h0)
@@ -481,21 +489,22 @@
     }
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type eikonal_quad_2d (
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
-                  real_type& _h1 ,
-                  real_type& _h2 ,
-                  real_type& _h3 ,
-                  real_type& _h4 ,
-                  real_type  _g1 ,
-                  real_type  _g2 ,
-                  real_type  _g3 ,
-                  real_type  _g4
+                  vals_type& _h1 ,
+                  vals_type& _h2 ,
+                  vals_type& _h3 ,
+                  vals_type& _h4 ,
+                  vals_type  _g1 ,
+                  vals_type  _g2 ,
+                  vals_type  _g3 ,
+                  vals_type  _g4
         )
     {
     /*---------------------- limit h-values within QUAD-4 */
@@ -574,21 +583,22 @@
     }
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type eikonal_quad_3d (
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
-                  real_type& _h1 ,
-                  real_type& _h2 ,
-                  real_type& _h3 ,
-                  real_type& _h4 ,
-                  real_type  _g1 ,
-                  real_type  _g2 ,
-                  real_type  _g3 ,
-                  real_type  _g4
+                  vals_type& _h1 ,
+                  vals_type& _h2 ,
+                  vals_type& _h3 ,
+                  vals_type& _h4 ,
+                  vals_type  _g1 ,
+                  vals_type  _g2 ,
+                  vals_type  _g3 ,
+                  vals_type  _g4
         )
     {
     /*---------------------- limit h-values within QUAD-4 */
@@ -673,21 +683,22 @@
     }
 
     template <
-        typename  real_type
+        typename  real_type ,
+        typename  vals_type
              >
     __normal_call bool_type eikonal_tria_3d (
     __const_ptr  (real_type) /*_p1*/ ,
     __const_ptr  (real_type) /*_p2*/ ,
     __const_ptr  (real_type) /*_p3*/ ,
     __const_ptr  (real_type) /*_p4*/ ,
-                  real_type& /*_h1*/ ,
-                  real_type& /*_h2*/ ,
-                  real_type& /*_h3*/ ,
-                  real_type& /*_h4*/ ,
-                  real_type  /*_g1*/ ,
-                  real_type  /*_g2*/ ,
-                  real_type  /*_g3*/ ,
-                  real_type  /*_g4*/
+                  vals_type& /*_h1*/ ,
+                  vals_type& /*_h2*/ ,
+                  vals_type& /*_h3*/ ,
+                  vals_type& /*_h4*/ ,
+                  vals_type  /*_g1*/ ,
+                  vals_type  /*_g2*/ ,
+                  vals_type  /*_g3*/ ,
+                  vals_type  /*_g4*/
         )
     {
         return false ;

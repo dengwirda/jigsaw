@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 March, 2020
+     * Last updated: 30 Mar., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -68,10 +68,16 @@
         {
         public  :
             mesh_data           *_init ;
+
             std::int32_t         _ftag ;
             jmsh_kind::
             enum_data            _kind ;
             std:: size_t         _ndim ;
+
+            real_type            _rrad[3] = {1.} ;
+
+            containers::
+                array<real_type> _vpwr ;
         public  :
     /*---------------------------------- construct reader */
         __normal_call init_reader (
@@ -96,6 +102,15 @@
             this->_ndim = _NDIM ;
             this->
            _init->_ndim = _NDIM ;
+        }
+    /*---------------------------------- parse RADII data */
+        __normal_call void_type push_radii (
+            double       *_erad
+            )
+        {
+            this->_rrad[0] = _erad[ 0] ;
+            this->_rrad[1] = _erad[ 1] ;
+            this->_rrad[2] = _erad[ 2] ;
         }
     /*---------------------------------- parse POINT data */
         __normal_call void_type push_point (
@@ -162,6 +177,126 @@
                    _euclidean_mesh_3d.
                _mesh.push_node(_ndat, false) ;
             }
+            else
+            if (this->_kind ==
+                    jmsh_kind::ellipsoid_mesh)
+            {
+                typename
+                mesh_data::euclidean_mesh_3d
+                    ::node_type _ndat ;
+                _ndat.pval(0) = _pval[0];
+                _ndat.pval(1) = _pval[1];
+                _ndat.pval(2) =
+                        (real_type) +0. ;
+                _ndat.itag () = _itag ;
+
+                _ndat.pval(3) =
+                        (real_type) +0. ;
+
+                _ndat.fdim () =     +0  ;
+
+                if (_itag < +0)
+                    _ndat.feat () =
+                        mesh::user_feat ;
+                else
+                    _ndat.feat () =
+                        mesh::null_feat ;
+
+                this->_init->
+                   _euclidean_mesh_3d.
+               _mesh.push_node(_ndat, false) ;
+            }
+        }
+    /*---------------------------------- store POINT data */
+        __normal_call void_type save_point (
+            )
+        {
+            if (this->_kind ==
+                    jmsh_kind::ellipsoid_mesh)
+            {
+            iptr_type _ipos = + 0 ;
+
+            for (auto
+                _iter  = this->_init->
+            _euclidean_mesh_3d._mesh.node().head();
+                _iter != this->_init->
+            _euclidean_mesh_3d._mesh.node().tend();
+              ++_iter, ++_ipos )
+            {
+                real_type _apos[2];
+                real_type _ppos[3];
+
+                _apos[0] = _iter->pval (0) ;
+                _apos[1] = _iter->pval (1) ;
+
+                math::toR3(
+                    _rrad, _apos, _ppos) ;
+
+                _iter->pval(0) = _ppos [0] ;
+                _iter->pval(1) = _ppos [1] ;
+                _iter->pval(2) = _ppos [2] ;
+            }
+            }
+        }
+    /*---------------------------------- parse POWER data */
+        __normal_call void_type push_power (
+            std:: size_t  _ipos ,
+            double       *_ppwr
+            )
+        {
+            this->_vpwr.push_tail(_ppwr[0]);
+        }
+    /*---------------------------------- store POWER data */
+        __normal_call void_type save_power (
+            )
+        {
+            if (this->_vpwr.count() == +0) return ;
+
+            if (this->_ndim == +2 &&
+                this->_kind ==
+                    jmsh_kind::euclidean_mesh)
+            {
+            if (this->_vpwr.count() !=
+                this->_init->
+            _euclidean_mesh_2d._mesh.node().count())
+                return ;
+
+            iptr_type _ipos = +0 ;
+            for (auto
+                _iter  = this->_init->
+            _euclidean_mesh_2d._mesh.node().head();
+                _iter != this->_init->
+            _euclidean_mesh_2d._mesh.node().tend();
+              ++_iter, ++_ipos )
+            {
+                _iter->pval(2) =
+                    this->_vpwr[_ipos] ;
+            }
+            }
+            else
+            if (this->_kind ==
+                    jmsh_kind::ellipsoid_mesh ||
+               (this->_ndim == +3 &&
+                this->_kind ==
+                    jmsh_kind::euclidean_mesh) )
+            {
+            if (this->_vpwr.count() !=
+                this->_init->
+            _euclidean_mesh_3d._mesh.node().count())
+                return ;
+
+            iptr_type _ipos = +0 ;
+            for (auto
+                _iter  = this->_init->
+            _euclidean_mesh_3d._mesh.node().head();
+                _iter != this->_init->
+            _euclidean_mesh_3d._mesh.node().tend();
+              ++_iter, ++_ipos )
+            {
+                _iter->pval(3) =
+                    this->_vpwr[_ipos] ;
+            }
+            }
         }
     /*---------------------------------- parse EDGE2 data */
         __normal_call void_type push_edge2 (
@@ -189,9 +324,11 @@
                _mesh.push_edge(_edat, false) ;
             }
             else
-            if (this->_ndim == +3 &&
+            if (this->_kind ==
+                    jmsh_kind::ellipsoid_mesh ||
+               (this->_ndim == +3 &&
                 this->_kind ==
-                    jmsh_kind::euclidean_mesh)
+                    jmsh_kind::euclidean_mesh) )
             {
                 typename
                 mesh_data::euclidean_mesh_3d
@@ -232,9 +369,11 @@
                _mesh.push_tri3(_tdat, false) ;
             }
             else
-            if (this->_ndim == +3 &&
+            if (this->_kind ==
+                    jmsh_kind::ellipsoid_mesh ||
+               (this->_ndim == +3 &&
                 this->_kind ==
-                    jmsh_kind::euclidean_mesh)
+                    jmsh_kind::euclidean_mesh) )
             {
                 typename
                 mesh_data::euclidean_mesh_3d
@@ -277,9 +416,11 @@
                _mesh.push_quad(_qdat, false) ;
             }
             else
-            if (this->_ndim == +3 &&
+            if (this->_kind ==
+                    jmsh_kind::ellipsoid_mesh ||
+               (this->_ndim == +3 &&
                 this->_kind ==
-                    jmsh_kind::euclidean_mesh)
+                    jmsh_kind::euclidean_mesh) )
             {
                 typename
                 mesh_data::euclidean_mesh_3d
@@ -312,9 +453,11 @@
                 // do nothing...
             }
             else
-            if (this->_ndim == +3 &&
+            if (this->_kind ==
+                    jmsh_kind::ellipsoid_mesh ||
+               (this->_ndim == +3 &&
                 this->_kind ==
-                    jmsh_kind::euclidean_mesh)
+                    jmsh_kind::euclidean_mesh) )
             {
                 typename
                 mesh_data::euclidean_mesh_3d
@@ -329,6 +472,13 @@
                    _euclidean_mesh_3d.
                _mesh.push_tri4(_tdat, false) ;
             }
+        }
+    /*---------------------------------- finalise objects */
+        __normal_call void_type postscript (
+            )
+        {
+            save_point () ;           // lon-lat to R^3
+            save_power () ;           // match to point
         }
         } ;
 
@@ -400,11 +550,10 @@
         __unreferenced (_jlog) ;
         __unreferenced (_jcfg) ;
 
-        if (_imsh._flags ==
+        if (_imsh._vert2._size > 0 &&
+            _imsh._flags ==
                 JIGSAW_EUCLIDEAN_MESH )
         {
-            if (_imsh._vert2._size > 0)
-            {
     /*--------------------------------- euclidean-mesh-2d */
             _init._kind
                 = jmsh_kind::euclidean_mesh ;
@@ -438,6 +587,20 @@
 
                 _init._euclidean_mesh_2d.
                     _mesh.push_node(_ndat,false);
+            }
+
+            if (_imsh._power._size != +0 &&
+                _imsh._power._size !=
+                _imsh._vert2._size  )
+                return __invalid_argument ;
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _imsh._power._size ;
+                    ++_ipos )
+            {
+                _init._euclidean_mesh_2d.
+                    _mesh.node(_ipos).pval(2) =
+                        _imsh._power._data[_ipos] ;
             }
 
             for (auto _ipos = (size_t) +0 ;
@@ -500,18 +663,38 @@
                     _mesh.push_quad(_qdat,false);
             }
 
-            }
-            else
-            if (_imsh._vert3._size > 0)
-            {
+        }
+        else
+        if (_imsh._flags ==
+                JIGSAW_ELLIPSOID_MESH ||
+           (_imsh._vert3._size > 0 &&
+            _imsh._flags ==
+                JIGSAW_EUCLIDEAN_MESH ) )
+        {
     /*--------------------------------- euclidean-mesh-3d */
             _init._kind
                 = jmsh_kind::euclidean_mesh ;
-            _init._ndim = +3;
+            _init._ndim = + 3;
+
+            real_type _rrad[3] = { 1. } ;
+
+            if (_imsh._radii._size == 3 )
+            {
+                _rrad[0] = _imsh._radii._data[0];
+                _rrad[1] = _imsh._radii._data[1];
+                _rrad[2] = _imsh._radii._data[2];
+            }
+            else
+            if (_imsh._radii._size == 1 )
+            {
+                _rrad[0] = _imsh._radii._data[0];
+                _rrad[1] = _imsh._radii._data[0];
+                _rrad[2] = _imsh._radii._data[0];
+            }
 
             for (auto _ipos = (size_t) +0 ;
                 _ipos != _imsh._vert3._size ;
-                    ++_ipos )
+                    ++_ipos )   // from euclidean...
             {
                 typename
                 mesh_data::euclidean_mesh_3d
@@ -539,6 +722,65 @@
 
                 _init._euclidean_mesh_3d.
                     _mesh.push_node(_ndat,false);
+            }
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _imsh._vert2._size ;
+                    ++_ipos )   // from ellipsoid...
+            {
+                typename
+                mesh_data::euclidean_mesh_3d
+                    ::node_type _ndat ;
+                _ndat.pval(0) = _imsh.
+                    _vert2._data[_ipos]._ppos[0];
+                _ndat.pval(1) = _imsh.
+                    _vert2._data[_ipos]._ppos[1];
+                _ndat.itag () = _imsh.
+                    _vert2._data[_ipos]._itag ;
+
+                _ndat.pval(3) =
+                        (real_type) +0. ;
+
+                _ndat.fdim () =     +0  ;
+
+                real_type _apos[2];
+                real_type _ppos[3];
+
+                _apos[0] = _ndat. pval (0) ;
+                _apos[1] = _ndat. pval (1) ;
+
+                math::toR3(
+                    _rrad, _apos, _ppos) ;
+
+                _ndat. pval(0) = _ppos [0] ;
+                _ndat. pval(1) = _ppos [1] ;
+                _ndat. pval(2) = _ppos [2] ;
+
+                if (_ndat.itag () < +0)
+                    _ndat.feat () =
+                        mesh::user_feat ;
+                else
+                    _ndat.feat () =
+                        mesh::null_feat ;
+
+                _init._euclidean_mesh_3d.
+                    _mesh.push_node(_ndat,false);
+            }
+
+            if (_imsh._power._size != +0 &&
+                _imsh._power._size !=
+                _imsh._vert3._size &&
+                _imsh._power._size !=
+                _imsh._vert2._size  )
+                return __invalid_argument ;
+
+            for (auto _ipos = (size_t) +0 ;
+                _ipos != _imsh._power._size ;
+                    ++_ipos )
+            {
+                _init._euclidean_mesh_3d.
+                    _mesh.node(_ipos).pval(3) =
+                        _imsh._power._data[_ipos] ;
             }
 
             for (auto _ipos = (size_t) +0 ;
@@ -621,8 +863,6 @@
 
                 _init._euclidean_mesh_3d.
                     _mesh.push_tri4(_tdat,false);
-            }
-
             }
         }
         else

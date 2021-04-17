@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 May, 2020
+     * Last updated: 08 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -552,14 +552,14 @@
         {
             this->_nval = _NVAL;
 
-            jigsaw_alloc_reals (
+            jigsaw_alloc_flt32 (
                 &this->
             _jmsh->_value , _nrow * _NVAL ) ;
         }
     /*-------------------------------- push VALUE section */
         __normal_call void_type push_value (
             std:: size_t  _ipos,
-            double      * _vdat
+            float       * _vdat
             )
         {
             if (_ipos < this->_jmsh->_value._size)
@@ -587,14 +587,14 @@
         {
             this->_nval = _NVAL;
 
-            jigsaw_alloc_reals (
+            jigsaw_alloc_flt32 (
                 &this->
             _jmsh->_slope , _nrow * _NVAL ) ;
         }
     /*-------------------------------- push SLOPE section */
         __normal_call void_type push_slope (
             std:: size_t  _ipos,
-            double      * _vdat
+            float       * _vdat
             )
         {
             if (_ipos < this->_jmsh->_slope._size)

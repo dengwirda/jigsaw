@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 14 Apr., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -298,14 +298,14 @@
 
     template <
         typename  list_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type node_feat (
         iptr_type *_node ,
         list_type &_aset ,
         char_type &_feat ,
         char_type &_topo ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
     /*------------ "sharp" geometry//topology about node? */
@@ -419,10 +419,10 @@
      */
 
     template <
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type find_feat (
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
         typename
@@ -532,10 +532,10 @@
      */
 
     template <
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type init_geom (
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
         __unreferenced(_opts) ;
@@ -673,15 +673,15 @@
 
     template <
         typename  mesh_type ,
-        typename  geom_opts
+        typename  user_opts
              >
-    __normal_call void_type seed_feat (
+    __normal_call void_type seed_root (
         mesh_type &_rdel ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
-        __unreferenced(_opts) ;
-
+        if (_opts.dims() < +3)
+        {
     /*------------------------- point at ellipsoid centre */
         real_type  _ppos[4] ;
         iptr_type  _inod;
@@ -697,6 +697,21 @@
         _tria.node(_inod)->feat() = +0 ;
         _rdel.
         _tria.node(_inod)->topo() = +0 ;
+        _rdel.
+        _tria.node(_inod)->part() = +0 ;
+        }
+    }
+
+    template <
+        typename  mesh_type ,
+        typename  user_opts
+             >
+    __normal_call void_type seed_feat (
+        mesh_type &_rdel ,
+        user_opts &_opts
+        )
+    {
+        __unreferenced(_opts) ;
 
     /*------------------------- push set of feature nodes */
         for (auto _iter  =
@@ -710,6 +725,7 @@
             if (_iter->feat() != null_feat)
             {
     /*----------------------------- push any 'real' feat. */
+            real_type  _ppos[4] ;
             _ppos[0] = _iter->pval(0) ;
             _ppos[1] = _iter->pval(1) ;
             _ppos[2] = _iter->pval(2) ;
@@ -740,6 +756,7 @@
             if (_iter->itag() <= -1 )
             {
     /*----------------------------- push any 'user' feat. */
+            real_type  _ppos[4] ;
             _ppos[0] = _iter->pval(0) ;
             _ppos[1] = _iter->pval(1) ;
             _ppos[2] = _iter->pval(2) ;
@@ -811,6 +828,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_pi*(real_type)+0.0) *
@@ -829,6 +848,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+0.0) *
@@ -847,6 +868,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+1.0) *
@@ -865,6 +888,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+2.0) *
@@ -883,6 +908,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+3.0) *
@@ -901,6 +928,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+4.0) *
@@ -919,6 +948,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+5.0) *
@@ -937,6 +968,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+6.0) *
@@ -955,6 +988,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+7.0) *
@@ -973,6 +1008,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+8.0) *
@@ -991,6 +1028,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
 
         _ppos[0] = this->_radA *
         std::cos(_lo*(real_type)+9.0) *
@@ -1009,6 +1048,8 @@
         _tria.node(_inod)->feat() = +0;
         _rdel.
         _tria.node(_inod)->topo() = +2;
+        _rdel.
+        _tria.node(_inod)->part() = +0;
     }
 
     /*
@@ -1019,11 +1060,11 @@
 
     template <
         typename  mesh_type ,
-        typename  geom_opts
+        typename  user_opts
              >
     __normal_call void_type seed_mesh (
         mesh_type &_rdel ,
-        geom_opts &_opts
+        user_opts &_opts
         )
     {
     /*------------------------- well-distributed sampling */
@@ -1094,6 +1135,10 @@
                     _rdel._tria.node
                         (_node)->topo()
                             = _best->topo() ;
+
+                    _rdel._tria.node
+                        (_node)->part()
+                            = _best->itag() ;
                 }
             }
             else break  ;
@@ -1999,59 +2044,80 @@
         _jpos[2] = _line._jpos[ 2];
 
         real_type _ttaa, _ttbb;
-        if (line_surf(_ipos, _jpos, _ttaa, _ttbb))
+        if(line_surf(_ipos, _jpos, _ttaa, _ttbb))
         {
-        real_type  _pmid[3] = {
-        _jpos[0] * (real_type)+.5 +
-        _ipos[0] * (real_type)+.5 ,
-        _jpos[1] * (real_type)+.5 +
-        _ipos[1] * (real_type)+.5 ,
-        _jpos[2] * (real_type)+.5 +
-        _ipos[2] * (real_type)+.5
-            } ;
-        real_type  _pdel[3] = {
-        _jpos[0] * (real_type)+.5 -
-        _ipos[0] * (real_type)+.5 ,
-        _jpos[1] * (real_type)+.5 -
-        _ipos[1] * (real_type)+.5 ,
-        _jpos[2] * (real_type)+.5 -
-        _ipos[2] * (real_type)+.5
-            } ;
+        dd_flt     _pmid[3] ;
+        _pmid[0].
+            from_add(_jpos[0], _ipos[0]);
+        _pmid[0] *= +0.5 ;
+        _pmid[1].
+            from_add(_jpos[1], _ipos[1]);
+        _pmid[1] *= +0.5 ;
+        _pmid[2].
+            from_add(_jpos[2], _ipos[2]);
+        _pmid[2] *= +0.5 ;
 
-    /*------------------ calc. XYZ pos. for intersections */
-        real_type  _apos[3] = {
-        _pmid[0] + _ttaa * _pdel[0] ,
-        _pmid[1] + _ttaa * _pdel[1] ,
-        _pmid[2] + _ttaa * _pdel[2]
-            } ;
-
-        real_type  _bpos[3] = {
-        _pmid[0] + _ttbb * _pdel[0] ,
-        _pmid[1] + _ttbb * _pdel[1] ,
-        _pmid[2] + _ttbb * _pdel[2]
-            } ;
-
-    /*------------------ push surf.-proj. to output func. */
-        char_type _hits =
-            geometry::face_hits ;
-        char_type _feat = +2;
-        char_type _topo = +2;
-        iptr_type _itag = +0;
+        dd_flt     _pdel[3] ;
+        _pdel[0].
+            from_sub(_jpos[0], _ipos[0]);
+        _pdel[0] *= +0.5 ;
+        _pdel[1].
+            from_sub(_jpos[1], _ipos[1]);
+        _pdel[1] *= +0.5 ;
+        _pdel[2].
+            from_sub(_jpos[2], _ipos[2]);
+        _pdel[2] *= +0.5 ;
 
         if (_ttaa >= (real_type)-1.)
         if (_ttaa <= (real_type)+1.)
         {
+    /*------------------ push surf.-proj. to output func. */
+            dd_flt    _APOS[3] = {
+            _pmid[0] + _ttaa * _pdel[0] ,
+            _pmid[1] + _ttaa * _pdel[1] ,
+            _pmid[2] + _ttaa * _pdel[2]
+                } ;
+
+            char_type _hits =
+                geometry::face_hits ;
+            char_type _feat = +2;
+            char_type _topo = +2;
+            iptr_type _itag = +0;
+
+            real_type  _apos[3] ;
+            _apos[0] = _APOS[0] ;
+            _apos[1] = _APOS[1] ;
+            _apos[2] = _APOS[2] ;
+
             _find  =  true  ;
             _hfun( _apos,
-        _hits, _feat, _topo, _itag) ;
+            _hits, _feat, _topo, _itag) ;
         }
 
         if (_ttbb >= (real_type)-1.)
         if (_ttbb <= (real_type)+1.)
         {
+    /*------------------ push surf.-proj. to output func. */
+            dd_flt    _BPOS[3] = {
+            _pmid[0] + _ttbb * _pdel[0] ,
+            _pmid[1] + _ttbb * _pdel[1] ,
+            _pmid[2] + _ttbb * _pdel[2]
+                } ;
+
+            char_type _hits =
+                geometry::face_hits ;
+            char_type _feat = +2;
+            char_type _topo = +2;
+            iptr_type _itag = +0;
+
+            real_type  _bpos[3] ;
+            _bpos[0] = _BPOS[0] ;
+            _bpos[1] = _BPOS[1] ;
+            _bpos[2] = _BPOS[2] ;
+
             _find  =  true  ;
             _hfun( _bpos,
-        _hits, _feat, _topo, _itag) ;
+            _hits, _feat, _topo, _itag) ;
         }
 
         }
@@ -2074,6 +2140,8 @@
         hits_func &_hfun
         )
     {
+        bool_type _find = true  ;
+
     /*------------------ calc. initial dir. to surf.-ball */
         real_type _proj[3], _vdir[3] ;
         proj_surf(_sbal, _proj) ;
@@ -2104,20 +2172,20 @@
 
         if (_dsqr < this->_rEPS *
                     this->_rEPS )
-            break ;
+        {
+    /*------------------ push surf.-proj. to output func. */
+            char_type _hits =
+                geometry::face_hits ;
+            char_type _feat = +2;
+            char_type _topo = +2;
+            iptr_type _itag = +0;
+
+            _hfun( _proj ,
+            _hits, _feat , _topo, _itag) ;
+        }
         }
 
-    /*------------------ push surf.-proj. to output func. */
-        char_type _hits =
-            geometry::face_hits ;
-        char_type _feat = +2;
-        char_type _topo = +2;
-        iptr_type _itag = +0;
-
-        _hfun( _proj ,
-        _hits, _feat , _topo, _itag) ;
-
-        return  true ;
+        return ( _find ) ;
     }
 
     /*

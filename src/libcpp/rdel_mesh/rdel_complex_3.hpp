@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 February, 2020
+     * Last updated: 24 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -73,13 +73,13 @@
         {
         public  :
     /*---------------------------- delaunay-tri node type */
-            iptr_type     _idxh ;
-            iptr_type     _part ;
+            iptr_type     _idxh = 0 ;
+            iptr_type     _part = 0 ;
 
-            char_type     _fdim ;
+            char_type     _fdim = 0 ;
 
-            char_type     _feat ;
-            char_type     _topo ;
+            char_type     _feat = 0 ;
+            char_type     _topo = 0 ;
 
         public  :
 

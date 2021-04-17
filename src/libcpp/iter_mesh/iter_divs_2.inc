@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Sept., 2020
+     * Last updated: 27 Dec., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -106,6 +106,13 @@
         _jset.set_count(
             0, containers::loose_alloc);
 
+        _qsrc.set_count(
+            0, containers::loose_alloc);
+        _qdst.set_count(
+            0, containers::loose_alloc);
+        _qtmp.set_count(
+            0, containers::loose_alloc);
+
         _mesh.connect_2(
             _enum, EDGE2_tag, _cset) ;
 
@@ -114,18 +121,37 @@
         if (_cset.count()<=1) return ;
 
     /*--------------------------------- get edge h-sizing */
-        real_type _isiz, _jsiz ;
+        real_type _pmid[_last + 1] ;
+        for (auto _idim =
+        pred_type::real_dims; _idim-- != 0; )
+        {
+            _pmid[_idim]  = (real_type)0. ;
+            _pmid[_idim] +=
+                _iptr->pval(_idim) ;
+            _pmid[_idim] +=
+                _jptr->pval(_idim) ;
+
+            _pmid[_idim] /= (real_type)2. ;
+        }
+
+        real_type _isiz, _jsiz, _msiz ;
         _isiz = _hfun.eval(
             &_iptr->pval(0), _iptr->hidx()) ;
         _jsiz = _hfun.eval(
             &_jptr->pval(0), _jptr->hidx()) ;
+
+         auto _hint = _iptr->hidx();
+
+        _msiz = _hfun.eval(_pmid , _hint) ;
 
         real_type _lsqr =
             pred_type::length_sq (
            &_iptr->pval(0),&_jptr->pval(0)) ;
 
         real_type _hbar =
-            std::max(_isiz , _jsiz ) ;
+            _isiz * (real_type)(1./4.) +
+            _jsiz * (real_type)(1./4.) +
+            _msiz * (real_type)(2./4.) ;
 
     /*--------------------------------- exit if too small */
         if (_lsqr <= _hbar * _lmin *
@@ -134,7 +160,7 @@
 
     /*--------------------------------- split if too long */
         real_type static constexpr
-            _lBIG  = (real_type)+11./8.;
+        _lBIG  = (real_type)+1.375 ;
 
         if (_lsqr >= _hbar * _lBIG *
                      _hbar * _lBIG )
@@ -142,9 +168,9 @@
     //  if more regular geom. is constructed via the edge
     //  div, make it easier to do so!
 
-        _qinc -= (real_type)+1./2. ;
+        _qinc  = 0.5 * (_hbar / std::sqrt(_lsqr) - 1.0) ;
 
-        _qinc /= std::sqrt (_iout) ; // no oscl. wrt. zip
+        _qinc /= std::abs( _iout ) ; // no oscl. wrt. zip
 
         }
         else
@@ -345,7 +371,7 @@
                 ) ;
 
             move_node( _geom, _mesh,
-                _hfun, _hval ,
+                _hfun, _hval,
                 _opts, _nptr, _kern,
                 _move, _cnew,
                 _qtmp, _qdst,

@@ -1,6 +1,5 @@
 
-//  gcc -Wall test_9.c
-//  -Xlinker -rpath=../lib
+//  gcc -Wall -Wextra test_9.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test_9
 
 //  Use JIGSAW to generate a uniform mesh for a spheroidal
@@ -10,10 +9,7 @@
 
 #   include "stdio.h"
 
-    int main (
-        int          _argc ,
-        char       **_argv
-        )
+    int main ()
     {
         int _retv = 0;
 
@@ -59,7 +55,7 @@
 
         printf("\n VERT3: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _mesh._vert3._size ;
                    ++_ipos )
         {
@@ -76,7 +72,7 @@
 
         printf("\n TRIA3: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _mesh._tria3._size ;
                    ++_ipos )
         {

@@ -1,6 +1,5 @@
 
-//  gcc -Wall test_5.c
-//  -Xlinker -rpath=../lib
+//  gcc -Wall -Wextra test_5.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test_5
 
 //  An example that uses TRIPOD to build a "restricted" DT.
@@ -9,10 +8,7 @@
 
 #   include "stdio.h"
 
-    int main (
-        int          _argc ,
-        char       **_argv
-        )
+    int main ()
     {
         int _retv = 0;
 
@@ -108,7 +104,7 @@
 
         printf("\n VERT2: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _tria._vert2._size ;
                    ++_ipos )
         {
@@ -122,7 +118,7 @@
 
         printf("\n TRIA3: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _tria._tria3._size ;
                    ++_ipos )
         {

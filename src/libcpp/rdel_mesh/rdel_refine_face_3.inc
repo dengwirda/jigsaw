@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 13 April, 2018
+     * Last updated: 28 Dec., 2020
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2020
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -174,6 +174,31 @@
         {
             if (_tdim != +1)
             {
+                if (_qdat._mark++ <= +0)
+                {
+    /*------------------------- tmp. reject if split bnds */
+                _mesh.
+                _tria.roll_back(_tnew, _told);
+
+                _kind = rdel_opts::null_kind ;
+
+                _nnew.set_count(0) ;
+                _nold.set_count(0) ;
+                _tnew.set_count(0) ;
+                _told.set_count(0) ;
+
+                _eold.set_count(0) ;
+                _escr.set_count(0) ;
+                _ecav.set_count(0) ;
+                _fold.set_count(0) ;
+                _fscr.set_count(0) ;
+                _fcav.set_count(0) ;
+                _tscr.set_count(0) ;
+                _tcav.set_count(0) ;
+
+                _bscr.set_count(0) ;
+                _bcav.set_count(0) ;
+                }
     /*------------------------- re-queue face if un-split */
             _escr.push_tail(_qdat) ;
             }
@@ -312,6 +337,31 @@
         {
             if (_tdim != +2)
             {
+                if (_qdat._mark++ <= +0)
+                {
+    /*------------------------- tmp. reject if split bnds */
+                _mesh.
+                _tria.roll_back(_tnew, _told);
+
+                _kind = rdel_opts::null_kind ;
+
+                _nnew.set_count(0) ;
+                _nold.set_count(0) ;
+                _tnew.set_count(0) ;
+                _told.set_count(0) ;
+
+                _eold.set_count(0) ;
+                _escr.set_count(0) ;
+                _ecav.set_count(0) ;
+                _fold.set_count(0) ;
+                _fscr.set_count(0) ;
+                _fcav.set_count(0) ;
+                _tscr.set_count(0) ;
+                _tcav.set_count(0) ;
+
+                _bscr.set_count(0) ;
+                _bcav.set_count(0) ;
+                }
     /*------------------------- re-queue face if un-split */
             _fscr.push_tail(_qdat) ;
             }
@@ -450,6 +500,31 @@
         {
             if (_tdim != +3)
             {
+                if (_qdat._mark++ <= +0)
+                {
+    /*------------------------- tmp. reject if split bnds */
+                _mesh.
+                _tria.roll_back(_tnew, _told);
+
+                _kind = rdel_opts::null_kind ;
+
+                _nnew.set_count(0) ;
+                _nold.set_count(0) ;
+                _tnew.set_count(0) ;
+                _told.set_count(0) ;
+
+                _eold.set_count(0) ;
+                _escr.set_count(0) ;
+                _ecav.set_count(0) ;
+                _fold.set_count(0) ;
+                _fscr.set_count(0) ;
+                _fcav.set_count(0) ;
+                _tscr.set_count(0) ;
+                _tcav.set_count(0) ;
+
+                _bscr.set_count(0) ;
+                _bcav.set_count(0) ;
+                }
     /*------------------------- re-queue face if un-split */
             _tscr.push_tail(_qdat) ;
             }

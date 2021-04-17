@@ -14,9 +14,9 @@
      * JIGSAW: Interface to the JIGSAW meshing library.
     --------------------------------------------------------
      *
-     * Last updated: 19 June, 2019
+     * Last updated: 08 Feb., 2021
      *
-     * Copyright 2013 -- 2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -78,6 +78,7 @@
     typedef int32_t         indx_t ;    // yes, 32 bit ints,
                                         // but, 64 bit ptrs!
     typedef double          real_t ;
+    typedef float           fp32_t ;
 
 #   include "jigsaw_const.h"
 
@@ -268,6 +269,11 @@
 		size_t _size
         ) ;
 
+    SHARED void  jigsaw_alloc_flt32 (
+        jigsaw_FLT32_array_t *_xsrc ,
+		size_t _size
+        ) ;
+
     SHARED void   jigsaw_free_msh_t (
         jigsaw_msh_t   *_mesh
         ) ;
@@ -318,6 +324,10 @@
 
     SHARED void   jigsaw_free_reals (
         jigsaw_REALS_array_t *_xsrc
+        ) ;
+
+    SHARED void   jigsaw_free_flt32 (
+        jigsaw_FLT32_array_t *_xsrc
         ) ;
 
 #   ifdef  __cplusplus

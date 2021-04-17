@@ -31,9 +31,9 @@
      *
      --------------------------------------------------------
      *
-     * Last updated: 08 April, 2020
+     * Last updated: 14 Apr., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -321,12 +321,47 @@
 
     /*--------------------------- find loc. intersections */
         mesh::keep_all_2d <
-            real_type, iptr_type> _pred ;
+            real_type, 
+            iptr_type     > _pred;
 
-        if(!_geom.intersect (
-            _line, _pred) )
+        if(!_geom.intersect(_line, _pred) )
     /*--------------------------- face cant be restricted */
             return false  ;
+
+    /*--------------------------- size loc. neighbourhood */
+        real_type _radj = (real_type)+.0 ;
+
+        _radj += geometry::lensqr_2d (
+           &_mesh._tria.tria(_tadj)->circ(0),
+           &_mesh._tria.node(
+                _enod[0])->pval(0)) ;
+
+        _radj += geometry::lensqr_2d (
+           &_mesh._tria.tria(_tadj)->circ(0),
+           &_mesh._tria.node(
+                _enod[1])->pval(0)) ;
+        
+        _radj += geometry::lensqr_2d (
+           &_mesh._tria.tria(_tadj)->circ(0),
+           &_mesh._tria.node(
+                _enod[2])->pval(0)) ;
+
+        _radj += geometry::lensqr_2d (
+           &_mesh._tria.tria(_topp)->circ(0),
+           &_mesh._tria.node(
+                _onod[0])->pval(0)) ;
+        
+        _radj += geometry::lensqr_2d (
+           &_mesh._tria.tria(_topp)->circ(0),
+           &_mesh._tria.node(
+                _onod[1])->pval(0)) ;
+        
+        _radj += geometry::lensqr_2d (
+           &_mesh._tria.tria(_topp)->circ(0),
+           &_mesh._tria.node(
+                _onod[2])->pval(0)) ;
+
+        _radj /=     (real_type)+6. ;
 
     /*--------------------------- form list of halfplanes */
         containers::
@@ -346,7 +381,7 @@
         auto _iful = _pred._list.tend() ;
         auto _imax = _pred._list.tend() ;
 
-        real_type _RTOL = _rEPS*_ebal[2];
+        real_type _RTOL  = _rEPS*_radj;
 
         real_type _dmax  =
             -std::numeric_limits

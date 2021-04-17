@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Sept., 2020
+     * Last updated: 08 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -50,6 +50,8 @@
     {
 /*------------------------ inherit from base to read file */
     public  :
+    __normal_call void_type initialise() {}
+    __normal_call void_type postscript() {}
     __normal_call void_type push_mshid (
         std::int32_t  /*_ftag*/,
         jmsh_kind::enum_data  /*_kind*/
@@ -146,7 +148,7 @@
         ) { }
     __normal_call void_type push_value (
         std:: size_t  /*_irow*/,
-        double      * /*_vdat*/
+        float       * /*_vdat*/
         ) { }
     __normal_call void_type open_slope (
         std:: size_t  /*_nrow*/,
@@ -154,7 +156,7 @@
         ) { }
     __normal_call void_type push_slope (
         std:: size_t  /*_irow*/,
-        double      * /*_vdat*/
+        float       * /*_vdat*/
         ) { }
     __normal_call void_type open_bound (
         std:: size_t  /*_nrow*/
@@ -580,7 +582,7 @@
                 std:: size_t static
                     constexpr _VMAX = +256 ;
 
-                double _vpwr [_VMAX] ;
+                real_t _vpwr [_VMAX] ;
                 char  *_next =(char*)_line.data() ;
 
                 for (size_t _ipos  = +0;
@@ -647,14 +649,14 @@
                 std:: size_t static
                     constexpr _VMAX = +256 ;
 
-                double _vval [_VMAX] ;
+                fp32_t _vval [_VMAX] ;
                 char  *_next =(char*)_line.data() ;
 
                 for (size_t _ipos  = +0;
                     _ipos < _nval; ++_ipos)
                 {
                     _vval[_ipos] =
-                     std::strtod(_next, &_next) ;
+                     std::strtof(_next, &_next) ;
 
                     _next += +1 ;
                 }
@@ -714,14 +716,14 @@
                 std:: size_t static
                     constexpr _VMAX = +256 ;
 
-                double _vval [_VMAX] ;
+                fp32_t _vval [_VMAX] ;
                 char  *_next =(char*)_line.data() ;
 
                 for (size_t _ipos  = +0;
                     _ipos < _nval; ++_ipos)
                 {
                     _vval[_ipos] =
-                     std::strtod(_next, &_next) ;
+                     std::strtof(_next, &_next) ;
 
                     _next += +1 ;
                 }
@@ -1324,6 +1326,8 @@
         this->_ftag = -1 ;
         this->_ndim = +0 ;
 
+       _dest.initialise();
+
         std::string _line;
         while (std::getline(_ffid, _line))
         {
@@ -1441,6 +1445,9 @@
             {
                 this->_errs.push_tail(_line) ;
             }
+        }
+        {
+           _dest.postscript();
         }
     }
 

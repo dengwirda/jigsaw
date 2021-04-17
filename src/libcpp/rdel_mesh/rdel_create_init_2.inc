@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 March, 2020
+     * Last updated: 24 Feb., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -346,6 +346,10 @@
             _mesh._tria.node
                 (_npos)->topo() = 2 ;
 
+            _mesh._tria.node
+                (_npos)->part()
+                    = _node->itag() ;
+
             _hint        = _npos ;
 
             }
@@ -354,6 +358,10 @@
             {
     /*------------------------------ else move to nearest */
             _imap[_imid] = _near ;
+
+            _mesh._tria.node
+                (_near)->part()
+                    = _node->itag() ;
 
             _hint        = _near ;
 
@@ -419,6 +427,10 @@
             _mesh._tria.node
                 (_npos)->topo() = 2 ;
 
+            _mesh._tria.node
+                (_npos)->part()
+                    = _node->itag() ;
+
             _hint        = _npos ;
 
             }
@@ -427,6 +439,10 @@
             {
     /*------------------------------ else move to nearest */
             _imap[_inum] = _near ;
+
+            _mesh._tria.node
+                (_near)->part()
+                    = _node->itag() ;
 
             _hint        = _near ;
 

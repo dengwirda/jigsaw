@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 Februay, 2020
+     * Last updated: 31 Mar., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -152,9 +152,9 @@
             _hsiz[3] = _hfun.eval(_PMID, _HINT) ;
 
             real_type _hval =
-            _hsiz[0] * (real_type)1./3. +
-            _hsiz[2] * (real_type)1./3. +
-            _hsiz[3] * (real_type)1./3. ;
+            _hsiz[0] * (real_type)1./4. +
+            _hsiz[2] * (real_type)1./4. +
+            _hsiz[3] * (real_type)2./4. ;
 
             real_type _dist = _hval ;
 
@@ -347,8 +347,8 @@
             real_type _hval =
             _hsiz[0] * (real_type)1./6. +
             _hsiz[1] * (real_type)1./6. +
-            _hsiz[2] * (real_type)2./6. +
-            _hsiz[3] * (real_type)2./6. ;
+            _hsiz[2] * (real_type)1./6. +
+            _hsiz[3] * (real_type)3./6. ;
 
             real_type _hmin ;
             _hmin = std::min (_hval , _epsh);
@@ -361,7 +361,7 @@
             real_type _frad =
            (real_type)+.25  * _elen * _elen ;
             real_type _near =
-           (real_type)+.33  * _frad ;
+            _frad    * (real_type)1./3. ;
 
             _kind    = rdel_opts::offH_kind ;
 
@@ -541,11 +541,11 @@
             _hsiz[4] = _hfun.eval(_PMID, _HINT) ;
 
             real_type _hmid =
-            _hsiz[0] * (real_type)1./9. +
-            _hsiz[1] * (real_type)1./9. +
-            _hsiz[2] * (real_type)1./9. +
-            _hsiz[3] * (real_type)3./9. +
-            _hsiz[4] * (real_type)3./9. ;
+            _hsiz[0] * (real_type)1./8. +
+            _hsiz[1] * (real_type)1./8. +
+            _hsiz[2] * (real_type)1./8. +
+            _hsiz[3] * (real_type)1./8. +
+            _hsiz[4] * (real_type)4./8. ;
 
             _kind    = rdel_opts::offH_kind ;
 

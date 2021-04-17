@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 April, 2020
+     * Last updated: 31 Mar., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -50,6 +50,7 @@
 
     template <
     typename R ,
+    typename V ,
     typename I ,
     typename A = allocators::basic_alloc
              >
@@ -61,11 +62,13 @@
     /*------------------------- euclidean size-fun in R^2 */
 
     typedef R                       real_type ;
+    typedef V                       vals_type ;
     typedef I                       iptr_type ;
     typedef A                       allocator ;
 
     typedef hfun_mesh_ellipsoid_3d  <
             real_type ,
+            vals_type ,
             iptr_type >             hfun_type ;
 
     typedef typename  hfun_base_kd  <
@@ -75,6 +78,10 @@
     typedef containers::array   <
             real_type ,
             allocator >             real_list ;
+
+    typedef containers::array   <
+            vals_type ,
+            allocator >             vals_list ;
 
 
     typedef mesh_complex_node_3<I, R>
@@ -125,10 +132,10 @@
     tree_type                      _tree ;
 
     containers::array<
-        real_type, allocator >     _hval ;
+        vals_type, allocator >     _hval ;
 
     containers::array<
-        real_type, allocator >     _dhdx ;
+        vals_type, allocator >     _dhdx ;
 
     public  :
 
@@ -300,12 +307,12 @@
     /*-------------------- "LESS-THAN" operator for queue */
         public  :
             typename
-            real_list::_write_it _hptr;
+            vals_list::_write_it _hptr;
 
         public  :
         __inline_call less_than  (
             typename
-            real_list::_write_it _hsrc
+            vals_list::_write_it _hsrc
             ) : _hptr(_hsrc) {}
 
         __inline_call
@@ -370,7 +377,7 @@
              this->_mesh.
             connect_2(_base, POINT_tag, _conn) ;
 
-            real_type _hnow  = _hval[_base];
+            vals_type _hnow  = _hval[_base];
 
             for (auto _next  = _conn.head();
                       _next != _conn.tend();
@@ -397,7 +404,7 @@
                     _knod != _base) continue ;
 
     /*-------------------- skip cells due to sorted order */
-                real_type _hmax;
+                vals_type _hmax;
                 _hmax = this->_hval[_inod] ;
                 _hmax = std::max(
                 _hmax , this->_hval[_jnod]);
@@ -407,11 +414,11 @@
                 if (_hmax <= _hnow) continue ;
 
     /*-------------------- solve for local |dh/dx| limits */
-                real_type _iold =
+                vals_type _iold =
                      this->_hval[_inod] ;
-                real_type _jold =
+                vals_type _jold =
                      this->_hval[_jnod] ;
-                real_type _kold =
+                vals_type _kold =
                      this->_hval[_knod] ;
 
                 if (this->_dhdx.count() >1)
@@ -715,6 +722,7 @@
         )
     /*------------------------ find tria + linear interp. */
     {
+        real_type  _QTMP[3] ;
         real_type  _QPOS[3] = {
        (real_type) _ppos[0] ,
        (real_type) _ppos[1] ,
@@ -732,7 +740,7 @@
         {
     /*------------------------ test whether hint is valid */
             if(!near_pred( _ppos,
-                    _QPOS, _mesh,
+                    _QTMP, _mesh,
                     _hint)  )
             {
             _hint =  this->null_hint();

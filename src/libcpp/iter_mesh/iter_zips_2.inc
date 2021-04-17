@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Sept., 2020
+     * Last updated: 27 Dec., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -73,7 +73,7 @@
         real_type  _lmax
             = (real_type) +8.00E-01 ,
         real_type  _qinc
-            = (real_type) +1.00E-02
+            = (real_type) +1.00E-03
         )
     {
         iptr_type static constexpr
@@ -160,31 +160,46 @@
     //  zip, make it easier to do so!
 
         real_type _qerr =
-            (real_type)-1./9. * _ierr +
-            (real_type)-1./9. * _jerr ;
-
-        real_type _lerr =
-            (real_type)+9./8. * _lmax ;
+            (real_type)-1./8. *
+                std::max(_ierr, _jerr);
 
         if (2 * _nerr < _iabs + _jabs)
         {
         _qinc = std::min(_qinc, _qerr);
-        _lmax = std::max(_lmax, _lerr);
         }
 
     /*--------------------------------- get edge h-sizing */
-        real_type _isiz, _jsiz ;
+        real_type _pmid[_last + 1] ;
+        for (auto _idim =
+        pred_type::real_dims; _idim-- != 0; )
+        {
+            _pmid[_idim]  = (real_type)0. ;
+            _pmid[_idim] +=
+                _iptr->pval(_idim) ;
+            _pmid[_idim] +=
+                _jptr->pval(_idim) ;
+
+            _pmid[_idim] /= (real_type)2. ;
+        }
+
+        real_type _isiz, _jsiz, _msiz ;
         _isiz = _hfun.eval(
             &_iptr->pval(0), _iptr->hidx()) ;
         _jsiz = _hfun.eval(
             &_jptr->pval(0), _jptr->hidx()) ;
+
+         auto _hint = _iptr->hidx();
+
+        _msiz = _hfun.eval(_pmid , _hint) ;
 
         real_type _lsqr =
             pred_type::length_sq (
            &_iptr->pval(0),&_jptr->pval(0)) ;
 
         real_type _hbar =
-            std::min(_isiz , _jsiz ) ;
+            _isiz * (real_type)(1./4.) +
+            _jsiz * (real_type)(1./4.) +
+            _msiz * (real_type)(2./4.) ;
 
     /*--------------------------------- exit if too large */
         if (_lsqr >= _hbar * _lmax *
@@ -299,17 +314,100 @@
             std::min(_amin, _bmin) ;
 
     /*--------------------------------- get adjacent ball */
-        real_type _ball[_last + 1] ;
-        for (auto _idim =
-        pred_type::real_dims; _idim-- != 0; )
-        {
-            _ball[_idim]  = (real_type) +0. ;
-            _ball[_idim] +=
-                _iptr->pval(_idim) ;
-            _ball[_idim] +=
-                _jptr->pval(_idim) ;
+        real_type _ball[_last + 1]  =
+            {(real_type) 0.} ;
+        real_type _mass = (real_type)0.;
 
-            _ball[_idim] /= (real_type) +2. ;
+        for (auto _cell  = _iset.head();
+                  _cell != _iset.tend();
+                ++_cell  )
+        {
+            if (_cell->_kind == TRIA3_tag)
+            {
+            auto _tptr =
+           _mesh. tri3().head() + _cell->_cell ;
+
+            auto _inod = _tptr->node(0) ;
+            auto _jnod = _tptr->node(1) ;
+            auto _knod = _tptr->node(2) ;
+
+            auto _iptr =
+           _mesh. node().head() + _inod ;
+            auto _jptr =
+           _mesh. node().head() + _jnod ;
+            auto _kptr =
+           _mesh. node().head() + _knod ;
+
+            real_type _BALL [_last + 1] ;
+            pred_type::tri3_ball(_BALL,
+                &_iptr->pval(+0),
+                &_jptr->pval(+0),
+                &_kptr->pval(+0), true) ;
+
+            real_type _MASS =
+            std::abs(pred_type::tri3_mass (
+                &_iptr->pval(+0),
+                &_jptr->pval(+0),
+                &_kptr->pval(+0)) ) ;
+
+           _mass +=   _MASS ;
+
+            for (auto _idim =
+        pred_type::geom_dims; _idim-- != 0; )
+            {
+                _ball[_idim] +=
+                    _MASS * _BALL[_idim];
+            }
+            }
+        }
+
+        for (auto _cell  = _jset.head();
+                  _cell != _jset.tend();
+                ++_cell  )
+        {
+            if (_cell->_kind == TRIA3_tag)
+            {
+            auto _tptr =
+           _mesh. tri3().head() + _cell->_cell ;
+
+            auto _inod = _tptr->node(0) ;
+            auto _jnod = _tptr->node(1) ;
+            auto _knod = _tptr->node(2) ;
+
+            auto _iptr =
+           _mesh. node().head() + _inod ;
+            auto _jptr =
+           _mesh. node().head() + _jnod ;
+            auto _kptr =
+           _mesh. node().head() + _knod ;
+
+            real_type _BALL [_last + 1] ;
+            pred_type::tri3_ball(_BALL,
+                &_iptr->pval(+0),
+                &_jptr->pval(+0),
+                &_kptr->pval(+0), true) ;
+
+            real_type _MASS =
+            std::abs(pred_type::tri3_mass (
+                &_iptr->pval(+0),
+                &_jptr->pval(+0),
+                &_kptr->pval(+0)) ) ;
+
+           _mass +=   _MASS ;
+
+            for (auto _idim =
+        pred_type::geom_dims; _idim-- != 0; )
+            {
+                _ball[_idim] +=
+                    _MASS * _BALL[_idim];
+            }
+            }
+        }
+
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != 0; )
+        {
+            _ball[_idim] /= _mass;
         }
 
         pred_type::

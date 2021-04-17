@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 July, 2019
+     * Last updated: 30 Mar., 2021
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -107,6 +107,59 @@
         }
 
         return _real ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * axis-aligned ellipsoid.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  real_type
+             >
+    __inline_call void_type toR3 (
+      __const_ptr(real_type) _rrad ,
+      __const_ptr(real_type) _apos ,
+      __write_ptr(real_type) _ppos
+        )
+    {
+    /*------------ helper: convert from S^2 to R^3 coord. */
+        _ppos[0] = _rrad[0] *
+            std::cos( _apos[0] ) *
+            std::cos( _apos[1] ) ;
+
+        _ppos[1] = _rrad[1] *
+            std::sin( _apos[0] ) *
+            std::cos( _apos[1] ) ;
+
+        _ppos[2] = _rrad[2] *
+            std::sin( _apos[1] ) ;
+    }
+
+    template <
+        typename  real_type
+             >
+    __inline_call void_type toS2 (
+      __const_ptr(real_type) _rrad ,
+      __const_ptr(real_type) _ppos ,
+      __write_ptr(real_type) _apos
+        )
+    {
+    /*------------ helper: convert from R^3 to S^2 coord. */
+        real_type _xmul =
+            _ppos[0] * _rrad [1] ;
+        real_type _ymul =
+            _ppos[1] * _rrad [0] ;
+        real_type _zrat =
+            _ppos[2] / _rrad [2] ;
+
+        _zrat = std::min(+1.,_zrat);
+        _zrat = std::max(-1.,_zrat);
+
+        _apos[0]= std::atan2(_ymul,
+                             _xmul);
+        _apos[1]= std::asin (_zrat);
     }
 
     /*

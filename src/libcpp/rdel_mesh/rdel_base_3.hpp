@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 April, 2020
+     * Last updated: 14 Apr., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -394,8 +394,8 @@
     /*--------------------------- calc. intersection halo */
         _flat._bnds.set_alloc (_tset.count ()) ;
 
-        for (auto _tpos  = _tset.head() ;
-                  _tpos != _tset.tend() ;
+        for (auto _tpos  = _tset.head();
+                  _tpos != _tset.tend();
                 ++_tpos  )
         {
             _flat._bnds.push_tail(
@@ -412,17 +412,16 @@
         _flat._nvec[2] = _evec[2] ;
 
         mesh::keep_all_3d <
-            real_type ,
+            real_type , 
             iptr_type     > _pred ;
 
-        if(!_geom.intersect (
-            _flat, _pred) )
+        if(!_geom.intersect(_flat, _pred) )
     /*--------------------------- face cant be restricted */
             return false  ;
 
     /*--------------------------- form list of halfplanes */
-        for (auto _tpos  = _tset.head() ;
-                  _tpos != _tset.tend() ;
+        for (auto _tpos  = _tset.head();
+                  _tpos != _tset.tend();
                 ++_tpos  )
         {
         for (auto _enum = +6; _enum-- != +0; )
@@ -463,11 +462,45 @@
         }
         }
 
+    /*--------------------------- size loc. neighbourhood */
+        real_type _radj  = (real_type)+.0 ;
+
+        for (auto _tpos  = _tset.head();
+                  _tpos != _tset.tend();
+                ++_tpos  )
+        {
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(*_tpos)->circ(0),
+           &_mesh._tria.node(
+            _mesh._tria.tria(
+           *_tpos)->node(0))->pval(0)) ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(*_tpos)->circ(0),
+           &_mesh._tria.node(
+            _mesh._tria.tria(
+           *_tpos)->node(1))->pval(0)) ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(*_tpos)->circ(0),
+           &_mesh._tria.node(
+            _mesh._tria.tria(
+           *_tpos)->node(2))->pval(0)) ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(*_tpos)->circ(0),
+           &_mesh._tria.node(
+            _mesh._tria.tria(
+           *_tpos)->node(3))->pval(0)) ;
+        }
+
+        _radj /= (+4. * _tset.count()) ;
+
     /*--------------------------- test loc. intersections */
         auto _iful = _pred._list.tend() ;
         auto _imax = _pred._list.tend() ;
 
-        real_type _RTOL = _rEPS*_ebal[3];
+        real_type _RTOL  = _rEPS*_radj;
 
         real_type _dmax  =
             -std::numeric_limits
@@ -734,12 +767,57 @@
 
     /*--------------------------- calc. intersection halo */
         mesh::keep_all_3d <
-            real_type, iptr_type> _pred ;
+            real_type , 
+            iptr_type     > _pred;
 
-        if(!_geom.intersect (
-            _line, _pred) )
+        if(!_geom.intersect(_line, _pred) )
     /*--------------------------- face cant be restricted */
             return false  ;
+
+    /*--------------------------- size loc. neighbourhood */
+        real_type _radj = (real_type)+.0 ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(_tadj)->circ(0),
+           &_mesh._tria.node(
+                _fnod[0])->pval(0)) ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(_tadj)->circ(0),
+           &_mesh._tria.node(
+                _fnod[1])->pval(0)) ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(_tadj)->circ(0),
+           &_mesh._tria.node(
+                _fnod[2])->pval(0)) ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(_tadj)->circ(0),
+           &_mesh._tria.node(
+                _fnod[3])->pval(0)) ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(_topp)->circ(0),
+           &_mesh._tria.node(
+                _onod[0])->pval(0)) ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(_topp)->circ(0),
+           &_mesh._tria.node(
+                _onod[1])->pval(0)) ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(_topp)->circ(0),
+           &_mesh._tria.node(
+                _onod[2])->pval(0)) ;
+
+        _radj += geometry::lensqr_3d (
+           &_mesh._tria.tria(_topp)->circ(0),
+           &_mesh._tria.node(
+                _onod[3])->pval(0)) ;
+
+        _radj /=     (real_type)+8. ;
 
     /*--------------------------- form list of halfplanes */
         containers::
@@ -763,7 +841,7 @@
         auto _iful = _pred._list.tend() ;
         auto _imax = _pred._list.tend() ;
 
-        real_type _RTOL = _rEPS*_fbal[3];
+        real_type _RTOL  = _rEPS*_radj;
 
         real_type _dmax  =
             -std::numeric_limits

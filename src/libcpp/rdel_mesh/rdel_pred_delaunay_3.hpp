@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 September, 2017
+     * Last updated: 28 Dec., 2020
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2020
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -131,19 +131,22 @@
     class edge_data
         {
         public  :
-        float               _cost ;
+        iptr_type       _mark = +0 ;
+        float           _cost ;
         } ;
 
     class face_data
         {
         public  :
-        float               _cost ;
+        iptr_type       _mark = +0 ;
+        float           _cost ;
         } ;
 
     class tria_data
         {
         public  :
-        float               _cost ;
+        iptr_type       _mark = +0 ;
+        float           _cost ;
         } ;
 
     /*------------------------ refinement priority pred. */

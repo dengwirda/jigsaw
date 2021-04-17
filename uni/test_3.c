@@ -1,6 +1,5 @@
 
-//  gcc -Wall test_3.c
-//  -Xlinker -rpath=../lib
+//  gcc -Wall -Wextra test_3.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test_3
 
 //  Use JIGSAW to mesh a simple geometry with user-defined
@@ -10,10 +9,7 @@
 
 #   include "stdio.h"
 
-    int main (
-        int          _argc,
-        char       **_argv
-        )
+    int main ()
     {
         int _retv = 0;
 
@@ -101,7 +97,7 @@
             0., .5, 1.
             } ;
 
-        real_t         _hfun_value[9] = {
+        fp32_t         _hfun_value[9] = {
             .3, .2, .3, .2, .1, .2, .3,
             .2, .3
             } ;
@@ -141,7 +137,7 @@
 
         printf("\n VERT2: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _mesh._vert2._size ;
                    ++_ipos )
         {
@@ -155,7 +151,7 @@
 
         printf("\n TRIA3: \n\n") ;
 
-        for (indx_t _ipos = +0;
+        for (size_t _ipos = +0;
                 _ipos != _mesh._tria3._size ;
                    ++_ipos )
         {
