@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 March, 2020
+     * Last updated: 17 Apr., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -262,7 +262,7 @@
     __inline_call iptr_type _get_node (
         )
     {
-        iptr_type _ipos = -1;
+        iptr_type _ipos = -1 ;
         if (this->_npop.count() != +0 )
         {
     /*---------------------------- recycle from free list */
@@ -274,12 +274,56 @@
     /*---------------------------- alloc. from underlying */
             _ipos = (iptr_type)
                 this->_nset.count() ;
+
             this->_nset.push_tail() ;
         }
 
-        node(_ipos)->mark() = +0 ;
+        this->node(_ipos)->mark() = 0 ;
 
-        return ( _ipos ) ;
+        return _ipos ;
+    }
+
+    __inline_call iptr_type _get_node ( // w index "hint"
+        iptr_type _iask
+        )
+    {
+        iptr_type _ipos = -1 ;
+        if (_iask <= (iptr_type) -1 )
+        {
+    /*---------------------------- fallback to new alloc. */
+            _ipos = _get_node () ;
+        }
+        else
+        if (( (iptr_type)
+        this->_nset.count()) > _iask)
+        {
+
+        if (node(_iask)->mark() < 0 )
+    /*---------------------------- have within old alloc. */
+            _ipos =   _iask ;
+        else
+    /*---------------------------- fallback to new alloc. */
+            _ipos = _get_node () ;
+
+        }
+        else
+        {
+    /*---------------------------- have within new alloc. */
+            _ipos =   _iask ;
+
+            node_type _null ;
+            _null.mark() =-1;
+
+            auto _kind =
+            containers::loose_alloc ;
+
+            _nset.set_count (
+            _iask + 1, _kind, _null);
+        }
+
+        this->node(_ipos)->mark() = 0 ;
+
+        return _ipos ;
     }
 
     /*
@@ -291,7 +335,7 @@
     __inline_call iptr_type _get_tria (
         )
     {
-        iptr_type _ipos = -1;
+        iptr_type _ipos = -1 ;
         if (this->_tpop.count() != +0 )
         {
     /*---------------------------- recycle from free list */
@@ -303,12 +347,56 @@
     /*---------------------------- alloc. from underlying */
             _ipos = (iptr_type)
                 this->_tset.count() ;
+
             this->_tset.push_tail() ;
         }
 
-        tria(_ipos)->mark() = +0 ;
+        this->tria(_ipos)->mark() = 0 ;
 
-        return ( _ipos ) ;
+        return _ipos ;
+    }
+
+    __inline_call iptr_type _get_tria ( // w index "hint"
+        iptr_type _iask
+        )
+    {
+        iptr_type _ipos = -1 ;
+        if (_iask <= (iptr_type) -1 )
+        {
+    /*---------------------------- fallback to new alloc. */
+            _ipos = _get_tria () ;
+        }
+        else
+        if (( (iptr_type)
+        this->_tset.count()) > _iask)
+        {
+
+        if (tria(_iask)->mark() < 0 )
+    /*---------------------------- have within old alloc. */
+            _ipos =   _iask ;
+        else
+    /*---------------------------- fallback to new alloc. */
+            _ipos = _get_tria () ;
+
+        }
+        else
+        {
+    /*---------------------------- have within new alloc. */
+            _ipos =   _iask ;
+
+            tria_type _null ;
+            _null.mark() =-1;
+
+            auto _kind =
+            containers::loose_alloc ;
+
+            _tset.set_count (
+            _iask + 1, _kind, _null);
+        }
+
+        this->tria(_ipos)->mark() = 0 ;
+
+        return _ipos ;
     }
 
     /*
@@ -634,13 +722,12 @@
     {
         this->_work.clear ();
 
-    /*--------------------------- _find enclosing element */
+    /*--------------------------- find containing element */
         iptr_type _elem = -1;
         if (walk_tria_near(_ppos, _elem, _hint))
         {
-
     /*--------------------------- push new node onto list */
-        _node = _get_node() ;
+        _node  = _get_node(_node) ;
         for (auto _idim = tria_pred::real_dims + 0 ;
                   _idim-- != +0 ; )
         {

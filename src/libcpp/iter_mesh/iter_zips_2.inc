@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 Dec., 2020
+     * Last updated: 16 Apr., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -73,7 +73,7 @@
         real_type  _lmax
             = (real_type) +8.00E-01 ,
         real_type  _qinc
-            = (real_type) +1.00E-03
+            = (real_type) +1.00E-02
         )
     {
         iptr_type static constexpr
@@ -160,12 +160,18 @@
     //  zip, make it easier to do so!
 
         real_type _qerr =
-            (real_type)-1./8. *
+            (real_type)-2./16. *
+                std::max(_ierr, _jerr);
+
+        real_type _lerr =
+            (real_type)+1./16. *
                 std::max(_ierr, _jerr);
 
         if (2 * _nerr < _iabs + _jabs)
         {
         _qinc = std::min(_qinc, _qerr);
+        _lmax = std::max(_lmax,
+                         _lmax+ _lerr);
         }
 
     /*--------------------------------- get edge h-sizing */

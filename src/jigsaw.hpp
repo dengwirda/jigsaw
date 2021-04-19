@@ -14,9 +14,9 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * Last updated: 16 July, 2020
+     * Last updated: 16 Apr., 2021
      *
-     * Copyright 2013 -- 2020
+     * Copyright 2013 -- 2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -1059,15 +1059,13 @@
 
 #       ifdef  __use_timers
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttic ;
+        high_resolution_clock::time_point  _ttic ;
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttoc ;
+        high_resolution_clock::time_point  _ttoc ;
         typename std ::chrono::
-        high_resolution_clock _time;
+        high_resolution_clock _time ;
 
-        __unreferenced(_time) ;
+        __unreferenced(_time) ; // why does MSVC need this??
 #       endif//__use_timers
 
     /*--------------------------------- init. geo. kernel */
@@ -1495,15 +1493,13 @@
 
 #       ifdef  __use_timers
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttic ;
+        high_resolution_clock::time_point  _ttic ;
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttoc ;
+        high_resolution_clock::time_point  _ttoc ;
         typename std ::chrono::
-        high_resolution_clock _time;
+        high_resolution_clock _time ;
 
-        __unreferenced(_time) ;
+        __unreferenced(_time) ; // why does MSVC need this??
 #       endif//__use_timers
 
     /*--------------------------------- init. geo. kernel */

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 Apr., 2021
+     * Last updated: 17 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -683,8 +683,8 @@
         if (_opts.dims() < +3)
         {
     /*------------------------- point at ellipsoid centre */
-        real_type  _ppos[4] ;
-        iptr_type  _inod;
+        real_type  _ppos[4];
+        iptr_type  _inod = -1;
         _ppos[0] = (real_type) +0.0E+0 ;
         _ppos[1] = (real_type) +0.0E+0 ;
         _ppos[2] = (real_type) +0.0E+0 ;
@@ -809,8 +809,8 @@
 
         real_type  _lo = 2.*_pi / 10. ;
 
-        real_type  _ppos[4] ;
-        iptr_type  _inod;
+        real_type  _ppos[4];
+        iptr_type  _inod = -1;
         _ppos[0] = this->_radA *
         std::cos(_pi*(real_type)+0.0) *
         std::cos(_pi*(real_type)+0.5) ;
@@ -840,6 +840,7 @@
         _ppos[2] = this->_radC *
         std::sin(_pi*(real_type)-0.5) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -860,6 +861,7 @@
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)+1.0) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -880,6 +882,7 @@
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)-1.0) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -900,6 +903,7 @@
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)+1.0) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -920,6 +924,7 @@
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)-1.0) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -940,6 +945,7 @@
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)+1.0) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -960,6 +966,7 @@
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)-1.0) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -980,6 +987,7 @@
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)+1.0) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -1000,6 +1008,7 @@
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)-1.0) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -1020,6 +1029,7 @@
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)+1.0) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.
@@ -1040,6 +1050,7 @@
         _ppos[2] = this->_radC *
         std::sin(_la*(real_type)-1.0) ;
         _ppos[3] =   (real_type)+0.0;
+        _inod = -1 ;
         _rdel.
         _tria.push_node(_ppos, _inod) ;
         _rdel.

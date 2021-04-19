@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 Feb., 2021
+     * Last updated: 16 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -199,21 +199,20 @@
             __unreferenced(_opts);
 
             bool_type _rBND  =
-            rdel_pred::edge_ball (
-                _geom,_mesh,
-                _edat._tadj,
-                _edat._eadj,
-                _fbal,_sbal,
-                _edat._feat,
-                _edat._topo,
-                _edat._part) ;
+                rdel_pred::edge_ball (
+                    _geom,_mesh,
+                    _edat._tadj,
+                    _edat._eadj,
+                    _fbal,_sbal,
+                    _edat._feat,
+                    _edat._topo,
+                    _edat._part) ;
 
         /*--------------------------- push edge onto mesh */
             if (_rBND) _nedg += +1 ;
 
             if (_rBND)
             _mesh.push_edge(_edat) ;
-
 
             _edge_test.push(_edat) ;
 
@@ -300,13 +299,13 @@
             __unreferenced(_opts);
 
             bool_type _rBND    =
-            rdel_pred::face_ball (
-                _geom,_mesh,
-                _fdat._tadj,
-                _fdat._fadj,
-                _fbal,_sbal,
-                _feat,_topo,
-                _fdat._part)   ;
+                rdel_pred::face_ball (
+                    _geom,_mesh,
+                    _fdat._tadj,
+                    _fdat._fadj,
+                    _fbal,_sbal,
+                    _feat,_topo,
+                    _fdat._part) ;
 
         /*--------------------------- push face onto mesh */
             if (_rBND) _nfac += +1 ;
@@ -316,7 +315,6 @@
 
             if (_rBND)
             _mesh.push_face(_fdat) ;
-
 
             _face_test.push(_fdat) ;
 
@@ -372,7 +370,6 @@
 
             _tdat._tadj    = _tpos;
 
-
         //!!_tria_test.push (_tdat) ; won't have repeats!
 
         /*--------------------------- call tria predicate */
@@ -384,13 +381,76 @@
             __unreferenced(_opts);
 
             bool_type _rBND   =
-            rdel_pred::tria_ball (
-                _geom,_mesh,
-                _tdat._tadj,
-                _tbal,
-                _tdat._part)  ;
+                rdel_pred::tria_ball (
+                    _geom,_mesh,
+                    _tdat._tadj,
+                    _tbal,
+                    _tdat._part) ;
 
-            _sign = _tdat. _part ;
+            _sign = _tdat._part  ;
+
+        /*--------------------------- push tria onto mesh */
+            if (_rBND) _ntri += +1 ;
+
+            if (_rBND)
+            _mesh.push_tria(_tdat) ;
+
+        }
+    }
+
+    /*
+    --------------------------------------------------------
+     * PUSH-TRIA: add new tria to restricted-tria.
+    --------------------------------------------------------
+     */
+
+    __static_call
+    __normal_call void_type push_tria (
+        mesh_type &_mesh ,
+        geom_type &_geom ,
+        iptr_type  _tpos ,
+        iptr_type &_ntri ,
+        rdel_opts &_opts
+        )
+    {
+    /*-------------------------------- check "restricted" */
+        {
+            iptr_type  _tnod[ +4] ;
+            _tnod[0] = _mesh.
+            _tria.tria(_tpos)->node(0);
+            _tnod[1] = _mesh.
+            _tria.tria(_tpos)->node(1);
+            _tnod[2] = _mesh.
+            _tria.tria(_tpos)->node(2);
+            _tnod[3] = _mesh.
+            _tria.tria(_tpos)->node(3);
+
+        /*--------------- face contains higher dim. nodes */
+            if (_mesh._tria.node(
+                _tnod[0])->fdim() > 3 ||
+                _mesh._tria.node(
+                _tnod[1])->fdim() > 3 ||
+                _mesh._tria.node(
+                _tnod[2])->fdim() > 3 ||
+                _mesh._tria.node(
+                _tnod[3])->fdim() > 3 )
+                return ;
+
+            tria_data _tdat;
+            _tdat._node[0] = _tnod[ 0] ;
+            _tdat._node[1] = _tnod[ 1] ;
+            _tdat._node[2] = _tnod[ 2] ;
+            _tdat._node[3] = _tnod[ 3] ;
+
+            _tdat._tadj    = _tpos ;
+
+        /*--------------------------- call tria predicate */
+            _tdat._part =    +0  ;
+            _tdat._pass =    +0  ;
+
+            __unreferenced (_opts) ;
+
+            bool_type _rBND   = true ;
 
         /*--------------------------- push tria onto mesh */
             if (_rBND) _ntri += +1 ;
@@ -488,7 +548,6 @@
         {
             if (_node->mark() >= +0)
             {
-
             _bbox.push_tail() ;
             _bbox.tail()->
                pval(0) = _node->pval(0) ;
@@ -499,7 +558,6 @@
 
             _bbox.tail()->
                ipos () = _npos ;
-
             }
         }
 
@@ -575,6 +633,9 @@
         }
 
     /*------------------------------ seed mesh from init. */
+        iptr_type _base =
+            _mesh._tria._nset.count () ;
+
         if (_imid > -1)
         {
              auto _node =
@@ -586,12 +647,13 @@
                 _node->itag () ,
                &_node->pval(0) ) ;
 
-            iptr_type _npos = -1 ;
+            iptr_type _npos =     // undo BRIO reindexing
+                _base + _imid - 0;
+
             if (_mesh._tria.push_node(
                &_node->pval(0) ,
                 _npos, _hint ) )
             {
-
             _mesh._tria.node
                 (_npos)->fdim() = 0 ;
 
@@ -608,7 +670,6 @@
 
             _hint = _mesh._tria.
                 node(_npos)->next() ;
-
             }
         }
 
@@ -628,12 +689,13 @@
                 _node->itag () ,
                &_node->pval(0) ) ;
 
-            iptr_type _npos = -1 ;
+            iptr_type _npos =     // undo BRIO reindexing
+                _base + *_iter -  0 ;
+
             if (_mesh._tria.push_node(
                &_node->pval(0) ,
                 _npos, _hint ) )
             {
-
             _mesh._tria.node
                 (_npos)->fdim() = 0 ;
 
@@ -650,7 +712,6 @@
 
             _hint = _mesh._tria.
                 node(_npos)->next() ;
-
             }
         }
     }
@@ -705,9 +766,9 @@
         _pmax[ 1] - _pmin[ 1] ,
         _pmax[ 2] - _pmin[ 2] ,
             } ;
-        _plen[ 0]*= (real_type)+2.0 ;
-        _plen[ 1]*= (real_type)+2.0 ;
-        _plen[ 2]*= (real_type)+2.0 ;
+        _plen[ 0]*= (real_type)+4.0 ;
+        _plen[ 1]*= (real_type)+4.0 ;
+        _plen[ 2]*= (real_type)+4.0 ;
 
         _pmin[ 0]-= _plen[ 0] ;
         _pmin[ 1]-= _plen[ 1] ;
@@ -717,7 +778,7 @@
         _pmax[ 2]+= _plen[ 2] ;
 
         _mesh.
-        _tria.push_root(_pmin, _pmax) ;
+        _tria.push_root (_pmin, _pmax);
 
     /*------------------------------ initialise mesh root */
         _mesh.
@@ -778,11 +839,9 @@
 
     #   ifdef  __use_timers
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttic ;
+        high_resolution_clock::time_point  _ttic ;
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttoc ;
+        high_resolution_clock::time_point  _ttoc ;
         typename std ::chrono::
         high_resolution_clock _time ;
 
@@ -836,7 +895,18 @@
                   _iter != _tnew.tend();
                 ++_iter  )
         {
-            tria_circ(_mesh,*_iter) ;
+            tria_circ(_mesh, *_iter) ;
+        }
+        }
+        else
+        {
+    /*------------------------- prune scaffolding tria.'s */
+        for( auto _iter  = _tnew.head();
+                  _iter != _tnew.tend();
+                ++_iter  )
+        {
+            push_tria( _mesh, _geom,
+               *_iter, _ntri, _args) ;
         }
         }
 
@@ -860,10 +930,9 @@
                   _iter != _tnew.tend();
                 ++_iter  )
         {
-            test_edge(_mesh, _geom,
-                     *_iter,
-                      _eset, _nedg,
-                      _args) ;
+            test_edge( _mesh, _geom,
+               *_iter, _eset, _nedg, _args
+                ) ;
         }
 
     #   ifdef  __use_timers
@@ -894,11 +963,9 @@
                   _iter != _tnew.tend();
                 ++_iter  )
         {
-            test_face(_mesh, _geom,
-                     *_iter,
-                      _fset,
-                      _nfac, _ndup,
-                      _args) ;
+            test_face( _mesh, _geom,*_iter,
+                _fset, _nfac, _ndup, _args
+                ) ;
         }
 
     #   ifdef  __use_timers
@@ -936,10 +1003,9 @@
         {
            _sign = _safe ? _sign : -1 ;
 
-            test_tria(_mesh, _geom,
-                     *_iter,
-                      _sign, _ntri,
-                      _args) ;
+            test_tria( _mesh, _geom,
+               *_iter, _sign, _ntri, _args
+                ) ;
         }
 
     #   ifdef  __use_timers
@@ -953,7 +1019,6 @@
         if (_args.verb() >= +2 )
         {
     /*------------------------- push rDEL scheme metrics */
-
         _dump.push("\n")  ;
         _dump.push("**DELTRI statistics... \n") ;
         _dump.push("\n")  ;
@@ -1001,7 +1066,6 @@
         if (_args.verb() >= +3 )
         {
     /*------------------------- push rDEL memory metrics */
-
         _dump.push("\n")  ;
         _dump.push("**MEMORY statistics... \n") ;
         _dump.push("\n")  ;
@@ -1077,7 +1141,6 @@
         _dump.push("\n")  ;
 
         }
-
     }
 
     } ;

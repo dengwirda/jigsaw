@@ -412,7 +412,7 @@
         _flat._nvec[2] = _evec[2] ;
 
         mesh::keep_all_3d <
-            real_type , 
+            real_type ,
             iptr_type     > _pred ;
 
         if(!_geom.intersect(_flat, _pred) )
@@ -767,7 +767,7 @@
 
     /*--------------------------- calc. intersection halo */
         mesh::keep_all_3d <
-            real_type , 
+            real_type ,
             iptr_type     > _pred;
 
         if(!_geom.intersect(_line, _pred) )
