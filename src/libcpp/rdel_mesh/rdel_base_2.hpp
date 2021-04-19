@@ -321,7 +321,7 @@
 
     /*--------------------------- find loc. intersections */
         mesh::keep_all_2d <
-            real_type, 
+            real_type,
             iptr_type     > _pred;
 
         if(!_geom.intersect(_line, _pred) )
@@ -340,7 +340,7 @@
            &_mesh._tria.tria(_tadj)->circ(0),
            &_mesh._tria.node(
                 _enod[1])->pval(0)) ;
-        
+
         _radj += geometry::lensqr_2d (
            &_mesh._tria.tria(_tadj)->circ(0),
            &_mesh._tria.node(
@@ -350,12 +350,12 @@
            &_mesh._tria.tria(_topp)->circ(0),
            &_mesh._tria.node(
                 _onod[0])->pval(0)) ;
-        
+
         _radj += geometry::lensqr_2d (
            &_mesh._tria.tria(_topp)->circ(0),
            &_mesh._tria.node(
                 _onod[1])->pval(0)) ;
-        
+
         _radj += geometry::lensqr_2d (
            &_mesh._tria.tria(_topp)->circ(0),
            &_mesh._tria.node(

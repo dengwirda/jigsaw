@@ -14,9 +14,9 @@
      * TRIPOD: a "restricted" delaunay tessellator.
     --------------------------------------------------------
      *
-     * Last updated: 01 March, 2020
+     * Last updated: 16 Apr., 2021
      *
-     * Copyright 2013 -- 2020
+     * Copyright 2013 -- 2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -221,6 +221,46 @@
                 _mesh._euclidean_rdel_3d,
                 _args, _jlog) ;
             }
+            else
+            if (_init._euclidean_mesh_2d.
+                    _mesh.node().count() > 0 )
+            {
+        /*----------- call euclidean-mesh TRIA kernel */
+                _mesh._kind  =
+                jmsh_kind::euclidean_mesh;
+
+                _mesh._ndim  = +2 ;
+
+                _geom._euclidean_mesh_2d.
+                     init_geom(
+                    _args._mesh_opts) ;
+
+                tria_euclidean_2d (
+                _geom._euclidean_mesh_2d,
+                _init._euclidean_mesh_2d,
+                _mesh._euclidean_rdel_2d,
+                _args, _jlog) ;
+            }
+            else
+            if (_init._euclidean_mesh_3d.
+                    _mesh.node().count() > 0)
+            {
+        /*----------- call euclidean-mesh TRIA kernel */
+                _mesh._kind  =
+                jmsh_kind::euclidean_mesh;
+
+                _mesh._ndim  = +3 ;
+
+                _geom._euclidean_mesh_3d.
+                     init_geom(
+                    _args._mesh_opts) ;
+
+                tria_euclidean_3d (
+                _geom._euclidean_mesh_3d,
+                _init._euclidean_mesh_3d,
+                _mesh._euclidean_rdel_3d,
+                _args, _jlog) ;
+            }
         }
         catch (...)
         {
@@ -258,15 +298,13 @@
 
 #       ifdef  __use_timers
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttic ;
+        high_resolution_clock::time_point  _ttic ;
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttoc ;
+        high_resolution_clock::time_point  _ttoc ;
         typename std ::chrono::
-        high_resolution_clock _time;
+        high_resolution_clock _time ;
 
-        __unreferenced(_time) ;
+        __unreferenced(_time) ; // why does MSVC need this??
 #       endif//__use_timers
 
     /*--------------------------------- init. geo. kernel */
@@ -535,15 +573,13 @@
 
 #       ifdef  __use_timers
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttic ;
+        high_resolution_clock::time_point  _ttic ;
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttoc ;
+        high_resolution_clock::time_point  _ttoc ;
         typename std ::chrono::
-        high_resolution_clock _time;
+        high_resolution_clock _time ;
 
-        __unreferenced(_time) ;
+        __unreferenced(_time) ; // why does MSVC need this??
 #       endif//__use_timers
 
     /*--------------------------------- init. geo. kernel */

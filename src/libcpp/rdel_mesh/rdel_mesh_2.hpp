@@ -588,8 +588,8 @@
         _scal =  std::max(
             _scal , _plen[ 1]);
 
-        _plen[ 0]*= (real_type)+2.0 ;
-        _plen[ 1]*= (real_type)+2.0 ;
+        _plen[ 0]*= (real_type)+4.0 ;
+        _plen[ 1]*= (real_type)+4.0 ;
 
         _pmin[ 0]-= _plen[ 0] ;
         _pmin[ 1]-= _plen[ 1] ;
@@ -672,11 +672,9 @@
 
     #   ifdef  __use_timers
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttic ;
+        high_resolution_clock::time_point  _ttic ;
         typename std ::chrono::
-        high_resolution_clock::
-            time_point _ttoc ;
+        high_resolution_clock::time_point  _ttoc ;
         typename std ::chrono::
         high_resolution_clock _time ;
 

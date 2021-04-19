@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 Feb., 2021
+     * Last updated: 17 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -82,7 +82,6 @@
         {
             if (_node->mark() >= +0)
             {
-
             _bbox.push_tail() ;
             _bbox.tail()->
                pval(0) = _node->pval(0) ;
@@ -93,7 +92,6 @@
 
             _bbox.tail()->
                ipos () = _npos ;
-
             }
         }
 
@@ -438,12 +436,16 @@
         }
 
     /*------------------------------ seed node from init. */
+        iptr_type _base =
+            _mesh._tria._nset.count () ;
+
         if (_imid > -1)
         {
              auto _node =
            &_init._mesh. node ( _imid) ;
 
-            iptr_type _npos = -1 ;
+            iptr_type _npos =
+                _base+_imid -  0 ;
             iptr_type _near = -1 ;
 
             if (_node->itag () >= +0 )
@@ -524,8 +526,9 @@
              auto _node =
            &_init._mesh . node(*_iter) ;
 
+            iptr_type _npos =
+               *_iter+_base -  0 ;
             iptr_type _near = -1 ;
-            iptr_type _npos = -1 ;
 
             if (_node->itag () >= +0 )
                 _geom.projector(

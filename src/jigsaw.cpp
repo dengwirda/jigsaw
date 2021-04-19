@@ -41,7 +41,8 @@
     --------------------------------------------------------
      *
      * JIGSAW release 0.9.15.x
-     * Last updated: 08 April, 2021
+     *
+     * Last updated: 16 April, 2021
      *
      * Copyright 2013 -- 2021
      * Darren Engwirda
@@ -265,7 +266,7 @@
 #   include "libcpp/useropts.hpp"
 
 #   include "libcpp/rdelmesh.hpp"
-#   include "libcpp/treemesh.hpp"
+//  include "libcpp/treemesh.hpp"
 #   include "libcpp/itermesh.hpp"
 
     extern  "C"

@@ -1842,11 +1842,11 @@
 
     #   ifdef  __use_timers
         typename std ::chrono::
-        high_resolution_clock::time_point _ttic;
+        high_resolution_clock::time_point  _ttic ;
         typename std ::chrono::
-        high_resolution_clock::time_point _ttoc;
+        high_resolution_clock::time_point  _ttoc ;
         typename std ::chrono::
-        high_resolution_clock _time;
+        high_resolution_clock _time ;
 
         __unreferenced(_time) ; // why does MSVC need this??
     #   endif//__use_timers
