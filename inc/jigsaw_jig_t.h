@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 October, 2019
+     * Last updated: 21 Apr., 2021
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda

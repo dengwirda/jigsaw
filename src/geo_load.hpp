@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 May, 2020
+     * Last updated: 07 Jul., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -111,13 +111,11 @@
         }
     /*---------------------------------- parse POINT data */
         __normal_call void_type push_point (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             double       *_pval ,
             std::int32_t  _itag
             )
         {
-            __unreferenced(_ipos) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -169,13 +167,11 @@
         }
     /*---------------------------------- parse SEEDS data */
         __normal_call void_type push_seeds (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             double       *_pval ,
             std::int32_t  _itag
             )
         {
-            __unreferenced(_ipos) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -230,13 +226,11 @@
         }
     /*---------------------------------- parse EDGE2 data */
         __normal_call void_type push_edge2 (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
         {
-            __unreferenced(_ipos) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -286,13 +280,11 @@
         }
     /*---------------------------------- parse TRIA3 data */
         __normal_call void_type push_tria3 (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
         {
-            __unreferenced(_ipos) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -325,15 +317,14 @@
         }
     /*---------------------------------- parse BOUND data */
         __normal_call void_type push_bound (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             std::int32_t  _itag ,
             std::int32_t  _inum ,
             std::int32_t  _KIND
             )
         {
-            __unreferenced(_ipos) ;
-
-            if (this->_kind ==
+            if (this->_ndim == +2 &&
+                this->_kind ==
                     jmsh_kind::euclidean_mesh)
             {
                 typename
@@ -1162,27 +1153,6 @@
         geom_data &_geom
         )
     {
-        std::stringstream  _sstr;
-
-    /*---------------------------------- push "int_" data */
-        #define __dumpINTS(__tag,__var)     \
-            _sstr.str("");                  \
-            _sstr.clear();                  \
-            _sstr << "  " __tag " = "       \
-                  << __var << "\n" ;        \
-            _jlog.push(_sstr.str());
-
-    /*---------------------------------- push "real" data */
-        #define __dumpREAL(__tag,__var)     \
-            _sstr.str("");                  \
-            _sstr.clear();                  \
-            _sstr << "  " __tag " = "       \
-                  << std::scientific        \
-                  << std::setprecision(2)   \
-                  << __var                  \
-                  << " \n" ;                \
-            _jlog.push(_sstr.str()) ;       \
-
         iptr_type _errv  = __no_error ;
 
         __unreferenced(_jcfg) ;
@@ -1195,7 +1165,8 @@
             _jlog.push(
                 "  EUCLIDEAN-MESH\n\n") ;
 
-            __dumpINTS("|NDIMS.|",  +2) ;
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(2) + "\n");
 
             _jlog.push("\n") ;
 
@@ -1211,7 +1182,9 @@
             if (_iter->mark()>=0 ) _nnPT += +1 ;
             }
 
-            __dumpINTS("|COORD.|", _nnPT)
+            _jlog.push(
+                "  |COORD.| = " 
+                + std::to_string(_nnPT) + "\n");
 
             for (auto _iter  = _geom.
             _euclidean_mesh_2d._tria.edge().head() ;
@@ -1222,7 +1195,9 @@
             if (_iter->mark()>=0 ) _nnE2 += +1 ;
             }
 
-            __dumpINTS("|EDGE-2|", _nnE2)
+            _jlog.push(
+                "  |EDGE-2| = " 
+                + std::to_string(_nnE2) + "\n");
 
             _jlog.push("\n") ;
 
@@ -1237,7 +1212,19 @@
             if (_iter->mark()>=0 ) _nnSD += +1 ;
             }
 
-            __dumpINTS("|SEEDS.|", _nnSD)
+            _jlog.push(
+                "  |SEEDS.| = " 
+                + std::to_string(_nnSD) + "\n");
+
+            _jlog.push("\n") ;
+
+            _jlog.push("  |BOUND.| = " +
+                std::to_string(_geom.
+                _euclidean_mesh_2d._ptag.count()) + 
+                " (" + 
+                std::to_string(_geom.
+                _euclidean_mesh_2d._part.count()) +
+                ") " + "\n") ;
         }
         else
         if (_geom._ndim == +3 &&
@@ -1248,7 +1235,8 @@
             _jlog.push(
                 "  EUCLIDEAN-MESH\n\n") ;
 
-            __dumpINTS("|NDIMS.|",  +3) ;
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(3) + "\n");
 
             _jlog.push("\n") ;
 
@@ -1265,7 +1253,9 @@
             if (_iter->mark()>=0 ) _nnPT += +1 ;
             }
 
-            __dumpINTS("|COORD.|", _nnPT)
+            _jlog.push(
+                "  |COORD.| = " 
+                + std::to_string(_nnPT) + "\n");
 
             for (auto _iter  = _geom.
             _euclidean_mesh_3d._tria.edge().head() ;
@@ -1276,7 +1266,9 @@
             if (_iter->mark()>=0 ) _nnE2 += +1 ;
             }
 
-            __dumpINTS("|EDGE-2|", _nnE2)
+            _jlog.push(
+                "  |EDGE-2| = " 
+                + std::to_string(_nnE2) + "\n");
 
             for (auto _iter  = _geom.
             _euclidean_mesh_3d._tria.tri3().head() ;
@@ -1287,7 +1279,9 @@
             if (_iter->mark()>=0 ) _nnT3 += +1 ;
             }
 
-            __dumpINTS("|TRIA-3|", _nnT3)
+            _jlog.push(
+                "  |TRIA-3| = " 
+                + std::to_string(_nnT3) + "\n");
 
             _jlog.push("\n") ;
 
@@ -1302,7 +1296,19 @@
             if (_iter->mark()>=0 ) _nnSD += +1 ;
             }
 
-            __dumpINTS("|SEEDS.|", _nnSD)
+            _jlog.push(
+                "  |SEEDS.| = " 
+                + std::to_string(_nnSD) + "\n");
+
+            _jlog.push("\n") ;
+
+            _jlog.push("  |BOUND.| = " +
+                std::to_string(_geom.
+                _euclidean_mesh_3d._ptag.count()) + 
+                " (" + 
+                std::to_string(_geom.
+                _euclidean_mesh_3d._part.count()) +
+                ") " + "\n") ;
         }
         else
         if (_geom._kind ==
@@ -1312,18 +1318,22 @@
             _jlog.push(
                 "  ELLIPSOID-MESH\n\n") ;
 
-            __dumpINTS("|NDIMS.|",  +3) ;
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(3) + "\n");
 
             _jlog.push("\n") ;
 
-            __dumpREAL("|1-RAD.|",
-                _geom._ellipsoid_mesh_3d._radA) ;
+            _jlog.push("  |1-RAD.|" +
+                to_string_prec (
+                _geom._ellipsoid_mesh_3d._radA, 2));
 
-            __dumpREAL("|2-RAD.|",
-                _geom._ellipsoid_mesh_3d._radB) ;
+            _jlog.push("  |2-RAD.|" +
+                to_string_prec (
+                _geom._ellipsoid_mesh_3d._radB, 2));
 
-            __dumpREAL("|3-RAD.|",
-                _geom._ellipsoid_mesh_3d._radC) ;
+            _jlog.push("  |3-RAD.|" +
+                to_string_prec (
+                _geom._ellipsoid_mesh_3d._radC, 2));
 
             _jlog.push("\n") ;
 
@@ -1339,7 +1349,9 @@
             if (_iter->mark()>=0 ) _nnPT += +1 ;
             }
 
-            __dumpINTS("|COORD.|", _nnPT)
+            _jlog.push(
+                "  |COORD.| = " 
+                + std::to_string(_nnPT) + "\n");
 
             for (auto _iter  = _geom.
             _ellipsoid_mesh_3d._mesh.edge().head() ;
@@ -1350,7 +1362,9 @@
             if (_iter->mark()>=0 ) _nnE2 += +1 ;
             }
 
-            __dumpINTS("|EDGE-2|", _nnE2)
+            _jlog.push(
+                "  |EDGE-2| = " 
+                + std::to_string(_nnE2) + "\n");
 
             _jlog.push("\n") ;
 
@@ -1365,7 +1379,9 @@
             if (_iter->mark()>=0 ) _nnSD += +1 ;
             }
 
-            __dumpINTS("|SEEDS.|", _nnSD)
+            _jlog.push(
+                "  |SEEDS.| = " 
+                + std::to_string(_nnSD) + "\n");
         }
 
         _jlog.push("\n") ;

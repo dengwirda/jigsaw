@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 Apr., 2021
+     * Last updated: 21 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -498,12 +498,12 @@
 
     /*--------------------------- test loc. intersections */
         auto _iful = _pred._list.tend() ;
-        auto _imax = _pred._list.tend() ;
+        auto _imin = _pred._list.tend() ;
 
         real_type _RTOL  = _rEPS*_radj;
 
-        real_type _dmax  =
-            -std::numeric_limits
+        real_type _dmin  =
+            +std::numeric_limits
                 <real_type>::infinity() ;
         real_type _dful  =
             -std::numeric_limits
@@ -555,11 +555,12 @@
                    &_iter->pval( 0)) ;
 
     /*--------------------------- keep furthest from ball */
-                if (_dsqr > _dmax )
+                if (_dsqr < _dmin )
                 {
-                    _dmax = _dsqr ;
-                    _imax = _iter ;
+                    _dmin = _dsqr ;
+                    _imin = _iter ;
                 }
+
                 if (_dsqr > _dful &&
                     _safe )
                 {
@@ -597,17 +598,17 @@
         return (  true ) ;
         }
         else
-        if (_imax !=
+        if (_imin !=
                 _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
-        _sbal[ 0] = _imax->pval(0);
-        _sbal[ 1] = _imax->pval(1);
-        _sbal[ 2] = _imax->pval(2);
+        _sbal[ 0] = _imin->pval(0);
+        _sbal[ 1] = _imin->pval(1);
+        _sbal[ 2] = _imin->pval(2);
 
-        _part     = _imax->itag ();
-        _feat     = _imax->feat ();
-        _topo     = _imax->topo ();
+        _part     = _imin->itag ();
+        _feat     = _imin->feat ();
+        _topo     = _imin->topo ();
 
     /*--------------------------- eval. surf. ball radius */
         _sbal[ 3]+=
@@ -839,12 +840,12 @@
 
     /*--------------------------- test loc. intersections */
         auto _iful = _pred._list.tend() ;
-        auto _imax = _pred._list.tend() ;
+        auto _imin = _pred._list.tend() ;
 
         real_type _RTOL  = _rEPS*_radj;
 
-        real_type _dmax  =
-            -std::numeric_limits
+        real_type _dmin  =
+            +std::numeric_limits
                 <real_type>::infinity() ;
         real_type _dful  =
             -std::numeric_limits
@@ -891,11 +892,12 @@
                    &_iter->pval( 0)) ;
 
     /*--------------------------- keep furthest from ball */
-                if (_dsqr > _dmax )
+                if (_dsqr > _dmin )
                 {
-                    _dmax = _dsqr ;
-                    _imax = _iter ;
+                    _dmin = _dsqr ;
+                    _imin = _iter ;
                 }
+
                 if (_dsqr > _dful &&
                     _safe )
                 {
@@ -937,17 +939,17 @@
         return (  true ) ;
         }
         else
-        if (_imax !=
+        if (_imin !=
                 _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
-        _sbal[ 0] = _imax->pval(0);
-        _sbal[ 1] = _imax->pval(1);
-        _sbal[ 2] = _imax->pval(2);
+        _sbal[ 0] = _imin->pval(0);
+        _sbal[ 1] = _imin->pval(1);
+        _sbal[ 2] = _imin->pval(2);
 
-        _part     = _imax->itag ();
-        _feat     = _imax->feat ();
-        _topo     = _imax->topo ();
+        _part     = _imin->itag ();
+        _feat     = _imin->feat ();
+        _topo     = _imin->topo ();
 
     /*--------------------------- eval. surf. ball radius */
         _sbal[ 3]+=

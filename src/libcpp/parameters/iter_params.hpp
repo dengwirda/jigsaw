@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 March, 2019
+     * Last updated: 21 Apr., 2021
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -45,6 +45,8 @@
 
 #   ifndef __ITER_PARAMS__
 #   define __ITER_PARAMS__
+
+#   include "../../liblib/init_jig_t.hpp"
 
     namespace mesh {
 
@@ -83,19 +85,30 @@
 
     /*-------------------------- construct default param. */
         __inline_call iter_params (
-            ) :
-            _verb ((iptr_type) +   0  ) ,
-
-            _iter ((iptr_type) +  16  ) ,
-
-            _qtol ((real_type) +1.E-04) ,
-            _qlim ((real_type) +0.9375) ,
-
-            _zip_ ((bool_type)  true  ) ,
-            _div_ ((bool_type)  true  ) ,
-            _tria ((bool_type)  true  ) ,
-            _dual ((bool_type)  false )
+            )
         {   // load default values
+            jigsaw_jig_t _jjig ;
+            jigsaw_init_jig_t( &_jjig ) ;
+
+            this->_verb = 
+            iptr_type(_jjig._verbosity) ;
+            
+            this->_iter = 
+            iptr_type(_jjig._optm_iter) ;
+
+            this->_qtol =
+            real_type(_jjig._optm_qtol) ;
+            this->_qlim =
+            real_type(_jjig._optm_qlim) ;
+
+            this->_zip_ =
+            bool_type(_jjig._optm_zip_) ;
+            this->_div_ =
+            bool_type(_jjig._optm_div_) ;
+            this->_tria =
+            bool_type(_jjig._optm_tria) ;
+            this->_dual =
+            bool_type(_jjig._optm_dual) ;
         }
 
     /*------------------------------------ "write" access */
@@ -175,7 +188,6 @@
         } ;
 
     }
-
 
 #   endif   //__ITER_PARAMS__
 

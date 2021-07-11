@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 Feb., 2021
+     * Last updated: 20 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -65,9 +65,9 @@
             (_g1 + _g2) / (vals_type)2. ;
 
     /*---------------------- form "limited" extrap. to P2 */
-        vals_type _hn = _h1 + _gg *
-            std::sqrt(
-        geometry::lensqr_2d(_p1, _p2) ) ;
+        vals_type _hn = (vals_type) (
+            _h1 + _gg *  std::sqrt(
+        geometry::lensqr_2d(_p1, _p2))) ;
 
         if (_hn < _h2)
         {
@@ -93,9 +93,9 @@
             (_g1 + _g2) / (vals_type)2. ;
 
     /*---------------------- form "limited" extrap. to P2 */
-        vals_type _hn = _h1 + _gg *
-            std::sqrt(
-        geometry::lensqr_3d(_p1, _p2) ) ;
+        vals_type _hn = (vals_type) (
+            _h1 + _gg *  std::sqrt(
+        geometry::lensqr_3d(_p1, _p2))) ;
 
         if (_hn < _h2)
         {
@@ -191,14 +191,14 @@
         real_type _lp = std::sqrt(
             geometry::lensqr_2d(_vp)) ;
 
-        vals_type _hp =
-        _h1 + _tt[0]*_dh + _gg*_lp ;
+        vals_type _hp =(vals_type)(
+        _h1 + _tt[0]*_dh + _gg*_lp) ;
 
         real_type _lm = std::sqrt(
             geometry::lensqr_2d(_vm)) ;
 
-        vals_type _hm =
-        _h1 + _tt[1]*_dh + _gg*_lm ;
+        vals_type _hm =(vals_type)(
+        _h1 + _tt[1]*_dh + _gg*_lm) ;
 
         _hn = std::min(_hp, _hm) ;
 
@@ -300,14 +300,14 @@
         real_type _lp = std::sqrt(
             geometry::lensqr_3d(_vp)) ;
 
-        vals_type _hp =
-        _h1 + _tt[0]*_dh + _gg*_lp ;
+        vals_type _hp =(vals_type)(
+        _h1 + _tt[0]*_dh + _gg*_lp) ;
 
         real_type _lm = std::sqrt(
             geometry::lensqr_3d(_vm)) ;
 
-        vals_type _hm =
-        _h1 + _tt[1]*_dh + _gg*_lm ;
+        vals_type _hm =(vals_type)(
+        _h1 + _tt[1]*_dh + _gg*_lm) ;
 
         _hn = std::min(_hp, _hm) ;
 

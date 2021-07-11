@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 Apr., 2021
+     * Last updated: 20 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -407,7 +407,6 @@
     __static_call
     __normal_call void_type push_tria (
         mesh_type &_mesh ,
-        geom_type &_geom ,
         iptr_type  _tpos ,
         iptr_type &_ntri ,
         rdel_opts &_opts
@@ -905,7 +904,7 @@
                   _iter != _tnew.tend();
                 ++_iter  )
         {
-            push_tria( _mesh, _geom,
+            push_tria( _mesh,
                *_iter, _ntri, _args) ;
         }
         }

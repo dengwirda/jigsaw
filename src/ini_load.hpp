@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Mar., 2021
+     * Last updated: 07 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -114,13 +114,11 @@
         }
     /*---------------------------------- parse POINT data */
         __normal_call void_type push_point (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             double       *_pval ,
             std::int32_t  _itag
             )
         {
-            __unreferenced(_ipos) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -240,7 +238,7 @@
         }
     /*---------------------------------- parse POWER data */
         __normal_call void_type push_power (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             double       *_ppwr
             )
         {
@@ -300,14 +298,11 @@
         }
     /*---------------------------------- parse EDGE2 data */
         __normal_call void_type push_edge2 (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
         {
-            __unreferenced(_ipos) ;
-            __unreferenced(_itag) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -344,14 +339,11 @@
         }
     /*---------------------------------- parse TRIA3 data */
         __normal_call void_type push_tria3 (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
         {
-            __unreferenced(_ipos) ;
-            __unreferenced(_itag) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -390,14 +382,11 @@
         }
     /*---------------------------------- parse QUAD4 data */
         __normal_call void_type push_quad4 (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
         {
-            __unreferenced(_ipos) ;
-            __unreferenced(_itag) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -438,14 +427,11 @@
         }
     /*---------------------------------- parse TRIA4 data */
         __normal_call void_type push_tria4 (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             std::int32_t *_node ,
             std::int32_t  _itag
             )
         {
-            __unreferenced(_ipos) ;
-            __unreferenced(_itag) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -1187,27 +1173,6 @@
         mesh_data &_init
         )
     {
-        std::stringstream  _sstr;
-
-    /*---------------------------------- push "int_" data */
-        #define __dumpINTS(__tag,__var)     \
-            _sstr.str("");                  \
-            _sstr.clear();                  \
-            _sstr << "  " __tag " = "       \
-                  << __var << "\n" ;        \
-            _jlog.push(_sstr.str());
-
-    /*---------------------------------- push "real" data */
-        #define __dumpREAL(__tag,__var)     \
-            _sstr.str("");                  \
-            _sstr.clear();                  \
-            _sstr << "  " __tag " = "       \
-                  << std::scientific        \
-                  << std::setprecision(2)   \
-                  << __var                  \
-                  << " \n" ;                \
-            _jlog.push(_sstr.str()) ;       \
-
         iptr_type _errv  = __no_error ;
 
         __unreferenced(_jcfg) ;
@@ -1220,7 +1185,8 @@
             _jlog.push(
                 "  EUCLIDEAN-MESH\n\n") ;
 
-            __dumpINTS("|NDIMS.|",  +2) ;
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(2) + "\n");
 
             _jlog.push("\n") ;
 
@@ -1237,7 +1203,9 @@
             if (_iter->mark()>=+0) _nnN1 += +1 ;
             }
 
-            __dumpINTS("|COORD.|", _nnN1)
+            _jlog.push(
+                "  |COORD.| = " 
+                + std::to_string(_nnN1) + "\n");
 
             for (auto _iter  = _init.
             _euclidean_mesh_2d._mesh.edge().head();
@@ -1248,7 +1216,9 @@
             if (_iter->mark()>=+0) _nnE2 += +1 ;
             }
 
-            __dumpINTS("|EDGE-2|", _nnE2)
+            _jlog.push(
+                "  |EDGE-2| = " 
+                + std::to_string(_nnE2) + "\n");
 
             for (auto _iter  = _init.
             _euclidean_mesh_2d._mesh.tri3().head();
@@ -1259,7 +1229,9 @@
             if (_iter->mark()>=+0) _nnT3 += +1 ;
             }
 
-            __dumpINTS("|TRIA-3|", _nnT3)
+            _jlog.push(
+                "  |TRIA-3| = " 
+                + std::to_string(_nnT3) + "\n");
 
             for (auto _iter  = _init.
             _euclidean_mesh_2d._mesh.quad().head();
@@ -1270,7 +1242,9 @@
             if (_iter->mark()>=+0) _nnQ4 += +1 ;
             }
 
-            __dumpINTS("|QUAD-4|", _nnQ4)
+            _jlog.push(
+                "  |QUAD-4| = " 
+                + std::to_string(_nnQ4) + "\n");
         }
         else
         if (_init._ndim == +3 &&
@@ -1281,7 +1255,8 @@
             _jlog.push(
                 "  EUCLIDEAN-MESH\n\n") ;
 
-            __dumpINTS("|NDIMS.|",  +3) ;
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(3) + "\n");
 
             _jlog.push("\n") ;
 
@@ -1299,7 +1274,9 @@
             if (_iter->mark()>=+0) _nnN1 += +1 ;
             }
 
-            __dumpINTS("|COORD.|", _nnN1)
+            _jlog.push(
+                "  |COORD.| = " 
+                + std::to_string(_nnN1) + "\n");
 
             for (auto _iter  = _init.
             _euclidean_mesh_3d._mesh.edge().head();
@@ -1310,7 +1287,9 @@
             if (_iter->mark()>=+0) _nnE2 += +1 ;
             }
 
-            __dumpINTS("|EDGE-2|", _nnE2)
+            _jlog.push(
+                "  |EDGE-2| = " 
+                + std::to_string(_nnE2) + "\n");
 
             for (auto _iter  = _init.
             _euclidean_mesh_3d._mesh.tri3().head();
@@ -1321,7 +1300,9 @@
             if (_iter->mark()>=+0) _nnT3 += +1 ;
             }
 
-            __dumpINTS("|TRIA-3|", _nnT3)
+            _jlog.push(
+                "  |TRIA-3| = " 
+                + std::to_string(_nnT3) + "\n");
 
             for (auto _iter  = _init.
             _euclidean_mesh_3d._mesh.quad().head();
@@ -1332,7 +1313,9 @@
             if (_iter->mark()>=+0) _nnQ4 += +1 ;
             }
 
-            __dumpINTS("|QUAD-4|", _nnQ4)
+            _jlog.push(
+                "  |QUAD-4| = " 
+                + std::to_string(_nnQ4) + "\n");
 
             for (auto _iter  = _init.
             _euclidean_mesh_3d._mesh.tri4().head();
@@ -1343,13 +1326,12 @@
             if (_iter->mark()>=+0) _nnT4 += +1 ;
             }
 
-            __dumpINTS("|TRIA-4|", _nnT4)
+            _jlog.push(
+                "  |TRIA-4| = " 
+                + std::to_string(_nnT4) + "\n");
         }
 
         _jlog.push("\n") ;
-
-        #undef  __dumpINTS
-        #undef  __dumpREAL
 
         return (  _errv) ;
     }

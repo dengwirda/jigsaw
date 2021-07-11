@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 May, 2020
+     * Last updated: 20 Apr., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -236,9 +236,8 @@
             }
         }
 
-        if(__chkbit(_opts.rule(),
-                rdel_opts
-              ::offT_kind) )
+        if(__chkbit(
+        _opts.rule(),rdel_opts::offT_kind) )
         {
     /*--------------------- calc. "skinny" off-centre */
             _vnrm[2] =

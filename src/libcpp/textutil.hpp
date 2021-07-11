@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 August, 2017
+     * Last updated: 07 Jul., 2021
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -45,6 +45,28 @@
 
 #   ifndef __TEXTUTIL__
 #   define __TEXTUTIL__
+
+    /*
+    --------------------------------------------------------
+     * TO-STRING: to_string, but controls precision.
+    --------------------------------------------------------
+     */
+
+    template <
+    typename      real_type 
+             >
+    __static_call
+    __inline_call std::string to_string_prec (
+        real_type const&_real,
+        std::size_t     _prec       
+        )
+    {
+        std::stringstream  _sstr ;
+        _sstr << std::scientific
+              << std::setprecision(_prec)
+              << _real ;
+        return   _sstr.str() ;
+    }
 
     /*
     --------------------------------------------------------
@@ -221,7 +243,7 @@
     }
 
 
-#   endif//__TEXTUTIL__
+#   endif   //__TEXTUTIL__
 
 
 

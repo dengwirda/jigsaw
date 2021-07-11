@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 Apr., 2021
+     * Last updated: 20 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -333,28 +333,28 @@
             auto _tptr =
            _mesh. tri3().head() + _cell->_cell ;
 
-            auto _inod = _tptr->node(0) ;
-            auto _jnod = _tptr->node(1) ;
-            auto _knod = _tptr->node(2) ;
+            auto _INOD = _tptr->node(0) ;
+            auto _JNOD = _tptr->node(1) ;
+            auto _KNOD = _tptr->node(2) ;
 
-            auto _iptr =
-           _mesh. node().head() + _inod ;
-            auto _jptr =
-           _mesh. node().head() + _jnod ;
-            auto _kptr =
-           _mesh. node().head() + _knod ;
+            auto _IPTR =
+           _mesh. node().head() + _INOD ;
+            auto _JPTR =
+           _mesh. node().head() + _JNOD ;
+            auto _KPTR =
+           _mesh. node().head() + _KNOD ;
 
             real_type _BALL [_last + 1] ;
             pred_type::tri3_ball(_BALL,
-                &_iptr->pval(+0),
-                &_jptr->pval(+0),
-                &_kptr->pval(+0), true) ;
+                &_IPTR->pval(+0),
+                &_JPTR->pval(+0),
+                &_KPTR->pval(+0), true) ;
 
             real_type _MASS =
             std::abs(pred_type::tri3_mass (
-                &_iptr->pval(+0),
-                &_jptr->pval(+0),
-                &_kptr->pval(+0)) ) ;
+                &_IPTR->pval(+0),
+                &_JPTR->pval(+0),
+                &_KPTR->pval(+0)) ) ;
 
            _mass +=   _MASS ;
 
@@ -376,28 +376,28 @@
             auto _tptr =
            _mesh. tri3().head() + _cell->_cell ;
 
-            auto _inod = _tptr->node(0) ;
-            auto _jnod = _tptr->node(1) ;
-            auto _knod = _tptr->node(2) ;
+            auto _INOD = _tptr->node(0) ;
+            auto _JNOD = _tptr->node(1) ;
+            auto _KNOD = _tptr->node(2) ;
 
-            auto _iptr =
-           _mesh. node().head() + _inod ;
-            auto _jptr =
-           _mesh. node().head() + _jnod ;
-            auto _kptr =
-           _mesh. node().head() + _knod ;
+            auto _IPTR =
+           _mesh. node().head() + _INOD ;
+            auto _JPTR =
+           _mesh. node().head() + _JNOD ;
+            auto _KPTR =
+           _mesh. node().head() + _KNOD ;
 
             real_type _BALL [_last + 1] ;
             pred_type::tri3_ball(_BALL,
-                &_iptr->pval(+0),
-                &_jptr->pval(+0),
-                &_kptr->pval(+0), true) ;
+                &_IPTR->pval(+0),
+                &_JPTR->pval(+0),
+                &_KPTR->pval(+0), true) ;
 
             real_type _MASS =
             std::abs(pred_type::tri3_mass (
-                &_iptr->pval(+0),
-                &_jptr->pval(+0),
-                &_kptr->pval(+0)) ) ;
+                &_IPTR->pval(+0),
+                &_JPTR->pval(+0),
+                &_KPTR->pval(+0)) ) ;
 
            _mass +=   _MASS ;
 

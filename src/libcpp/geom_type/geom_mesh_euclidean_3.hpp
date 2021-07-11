@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 Apr., 2021
+     * Last updated: 07 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -2771,9 +2771,11 @@
 
             tree_pred _pred(_PPOS, _RPOS) ;
 
-            null_pred _hfun;
+            null_pred _hfun ;
             hits_pred _func(_ppos, _rpos,
-                            *this, _hfun) ;
+                            *this, _hfun,
+                       this->_ptag[_pnum]
+                            ) ;
 
             this->_tbox.find(_pred,_func) ;
 

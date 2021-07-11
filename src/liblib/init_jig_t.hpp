@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 October, 2019
+     * Last updated: 21 Apr., 2021
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -54,8 +54,6 @@
     --------------------------------------------------------
      */
 
-#   ifdef  __lib_jigsaw
-
     void jigsaw_init_jig_t (                // init. jig_t
         jigsaw_jig_t *_jcfg
         )
@@ -70,6 +68,7 @@
         _jcfg->_geom_seed = (indx_t) +8 ;
 
         _jcfg->_geom_feat = (indx_t) +0 ;
+
         _jcfg->_geom_eta1 = (real_t) +45.0 ;
         _jcfg->_geom_eta2 = (real_t) +45.0 ;
 
@@ -83,23 +82,26 @@
 
     /*------------------------------------- MESH keywords */
         _jcfg->_mesh_kern = JIGSAW_KERN_DELFRONT ;
-        _jcfg->_mesh_dims = (indx_t) +3 ;
+        _jcfg->_mesh_dims = (indx_t) +2 ;
         _jcfg->_mesh_iter = (indx_t)
-            std::numeric_limits<iptr_type>::max();
+            std::numeric_limits< indx_t >::max() ;
 
         _jcfg->_mesh_top1 = (indx_t) +0 ;
         _jcfg->_mesh_top2 = (indx_t) +0 ;
 
         _jcfg->_mesh_rad2 = (real_t) +1.05 ;
         _jcfg->_mesh_rad3 = (real_t) +2.05 ;
+
         _jcfg->_mesh_off2 = (real_t) +0.90 ;
         _jcfg->_mesh_off3 = (real_t) +1.10 ;
 
-        real_t _SIZ1 = +1. *   4./3. ;
-        real_t _SIZ2 = +.5 *  (4./3. +
-            2. / (1.+std::sqrt(1./3.))) ;
-        real_t _SIZ3 = +.5 *  (4./3. +
-            2. / (1.+std::sqrt(3./8.))) ;
+        real_t _SIZ1 = +1./1. * 4./3. ;
+
+        real_t _SIZ2 = +5./8. * 4./3. +
+            3./8. * 2. / (1. + std::sqrt(1./3.)) ;
+
+        real_t _SIZ3 = +5./8. * 4./3. +
+            3./8. * 2. / (1. + std::sqrt(3./8.)) ;
 
         _jcfg->_mesh_siz1 = (real_t) _SIZ1 ;
         _jcfg->_mesh_siz2 = (real_t) _SIZ2 ;
@@ -126,8 +128,6 @@
         _jcfg->_optm_div_ = (indx_t) +1 ;
         _jcfg->_optm_zip_ = (indx_t) +1 ;
     }
-
-#   endif//__lib_jigsaw
 
 #   endif
 

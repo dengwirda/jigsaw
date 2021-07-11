@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Dec., 2020
+     * Last updated: 21 Apr., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -147,7 +147,7 @@
             _mesh._tria.
         node(_enod[1])->fdim() < +1  ;
 
-        real_type _scal = 1. + _trap * .125 ;
+        real_type _scal = 1. + _trap * .100 ;
 
         if (_eave >= _args.siz1() * _scal *
                      _args.siz1() * _scal ||
@@ -354,7 +354,7 @@
         _eave *= (real_type)+3.0 ;
 
     /*------------------------- refinement classification */
-        _scal += (real_type)(_trap * 0.125) ;
+        _scal += (real_type)(_trap * 0.100) ;
 
         if (_eave >= _args.siz2() * _scal *
                      _args.siz2() * _scal )

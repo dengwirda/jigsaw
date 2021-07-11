@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Feb., 2021
+     * Last updated: 20 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -284,10 +284,10 @@
             _xbot += this->_hmat[_indx] ;
         }
 
-        this->_htop =
-            (_xtop / this->_xpos.count()) ;
-        this->_hbot =
-            (_xbot / this->_xpos.count()) ;
+        this->_htop = (vals_type)(
+            _xtop / this->_xpos.count() ) ;
+        this->_hbot = (vals_type)(
+            _xbot / this->_xpos.count() ) ;
     }
 
     /*

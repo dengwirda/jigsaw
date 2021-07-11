@@ -163,11 +163,14 @@
         {
             if (_tdim != +1)
             {
-                if (_qdat._mark++ <= +0)
+                if (_qdat._mark <= +0)
                 {
     /*------------------------- tmp. reject if split bnds */
                 _mesh.
                 _tria.roll_back(_tnew, _told);
+
+                _qdat._mark = 
+                 std::max(1,_qdat._mark+1) ;
 
                 _kind = rdel_opts::null_kind ;
 
@@ -311,11 +314,14 @@
         {
             if (_tdim != +2)
             {
-                if (_qdat._mark++ <= +0)
+                if (_qdat._mark <= +0)
                 {
     /*------------------------- tmp. reject if split bnds */
                 _mesh.
                 _tria.roll_back(_tnew, _told);
+
+                _qdat._mark = 
+                 std::max(1,_qdat._mark+1) ;
 
                 _kind = rdel_opts::null_kind ;
 
