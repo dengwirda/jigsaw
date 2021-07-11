@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Apr., 2021
+     * Last updated: 23 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -73,7 +73,7 @@
         real_type  _lmax
             = (real_type) +8.00E-01 ,
         real_type  _qinc
-            = (real_type) +1.00E-02
+            = (real_type) +2.50E-02
         )
     {
         iptr_type static constexpr
@@ -159,13 +159,11 @@
     //  if more regular topo. is constructed via the edge
     //  zip, make it easier to do so!
 
-        real_type _qerr =
-            (real_type)-2./16. *
-                std::max(_ierr, _jerr);
+        real_type _qerr = (real_type)(
+            -2./16.*1./2.*(_ierr + _jerr));
 
-        real_type _lerr =
-            (real_type)+1./16. *
-                std::max(_ierr, _jerr);
+        real_type _lerr = (real_type)(
+            +1./16.*1./2.*(_ierr + _jerr));
 
         if (2 * _nerr < _iabs + _jabs)
         {

@@ -73,7 +73,7 @@
         real_type  _lmin
             = (real_type) +1.00E+00 ,
         real_type  _qinc
-            = (real_type) +1.00E-02
+            = (real_type) +2.50E-02
         )
     {
         iptr_type static constexpr
@@ -160,7 +160,7 @@
 
     /*--------------------------------- split if too long */
         real_type static constexpr
-        _lBIG  = (real_type)+1.375 ;
+            _lBIG  = (real_type) +1.38750 ;
 
         if (_lsqr >= _hbar * _lBIG *
                      _hbar * _lBIG )

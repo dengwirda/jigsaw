@@ -1633,20 +1633,19 @@
 
     //  assemble list of edges attached to "recent" nodes
 
-        for (auto _enum =
-            _mesh. edge().count(); _enum-- != 0; )
+        for (auto _iter  = _mesh.edge().head() ;
+                  _iter != _mesh.edge().tend() ;
+                ++_iter  )
         {
-             auto _eptr =&_mesh.edge(_enum) ;
-
-             auto _inod = _eptr->node(0) ;
-             auto _jnod = _eptr->node(1) ;
+             auto _inod =  _iter->node(0) ;
+             auto _jnod =  _iter->node(1) ;
 
              auto _iptr = _mesh.
-             node().head()+_eptr->node(0) ;
+             node().head()+_iter->node(0) ;
              auto _jptr = _mesh.
-             node().head()+_eptr->node(1) ;
+             node().head()+_iter->node(1) ;
 
-            if (_eptr->mark() >= +0 &&
+            if (_iter->mark() >= +0 &&
                (    std::abs (
             _mark._node[_inod]) > _imrk - 4 ||
                     std::abs (
@@ -1656,6 +1655,19 @@
                (float)pred_type::length_sq (
                     & _iptr->pval(0) ,
                     & _jptr->pval(0) ) ;
+
+                _iset.set_count(
+                    0, containers::loose_alloc);
+                _jset.set_count(
+                    0, containers::loose_alloc);
+
+                _mesh.connect_2(_iter->node(0) ,
+                    POINT_tag , _iset) ;
+                _mesh.connect_2(_iter->node(1) ,
+                    POINT_tag , _jset) ;
+
+                _lsqr *= (_iset.count() + 
+                          _jset.count() ) / 2  ;
 
                 _sort.push_tail(
                  sort_pair(_inod, _jnod, _lsqr)) ;
@@ -1679,9 +1691,6 @@
             iptr_type  _eadj, _enod[2] ;
             _enod[0] = _iter->_inod;
             _enod[1] = _iter->_jnod;
-
-            if (MARKNODE(_enod[0])>_imrk) continue ;
-            if (MARKNODE(_enod[1])>_imrk) continue ;
 
             if (MARKNODE(_enod[0]) < +0 &&
                 MARKNODE(_enod[1]) < +0 ) continue ;
@@ -1722,9 +1731,6 @@
             iptr_type  _eadj, _enod[2] ;
             _enod[0] = _iter->_inod;
             _enod[1] = _iter->_jnod;
-
-            if (MARKNODE(_enod[0])>_imrk) continue ;
-            if (MARKNODE(_enod[1])>_imrk) continue ;
 
             if (MARKNODE(_enod[0]) < +0 ||
                 MARKNODE(_enod[1]) < +0 ) continue ;
