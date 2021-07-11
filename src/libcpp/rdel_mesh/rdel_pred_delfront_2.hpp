@@ -505,8 +505,8 @@
             if (_tdat._mark <= _REDO)   // finite cycles!
             {
         /*---------------------- reject as "void" element */
-            uint32_t  _push  =
-           (hash_ball(_tbal) % _STEP) + 1 ;
+            uint32_t _push =
+            (hash_ball(_tbal) % _STEP) + 1;
 
             _tdat._mark += _push;
 
