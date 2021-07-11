@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2021
+     * Last updated: 09 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -107,13 +107,13 @@
         _jcfg->_mesh_siz2 = (real_t) _SIZ2 ;
         _jcfg->_mesh_siz3 = (real_t) _SIZ3 ;
 
-        _jcfg->_mesh_snk2 = (real_t) +0.20 ;
-        _jcfg->_mesh_snk3 = (real_t) +0.33 ;
+        _jcfg->_mesh_snk2 = (real_t) +1./5.;
+        _jcfg->_mesh_snk3 = (real_t) +1./3.;
 
-        _jcfg->_mesh_eps1 = (real_t) +0.33 ;
-        _jcfg->_mesh_eps2 = (real_t) +0.33 ;
+        _jcfg->_mesh_eps1 = (real_t) +1./3.;
+        _jcfg->_mesh_eps2 = (real_t) +1./3.;
 
-        _jcfg->_mesh_vol3 = (real_t) +0.00 ;
+        _jcfg->_mesh_vol3 = (real_t) +0./1.;
 
     /*------------------------------------- OPTM keywords */
         _jcfg->_optm_kern = JIGSAW_KERN_ODT_DQDX ;
@@ -121,7 +121,7 @@
         _jcfg->_optm_iter = (indx_t) +16;
 
         _jcfg->_optm_qtol = (real_t) +1.E-04 ;
-        _jcfg->_optm_qlim = (real_t) +0.9375 ;
+        _jcfg->_optm_qlim = (real_t) +14./15.;
 
         _jcfg->_optm_tria = (indx_t) +1 ;
         _jcfg->_optm_dual = (indx_t) +0 ;
