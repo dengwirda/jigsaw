@@ -943,7 +943,7 @@
 
         }
 
-    /*------------------------- test for restricted edges */
+    /*------------------------- test for restricted faces */
         if (_args.dims() >= 2 &&
             _geom.have_feat(2) )
         {
@@ -976,7 +976,7 @@
 
         }
 
-    /*------------------------- test for restricted tria. */
+    /*------------------------- test for restricted cells */
         if (_args.dims() >= 3 &&
             _geom.have_feat(2) )
         {

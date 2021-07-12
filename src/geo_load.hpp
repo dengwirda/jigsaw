@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Jul., 2021
+     * Last updated: 10 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -1323,17 +1323,17 @@
 
             _jlog.push("\n") ;
 
-            _jlog.push("  |1-RAD.|" +
+            _jlog.push("  |1-RAD.| = " +
                 to_string_prec (
-                _geom._ellipsoid_mesh_3d._radA, 2));
+            _geom._ellipsoid_mesh_3d._radA, 2) + "\n");
 
-            _jlog.push("  |2-RAD.|" +
+            _jlog.push("  |2-RAD.| = " +
                 to_string_prec (
-                _geom._ellipsoid_mesh_3d._radB, 2));
+            _geom._ellipsoid_mesh_3d._radB, 2) + "\n");
 
-            _jlog.push("  |3-RAD.|" +
+            _jlog.push("  |3-RAD.| = " +
                 to_string_prec (
-                _geom._ellipsoid_mesh_3d._radC, 2));
+            _geom._ellipsoid_mesh_3d._radC, 2) + "\n");
 
             _jlog.push("\n") ;
 

@@ -892,7 +892,7 @@
                    &_iter->pval( 0)) ;
 
     /*--------------------------- keep furthest from ball */
-                if (_dsqr > _dmin )
+                if (_dsqr < _dmin )
                 {
                     _dmin = _dsqr ;
                     _imin = _iter ;

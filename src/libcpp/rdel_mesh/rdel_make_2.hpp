@@ -811,7 +811,7 @@
 
         }
 
-    /*------------------------- test for restricted tria. */
+    /*------------------------- test for restricted cells */
         if (_args.dims() >= 2 &&
             _geom.have_feat(1) )
         {
