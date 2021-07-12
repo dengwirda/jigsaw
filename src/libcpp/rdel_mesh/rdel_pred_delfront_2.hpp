@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 February, 2020
+     * Last updated: 22 Apr., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -149,7 +149,10 @@
 
     /*------------------------ max. frontal "redo" steps */
 
-    iptr_type static const _REDO = + 32 ;
+    iptr_type static constexpr _REDO = 32 ;
+    iptr_type static constexpr _STEP =  8 ;
+    real_type static constexpr
+        _OKAY = (real_type) +5./6. ;
 
     /*------------------------ refinement priority types */
 
@@ -502,18 +505,14 @@
             if (_tdat._mark <= _REDO)   // finite cycles!
             {
         /*---------------------- reject as "void" element */
-                uint32_t _push =
-               (hash_ball(_tbal) % 8) + 1 ;
+            uint32_t _push =
+            (hash_ball(_tbal) % _STEP) + 1;
 
-                _tdat._mark += _push;
+            _tdat._mark += _push;
 
-                return
-                rdel_opts::null_kind;
+            return rdel_opts::null_kind;
             }
-            else
-            {
         /*----------------------------- just fall through */
-            }
         }
 
     /*--------------------------------- get face indexing */
@@ -585,9 +584,6 @@
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
         {
-            real_type static const
-                _OKAY = (real_type) +5./6.;
-
             real_type _alen =
                 geometry::tria_quality_2d (
                 &_mesh.
@@ -599,11 +595,11 @@
                 ) ;
 
             if (_alen <= _OKAY &&
-                    _tdat._mark <= +8)
+                    _tdat._mark <= _REDO)
             {
         /*---------------------- reject as "void" element */
             uint32_t _push =
-                (hash_ball(_tbal) % 8) + 1;
+            (hash_ball(_tbal) % _STEP) + 1;
 
             _tdat._mark += _push ;
 

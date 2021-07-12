@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Apr., 2021
+     * Last updated: 10 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -45,6 +45,8 @@
 
 #   ifndef __MESH_PARAMS__
 #   define __MESH_PARAMS__
+
+#   include "../../liblib/init_jig_t.hpp"
 
     namespace mesh {
 
@@ -110,7 +112,7 @@
 
         real_type   _off2 ;     // 2-off. radius-edge ratio
         real_type   _off3 ;     // 3-off. radius-edge ratio
-
+ 
         real_type   _snk2 ;     // 2-dim. sink "safe" ratio
         real_type   _snk3 ;     // 3-dim. sink "safe" ratio
 
@@ -120,24 +122,6 @@
         bool_type   _top2 ;     // impose 2-"manifold-ness"
 
         public  :
-
-        __static_call
-        __inline_call real_type init_siz1 (
-            )
-        {   return 1. * 4./3. ;
-        }
-        __static_call
-        __inline_call real_type init_siz2 (
-            )
-        {   return .5 *(4./3. +
-            2. / (1.+std::sqrt(1./3.))) ;
-        }
-        __static_call
-        __inline_call real_type init_siz3 (
-            )
-        {   return .5 *(4./3. +
-            2. / (1.+std::sqrt(3./8.))) ;
-        }
 
         __static_call
         __inline_call iptr_type init_rule (
@@ -152,60 +136,77 @@
             return _rule ;
         }
 
-        __static_call
-        __inline_call iptr_type init_iter (
-            )
-        {   return iptr_type (
-                std::numeric_limits
-                    <iptr_type>::max()) ;
-        }
-
         public  :
 
     /*-------------------------- construct default param. */
         __inline_call mesh_params  (
-            ) :
-            _verb(iptr_type(+   0)) ,
-
-            _seed(iptr_type(+   8)) ,
-
-            _phi1(real_type(+ 60.)) ,
-            _phi2(real_type(+ 60.)) ,
-
-            _eta1(real_type(+ 45.)) ,
-            _eta2(real_type(+ 45.)) ,
-
-            _feat(bool_type(false)) ,
-
-            _near(real_type(1.E-8)) ,
-
-            _dims(iptr_type(+   2)) ,
-
-            _iter(init_iter())  ,
-
-            _rule(init_rule())  ,
-
-            _siz1(init_siz1())  ,
-            _siz2(init_siz2())  ,
-            _siz3(init_siz3())  ,
-
-            _eps1(real_type(+.333)) ,
-            _eps2(real_type(+.333)) ,
-
-            _rad2(real_type(+1.05)) ,
-            _rad3(real_type(+2.05)) ,
-
-            _off2(real_type(+0.90)) ,
-            _off3(real_type(+1.10)) ,
-
-            _snk2(real_type(+.200)) ,
-            _snk3(real_type(+.333)) ,
-
-            _vol3(real_type(+.000)) ,
-
-            _top1(bool_type(false)) ,
-            _top2(bool_type(false))
+            )
         {   // load default values
+            jigsaw_jig_t _jjig ;
+            jigsaw_null_jig_t( &_jjig ) ;
+
+            this->_verb = 
+            iptr_type(_jjig._verbosity) ;
+
+            this->_seed = 
+            iptr_type(_jjig._geom_seed) ;
+
+            this->_phi1 = real_type(60) ;
+            this->_phi2 = real_type(60) ;
+
+            this->_eta1 = 
+            real_type(_jjig._geom_eta1) ;
+            this->_eta2 = 
+            real_type(_jjig._geom_eta2) ;
+
+            this->_feat = 
+            bool_type(_jjig._geom_feat) ;
+
+            this->_near = 
+            real_type(_jjig._init_near) ;
+
+            this->_dims = 
+            iptr_type(_jjig._mesh_dims) ;
+            this->_iter = 
+            iptr_type(_jjig._mesh_iter) ;
+
+            this->_rule = 
+            iptr_type(init_rule()) ;
+
+            this->_siz1 = 
+            real_type(_jjig._mesh_siz1) ;
+            this->_siz2 = 
+            real_type(_jjig._mesh_siz2) ;
+            this->_siz3 = 
+            real_type(_jjig._mesh_siz3) ;
+
+            this->_eps1 = 
+            real_type(_jjig._mesh_eps1) ;
+            this->_eps2 = 
+            real_type(_jjig._mesh_eps2) ;
+
+            this->_rad2 = 
+            real_type(_jjig._mesh_rad2) ;
+            this->_rad3 = 
+            real_type(_jjig._mesh_rad3) ;
+
+            this->_off2 =
+            real_type(_jjig._mesh_off2) ;
+            this->_off3 = 
+            real_type(_jjig._mesh_off3) ;
+
+            this->_snk2 = 
+            real_type(_jjig._mesh_snk2) ;
+            this->_snk3 = 
+            real_type(_jjig._mesh_snk3) ;
+
+            this->_vol3 = 
+            real_type(_jjig._mesh_vol3) ;
+
+            this->_top1 =
+            bool_type(_jjig._mesh_top1) ;
+            this->_top2 = 
+            bool_type(_jjig._mesh_top2) ;
         }
 
     /*------------------------------------ "write" access */

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 Feb., 2021
+     * Last updated: 20 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -148,7 +148,7 @@
             _euclidean_mesh_2d._hval.tend();
                 ++_iter  )
         {
-           *_iter = _scal *  *_iter;
+           *_iter*= (fp32_t)  _scal;
 
            *_iter = std::min(*_iter,
         (fp32_t) (_scal *_jcfg._hfun_hmax));
@@ -168,7 +168,7 @@
             _euclidean_grid_2d._hmat.tend();
                 ++_iter  )
         {
-           *_iter = _scal *  *_iter;
+           *_iter*= (fp32_t)  _scal;
 
            *_iter = std::min(*_iter,
         (fp32_t) (_scal *_jcfg._hfun_hmax));
@@ -192,7 +192,7 @@
             _euclidean_mesh_3d._hval.tend();
                 ++_iter  )
         {
-           *_iter = _scal *  *_iter;
+           *_iter*= (fp32_t)  _scal;
 
            *_iter = std::min(*_iter,
         (fp32_t) (_scal *_jcfg._hfun_hmax));
@@ -212,7 +212,7 @@
             _euclidean_grid_3d._hmat.tend();
                 ++_iter  )
         {
-           *_iter = _scal *  *_iter;
+           *_iter*= (fp32_t)  _scal;
 
            *_iter = std::min(*_iter,
         (fp32_t) (_scal *_jcfg._hfun_hmax));
@@ -234,7 +234,7 @@
             _ellipsoid_mesh_3d._hval.tend();
                 ++_iter  )
         {
-           *_iter = _scal *  *_iter;
+           *_iter*= (fp32_t)  _scal;
 
            *_iter = std::min(*_iter,
         (fp32_t) (_scal *_jcfg._hfun_hmax));
@@ -255,7 +255,7 @@
             _ellipsoid_grid_3d._hmat.tend();
                 ++_iter  )
         {
-           *_iter = _scal *  *_iter;
+           *_iter*= (fp32_t)  _scal;
 
            *_iter = std::min(*_iter,
         (fp32_t) (_scal *_jcfg._hfun_hmax));

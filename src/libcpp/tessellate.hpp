@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 30 April, 2020
+ * Last updated: 21 Apr., 2021
  *
- * Copyright 2013-2020
+ * Copyright 2013-2021
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -54,17 +54,17 @@
 
 #   include "tessellate/delaunay_tri_type_2.hpp"
 #   include "tessellate/delaunay_tri_type_3.hpp"
-#   include "tessellate/delaunay_tri_type_4.hpp"
+//  include "tessellate/delaunay_tri_type_4.hpp"
 
 #   include "tessellate/delaunay_tri_k.hpp"
 
 #   include "tessellate/delaunay_tri_pred_2.hpp"
 #   include "tessellate/delaunay_tri_pred_3.hpp"
-#   include "tessellate/delaunay_tri_pred_4.hpp"
+//  include "tessellate/delaunay_tri_pred_4.hpp"
 
 #   include "tessellate/laguerre_tri_pred_2.hpp"
 #   include "tessellate/laguerre_tri_pred_3.hpp"
-#   include "tessellate/laguerre_tri_pred_4.hpp"
+//  include "tessellate/laguerre_tri_pred_4.hpp"
 
 #   endif//__TESSELLATE__
 

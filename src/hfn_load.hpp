@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Feb., 2021
+     * Last updated: 07 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -100,14 +100,11 @@
         }
     /*-------------------------------- read POINT section */
         __normal_call void_type push_point (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             double       *_pval ,
-            std::int32_t  _itag
+            std::int32_t/*_itag*/
             )
         {
-            __unreferenced(_ipos) ;
-            __unreferenced(_itag) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -156,14 +153,11 @@
         }
     /*-------------------------------- read TRIA3 section */
         __normal_call void_type push_tria3 (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             std::int32_t *_node ,
-            std::int32_t  _itag
+            std::int32_t/*_itag*/
             )
         {
-            __unreferenced(_ipos) ;
-            __unreferenced(_itag) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -197,14 +191,11 @@
         }
     /*-------------------------------- read TRIA4 section */
         __normal_call void_type push_tria4 (
-            std:: size_t  _ipos ,
+            std:: size_t/*_ipos*/ ,
             std::int32_t *_node ,
-            std::int32_t  _itag
+            std::int32_t/*_itag*/
             )
         {
-            __unreferenced(_ipos) ;
-            __unreferenced(_itag) ;
-
             if (this->_ndim == +3 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -224,13 +215,11 @@
         }
     /*-------------------------------- read COORD section */
         __normal_call void_type push_coord (
-            std:: size_t _idim,
-            std:: size_t _irow,
-            double       _ppos
+            std:: size_t  _idim ,
+            std:: size_t/*_irow*/ ,
+            double        _ppos
             )
         {
-            __unreferenced(_irow) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_grid)
@@ -297,11 +286,9 @@
     /*-------------------------------- open VALUE section */
         __normal_call void_type open_value (
             std:: size_t  _nrow ,
-            std:: size_t  _nval
+            std:: size_t/*_nval*/
             )
         {
-            __unreferenced(_nval) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -415,11 +402,9 @@
     /*-------------------------------- open SLOPE section */
         __normal_call void_type open_slope (
             std:: size_t  _nrow ,
-            std:: size_t  _nval
+            std:: size_t/*_nval*/
             )
         {
-            __unreferenced(_nval) ;
-
             if (this->_ndim == +2 &&
                 this->_kind ==
                     jmsh_kind::euclidean_mesh)
@@ -1960,37 +1945,17 @@
         hfun_data &_hfun
         )
     {
-        std::stringstream  _sstr;
-
-    /*---------------------------------- push "int_" data */
-        #define __dumpINTS(__tag,__var)     \
-            _sstr.str("");                  \
-            _sstr.clear();                  \
-            _sstr << "  " __tag " = "       \
-                  << __var << "\n" ;        \
-            _jlog.push(_sstr.str());
-
-    /*---------------------------------- push "real" data */
-        #define __dumpREAL(__tag,__var)     \
-            _sstr.str("");                  \
-            _sstr.clear();                  \
-            _sstr << "  " __tag " = "       \
-                  << std::scientific        \
-            << std::setprecision(+2)        \
-                  << __var << "\n" ;        \
-            _jlog.push(_sstr.str());
-
         iptr_type _errv  = __no_error ;
 
         __unreferenced(_jcfg) ;
 
         fp32_type _hmin =
             +std::numeric_limits
-                <real_type>::infinity() ;
+                <fp32_type>::infinity() ;
 
         fp32_type _hmax =
             -std::numeric_limits
-                <real_type>::infinity() ;
+                <fp32_type>::infinity() ;
 
         if (_hfun._ndim == +0)
         {
@@ -1998,9 +1963,10 @@
             _jlog.push(
                 "  CONSTANT-VALUE\n\n") ;
 
-            __dumpREAL(".VAL(H).",
-                _hfun._constant_value_kd._hval)
-
+            _jlog.push(
+                "  .VAL(H). = " + 
+                to_string_prec (
+                _hfun._constant_value_kd._hval, 2) + "\n") ;
         }
         else
         if (_hfun._ndim == +2 &&
@@ -2011,7 +1977,8 @@
             _jlog.push(
                 "  EUCLIDEAN-MESH\n\n") ;
 
-            __dumpINTS("|NDIMS.|",  +2) ;
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(2) + "\n");
 
             _jlog.push("\n") ;
 
@@ -2030,8 +1997,12 @@
                             _hmax,*_iter) ;
             }
 
-            __dumpREAL(".MIN(H).", _hmin)
-            __dumpREAL(".MAX(H).", _hmax)
+            _jlog.push(
+                "  .MIN(H). = " +
+                to_string_prec(_hmin, 2) + "\n");
+            _jlog.push(
+                "  .MAX(H). = " +
+                to_string_prec(_hmax, 2) + "\n");
 
             _jlog.push("  \n") ;
 
@@ -2047,7 +2018,9 @@
             if (_iter->mark()>=+0) _num1 += +1 ;
             }
 
-            __dumpINTS("|COORD.|", _num1)
+            _jlog.push(
+                "  |COORD.| = " 
+                + std::to_string(_num1) + "\n");
 
             for (auto _iter  =
                       _mptr->tri3().head();
@@ -2058,7 +2031,9 @@
             if (_iter->mark()>=+0) _num3 += +1 ;
             }
 
-            __dumpINTS("|TRIA-3|", _num3)
+            _jlog.push(
+                "  |TRIA-3| = " 
+                + std::to_string(_num3) + "\n");
 
         }
         else
@@ -2070,7 +2045,8 @@
             _jlog.push(
                 "  EUCLIDEAN-GRID\n\n") ;
 
-            __dumpINTS("|NDIMS.|",  +2) ;
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(2) + "\n");
 
             _jlog.push("\n") ;
 
@@ -2086,8 +2062,12 @@
                     std::max(_hmax, *_iter) ;
             }
 
-            __dumpREAL(".MIN(H).", _hmin)
-            __dumpREAL(".MAX(H).", _hmax)
+            _jlog.push(
+                "  .MIN(H). = " +
+                to_string_prec(_hmin, 2) + "\n");
+            _jlog.push(
+                "  .MAX(H). = " +
+                to_string_prec(_hmax, 2) + "\n");
 
             _jlog.push("  \n") ;
 
@@ -2097,9 +2077,12 @@
             auto _ynum = _hfun.
                 _euclidean_grid_2d._ypos.count();
 
-            __dumpINTS("|XGRID.|", _xnum)
-            __dumpINTS("|YGRID.|", _ynum)
-
+            _jlog.push(
+                "  |XGRID.| = " 
+                + std::to_string(_xnum) + "\n") ;
+            _jlog.push(
+                "  |YGRID.| = " 
+                + std::to_string(_ynum) + "\n") ;
         }
         else
         if (_hfun._ndim == +3 &&
@@ -2110,7 +2093,8 @@
             _jlog.push(
                 "  EUCLIDEAN-MESH\n\n") ;
 
-            __dumpINTS("|NDIMS.|",  +3) ;
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(3) + "\n");
 
             _jlog.push("\n") ;
 
@@ -2129,8 +2113,12 @@
                             _hmax,*_iter) ;
             }
 
-            __dumpREAL(".MIN(H).", _hmin)
-            __dumpREAL(".MAX(H).", _hmax)
+            _jlog.push(
+                "  .MIN(H). = " +
+                to_string_prec(_hmin, 2) + "\n");
+            _jlog.push(
+                "  .MAX(H). = " +
+                to_string_prec(_hmax, 2) + "\n");
 
             _jlog.push("  \n") ;
 
@@ -2146,7 +2134,9 @@
             if (_iter->mark()>=+0) _num1 += +1 ;
             }
 
-            __dumpINTS("|COORD.|", _num1)
+            _jlog.push(
+                "  |COORD.| = " 
+                + std::to_string(_num1) + "\n");
 
             for (auto _iter  =
                       _mptr->tri4().head();
@@ -2157,7 +2147,9 @@
             if (_iter->mark()>=+0) _num4 += +1 ;
             }
 
-            __dumpINTS("|TRIA-4|", _num4)
+            _jlog.push(
+                "  |TRIA-4| = " 
+                + std::to_string(_num4) + "\n");
 
         }
         else
@@ -2169,7 +2161,8 @@
             _jlog.push(
                 "  EUCLIDEAN-GRID\n\n") ;
 
-            __dumpINTS("|NDIMS.|",  +3) ;
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(3) + "\n");
 
             _jlog.push("\n") ;
 
@@ -2185,8 +2178,12 @@
                     std::max(_hmax, *_iter) ;
             }
 
-            __dumpREAL(".MIN(H).", _hmin)
-            __dumpREAL(".MAX(H).", _hmax)
+            _jlog.push(
+                "  .MIN(H). = " +
+                to_string_prec(_hmin, 2) + "\n");
+            _jlog.push(
+                "  .MAX(H). = " +
+                to_string_prec(_hmax, 2) + "\n");
 
             _jlog.push("  \n") ;
 
@@ -2199,9 +2196,15 @@
             auto _znum = _hfun.
                 _euclidean_grid_3d._zpos.count();
 
-            __dumpINTS("|XGRID.|", _xnum)
-            __dumpINTS("|YGRID.|", _ynum)
-            __dumpINTS("|ZGRID.|", _znum)
+            _jlog.push(
+                "  |XGRID.| = " 
+                + std::to_string(_xnum) + "\n") ;
+            _jlog.push(
+                "  |YGRID.| = " 
+                + std::to_string(_ynum) + "\n") ;
+            _jlog.push(
+                "  |ZGRID.| = " 
+                + std::to_string(_znum) + "\n") ;
 
         }
         else
@@ -2211,6 +2214,9 @@
     /*--------------------------------- ellipsoid-mesh-3d */
             _jlog.push(
                 "  ELLIPSOID-MESH\n\n") ;
+
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(2) + "\n");
 
             iptr_type _num1 = +0 ;
             iptr_type _num3 = +0 ;
@@ -2227,8 +2233,12 @@
                             _hmax,*_iter) ;
             }
 
-            __dumpREAL(".MIN(H).", _hmin)
-            __dumpREAL(".MAX(H).", _hmax)
+            _jlog.push(
+                "  .MIN(H). = " +
+                to_string_prec(_hmin, 2) + "\n");
+            _jlog.push(
+                "  .MAX(H). = " +
+                to_string_prec(_hmax, 2) + "\n");
 
             _jlog.push("  \n") ;
 
@@ -2244,7 +2254,9 @@
             if (_iter->mark()>=+0) _num1 += +1 ;
             }
 
-            __dumpINTS("|COORD.|", _num1)
+            _jlog.push(
+                "  |COORD.| = " 
+                + std::to_string(_num1) + "\n");
 
             for (auto _iter  =
                       _mptr->tri3().head();
@@ -2255,7 +2267,9 @@
             if (_iter->mark()>=+0) _num3 += +1 ;
             }
 
-            __dumpINTS("|TRIA-3|", _num3)
+            _jlog.push(
+                "  |TRIA-3| = " 
+                + std::to_string(_num3) + "\n");
 
         }
         else
@@ -2265,6 +2279,9 @@
     /*--------------------------------- ellipsoid-grid-3d */
             _jlog.push(
                 "  ELLIPSOID-GRID\n\n") ;
+
+            _jlog.push(
+                "  |NDIMS.| = " + std::to_string(2) + "\n");
 
             for (auto _iter  = _hfun.
             _ellipsoid_grid_3d._hmat.head() ;
@@ -2278,8 +2295,12 @@
                     std::max(_hmax, *_iter) ;
             }
 
-            __dumpREAL(".MIN(H).", _hmin)
-            __dumpREAL(".MAX(H).", _hmax)
+            _jlog.push(
+                "  .MIN(H). = " +
+                to_string_prec(_hmin, 2) + "\n");
+            _jlog.push(
+                "  .MAX(H). = " +
+                to_string_prec(_hmax, 2) + "\n");
 
             _jlog.push("  \n") ;
 
@@ -2289,8 +2310,12 @@
             auto _ynum = _hfun.
                 _ellipsoid_grid_3d._ypos.count();
 
-            __dumpINTS("|XGRID.|", _xnum)
-            __dumpINTS("|YGRID.|", _ynum)
+            _jlog.push(
+                "  |XGRID.| = " 
+                + std::to_string(_xnum) + "\n") ;
+            _jlog.push(
+                "  |YGRID.| = " 
+                + std::to_string(_ynum) + "\n") ;
 
             _jlog.push("  \n") ;
 
@@ -2300,10 +2325,6 @@
         }
 
         _jlog.push("\n") ;
-
-        #undef  __dumpINTS
-        #undef  __dumpREAL
-
 
         return (  _errv) ;
     }

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Dec., 2020
+     * Last updated: 08 Jul., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -174,11 +174,14 @@
         {
             if (_tdim != +1)
             {
-                if (_qdat._mark++ <= +0)
+                if (_qdat._mark < 0)
                 {
     /*------------------------- tmp. reject if split bnds */
                 _mesh.
                 _tria.roll_back(_tnew, _told);
+
+                _qdat._mark = 
+                 std::max(1,_qdat._mark+1) ;
 
                 _kind = rdel_opts::null_kind ;
 
@@ -337,11 +340,14 @@
         {
             if (_tdim != +2)
             {
-                if (_qdat._mark++ <= +0)
+                if (_qdat._mark < 0)
                 {
     /*------------------------- tmp. reject if split bnds */
                 _mesh.
                 _tria.roll_back(_tnew, _told);
+
+                _qdat._mark = 
+                 std::max(1,_qdat._mark+1) ;
 
                 _kind = rdel_opts::null_kind ;
 
@@ -500,11 +506,14 @@
         {
             if (_tdim != +3)
             {
-                if (_qdat._mark++ <= +0)
+                if (_qdat._mark < 0)
                 {
     /*------------------------- tmp. reject if split bnds */
                 _mesh.
                 _tria.roll_back(_tnew, _told);
+
+                _qdat._mark = 
+                 std::max(1,_qdat._mark+1) ; 
 
                 _kind = rdel_opts::null_kind ;
 

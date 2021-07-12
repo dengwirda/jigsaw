@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Feb., 2021
+     * Last updated: 20 Apr., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -268,7 +268,7 @@
         mesh::keep_all_2d <
             real_type, iptr_type> _halo ;
 
-        for(auto _iter = 64; _iter-- != +0 ; )
+        for(auto _iter = 96; _iter-- != +0 ; )
         {
             bool_type _okay = true;
 
@@ -326,75 +326,6 @@
 
     /*
     --------------------------------------------------------
-     * MARK-FEAT: "feature" nodes in "collar".
-    --------------------------------------------------------
-     */
-
-    template <
-        typename  halo_type
-             >
-    __static_call
-    __normal_call void_type mark_feat (
-        mesh_type &_mesh ,
-        iptr_type  _base ,
-        halo_type &_halo ,
-        iptr_list &_mark ,
-        rdel_opts &_args
-        )
-    {
-    /*------------ MARK[i] = 1 for nodes in "sharp-feat." */
-        real_type _DtoR =
-       (real_type)+3.141592653589793 / +180.;
-
-        real_type _PHI1 =
-       (real_type)+180. - _args.phi1() ;
-
-        real_type _HARD =
-            std::cos(_PHI1 * _DtoR) ;
-
-        auto _BASE = _mesh._tria.node(_base);
-
-        _mark.set_count(_halo._list.count());
-        _mark.fill( +0 ) ;
-
-        for (auto _ipos  = _halo._list.head() ;
-                  _ipos != _halo._list.tend() ;
-                ++_ipos  )
-        for (auto _jpos  = _ipos + 1;
-                  _jpos != _halo._list.tend() ;
-                ++_jpos  )
-        {
-    /*--------------------- calc. angle from IPOS to JPOS */
-            if (_ipos == _jpos) continue ;
-
-             auto _inum  =
-            _ipos - _halo._list.head();
-             auto _jnum  =
-            _jpos - _halo._list.head();
-
-            real_type _ivec[2], _jvec[2] ;
-            geometry::vector_2d (
-               &_BASE->pval(0),
-               &_ipos->pval(0), _ivec);
-
-            geometry::vector_2d (
-               &_BASE->pval(0),
-               &_jpos->pval(0), _jvec);
-
-            real_type _acos =
-            geometry::cosine_2d(_ivec, _jvec) ;
-
-            if (_acos >= _HARD)
-            {
-    /*--------------------- MARK pair if feat. is "sharp" */
-                _mark[_inum] = +1 ;
-                _mark[_jnum] = +1 ;
-            }
-        }
-    }
-
-    /*
-    --------------------------------------------------------
      * INIT-BALL: set-up ball "collar".
     --------------------------------------------------------
      */
@@ -415,6 +346,7 @@
         __unreferenced(_hfun) ;
         __unreferenced(_mode) ;
         __unreferenced(_pass) ;
+        __unreferenced(_args) ;
 
         iptr_list _mark  ;
         for (auto
@@ -447,19 +379,15 @@
 
             _geom.intersect( _hdat, _halo) ;
 
-          //mark_feat(_mesh,
-          //    _base,_halo, _mark, _args) ;
-
             iptr_type _inum  = +0 ;
-            for (auto _iter  = _halo._list.head() ;
-                      _iter != _halo._list.tend() ;
-                    ++_iter, ++_inum)
+            for (auto 
+                _iter  = _halo._list.head () ;
+                _iter != _halo._list.tend () ;
+              ++_iter, ++_inum)
             {
     /*--------------------- push nodes + constraint faces */
-              //if (_mark[_inum] <= +0) continue;
-
-                iptr_type _hint =
-                    _mesh._tria.node(_base)->next() ;
+                iptr_type _hint = _mesh.
+                    _tria. node(_base)->next() ;
 
                 real_type  _PPOS[3] ; // weight = 0
                 _PPOS[0] = _iter->pval(0) ;
@@ -468,7 +396,7 @@
 
                 iptr_type _node = -1;
                 if (_mesh._tria.push_node(
-                        &_PPOS[ 0], _node, _hint) )
+                   &_PPOS[ 0], _node, _hint) )
                 {
                     _mesh._tria.node(
                         _node)->idxh() =

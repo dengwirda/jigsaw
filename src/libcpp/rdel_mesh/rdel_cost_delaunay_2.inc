@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 August, 2019
+     * Last updated: 21 Apr., 2021
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -122,10 +122,23 @@
                 _ebal, _pmax)/(_esiz * _esiz) ;
 
     /*------------------------- refinement classification */
-        if (_eave >= _args.siz1() *
-                     _args.siz1() ||
-            _srat >= _args.eps1() *
-                     _args.eps1() )
+        
+    //  flag cells "trapped" between boundaries -- having
+    //  all nodes on lower dimensional facets and with at
+    //  least one boundary face.
+
+        bool_type _trap =
+            _mesh._tria.
+        node(_enod[0])->fdim() < +1 &&
+            _mesh._tria.
+        node(_enod[1])->fdim() < +1  ;
+
+        real_type _scal = 1. + _trap * .100 ;
+
+        if (_eave >= _args.siz1() * _scal *
+                     _args.siz1() * _scal ||
+            _srat >= _args.eps1() * _scal *
+                     _args.eps1() * _scal )
         {
             _kind = mesh::ring_item; return ;
         }
@@ -208,6 +221,42 @@
             _emin = _enum ;
         }
 
+    /*------------------------- calc. refinement priority */
+        bool_type _trap = false ;
+
+        _tdat._mark =  (iptr_type) +0;
+
+    #   ifdef __bias_bnds
+        for(_enum = +3; _enum-- != +0; )
+        {
+            iptr_type  _enod[ +3];
+            mesh_type::tria_type::
+                tria_type::
+            face_node(_enod, _enum, 2, 1);
+            _enod[ +0] = _tnod[_enod[+0]];
+            _enod[ +1] = _tnod[_enod[+1]];
+
+            algorithms::isort(
+                &_enod[0] , &_enod[2] ,
+                    std::less<iptr_type>()) ;
+
+            typename mesh_type::
+                     edge_data _edat;
+            _edat._node[0] = _enod[0] ;
+            _edat._node[1] = _enod[1] ;
+
+            typename mesh_type::
+                     edge_list::
+                 item_type *_eptr = nullptr ;
+            if (_mesh.find_edge(_edat,_eptr))
+            {
+                _trap =   true ;
+                
+                _tdat._mark -= +1 ;
+            }
+        }
+    #   endif
+
     /*------------------------- eval. radius--edge ratios */
         real_type _erat = _tbal[    2] /
                           _llen[_emin] ;
@@ -216,8 +265,23 @@
         _tdat._cost = (float) _erat;
 
     /*------------------------- refinement classification */
-        if (_erat >= _args.rad2() *
-                     _args.rad2() )
+        
+    //  flag cells "trapped" between boundaries -- having
+    //  all nodes on lower dimensional facets and with at
+    //  least one boundary face.
+
+        _trap = _trap &&
+            _mesh._tria.
+        node(_tnod[0])->fdim() < +2 &&
+            _mesh._tria.
+        node(_tnod[1])->fdim() < +2 &&
+            _mesh._tria.
+        node(_tnod[2])->fdim() < +2  ;
+
+        real_type _scal = 1. ;
+
+        if (_erat >= _args.rad2() * _scal *
+                     _args.rad2() * _scal )
         {
             _kind = mesh::ring_item; return ;
         }
@@ -253,8 +317,10 @@
         _eave *= (real_type)+3.0 ;
 
     /*------------------------- refinement classification */
-        if (_eave >= _args.siz2() *
-                     _args.siz2() )
+        _scal += (real_type)(_trap * 0.100) ;
+
+        if (_eave >= _args.siz2() * _scal *
+                     _args.siz2() * _scal )
         {
             _kind = mesh::ring_item; return ;
         }

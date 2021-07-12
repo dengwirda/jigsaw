@@ -42,7 +42,7 @@
      *
      * JIGSAW release 0.9.15.x
      *
-     * Last updated: 16 April, 2021
+     * Last updated: 10 July, 2021
      *
      * Copyright 2013 -- 2021
      * Darren Engwirda
@@ -260,6 +260,11 @@
 
     /*---------------------------------- JIGSAW's backend */
 
+    extern  "C"
+    {
+#   include "../inc/lib_jigsaw.h"
+    }
+
 #   include "libcpp/basebase.hpp"
 #   include "libcpp/textutil.hpp"
 
@@ -268,11 +273,6 @@
 #   include "libcpp/rdelmesh.hpp"
 //  include "libcpp/treemesh.hpp"
 #   include "libcpp/itermesh.hpp"
-
-    extern  "C"
-    {
-#   include "../inc/lib_jigsaw.h"
-    }
 
     typedef real_t real_type ;        // double-precision
     typedef fp32_t fp32_type ;        // single-precision
@@ -632,8 +632,8 @@
         euclidean_rdel_2d       _euclidean_rdel_2d ;
         euclidean_rdel_3d       _euclidean_rdel_3d ;
 
-        euclidean_rdel_2d       _euclidean_rvor_2d ;
-        euclidean_rdel_3d       _euclidean_rvor_3d ;
+    //  euclidean_rdel_2d       _euclidean_rvor_2d ;
+    //  euclidean_rdel_3d       _euclidean_rvor_3d ;
 
         euclidean_mesh_2d       _euclidean_mesh_2d ;
         euclidean_mesh_3d       _euclidean_mesh_3d ;

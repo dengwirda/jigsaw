@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 Apr., 2021
+     * Last updated: 10 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -437,6 +437,7 @@
 
     /*------------------------------ seed node from init. */
         iptr_type _base =
+            (iptr_type)
             _mesh._tria._nset.count () ;
 
         if (_imid > -1)

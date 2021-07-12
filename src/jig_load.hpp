@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 July, 2020
+     * Last updated: 07 Jul., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -549,6 +549,13 @@
                 iter() = _jjig._mesh_iter ;
 
             _jcfg._mesh_opts.
+                siz1() = _jjig._mesh_siz1 ;
+            _jcfg._mesh_opts.
+                siz2() = _jjig._mesh_siz2 ;
+            _jcfg._mesh_opts.
+                siz3() = _jjig._mesh_siz3 ;
+
+            _jcfg._mesh_opts.
                 top1() = _jjig._mesh_top1 ;
             _jcfg._mesh_opts.
                 top2() = _jjig._mesh_top2 ;
@@ -818,7 +825,6 @@
             (real_type)  0.,
             (real_type)  1.)
 
-
         #undef  __testINTS
         #undef  __testREAL
         #undef  __warnREAL
@@ -840,226 +846,185 @@
         jlog_data &_jlog
         )
     {
-        std::stringstream  _sstr ;
+        iptr_type _errv  = __no_error ;
 
-    /*---------------------------------- push "file" data */
-        #define __dumpFILE( __tag, __var)   \
-            _jlog.push("  " __tag " = " +   \
-                _jcfg.__var + " \n" ) ;
+    /*---------------------------------- push "bool" data */
+        #define __pushBVAL(__var)           \
+        std::string(__var ? "TRUE" : "FALSE") + "\n"
 
     /*---------------------------------- push "ints" data */
         #define __pushIVAL(__var)           \
            (__var !=                        \
         std::numeric_limits<iptr_type>::max() ? \
-            std::to_string(__var) : "MAXINT")
-
-        #define __dumpINTS(__tag,__var)     \
-            _sstr.str("");                  \
-            _sstr.clear();                  \
-            _sstr << "  " __tag " = "       \
-                  << __pushIVAL(__var)      \
-                  << " \n" ;                \
-            _jlog.push(_sstr.str()) ;       \
-
-    /*---------------------------------- push "bool" data */
-        #define __pushBVAL(__var)           \
-           ( __var ? "TRUE" : "FALSE" )
-
-        #define __dumpBOOL(__tag,__var)     \
-            _sstr.str("");                  \
-            _sstr.clear();                  \
-            _sstr << "  " __tag " = "       \
-                  << __pushBVAL(__var)      \
-                  << " \n" ;                \
-            _jlog.push(_sstr.str()) ;       \
+            std::to_string(__var) : "MAXINT"\
+            ) + "\n"
 
     /*---------------------------------- push "real" data */
-        #define __dumpREAL(__tag,__var)     \
-            _sstr.str("");                  \
-            _sstr.clear();                  \
-            _sstr << "  " __tag " = "       \
-                  << std::scientific        \
-                  << std::setprecision(2)   \
-                  << __var                  \
-                  << " \n" ;                \
-            _jlog.push(_sstr.str()) ;       \
+        #define __pushRVAL(__var)           \
+           (__var !=                        \
+        std::numeric_limits<real_type>::max() ? \
+        to_string_prec(__var, +2) : "MAXFLT"\
+            ) + "\n"
 
-
-        iptr_type _errv  = __no_error;
-
-        __dumpFILE(
-            "GEOM-FILE", _geom_file)
-        __dumpFILE(
-            "MESH-FILE", _mesh_file)
-        __dumpFILE(
-            "HFUN-FILE", _hfun_file)
-        __dumpFILE(
-            "INIT-FILE", _init_file)
-        __dumpFILE(
-            "TRIA-FILE", _tria_file)
-        __dumpFILE(
-            "BNDS-FILE", _bnds_file)
+        _jlog.push("  GEOM-FILE = " + 
+                    _jcfg._geom_file + "\n" ) ;
+        _jlog.push("  MESH-FILE = " + 
+                    _jcfg._mesh_file + "\n" ) ;
+        _jlog.push("  HFUN-FILE = " + 
+                    _jcfg._hfun_file + "\n" ) ;
+        _jlog.push("  INIT-FILE = " + 
+                    _jcfg._init_file + "\n" ) ;
+        _jlog.push("  TRIA-FILE = " + 
+                    _jcfg._tria_file + "\n" ) ;
+        _jlog.push("  BNDS-FILE = " + 
+                    _jcfg._bnds_file + "\n" ) ;
 
         _jlog.push("\n") ;
 
         if (_jcfg._verbosity > +0)
         {
     /*---------------------------- push GEOM keywords */
-        __dumpINTS("GEOM-SEED",
-            _jcfg._mesh_opts.seed())
+        _jlog.push("  GEOM-SEED = " + 
+            __pushIVAL(_jcfg._mesh_opts.seed()));
 
-        __dumpREAL("GEOM-PHI1",
-            _jcfg._mesh_opts.phi1())
-        __dumpREAL("GEOM-PHI2",
-            _jcfg._mesh_opts.phi2())
+        _jlog.push("  GEOM-PHI1 = " + 
+            __pushRVAL(_jcfg._mesh_opts.phi1()));
+        _jlog.push("  GEOM-PHI2 = " + 
+            __pushRVAL(_jcfg._mesh_opts.phi2()));
 
-        __dumpREAL("GEOM-ETA1",
-            _jcfg._mesh_opts.eta1())
-        __dumpREAL("GEOM-ETA2",
-            _jcfg._mesh_opts.eta2())
+        _jlog.push("  GEOM-ETA1 = " + 
+            __pushRVAL(_jcfg._mesh_opts.eta1()));
+        _jlog.push("  GEOM-ETA2 = " + 
+            __pushRVAL(_jcfg._mesh_opts.eta2()));
 
-        __dumpBOOL("GEOM-FEAT",
-            _jcfg._mesh_opts.feat())
+        _jlog.push("  GEOM-FEAT = " + 
+            __pushBVAL(_jcfg._mesh_opts.feat()));
 
         _jlog.push("\n") ;
 
     /*---------------------------- push INIT keywords */
-        __dumpREAL("INIT-NEAR",
-            _jcfg._mesh_opts.near())
+        _jlog.push("  INIT-NEAR = " + 
+            __pushRVAL(_jcfg._mesh_opts.near()));
 
         _jlog.push("\n") ;
 
     /*---------------------------- push HFUN keywords */
         if(_jcfg._hfun_scal ==
          jcfg_data::hfun_scal::absolute)
-        _jlog.push (
-            "  HFUN-SCAL = ABSOLUTE \n") ;
+        _jlog.push("  HFUN-SCAL = ABSOLUTE \n") ;
         else
         if(_jcfg._hfun_scal ==
          jcfg_data::hfun_scal::relative)
-        _jlog.push (
-            "  HFUN-SCAL = RELATIVE \n") ;
+        _jlog.push("  HFUN-SCAL = RELATIVE \n") ;
 
-        __dumpREAL(
-            "HFUN-HMAX", _jcfg._hfun_hmax)
-        __dumpREAL(
-            "HFUN-HMIN", _jcfg._hfun_hmin)
+        _jlog.push("  HFUN-HMAX = " + 
+            __pushRVAL( _jcfg._hfun_hmax )) ;
+        _jlog.push("  HFUN-HMIN = " + 
+            __pushRVAL( _jcfg._hfun_hmin )) ;
 
         _jlog.push("\n") ;
 
     /*---------------------------- push BNDS keywords */
         if(_jcfg._bnds_pred ==
          jcfg_data::bnds_pred::bnd_tria)
-        _jlog.push (
-            "  BNDS-KERN = BND-TRIA \n") ;
+        _jlog.push("  BNDS-KERN = BND-TRIA \n") ;
         else
         if(_jcfg._bnds_pred ==
          jcfg_data::bnds_pred::bnd_dual)
-        _jlog.push (
-            "  BNDS-KERN = BND-DUAL \n") ;
+        _jlog.push("  BNDS-KERN = BND-DUAL \n") ;
 
     /*---------------------------- push MESH keywords */
         if(_jcfg._mesh_pred ==
          jcfg_data::mesh_pred::delaunay)
-        _jlog.push (
-            "  MESH-KERN = DELAUNAY \n") ;
+        _jlog.push("  MESH-KERN = DELAUNAY \n") ;
         else
         if(_jcfg._mesh_pred ==
          jcfg_data::mesh_pred::delfront)
-        _jlog.push (
-            "  MESH-KERN = DELFRONT \n") ;
+        _jlog.push("  MESH-KERN = DELFRONT \n") ;
         else
         if(_jcfg._mesh_pred ==
          jcfg_data::mesh_pred::bisector)
-        _jlog.push (
-            "  MESH-KERN = BISECTOR \n") ;
+        _jlog.push("  MESH-KERN = BISECTOR \n") ;
 
-        __dumpBOOL("MESH-TOP1",
-            _jcfg._mesh_opts.top1())
-        __dumpBOOL("MESH-TOP2",
-            _jcfg._mesh_opts.top2())
+        _jlog.push("  MESH-TOP1 = " + 
+            __pushBVAL(_jcfg._mesh_opts.top1()));
+        _jlog.push("  MESH-TOP2 = " + 
+            __pushBVAL(_jcfg._mesh_opts.top2()));
 
-        __dumpINTS("MESH-ITER",
-            _jcfg._mesh_opts.iter())
+        _jlog.push("  MESH-ITER = " + 
+            __pushIVAL(_jcfg._mesh_opts.iter()));
+        _jlog.push("  MESH-DIMS = " + 
+            __pushIVAL(_jcfg._mesh_opts.dims()));
 
-        __dumpINTS("MESH-DIMS",
-            _jcfg._mesh_opts.dims())
+        _jlog.push("  MESH-SIZ1 = " + 
+            __pushRVAL(_jcfg._mesh_opts.siz1()));
+        _jlog.push("  MESH-SIZ2 = " + 
+            __pushRVAL(_jcfg._mesh_opts.siz2()));
+        _jlog.push("  MESH-SIZ2 = " + 
+            __pushRVAL(_jcfg._mesh_opts.siz3()));
 
-        __dumpREAL("MESH-SIZ1",
-            _jcfg._mesh_opts.siz1())
-        __dumpREAL("MESH-SIZ2",
-            _jcfg._mesh_opts.siz2())
-        __dumpREAL("MESH-SIZ3",
-            _jcfg._mesh_opts.siz3())
+        _jlog.push("  MESH-EPS1 = " + 
+            __pushRVAL(_jcfg._mesh_opts.eps1()));
+        _jlog.push("  MESH-EPS2 = " + 
+            __pushRVAL(_jcfg._mesh_opts.eps2()));
 
-        __dumpREAL("MESH-EPS1",
-            _jcfg._mesh_opts.eps1())
-        __dumpREAL("MESH-EPS2",
-            _jcfg._mesh_opts.eps2())
+        _jlog.push("  MESH-RAD2 = " + 
+            __pushRVAL(_jcfg._mesh_opts.rad2()));
+        _jlog.push("  MESH-RAD3 = " + 
+            __pushRVAL(_jcfg._mesh_opts.rad3()));
 
-        __dumpREAL("MESH-RAD2",
-            _jcfg._mesh_opts.rad2())
-        __dumpREAL("MESH-RAD3",
-            _jcfg._mesh_opts.rad3())
+        _jlog.push("  MESH-OFF2 = " + 
+            __pushRVAL(_jcfg._mesh_opts.off2()));
+        _jlog.push("  MESH-OFF3 = " + 
+            __pushRVAL(_jcfg._mesh_opts.off3()));
 
-        __dumpREAL("MESH-OFF2",
-            _jcfg._mesh_opts.off2())
-        __dumpREAL("MESH-OFF3",
-            _jcfg._mesh_opts.off3())
+        _jlog.push("  MESH-SNK2 = " + 
+            __pushRVAL(_jcfg._mesh_opts.snk2()));
+        _jlog.push("  MESH-SNK3 = " + 
+            __pushRVAL(_jcfg._mesh_opts.snk3()));
 
-        __dumpREAL("MESH-SNK2",
-            _jcfg._mesh_opts.snk2())
-        __dumpREAL("MESH-SNK3",
-            _jcfg._mesh_opts.snk3())
-
-        __dumpREAL("MESH-VOL3",
-            _jcfg._mesh_opts.vol3())
+        _jlog.push("  MESH-VOL3 = " + 
+            __pushRVAL(_jcfg._mesh_opts.vol3()));
 
         _jlog.push("\n") ;
 
     /*---------------------------- push OPTM keywords */
         if(_jcfg._iter_pred ==
          jcfg_data::iter_pred::odt_dqdx)
-        _jlog.push (
-            "  OPTM-KERN = ODT+DQDX \n") ;
+        _jlog.push("  OPTM-KERN = ODT+DQDX \n") ;
         else
         if(_jcfg._iter_pred ==
          jcfg_data::iter_pred::cvt_dqdx)
-        _jlog.push (
-            "  OPTM-KERN = CVT+DQDX \n") ;
+        _jlog.push("  OPTM-KERN = CVT+DQDX \n") ;
         else
         if(_jcfg._iter_pred ==
          jcfg_data::iter_pred::h95_dqdx)
-        _jlog.push (
-            "  OPTM-KERN = H95+DQDX \n") ;
+        _jlog.push("  OPTM-KERN = H95+DQDX \n") ;
 
-        __dumpINTS("OPTM-ITER",
-            _jcfg._iter_opts.iter())
+        _jlog.push("  OPTM-ITER = " + 
+            __pushIVAL(_jcfg._iter_opts.iter()));
 
-        __dumpREAL("OPTM-QTOL",
-            _jcfg._iter_opts.qtol())
-        __dumpREAL("OPTM-QLIM",
-            _jcfg._iter_opts.qlim())
+        _jlog.push("  OPTM-QTOL = " + 
+            __pushRVAL(_jcfg._iter_opts.qtol()));
+        _jlog.push("  OPTM-QLIM = " + 
+            __pushRVAL(_jcfg._iter_opts.qlim()));
 
-        __dumpBOOL("OPTM-ZIP_",
-            _jcfg._iter_opts.zip_())
-        __dumpBOOL("OPTM-DIV_",
-            _jcfg._iter_opts.div_())
-        __dumpBOOL("OPTM-TRIA",
-            _jcfg._iter_opts.tria())
-        __dumpBOOL("OPTM-DUAL",
-            _jcfg._iter_opts.dual())
+        _jlog.push("  OPTM-ZIP_ = " + 
+            __pushBVAL(_jcfg._iter_opts.zip_()));
+        _jlog.push("  OPTM-DIV_ = " + 
+            __pushBVAL(_jcfg._iter_opts.div_()));
+        _jlog.push("  OPTM-TRIA = " + 
+            __pushBVAL(_jcfg._iter_opts.tria()));
+        _jlog.push("  OPTM-DUAL = " + 
+            __pushBVAL(_jcfg._iter_opts.dual()));
 
         _jlog.push("\n") ;
 
         }
 
-        #undef  __dumpFILE
+        #undef  __pushRVAL
         #undef  __pushIVAL
         #undef  __pushBVAL
-        #undef  __dumpINTS
-        #undef  __dumpBOOL
-        #undef  __dumpREAL
 
         return (  _errv) ;
     }
