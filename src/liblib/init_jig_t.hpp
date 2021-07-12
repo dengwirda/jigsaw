@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 Jul., 2021
+     * Last updated: 10 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -50,11 +50,11 @@
 
     /*
     --------------------------------------------------------
-     * INIT-JIG_T: init. jig_t for lib_jigsaw.
+     * NULL-JIG_T: init. jig_t for all-jigsaw.
     --------------------------------------------------------
      */
 
-    void jigsaw_init_jig_t (                // init. jig_t
+    void jigsaw_null_jig_t (                // init. jig_t
         jigsaw_jig_t *_jcfg
         )
     {
@@ -128,6 +128,20 @@
         _jcfg->_optm_div_ = (indx_t) +1 ;
         _jcfg->_optm_zip_ = (indx_t) +1 ;
     }
+
+    /*
+    --------------------------------------------------------
+     * INIT-JIG_T: init. jig_t for lib_jigsaw.
+    --------------------------------------------------------
+     */
+
+#   ifdef  __lib_jigsaw
+
+    void jigsaw_init_jig_t (                // init. jig_t
+        jigsaw_jig_t *_jcfg
+        ) { jigsaw_null_jig_t(_jcfg) ;  }
+
+#   endif//__lib_jigsaw
 
 #   endif
 

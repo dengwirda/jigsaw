@@ -1951,11 +1951,11 @@
 
         fp32_type _hmin =
             +std::numeric_limits
-                <real_type>::infinity() ;
+                <fp32_type>::infinity() ;
 
         fp32_type _hmax =
             -std::numeric_limits
-                <real_type>::infinity() ;
+                <fp32_type>::infinity() ;
 
         if (_hfun._ndim == +0)
         {

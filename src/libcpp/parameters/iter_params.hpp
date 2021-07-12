@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2021
+     * Last updated: 10 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -88,7 +88,7 @@
             )
         {   // load default values
             jigsaw_jig_t _jjig ;
-            jigsaw_init_jig_t( &_jjig ) ;
+            jigsaw_null_jig_t( &_jjig ) ;
 
             this->_verb = 
             iptr_type(_jjig._verbosity) ;
