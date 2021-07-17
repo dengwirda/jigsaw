@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Apr., 2021
+     * Last updated: 15 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -140,6 +140,8 @@
         geom_type &_geom,
         mesh_type &_mesh,
         edat_list &_eset,
+        typename
+    mesh_type::edge_list &_epro ,
         iptr_type  _npos,
         real_type *_ppos,
         real_type *_pmax,
@@ -182,6 +184,20 @@
             _mesh._tria.node(_enod[0]) ;
              auto _jptr =
             _mesh._tria.node(_enod[1]) ;
+
+            algorithms::isort (
+                &_enod[0], &_enod[1],
+                    std::less<iptr_type>()) ;
+
+            edge_data _edat;
+            _edat._node[0] = _enod[ 0] ;
+            _edat._node[1] = _enod[ 1] ;
+
+            typename mesh_type::    // skip protected
+                     edge_list::
+                item_type *_same = nullptr  ;
+            if(_epro.find(
+                    _edat, _same)) continue ;
 
             char_type _feat, _topo ;
             iptr_type _part;
@@ -473,7 +489,7 @@
         _tria.node (_npos)->pval(0) ;
 
         _kind = topo_node( _geom,
-            _mesh , _eset,
+            _mesh , _eset, _epro,
             _npos , _ppos, _pmax,
             _tmax , _hint, _args) ;
 
