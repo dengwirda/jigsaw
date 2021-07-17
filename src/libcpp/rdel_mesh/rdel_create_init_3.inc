@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Jul., 2021
+     * Last updated: 15 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -621,6 +621,9 @@
             _edat._node[1] =
             _imap[_iter->node( 1 )] ;
 
+            _edat._pass    =     +0 ;
+            _edat._kind    = 
+                     mesh::good_item;
             _edat._part    =
                     _iter->itag() ;
 
@@ -628,11 +631,13 @@
             _edat._tadj    = _tadj  ;
 
             algorithms::isort (
-                &_edat._node[0],
-                &_edat._node[2],
+            _edat._node.head(),
+            _edat._node.tend(),
             std::less<iptr_type>()) ;
 
-            _epro.push(_edat)  ;
+            _epro.push     ( _edat) ;
+
+            _mesh.push_edge( _edat) ;
 
             }
             else
@@ -647,7 +652,7 @@
             _edat._part    =
                     _iter->itag() ;
 
-            _ebad.push(_edat)  ;
+            _ebad.push     ( _edat) ;
 
             }
 
@@ -680,6 +685,9 @@
             _fdat._node[2] =
             _imap[_iter->node( 2 )] ;
 
+            _fdat._pass    =     +0 ;
+            _fdat._kind    = 
+                     mesh::good_item;
             _fdat._part    =
                     _iter->itag() ;
 
@@ -691,7 +699,9 @@
             _fdat._node.tend(),
             std::less<iptr_type>()) ;
 
-            _fpro.push(_fdat) ;
+            _fpro.push     ( _fdat) ;
+
+            _mesh.push_face( _fdat) ;
 
             }
             else
@@ -708,7 +718,7 @@
             _fdat._part    =
                     _iter->itag() ;
 
-            _fbad.push(_fdat) ;
+            _fbad.push     ( _fdat) ;
 
             }
 

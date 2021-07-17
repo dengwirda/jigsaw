@@ -645,8 +645,8 @@
         _pmax[ 0] - _pmin[ 0] ,
         _pmax[ 1] - _pmin[ 1] ,
             } ;
-        _plen[ 0]*= (real_type)+4.0 ;
-        _plen[ 1]*= (real_type)+4.0 ;
+        _plen[ 0]*= (real_type)+8.0 ;
+        _plen[ 1]*= (real_type)+8.0 ;
 
         _pmin[ 0]-= _plen[ 0] ;
         _pmin[ 1]-= _plen[ 1] ;
@@ -936,8 +936,8 @@
             _mesh._eset._lptr.alloc())) ;
         _dump.push("\n")  ;
         _dump.push("  POOL-BYTE = ") ;
-        _dump.push(std::to_string(
-            _mesh._epol.bytes () ) ) ;
+        _dump.push(
+        std::to_string(_mesh._epol.bytes())) ;
         _dump.push("\n")  ;
 
         _dump.push("  TRIA-BYTE = ") ;
@@ -950,8 +950,8 @@
             _mesh._tset._lptr.alloc())) ;
         _dump.push("\n")  ;
         _dump.push("  POOL-BYTE = ") ;
-        _dump.push(std::to_string(
-            _mesh._tpol.bytes () ) ) ;
+        _dump.push(
+        std::to_string(_mesh._tpol.bytes())) ;
         _dump.push("\n")  ;
         _dump.push("\n")  ;
 

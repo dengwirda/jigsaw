@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 Apr., 2021
+     * Last updated: 15 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -87,11 +87,11 @@
         {
     /*------------------------------------ loc. node type */
         public  :
-        iptr_type                     _itag ;
+        iptr_type                     _itag = +0 ;
 
-        char_type                     _fdim ;
-        char_type                     _feat ;
-        char_type                     _topo ;
+        char_type                     _fdim = +0 ;
+        char_type                     _feat = +0 ;
+        char_type                     _topo = +0 ;
 
         public  :
     /*------------------------------------ "write" access */
@@ -135,7 +135,7 @@
         {
     /*------------------------------------ loc. node type */
         public  :
-        iptr_type                     _itag ;
+        iptr_type                     _itag = +0 ;
 
         public  :
     /*------------------------------------ "write" access */
@@ -155,10 +155,10 @@
         {
     /*------------------------------------ loc. edge type */
         public  :
-        iptr_type                     _itag ;
+        iptr_type                     _itag = +0 ;
 
-        char_type                     _feat ;
-        char_type                     _topo ;
+        char_type                     _feat = +0 ;
+        char_type                     _topo = +0 ;
 
         public  :
     /*------------------------------------ "write" access */

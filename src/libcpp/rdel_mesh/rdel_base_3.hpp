@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2021
+     * Last updated: 12 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -570,8 +570,7 @@
             }
         }
 
-        if (_iful !=
-                _pred._list.tend() )
+        if(_iful != _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _iful->pval(0);
@@ -598,8 +597,7 @@
         return (  true ) ;
         }
         else
-        if (_imin !=
-                _pred._list.tend() )
+        if(_imin != _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _imin->pval(0);
@@ -907,8 +905,7 @@
             }
         }
 
-        if (_iful !=
-                _pred._list.tend() )
+        if(_iful != _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _iful->pval(0);
@@ -939,8 +936,7 @@
         return (  true ) ;
         }
         else
-        if (_imin !=
-                _pred._list.tend() )
+        if(_imin != _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _imin->pval(0);
@@ -1029,9 +1025,45 @@
 
         _tbal[3]/= (real_type)+4. ;
 
+    /*--------------------------- init. local inpoly ball */
+
+    //  nudge away from orthoball, to sanitise degenerate
+    //  cases adj. to sharp boundaries
+
+        real_type static const _bump = 
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), +0.5) ;
+
+        real_type _test[3] ;
+        _test[0] = (real_type)1./4. * (
+        _mesh._tria.node(_tnod[0])->pval(0) +
+        _mesh._tria.node(_tnod[1])->pval(0) +
+        _mesh._tria.node(_tnod[2])->pval(0) +
+        _mesh._tria.node(_tnod[3])->pval(0) 
+            ) ;
+        _test[1] = (real_type)1./4. * (
+        _mesh._tria.node(_tnod[0])->pval(1) +
+        _mesh._tria.node(_tnod[1])->pval(1) +
+        _mesh._tria.node(_tnod[2])->pval(1) +
+        _mesh._tria.node(_tnod[3])->pval(1) 
+            ) ;
+        _test[2] = (real_type)1./4. * (
+        _mesh._tria.node(_tnod[0])->pval(2) +
+        _mesh._tria.node(_tnod[1])->pval(2) +
+        _mesh._tria.node(_tnod[2])->pval(2) +
+        _mesh._tria.node(_tnod[3])->pval(2) 
+            ) ;
+
+        _test[0] = (1.0 - _bump) * _tbal[0] + 
+                   (0.0 + _bump) * _test[0] ;
+        _test[1] = (1.0 - _bump) * _tbal[1] + 
+                   (0.0 + _bump) * _test[1] ;
+        _test[2] = (1.0 - _bump) * _tbal[2] + 
+                   (0.0 + _bump) * _test[2] ;
+
     /*------------------------- evaluate "in--out" status */
         if (_part <= -1 && (_part =
-            _geom.is_inside(_tbal)) < +0)
+            _geom.is_inside(_test)) < +0)
         {
     /*------------------------- is not a restricted facet */
             return false ;

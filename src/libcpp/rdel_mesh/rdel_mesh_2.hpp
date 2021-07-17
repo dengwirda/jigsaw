@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 Feb., 2021
+     * Last updated: 12 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -588,8 +588,8 @@
         _scal =  std::max(
             _scal , _plen[ 1]);
 
-        _plen[ 0]*= (real_type)+4.0 ;
-        _plen[ 1]*= (real_type)+4.0 ;
+        _plen[ 0]*= (real_type)+8.0 ;
+        _plen[ 1]*= (real_type)+8.0 ;
 
         _pmin[ 0]-= _plen[ 0] ;
         _pmin[ 1]-= _plen[ 1] ;
@@ -1283,8 +1283,8 @@
             _mesh._bset._lptr.alloc())) ;
         _dump.push("\n")  ;
         _dump.push("  POOL-BYTE = ") ;
-        _dump.push(std::to_string(
-            _mesh._bpol.bytes () ) ) ;
+        _dump.push(
+        std::to_string(_mesh._bpol.bytes())) ;
         _dump.push("\n")  ;
 
         _dump.push("  NODE-BYTE = ") ;
@@ -1297,8 +1297,8 @@
             _mesh._nset._lptr.alloc())) ;
         _dump.push("\n")  ;
         _dump.push("  POOL-BYTE = ") ;
-        _dump.push(std::to_string(
-            _mesh._npol.bytes () ) ) ;
+        _dump.push(
+        std::to_string(_mesh._npol.bytes())) ;
         _dump.push("\n")  ;
 
         _dump.push("  EDGE-BYTE = ") ;
@@ -1311,8 +1311,8 @@
             _mesh._eset._lptr.alloc())) ;
         _dump.push("\n")  ;
         _dump.push("  POOL-BYTE = ") ;
-        _dump.push(std::to_string(
-            _mesh._epol.bytes () ) ) ;
+        _dump.push(
+        std::to_string(_mesh._epol.bytes())) ;
         _dump.push("\n")  ;
 
         _dump.push("  TRIA-BYTE = ") ;
@@ -1325,8 +1325,8 @@
             _mesh._tset._lptr.alloc())) ;
         _dump.push("\n")  ;
         _dump.push("  POOL-BYTE = ") ;
-        _dump.push(std::to_string(
-            _mesh._tpol.bytes () ) ) ;
+        _dump.push(
+        std::to_string(_mesh._tpol.bytes())) ;
         _dump.push("\n")  ;
         _dump.push("\n")  ;
 
