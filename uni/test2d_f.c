@@ -1,11 +1,16 @@
 
-//  gcc -Wall -Wextra test_5.c -Xlinker -rpath=../lib
-//  -L ../lib -ljigsaw -o test_5
+//  gcc -Wall -Wextra test2d_f.c -Xlinker -rpath=../lib
+//  -L ../lib -ljigsaw -o test2d_f
 
-//  An example that uses TRIPOD to build a "restricted" DT.
+//  Uses TRIPOD to build a "restricted" DT, given a set
+//  points and a geometry in E^2. Compared to JIGSAW,
+//  TRIPOD computes a "restricted" triangulation (given
+//  a set of points a priori), rather than generating a
+//  mesh dynamically.
 
 #   include "../inc/lib_jigsaw.h"
 
+#   include "print.h"
 #   include "stdio.h"
 
     int main ()
@@ -45,32 +50,32 @@
     --------------------------------------------------------
      */
 
-        jigsaw_VERT2_t _vert2[4] = {    // setup geom.
+        jigsaw_VERT2_t _geom_vert2[4] = {   // setup geom.
             { {0., 0.}, +0 } ,
             { {1., 0.}, +0 } ,
             { {1., 1.}, +0 } ,
             { {0., 1.}, +0 }
             } ;
 
-        jigsaw_EDGE2_t _edge2[4] = {
-            { {+0, +1}, +0 } ,
-            { {+1, +2}, +0 } ,
-            { {+2, +3}, +0 } ,
-            { {+3, +0}, +0 }
+        jigsaw_EDGE2_t _geom_edge2[4] = {
+            { {+0, +1}, +1 } ,
+            { {+1, +2}, +2 } ,
+            { {+2, +3}, +3 } ,
+            { {+3, +0}, +4 }
             } ;
 
         _geom._flags
             = JIGSAW_EUCLIDEAN_MESH;
 
-        _geom._vert2._data = &_vert2[0] ;
+        _geom._vert2._data = &_geom_vert2[0] ;
         _geom._vert2._size = +4 ;
 
-        _geom._edge2._data = &_edge2[0] ;
+        _geom._edge2._data = &_geom_edge2[0] ;
         _geom._edge2._size = +4 ;
 
     /*-------------------------------- pts to triangulate */
 
-        jigsaw_VERT2_t _point[9] = {
+        jigsaw_VERT2_t _init_vert2[9] = {
             { {0., 0.}, +0 } ,
             { {1., 0.}, +0 } ,
             { {1., 1.}, +0 } ,
@@ -85,7 +90,7 @@
         _init._flags
             = JIGSAW_EUCLIDEAN_MESH;
 
-        _init._vert2._data = &_point[0] ;
+        _init._vert2._data = &_init_vert2[0] ;
         _init._vert2._size = +9 ;
 
     /*-------------------------------- build TRIPOD r-DT. */
@@ -95,42 +100,14 @@
         _jjig._mesh_dims =   +2 ;
 
         _retv = tripod (
-            &_jjig ,    // the config. opts
-            &_init ,    // init. data
-            &_geom ,    // geom. data
+            &_jjig ,                // the config. opts
+            &_init ,                // init. data
+            &_geom ,                // geom. data
             &_tria ) ;
 
     /*-------------------------------- print TRIPOD r-DT. */
 
-        printf("\n VERT2: \n\n") ;
-
-        for (size_t _ipos = +0;
-                _ipos != _tria._vert2._size ;
-                   ++_ipos )
-        {
-            printf("%1.4f, %1.4f\n",
-            _tria._vert2.
-                _data[_ipos]._ppos[0],
-            _tria._vert2.
-                _data[_ipos]._ppos[1]
-                ) ;
-        }
-
-        printf("\n TRIA3: \n\n") ;
-
-        for (size_t _ipos = +0;
-                _ipos != _tria._tria3._size ;
-                   ++_ipos )
-        {
-            printf("%d, %d, %d\n",
-            _tria._tria3.
-                _data[_ipos]._node[0],
-            _tria._tria3.
-                _data[_ipos]._node[1],
-            _tria._tria3.
-                _data[_ipos]._node[2]
-                ) ;
-        }
+        output_msh_data_2(&_tria);
 
         jigsaw_free_msh_t(&_tria);
 

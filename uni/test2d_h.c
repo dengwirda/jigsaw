@@ -1,11 +1,16 @@
 
-//  gcc -Wall -Wextra test_8.c -Xlinker -rpath=../lib
-//  -L ../lib -ljigsaw -o test_8
+//  gcc -Wall -Wextra test2d_h.c -Xlinker -rpath=../lib
+//  -L ../lib -ljigsaw -o test2d_h
 
 //  Use MARCHE to set "gradient-limits" on mesh-spacing data
+//
+//  ensures: |GRAD(h)| <= slope_limit(x),
+//
+//  via a "fast-marching" solver for the Hamilton-Jacobi eq.
 
 #   include "../inc/lib_jigsaw.h"
 
+#   include "print.h"
 #   include "stdio.h"
 
     int main ()
@@ -77,8 +82,8 @@
         _jjig._verbosity =   +1 ;
 
         _retv = marche (
-            &_jjig ,    // the config. opts
-            &_hfun ) ;  // the spacing h(x)
+            &_jjig ,                // the config. opts
+            &_hfun ) ;              // the spacing h(x)
 
     /*-------------------------------- print MARCHE hfun. */
 

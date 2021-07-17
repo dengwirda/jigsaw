@@ -1,12 +1,13 @@
 
-//  gcc -Wall -Wextra test_3.c -Xlinker -rpath=../lib
-//  -L ../lib -ljigsaw -o test_3
+//  gcc -Wall -Wextra test2d_b.c -Xlinker -rpath=../lib
+//  -L ../lib -ljigsaw -o test2d_b
 
 //  Use JIGSAW to mesh a simple geometry with user-defined
-//  mesh-spacing data defined on a "grid".
+//  mesh-spacing data defined on a "grid" in E^2.
 
 #   include "../inc/lib_jigsaw.h"
 
+#   include "print.h"
 #   include "stdio.h"
 
     int main ()
@@ -89,7 +90,7 @@
     --------------------------------------------------------
      */
 
-        real_t         _hfun_xgrid[3] = {   // setup hfun.
+        real_t         _hfun_xgrid[3] = {  // setup hfun.
             0., .5, 1.
             } ;
 
@@ -116,54 +117,29 @@
 
     /*-------------------------------- build JIGSAW tria. */
 
-        _jjig._verbosity = +1 ;
+        _jjig._verbosity =   +1 ;
 
         _jjig._hfun_scal =
-            JIGSAW_HFUN_ABSOLUTE ;
+            JIGSAW_HFUN_ABSOLUTE;
 
         _jjig._hfun_hmax = 1. ;
         _jjig._hfun_hmin = 0. ;
 
-        _jjig._mesh_dims = +2 ;
+        _jjig._geom_feat =   +1 ;   // do "sharp" geom.
+        _jjig._mesh_top1 =   +1 ;
+
+        _jjig._mesh_dims =   +2 ;
 
         _retv = jigsaw (
-            &_jjig ,    // the config. opts
-            &_geom ,    // geom. data
-              NULL ,    // empty init. data
-            &_hfun ,    // hfun. data
-            &_mesh ) ;
+            & _jjig ,               // the config. opt.
+            & _geom ,               // geom. data
+               NULL ,               // empty init. obj.
+            & _hfun ,               // hfun. data
+            & _mesh ) ;
 
     /*-------------------------------- print JIGSAW tria. */
 
-        printf("\n VERT2: \n\n") ;
-
-        for (size_t _ipos = +0;
-                _ipos != _mesh._vert2._size ;
-                   ++_ipos )
-        {
-            printf("%1.4f, %1.4f\n",
-            _mesh._vert2.
-                _data[_ipos]._ppos[0],
-            _mesh._vert2.
-                _data[_ipos]._ppos[1]
-                ) ;
-        }
-
-        printf("\n TRIA3: \n\n") ;
-
-        for (size_t _ipos = +0;
-                _ipos != _mesh._tria3._size ;
-                   ++_ipos )
-        {
-            printf("%i, %i, %i\n",
-            _mesh._tria3.
-                _data[_ipos]._node[0],
-            _mesh._tria3.
-                _data[_ipos]._node[1],
-            _mesh._tria3.
-                _data[_ipos]._node[2]
-                ) ;
-        }
+        output_msh_data_2(&_mesh);
 
         jigsaw_free_msh_t(&_mesh);
 

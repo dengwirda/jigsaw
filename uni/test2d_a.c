@@ -1,12 +1,13 @@
 
-//  gcc -Wall -Wextra test_6.c -Xlinker -rpath=../lib
-//  -L ../lib -ljigsaw -o test_6
+//  gcc -Wall -Wextra test2d_a.c -Xlinker -rpath=../lib
+//  -L ../lib -ljigsaw -o test2d_a
 
-//  Use JIGSAW to mesh a simple domain, but starting from
-//  user-defined initial-conditions.
+//  A simple example to start: use JIGSAW to mesh a plain
+//  domain in E^2.
 
 #   include "../inc/lib_jigsaw.h"
 
+#   include "print.h"
 #   include "stdio.h"
 
     int main ()
@@ -19,9 +20,6 @@
 
         jigsaw_msh_t _geom ;
         jigsaw_init_msh_t(&_geom) ;
-
-        jigsaw_msh_t _init ;
-        jigsaw_init_msh_t(&_init) ;
 
         jigsaw_msh_t _mesh ;
         jigsaw_init_msh_t(&_mesh) ;
@@ -69,81 +67,26 @@
         _geom._edge2._data = &_edge2[0] ;
         _geom._edge2._size = +4 ;
 
-    /*-------------------------------- form init. config. */
-
-        jigsaw_VERT2_t _point[4] = {
-            { {0., 0.}, +0 } ,
-            { {0., .5}, +0 } ,
-            { {0., 1.}, +0 } ,
-            { {.5, .5}, +0 }
-            } ;
-
-        jigsaw_EDGE2_t _edges[2] = {
-            { {+0, +1}, -1 } ,      // -1 => "un-refinable"
-            { {+1, +2}, -1 }
-            } ;
-
-        _init._flags
-            = JIGSAW_EUCLIDEAN_MESH;
-
-        _init._vert2._data = &_point[0] ;
-        _init._vert2._size = +4 ;
-
-        _init._edge2._data = &_edges[0] ;
-        _init._edge2._size = +2 ;
-
     /*-------------------------------- build JIGSAW tria. */
 
         _jjig._verbosity =   +1 ;
 
-        _jjig._hfun_hmax = 0.33 ;
+        _jjig._hfun_hmax = 0.25 ;
         _jjig._hfun_scal =
             JIGSAW_HFUN_RELATIVE;
 
         _jjig._mesh_dims =   +2 ;
-        _jjig._geom_feat =   +1 ;
-        _jjig._mesh_top1 =   +1 ;
-
-      //_jjig._optm_iter =   +0 ;
 
         _retv = jigsaw (
-            &_jjig ,    // the config. opts
-            &_geom ,    // geom. data
-            &_init ,    // init. data
-              NULL ,    // empty hfun. data
-            &_mesh ) ;
+            & _jjig ,               // the config. opt.
+            & _geom ,               // geom. data
+               NULL ,               // empty init. obj.
+               NULL ,               // empty hfun. obj.
+            & _mesh ) ;
 
     /*-------------------------------- print JIGSAW tria. */
 
-        printf("\n VERT2: \n\n") ;
-
-        for (size_t _ipos = +0;
-                _ipos != _mesh._vert2._size ;
-                   ++_ipos )
-        {
-            printf("%1.4f, %1.4f\n",
-            _mesh._vert2.
-                _data[_ipos]._ppos[0],
-            _mesh._vert2.
-                _data[_ipos]._ppos[1]
-                ) ;
-        }
-
-        printf("\n TRIA3: \n\n") ;
-
-        for (size_t _ipos = +0;
-                _ipos != _mesh._tria3._size ;
-                   ++_ipos )
-        {
-            printf("%d, %d, %d\n",
-            _mesh._tria3.
-                _data[_ipos]._node[0],
-            _mesh._tria3.
-                _data[_ipos]._node[1],
-            _mesh._tria3.
-                _data[_ipos]._node[2]
-                ) ;
-        }
+        output_msh_data_2(&_mesh);
 
         jigsaw_free_msh_t(&_mesh);
 

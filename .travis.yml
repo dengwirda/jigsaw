@@ -24,16 +24,31 @@ matrix:
         - cmake .. -DCMAKE_BUILD_TYPE=Debug
         - cmake --build . --config Debug --target install
         - cd ..
-        - ./test_1
-        - ./test_2
-        - ./test_3
-        - ./test_4
-        - ./test_5
-        - ./test_6
-        - ./test_7
-        - ./test_8
-        - ./test_9
-         
+        - ./test_2d_a
+        - ./test_3d_a
+        - ./test_2s_a
+        - ./test_2d_b
+        - ./test_3d_b
+        - ./test_2s_b
+        - ./test_2d_c
+        - ./test_3d_c
+        - ./test_2s_c         
+        - ./test_2d_d
+        - ./test_3d_d
+        - ./test_2d_e
+        - ./test_3d_e
+        - ./test_2s_e
+        - ./test_2d_f
+        - ./test_3d_f
+        - ./test_2s_f
+        - ./test_2d_g
+        - ./test_3d_g
+        - ./test_2s_g
+        - ./test_2d_h
+        - ./test_2s_h
+        - ./test_2d_i
+        - ./test_2s_i
+        
     - os: osx
       osx_image: xcode11
       script:
@@ -49,15 +64,30 @@ matrix:
         - cmake .. -DCMAKE_BUILD_TYPE=Debug
         - cmake --build . --config Debug --target install
         - cd ..
-        - ./test_1
-        - ./test_2
-        - ./test_3
-        - ./test_4
-        - ./test_5
-        - ./test_6
-        - ./test_7
-        - ./test_8
-        - ./test_9
+        - ./test_2d_a
+        - ./test_3d_a
+        - ./test_2s_a
+        - ./test_2d_b
+        - ./test_3d_b
+        - ./test_2s_b
+        - ./test_2d_c
+        - ./test_3d_c
+        - ./test_2s_c         
+        - ./test_2d_d
+        - ./test_3d_d
+        - ./test_2d_e
+        - ./test_3d_e
+        - ./test_2s_e
+        - ./test_2d_f
+        - ./test_3d_f
+        - ./test_2s_f
+        - ./test_2d_g
+        - ./test_3d_g
+        - ./test_2s_g
+        - ./test_2d_h
+        - ./test_2s_h
+        - ./test_2d_i
+        - ./test_2s_i
       
     - os: windows
       script:
@@ -74,12 +104,27 @@ matrix:
         - cmake .. -DCMAKE_BUILD_TYPE=Debug
         - cmake --build . --config Debug --target install
         - cd ..
-        - ./test_1.exe
-        - ./test_2.exe
-        - ./test_3.exe
-        - ./test_4.exe
-        - ./test_5.exe
-        - ./test_6.exe
-        - ./test_7.exe
-        - ./test_8.exe
-        - ./test_9.exe
+        - ./test_2d_a
+        - ./test_3d_a
+        - ./test_2s_a
+        - ./test_2d_b
+        - ./test_3d_b
+        - ./test_2s_b
+        - ./test_2d_c
+        - ./test_3d_c
+        - ./test_2s_c         
+        - ./test_2d_d
+        - ./test_3d_d
+        - ./test_2d_e
+        - ./test_3d_e
+        - ./test_2s_e
+        - ./test_2d_f
+        - ./test_3d_f
+        - ./test_2s_f
+        - ./test_2d_g
+        - ./test_3d_g
+        - ./test_2s_g
+        - ./test_2d_h
+        - ./test_2s_h
+        - ./test_2d_i
+        - ./test_2s_i
