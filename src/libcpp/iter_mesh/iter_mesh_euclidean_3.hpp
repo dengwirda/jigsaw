@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 Feb., 2021
+     * Last updated: 15 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -134,7 +134,7 @@ template <
     /*------------------------- edge type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -153,7 +153,7 @@ template <
     /*------------------------- face type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -172,7 +172,7 @@ template <
     /*------------------------- face type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -191,7 +191,7 @@ template <
     /*------------------------- cell type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -210,7 +210,7 @@ template <
     /*------------------------- cell type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -229,7 +229,7 @@ template <
     /*------------------------- cell type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -248,7 +248,7 @@ template <
     /*------------------------- cell type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 

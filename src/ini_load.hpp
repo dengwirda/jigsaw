@@ -1204,7 +1204,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_nnN1) + "\n");
 
             for (auto _iter  = _init.
@@ -1217,7 +1217,7 @@
             }
 
             _jlog.push(
-                "  |EDGE-2| = " 
+                "  |EDGE-2| = "
                 + std::to_string(_nnE2) + "\n");
 
             for (auto _iter  = _init.
@@ -1230,7 +1230,7 @@
             }
 
             _jlog.push(
-                "  |TRIA-3| = " 
+                "  |TRIA-3| = "
                 + std::to_string(_nnT3) + "\n");
 
             for (auto _iter  = _init.
@@ -1243,7 +1243,7 @@
             }
 
             _jlog.push(
-                "  |QUAD-4| = " 
+                "  |QUAD-4| = "
                 + std::to_string(_nnQ4) + "\n");
         }
         else
@@ -1275,7 +1275,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_nnN1) + "\n");
 
             for (auto _iter  = _init.
@@ -1288,7 +1288,7 @@
             }
 
             _jlog.push(
-                "  |EDGE-2| = " 
+                "  |EDGE-2| = "
                 + std::to_string(_nnE2) + "\n");
 
             for (auto _iter  = _init.
@@ -1301,7 +1301,7 @@
             }
 
             _jlog.push(
-                "  |TRIA-3| = " 
+                "  |TRIA-3| = "
                 + std::to_string(_nnT3) + "\n");
 
             for (auto _iter  = _init.
@@ -1314,7 +1314,7 @@
             }
 
             _jlog.push(
-                "  |QUAD-4| = " 
+                "  |QUAD-4| = "
                 + std::to_string(_nnQ4) + "\n");
 
             for (auto _iter  = _init.
@@ -1327,7 +1327,7 @@
             }
 
             _jlog.push(
-                "  |TRIA-4| = " 
+                "  |TRIA-4| = "
                 + std::to_string(_nnT4) + "\n");
         }
 

@@ -53,12 +53,12 @@
      */
 
     template <
-    typename      real_type 
+    typename      real_type
              >
     __static_call
     __inline_call std::string to_string_prec (
         real_type const&_real,
-        std::size_t     _prec       
+        std::size_t     _prec
         )
     {
         std::stringstream  _sstr ;

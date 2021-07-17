@@ -2,7 +2,7 @@
 //  gcc -Wall -Wextra test3d_d.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test3d_d
 
-//  Use JIGSAW to mesh "multi-part" geometry defined in 
+//  Use JIGSAW to mesh "multi-part" geometry defined in
 //  E^3. Cells inherit part information via ID-tags.
 
 #   include "../inc/lib_jigsaw.h"
@@ -26,7 +26,7 @@
 
     /*-------------------------------- setup JIGSAW geom. */
 
-        indx_t _ITAG 
+        indx_t _ITAG
             = JIGSAW_TRIA3_TAG ;
 
         jigsaw_VERT3_t _geom_vert3[16] = { // setup geom.
@@ -142,7 +142,7 @@
 
         _jjig._mesh_dims =   +3 ;   // make 3-dim cell
 
-        _jjig._mesh_kern = 
+        _jjig._mesh_kern =
             JIGSAW_KERN_DELAUNAY;
 
         _retv = jigsaw (

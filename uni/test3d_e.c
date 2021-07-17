@@ -2,7 +2,7 @@
 //  gcc -Wall -Wextra test3d_e.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test3d_e
 
-//  Use JIGSAW to mesh a simple domain in E^3, starting 
+//  Use JIGSAW to mesh a simple domain in E^3, starting
 //  from user-defined initial-conditions.
 
 #   include "../inc/lib_jigsaw.h"
@@ -97,7 +97,7 @@
 
         _jjig._geom_feat =   +1 ;   // do "sharp" geom.
         _jjig._mesh_top1 =   +1 ;
-        
+
         _jjig._mesh_dims =   +3 ;   // make 3-dim cell
 
         _retv = jigsaw (

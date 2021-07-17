@@ -399,7 +399,7 @@
             _geom.intersect( _hdat, _halo) ;
 
             iptr_type _inum  = +0 ;
-            for (auto 
+            for (auto
                 _iter  = _halo._list.head () ;
                 _iter != _halo._list.tend () ;
               ++_iter, ++_inum)
@@ -524,7 +524,7 @@
 
             _geom.intersect(_hdat, _junk, _halo) ;
 
-            for (auto 
+            for (auto
                 _iter  = _halo._list.head() ;
                 _iter != _halo._list.tend() ;
               ++_iter  )

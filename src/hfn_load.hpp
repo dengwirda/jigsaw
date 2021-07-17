@@ -1964,7 +1964,7 @@
                 "  CONSTANT-VALUE\n\n") ;
 
             _jlog.push(
-                "  .VAL(H). = " + 
+                "  .VAL(H). = " +
                 to_string_prec (
                 _hfun._constant_value_kd._hval, 2) + "\n") ;
         }
@@ -2019,7 +2019,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_num1) + "\n");
 
             for (auto _iter  =
@@ -2032,7 +2032,7 @@
             }
 
             _jlog.push(
-                "  |TRIA-3| = " 
+                "  |TRIA-3| = "
                 + std::to_string(_num3) + "\n");
 
         }
@@ -2078,10 +2078,10 @@
                 _euclidean_grid_2d._ypos.count();
 
             _jlog.push(
-                "  |XGRID.| = " 
+                "  |XGRID.| = "
                 + std::to_string(_xnum) + "\n") ;
             _jlog.push(
-                "  |YGRID.| = " 
+                "  |YGRID.| = "
                 + std::to_string(_ynum) + "\n") ;
         }
         else
@@ -2135,7 +2135,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_num1) + "\n");
 
             for (auto _iter  =
@@ -2148,7 +2148,7 @@
             }
 
             _jlog.push(
-                "  |TRIA-4| = " 
+                "  |TRIA-4| = "
                 + std::to_string(_num4) + "\n");
 
         }
@@ -2197,13 +2197,13 @@
                 _euclidean_grid_3d._zpos.count();
 
             _jlog.push(
-                "  |XGRID.| = " 
+                "  |XGRID.| = "
                 + std::to_string(_xnum) + "\n") ;
             _jlog.push(
-                "  |YGRID.| = " 
+                "  |YGRID.| = "
                 + std::to_string(_ynum) + "\n") ;
             _jlog.push(
-                "  |ZGRID.| = " 
+                "  |ZGRID.| = "
                 + std::to_string(_znum) + "\n") ;
 
         }
@@ -2255,7 +2255,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_num1) + "\n");
 
             for (auto _iter  =
@@ -2268,7 +2268,7 @@
             }
 
             _jlog.push(
-                "  |TRIA-3| = " 
+                "  |TRIA-3| = "
                 + std::to_string(_num3) + "\n");
 
         }
@@ -2311,10 +2311,10 @@
                 _ellipsoid_grid_3d._ypos.count();
 
             _jlog.push(
-                "  |XGRID.| = " 
+                "  |XGRID.| = "
                 + std::to_string(_xnum) + "\n") ;
             _jlog.push(
-                "  |YGRID.| = " 
+                "  |YGRID.| = "
                 + std::to_string(_ynum) + "\n") ;
 
             _jlog.push("  \n") ;

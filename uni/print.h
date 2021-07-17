@@ -4,7 +4,7 @@
 #   include "stdio.h"
 
     void output_msh_data_2 (
-        jigsaw_msh_t *_mesh        
+        jigsaw_msh_t *_mesh
         )
     {
     /*-------------------------------- helper: print msh. */

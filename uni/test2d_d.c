@@ -2,7 +2,7 @@
 //  gcc -Wall -Wextra test2d_d.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test2d_d
 
-//  Use JIGSAW to mesh "multi-part" geometry defined in 
+//  Use JIGSAW to mesh "multi-part" geometry defined in
 //  E^2. Cells inherit part information via ID-tags.
 
 #   include "../inc/lib_jigsaw.h"
@@ -44,7 +44,7 @@
     --------------------------------------------------------
      */
 
-        indx_t _ITAG 
+        indx_t _ITAG
             = JIGSAW_EDGE2_TAG ;
 
         jigsaw_VERT2_t _vert2[8] = {    // setup geom.

@@ -1666,7 +1666,7 @@
                 _mesh.connect_2(_iter->node(1) ,
                     POINT_tag , _jset) ;
 
-                _lsqr *= (_iset.count() + 
+                _lsqr *= (_iset.count() +
                           _jset.count() ) / 2  ;
 
                 _sort.push_tail(

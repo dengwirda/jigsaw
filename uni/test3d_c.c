@@ -54,7 +54,7 @@
             { {+3, +7, +4}, +0 } ,
             { {+3, +4, +0}, +0 }
             } ;
-           
+
         _geom._flags
             = JIGSAW_EUCLIDEAN_MESH;
 
@@ -123,7 +123,7 @@
 
         _jjig._mesh_dims =   +3 ;   // make 3-dim cell
 
-        _jjig._mesh_kern = 
+        _jjig._mesh_kern =
             JIGSAW_KERN_DELAUNAY;
 
         _retv = jigsaw (

@@ -866,17 +866,17 @@
         to_string_prec(__var, +2) : "MAXFLT"\
             ) + "\n"
 
-        _jlog.push("  GEOM-FILE = " + 
+        _jlog.push("  GEOM-FILE = " +
                     _jcfg._geom_file + "\n" ) ;
-        _jlog.push("  MESH-FILE = " + 
+        _jlog.push("  MESH-FILE = " +
                     _jcfg._mesh_file + "\n" ) ;
-        _jlog.push("  HFUN-FILE = " + 
+        _jlog.push("  HFUN-FILE = " +
                     _jcfg._hfun_file + "\n" ) ;
-        _jlog.push("  INIT-FILE = " + 
+        _jlog.push("  INIT-FILE = " +
                     _jcfg._init_file + "\n" ) ;
-        _jlog.push("  TRIA-FILE = " + 
+        _jlog.push("  TRIA-FILE = " +
                     _jcfg._tria_file + "\n" ) ;
-        _jlog.push("  BNDS-FILE = " + 
+        _jlog.push("  BNDS-FILE = " +
                     _jcfg._bnds_file + "\n" ) ;
 
         _jlog.push("\n") ;
@@ -884,26 +884,26 @@
         if (_jcfg._verbosity > +0)
         {
     /*---------------------------- push GEOM keywords */
-        _jlog.push("  GEOM-SEED = " + 
+        _jlog.push("  GEOM-SEED = " +
             __pushIVAL(_jcfg._mesh_opts.seed()));
 
-        _jlog.push("  GEOM-PHI1 = " + 
+        _jlog.push("  GEOM-PHI1 = " +
             __pushRVAL(_jcfg._mesh_opts.phi1()));
-        _jlog.push("  GEOM-PHI2 = " + 
+        _jlog.push("  GEOM-PHI2 = " +
             __pushRVAL(_jcfg._mesh_opts.phi2()));
 
-        _jlog.push("  GEOM-ETA1 = " + 
+        _jlog.push("  GEOM-ETA1 = " +
             __pushRVAL(_jcfg._mesh_opts.eta1()));
-        _jlog.push("  GEOM-ETA2 = " + 
+        _jlog.push("  GEOM-ETA2 = " +
             __pushRVAL(_jcfg._mesh_opts.eta2()));
 
-        _jlog.push("  GEOM-FEAT = " + 
+        _jlog.push("  GEOM-FEAT = " +
             __pushBVAL(_jcfg._mesh_opts.feat()));
 
         _jlog.push("\n") ;
 
     /*---------------------------- push INIT keywords */
-        _jlog.push("  INIT-NEAR = " + 
+        _jlog.push("  INIT-NEAR = " +
             __pushRVAL(_jcfg._mesh_opts.near()));
 
         _jlog.push("\n") ;
@@ -917,9 +917,9 @@
          jcfg_data::hfun_scal::relative)
         _jlog.push("  HFUN-SCAL = RELATIVE \n") ;
 
-        _jlog.push("  HFUN-HMAX = " + 
+        _jlog.push("  HFUN-HMAX = " +
             __pushRVAL( _jcfg._hfun_hmax )) ;
-        _jlog.push("  HFUN-HMIN = " + 
+        _jlog.push("  HFUN-HMIN = " +
             __pushRVAL( _jcfg._hfun_hmin )) ;
 
         _jlog.push("\n") ;
@@ -946,44 +946,44 @@
          jcfg_data::mesh_pred::bisector)
         _jlog.push("  MESH-KERN = BISECTOR \n") ;
 
-        _jlog.push("  MESH-TOP1 = " + 
+        _jlog.push("  MESH-TOP1 = " +
             __pushBVAL(_jcfg._mesh_opts.top1()));
-        _jlog.push("  MESH-TOP2 = " + 
+        _jlog.push("  MESH-TOP2 = " +
             __pushBVAL(_jcfg._mesh_opts.top2()));
 
-        _jlog.push("  MESH-ITER = " + 
+        _jlog.push("  MESH-ITER = " +
             __pushIVAL(_jcfg._mesh_opts.iter()));
-        _jlog.push("  MESH-DIMS = " + 
+        _jlog.push("  MESH-DIMS = " +
             __pushIVAL(_jcfg._mesh_opts.dims()));
 
-        _jlog.push("  MESH-SIZ1 = " + 
+        _jlog.push("  MESH-SIZ1 = " +
             __pushRVAL(_jcfg._mesh_opts.siz1()));
-        _jlog.push("  MESH-SIZ2 = " + 
+        _jlog.push("  MESH-SIZ2 = " +
             __pushRVAL(_jcfg._mesh_opts.siz2()));
-        _jlog.push("  MESH-SIZ2 = " + 
+        _jlog.push("  MESH-SIZ2 = " +
             __pushRVAL(_jcfg._mesh_opts.siz3()));
 
-        _jlog.push("  MESH-EPS1 = " + 
+        _jlog.push("  MESH-EPS1 = " +
             __pushRVAL(_jcfg._mesh_opts.eps1()));
-        _jlog.push("  MESH-EPS2 = " + 
+        _jlog.push("  MESH-EPS2 = " +
             __pushRVAL(_jcfg._mesh_opts.eps2()));
 
-        _jlog.push("  MESH-RAD2 = " + 
+        _jlog.push("  MESH-RAD2 = " +
             __pushRVAL(_jcfg._mesh_opts.rad2()));
-        _jlog.push("  MESH-RAD3 = " + 
+        _jlog.push("  MESH-RAD3 = " +
             __pushRVAL(_jcfg._mesh_opts.rad3()));
 
-        _jlog.push("  MESH-OFF2 = " + 
+        _jlog.push("  MESH-OFF2 = " +
             __pushRVAL(_jcfg._mesh_opts.off2()));
-        _jlog.push("  MESH-OFF3 = " + 
+        _jlog.push("  MESH-OFF3 = " +
             __pushRVAL(_jcfg._mesh_opts.off3()));
 
-        _jlog.push("  MESH-SNK2 = " + 
+        _jlog.push("  MESH-SNK2 = " +
             __pushRVAL(_jcfg._mesh_opts.snk2()));
-        _jlog.push("  MESH-SNK3 = " + 
+        _jlog.push("  MESH-SNK3 = " +
             __pushRVAL(_jcfg._mesh_opts.snk3()));
 
-        _jlog.push("  MESH-VOL3 = " + 
+        _jlog.push("  MESH-VOL3 = " +
             __pushRVAL(_jcfg._mesh_opts.vol3()));
 
         _jlog.push("\n") ;
@@ -1001,21 +1001,21 @@
          jcfg_data::iter_pred::h95_dqdx)
         _jlog.push("  OPTM-KERN = H95+DQDX \n") ;
 
-        _jlog.push("  OPTM-ITER = " + 
+        _jlog.push("  OPTM-ITER = " +
             __pushIVAL(_jcfg._iter_opts.iter()));
 
-        _jlog.push("  OPTM-QTOL = " + 
+        _jlog.push("  OPTM-QTOL = " +
             __pushRVAL(_jcfg._iter_opts.qtol()));
-        _jlog.push("  OPTM-QLIM = " + 
+        _jlog.push("  OPTM-QLIM = " +
             __pushRVAL(_jcfg._iter_opts.qlim()));
 
-        _jlog.push("  OPTM-ZIP_ = " + 
+        _jlog.push("  OPTM-ZIP_ = " +
             __pushBVAL(_jcfg._iter_opts.zip_()));
-        _jlog.push("  OPTM-DIV_ = " + 
+        _jlog.push("  OPTM-DIV_ = " +
             __pushBVAL(_jcfg._iter_opts.div_()));
-        _jlog.push("  OPTM-TRIA = " + 
+        _jlog.push("  OPTM-TRIA = " +
             __pushBVAL(_jcfg._iter_opts.tria()));
-        _jlog.push("  OPTM-DUAL = " + 
+        _jlog.push("  OPTM-DUAL = " +
             __pushBVAL(_jcfg._iter_opts.dual()));
 
         _jlog.push("\n") ;

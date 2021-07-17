@@ -2,7 +2,7 @@
 //  gcc -Wall -Wextra test3d_g.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test3d_g
 
-//  Uses TRIPOD to build an (unconstrained) DT in E^3, 
+//  Uses TRIPOD to build an (unconstrained) DT in E^3,
 //  comparable to more conventional Delaunay tessellation
 //  approaches.
 

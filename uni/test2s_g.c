@@ -2,7 +2,7 @@
 //  gcc -Wall -Wextra test2s_g.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test2s_g
 
-//  Uses TRIPOD to build an (unconstrained) DT in S^2, 
+//  Uses TRIPOD to build an (unconstrained) DT in S^2,
 //  comparable to more conventional Delaunay tessellation
 //  approaches.
 
@@ -42,16 +42,16 @@
     /*-------------------------------- pts to triangulate */
 
         real_t PI = 3.14159265358979323846 ;
-        indx_t _next = 0; 
+        indx_t _next = 0;
 
         jigsaw_VERT2_t _point[45] ;
 
         for (size_t _ipos = 0; _ipos < 9; ++_ipos)
         for (size_t _jpos = 0; _jpos < 5; ++_jpos)
         {
-            _point[_next]._ppos[0] = 
+            _point[_next]._ppos[0] =
                 -0.80 * PI + _ipos * 0.20 * PI ;
-            _point[_next]._ppos[1] = 
+            _point[_next]._ppos[1] =
                 -0.40 * PI + _jpos * 0.20 * PI ;
 
             _point[_next]._itag = +0 ;

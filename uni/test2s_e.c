@@ -2,7 +2,7 @@
 //  gcc -Wall -Wextra test2s_e.c -Xlinker -rpath=../lib
 //  -L ../lib -ljigsaw -o test2s_e
 
-//  Use JIGSAW to mesh a simple domain in S^2, starting 
+//  Use JIGSAW to mesh a simple domain in S^2, starting
 //  from user-defined initial-conditions.
 
 #   include "../inc/lib_jigsaw.h"

@@ -122,7 +122,7 @@
                 _ebal, _pmax)/(_esiz * _esiz) ;
 
     /*------------------------- refinement classification */
-        
+
     //  flag cells "trapped" between boundaries -- having
     //  all nodes on lower dimensional facets and with at
     //  least one boundary face.
@@ -254,7 +254,7 @@
             if (_mesh.find_edge(_edat,_eptr))
             {
                 _trap =   true ;
-              
+
                 _fdat._mark -= +1 ;
             }
         }
@@ -274,7 +274,7 @@
         _fdat._cost = (float) _prat;
 
     /*------------------------- refinement classification */
-        
+
     //  flag cells "trapped" between boundaries -- having
     //  all nodes on lower dimensional facets and with at
     //  least one boundary face.
@@ -492,7 +492,7 @@
             if (_mesh.find_face(_fdat,_fptr))
             {
                 _trap =   true ;
-                
+
                 _tdat._mark -= +1 ;
             }
         }
@@ -506,7 +506,7 @@
         _tdat._cost = (float) _erat;
 
     /*------------------------- refinement classification */
-        
+
     //  flag cells "trapped" between boundaries -- having
     //  all nodes on lower dimensional facets and with at
     //  least one boundary face.

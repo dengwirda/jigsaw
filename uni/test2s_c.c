@@ -40,7 +40,7 @@
 
     /*-------------------------------- setup JIGSAW hfun. */
 
-        real_t PI = 3.14159265358979323846 ; 
+        real_t PI = 3.14159265358979323846 ;
 
         jigsaw_VERT2_t _hfun_vert2[9] = {  // setup hfun.
             { {-1. * PI, -0.5 * PI}, +0 } ,
@@ -94,7 +94,7 @@
 
         _jjig._mesh_dims =   +2 ;
 
-        _jjig._mesh_kern = 
+        _jjig._mesh_kern =
             JIGSAW_KERN_DELAUNAY;
 
         _retv = jigsaw (

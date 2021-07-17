@@ -622,7 +622,7 @@
             _imap[_iter->node( 1 )] ;
 
             _edat._pass    =     +0 ;
-            _edat._kind    = 
+            _edat._kind    =
                      mesh::good_item;
             _edat._part    =
                     _iter->itag() ;
@@ -686,7 +686,7 @@
             _imap[_iter->node( 2 )] ;
 
             _fdat._pass    =     +0 ;
-            _fdat._kind    = 
+            _fdat._kind    =
                      mesh::good_item;
             _fdat._part    =
                     _iter->itag() ;

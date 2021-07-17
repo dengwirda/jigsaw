@@ -134,7 +134,7 @@
 
         _jjig._mesh_dims =   +2 ;
 
-        _jjig._mesh_kern = 
+        _jjig._mesh_kern =
             JIGSAW_KERN_DELAUNAY;
 
         _retv = jigsaw (

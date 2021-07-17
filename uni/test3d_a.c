@@ -51,7 +51,7 @@
             { {+3, +7, +4}, +0 } ,
             { {+3, +4, +0}, +0 }
             } ;
-           
+
         _geom._flags
             = JIGSAW_EUCLIDEAN_MESH;
 
