@@ -59,7 +59,7 @@
     {
     public  :
 
-    /*------------------------- euclidean size-fun in R^3 */
+    /*------------------------- euclidean size-fun in E^3 */
 
     typedef R                       real_type ;
     typedef V                       vals_type ;

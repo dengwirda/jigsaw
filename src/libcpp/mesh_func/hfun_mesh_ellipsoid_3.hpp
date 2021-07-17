@@ -59,7 +59,7 @@
     {
     public  :
 
-    /*------------------------- euclidean size-fun in R^2 */
+    /*------------------------- ellipsoid size-fun in S^2 */
 
     typedef R                       real_type ;
     typedef V                       vals_type ;
