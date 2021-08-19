@@ -1,0 +1,24 @@
+
+#
+#   BUNNY.JIG: stanford bunny 
+#
+
+#   To run on WIN platforms:
+#
+#       bin\jigsaw.exe geo\bunny.jig
+#
+#   To run on LNX platforms:
+#
+#       bin/jigsaw     geo/bunny.jig
+#
+#   from jigsaw root folder.
+#
+
+    GEOM_FILE = geo/bunny.msh
+    MESH_FILE = out/bunny.msh
+    VERBOSITY = 1
+    MESH_DIMS = 2
+    HFUN_HMAX = 0.0125
+
+
+
