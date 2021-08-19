@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 08 December, 2019
+ * Last updated: 15 Aug., 2021
  *
- * Copyright 2013-2019
+ * Copyright 2013-2021
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -283,7 +283,7 @@
     real_type                  _ipos [ 2] ;
     real_type                  _jpos [ 2] ;
 
-    real_type                  _xmul [ 2] ;
+    real_type                  _xdiv [ 2] ;
 
     real_type                  _rmin [ 2] ;
     real_type                  _rmax [ 2] ;
@@ -311,10 +311,10 @@
         this->_rmax[1] = std::max(
               _isrc[1] , _jsrc[1]) ;
 
-        this->_xmul[0] = (real_type)1. /
-            ( _jsrc[0] - _isrc[0]) ;
-        this->_xmul[1] = (real_type)1. /
-            ( _jsrc[1] - _isrc[1]) ;
+        this->_xdiv[0] = 
+              _jsrc[0] - _isrc[0];
+        this->_xdiv[1] = 
+              _jsrc[1] - _isrc[1];
     }
 
 /*---------------------------------- TRUE if intersection */
@@ -331,12 +331,27 @@
     /*------------------------------ bbox can't intersect */
             return false ;
 
+    /*------------------------------ test if contain ends */
+        if (_bmin[0] <= _ipos[0] &&
+            _bmax[0] >= _ipos[0] &&
+            _bmin[1] <= _ipos[1] &&
+            _bmax[1] >= _ipos[1] )
+            return true  ;
+
+        if (_bmin[0] <= _jpos[0] &&
+            _bmax[0] >= _jpos[0] &&
+            _bmin[1] <= _jpos[1] &&
+            _bmax[1] >= _jpos[1] )
+            return true  ;
+
+        return true ;
+
     /*------------------------------ test if line overlap */
         real_type _aval, _bval ;
         _aval = (_bmin[0]-_ipos[0])
-                *_xmul[0];
+                / this->  _xdiv[0];
         _bval = (_bmax[0]-_ipos[0])
-                *_xmul[0];
+                / this->  _xdiv[0];
 
         real_type _tmin, _tmax ;
         _tmin =
@@ -347,9 +362,9 @@
         if (_tmax<_tmin) return false ;
 
         _aval = (_bmin[1]-_ipos[1])
-                *_xmul[1];
+                / this->  _xdiv[1];
         _bval = (_bmax[1]-_ipos[1])
-                *_xmul[1];
+                / this->  _xdiv[1];
 
         _tmin = std::max(_tmin,
         std::min( _aval, _bval )) ;
@@ -358,7 +373,7 @@
 
         if (_tmax<_tmin) return false ;
 
-        if (_tmax<  +0.) return false ;
+        if (_tmax<  +0 ) return false ;
 
         return true ;
     }
@@ -384,7 +399,7 @@
     real_type                  _ipos [ 3] ;
     real_type                  _jpos [ 3] ;
 
-    real_type                  _xmul [ 3] ;
+    real_type                  _xdiv [ 3] ;
 
     real_type                  _rmin [ 3] ;
     real_type                  _rmax [ 3] ;
@@ -418,12 +433,12 @@
         this->_rmax[2] = std::max(
               _isrc[2] , _jsrc[2]) ;
 
-        this->_xmul[0] = (real_type)1. /
-            ( _jsrc[0] - _isrc[0]) ;
-        this->_xmul[1] = (real_type)1. /
-            ( _jsrc[1] - _isrc[1]) ;
-        this->_xmul[2] = (real_type)1. /
-            ( _jsrc[2] - _isrc[2]) ;
+        this->_xdiv[0] =
+              _jsrc[0] - _isrc[0];
+        this->_xdiv[1] =
+              _jsrc[1] - _isrc[1];
+        this->_xdiv[2] =
+              _jsrc[2] - _isrc[2];
     }
 
 /*---------------------------------- TRUE if intersection */
@@ -440,12 +455,29 @@
     /*------------------------------ bbox can't intersect */
             return false ;
 
+    /*------------------------------ test if contain ends */
+        if (_bmin[0] <= _ipos[0] &&
+            _bmax[0] >= _ipos[0] &&
+            _bmin[1] <= _ipos[1] &&
+            _bmax[1] >= _ipos[1] &&
+            _bmin[2] <= _ipos[2] &&
+            _bmax[2] >= _ipos[2] )
+            return true  ;
+
+        if (_bmin[0] <= _jpos[0] &&
+            _bmax[0] >= _jpos[0] &&
+            _bmin[1] <= _jpos[1] &&
+            _bmax[1] >= _jpos[1] &&
+            _bmin[2] <= _jpos[2] &&
+            _bmax[2] >= _jpos[2] )
+            return true  ;
+
     /*------------------------------ test if line overlap */
         real_type _aval, _bval ;
         _aval = (_bmin[0]-_ipos[0])
-                *_xmul[0];
+                / this->  _xdiv[0];
         _bval = (_bmax[0]-_ipos[0])
-                *_xmul[0];
+                / this->  _xdiv[0];
 
         real_type _tmin, _tmax ;
         _tmin =
@@ -456,9 +488,9 @@
         if (_tmax<_tmin) return false ;
 
         _aval = (_bmin[1]-_ipos[1])
-                *_xmul[1];
+                / this->  _xdiv[1];
         _bval = (_bmax[1]-_ipos[1])
-                *_xmul[1];
+                / this->  _xdiv[1];
 
         _tmin = std::max(_tmin,
         std::min( _aval, _bval )) ;
@@ -468,9 +500,9 @@
         if (_tmax<_tmin) return false ;
 
         _aval = (_bmin[2]-_ipos[2])
-                *_xmul[2];
+                / this->  _xdiv[2];
         _bval = (_bmax[2]-_ipos[2])
-                *_xmul[2];
+                / this->  _xdiv[2];
 
         _tmin = std::max(_tmin,
         std::min( _aval, _bval )) ;
@@ -479,7 +511,7 @@
 
         if (_tmax<_tmin) return false ;
 
-        if (_tmax<  +0.) return false ;
+        if (_tmax<  +0 ) return false ;
 
         return true ;
     }

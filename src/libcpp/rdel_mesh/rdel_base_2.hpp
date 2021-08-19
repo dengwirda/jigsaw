@@ -212,7 +212,7 @@
         real_type *_ebal,
         real_type *_sbal,
         char_type &_feat,
-        char_type &_topo,
+        char_type *_topo,
         iptr_type &_part
         )
     {
@@ -445,8 +445,7 @@
             }
         }
 
-        if (_iful !=
-                _pred._list.tend() )
+        if (_iful != _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _iful->pval(0);
@@ -454,7 +453,9 @@
 
         _part     = _iful->itag ();
         _feat     = _iful->feat ();
-        _topo     = _iful->topo ();
+
+        _topo[ 0] = _iful->topo(0);
+        _topo[ 1] = _iful->topo(1);
 
     /*--------------------------- eval. surf. ball radius */
         _sbal[ 2]+=
@@ -472,8 +473,7 @@
         return (  true ) ;
         }
         else
-        if (_imin !=
-                _pred._list.tend() )
+        if (_imin != _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _imin->pval(0);
@@ -481,7 +481,9 @@
 
         _part     = _imin->itag ();
         _feat     = _imin->feat ();
-        _topo     = _imin->topo ();
+
+        _topo[ 0] = _imin->topo(0);
+        _topo[ 1] = _imin->topo(1);
 
     /*--------------------------- eval. surf. ball radius */
         _sbal[ 2]+=

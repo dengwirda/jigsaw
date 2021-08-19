@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 Feb., 2021
+     * Last updated: 18 Aug., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -79,59 +79,56 @@
             char_type     _fdim = 0 ;
 
             char_type     _feat = 0 ;
-            char_type     _topo = 0 ;
+            
+            char_type     _topo [ 2] = {+0} ;
 
         public  :
 
         __inline_call iptr_type      & idxh (
             )
-        {
-            return  this->_idxh ;
+        {   return  this->_idxh ;
         }
         __inline_call iptr_type const& idxh (
             ) const
-        {
-            return  this->_idxh ;
+        {   return  this->_idxh ;
         }
         __inline_call iptr_type      & part (
             )
-        {
-            return  this->_part ;
+        {   return  this->_part ;
         }
         __inline_call iptr_type const& part (
             ) const
-        {
-            return  this->_part ;
+        {   return  this->_part ;
         }
         __inline_call char_type      & fdim (
             )
-        {
-            return  this->_fdim ;
+        {   return  this->_fdim ;
         }
         __inline_call char_type const& fdim (
             ) const
-        {
-            return  this->_fdim ;
+        {   return  this->_fdim ;
         }
         __inline_call char_type      & feat (
             )
-        {
-            return  this->_feat ;
+        {   return  this->_feat ;
         }
         __inline_call char_type const& feat (
             ) const
-        {
-            return  this->_feat ;
+        {   return  this->_feat ;
         }
         __inline_call char_type      & topo (
+            char_type _kind = filt_topo
             )
-        {
-            return  this->_topo ;
+        {   return ( _kind == filt_topo ) ? 
+                    this->_topo[ +0] : 
+                    this->_topo[ +1] ;
         }
         __inline_call char_type const& topo (
+            char_type _kind = filt_topo
             ) const
-        {
-            return  this->_topo ;
+        {   return ( _kind == filt_topo ) ? 
+                    this->_topo[ +0] : 
+                    this->_topo[ +1] ;
         }
         } ;
 
@@ -152,8 +149,7 @@
         __inline_call real_type const& circ (
             iptr_type _ipos
             ) const
-        {
-            return this->_circ[ _ipos] ;
+        {   return this->_circ[ _ipos] ;
         }
         } ;
 
@@ -207,7 +203,7 @@
         char_type                   _kind;
 
         char_type                   _feat;
-        char_type                   _topo;
+        char_type                   _topo[ 2];
 
         char_type                   _eadj;
         iptr_type                   _tadj;

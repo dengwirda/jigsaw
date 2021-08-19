@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 Dec., 2020
+     * Last updated: 16 Jul., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -73,7 +73,7 @@
         real_type  _lmin
             = (real_type) +1.00E+00 ,
         real_type  _qinc
-            = (real_type) +2.50E-02
+            = (real_type) +1.25E-02
         )
     {
         iptr_type static constexpr
@@ -86,7 +86,7 @@
 
     /*--------------------------------- get edge indexing */
          auto _eptr =
-        _mesh. edge().head()+_enum  ;
+        _mesh. edge().head()+_enum ;
 
         iptr_type _enod[2] ;
         _enod[ 0] = _eptr->node(0) ;
@@ -170,7 +170,7 @@
 
         _qinc  = 0.5 * (_hbar / std::sqrt(_lsqr) - 1.0) ;
 
-        _qinc /= std::abs( _iout ) ; // no oscl. wrt. zip
+        _qinc /= std::sqrt( _iout ); // no oscl. wrt. zip
 
         }
         else

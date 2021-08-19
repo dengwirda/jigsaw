@@ -408,8 +408,7 @@
                 find_edge(*_edge, _eptr))
             {
         /*------------------- "external" topo. degree */
-                _topo =
-                    _eptr->_data. _topo ;
+                _topo = _eptr->_data._topo[0] ;
             }
 
             if (_aset.count () != _topo )
@@ -493,7 +492,8 @@
             if(_epro.find(
                     _edat, _same)) continue ;
 
-            char_type _feat, _topo ;
+            char_type _feat;
+            char_type _topo[ +2] ;
             iptr_type _part;
             real_type _fbal[ +4] ;
             real_type _sbal[ +4] ;
@@ -717,7 +717,8 @@
             if(_fpro.find(
                     _fdat, _same)) continue ;
 
-            char_type _feat, _topo ;
+            char_type _feat;
+            char_type _topo[ +2] ;
             iptr_type _part;
             real_type _fbal[ +4] ;
             real_type _sbal[ +4] ;

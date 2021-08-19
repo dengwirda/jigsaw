@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 Apr., 2021
+     * Last updated: 16 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -57,6 +57,7 @@
         hfun_type &_hfun ,
         real_list &_hval ,
         iter_opts &_opts ,
+        iptr_type  _iout ,
         iptr_type  _edge ,
         char_type  _kern ,
         bool_type &_okay ,
@@ -73,7 +74,7 @@
         real_type  _lmax
             = (real_type) +8.00E-01 ,
         real_type  _qinc
-            = (real_type) +2.50E-02
+            = (real_type) +1.25E-02
         )
     {
         iptr_type static constexpr
@@ -132,10 +133,44 @@
         _mesh.connect_2(_eptr->node(+1),
             POINT_tag , _jset) ;
 
-    /*--------------------------------- calc. local topo. */
-        auto _ndeg = _iset.count()
-                   + _jset.count() - 4 ;
+        _mesh.connect_2(&_eptr->node(0),
+            EDGE2_tag , _cset) ;
 
+        if (_cset.count() != 2) return ;
+
+        auto _atri = 
+       _mesh.tri3().head()+_cset[0]._cell ;
+        auto _btri = 
+       _mesh.tri3().head()+_cset[1]._cell ;
+
+        iptr_type _anod;                // find cell apex
+        if (_atri->node(0) != _inod &&
+            _atri->node(0) != _jnod )
+            _anod = _atri->node( 0 ) ;
+        if (_atri->node(1) != _inod &&
+            _atri->node(1) != _jnod )
+            _anod = _atri->node( 1 ) ;
+        if (_atri->node(2) != _inod &&
+            _atri->node(2) != _jnod )
+            _anod = _atri->node( 2 ) ;
+
+        iptr_type _bnod;                // find cell apex
+        if (_btri->node(0) != _inod &&
+            _btri->node(0) != _jnod )
+            _bnod = _btri->node( 0 ) ;
+        if (_btri->node(1) != _inod &&
+            _btri->node(1) != _jnod )
+            _bnod = _btri->node( 1 ) ;
+        if (_btri->node(2) != _inod &&
+            _btri->node(2) != _jnod )
+            _bnod = _btri->node( 2 ) ;
+
+        _mesh.connect_2(
+            _anod, POINT_tag, _aset) ;
+        _mesh.connect_2(
+            _bnod, POINT_tag, _bset) ;
+
+    /*--------------------------------- calc. local topo. */
         auto _ideg = _iset.count() ;
         auto _ierr =
             (iptr_type)(_DEG_TRIA3-_ideg) ;
@@ -144,32 +179,58 @@
         auto _jerr =
             (iptr_type)(_DEG_TRIA3-_jdeg) ;
 
-        auto _iabs = std::abs(_ierr) ;
-        auto _jabs = std::abs(_jerr) ;
+        auto _adeg = _aset.count() ;
+        auto _aerr =
+            (iptr_type)(_DEG_TRIA3-_adeg) ;
 
-        auto _nerr = std::abs(
-            (iptr_type)(_DEG_TRIA3-_ndeg));
+        auto _bdeg = _bset.count() ;
+        auto _berr =
+            (iptr_type)(_DEG_TRIA3-_bdeg) ;
+
+        auto _ndeg = _iset.count()
+                   + _jset.count() - 4 ;
+
+        auto _nerr =
+            (iptr_type)(_DEG_TRIA3-_ndeg) ;
+
+        auto _ADEG = _adeg - 1 ;
+        auto _AERR =
+            (iptr_type)(_DEG_TRIA3-_ADEG) ;
+
+        auto _BDEG = _bdeg - 1 ;
+        auto _BERR =
+            (iptr_type)(_DEG_TRIA3-_BDEG) ;
+
+        auto _dnow = std::abs(_ierr) +  // current defect
+                     std::abs(_jerr) + 
+                     std::abs(_aerr) +
+                     std::abs(_berr) ;
+
+        auto _dnew = std::abs(_nerr) +  // updated defect
+                     std::abs(_AERR) +
+                     std::abs(_BERR) ;
 
     //  bail-out early if the topological defect would be
     //  made worse if the zip is done
 
-        if (_nerr> std::max(_ierr, _jerr))
-            return  ;
-
+        if (_dnew >= _dnow + 1) return;
+        
     //  if more regular topo. is constructed via the edge
     //  zip, make it easier to do so!
 
         real_type _qerr = (real_type)(
-            -2./16.*1./2.*(_ierr + _jerr));
+            -1./16.*1./2.*(_ierr + _jerr));
 
         real_type _lerr = (real_type)(
             +1./16.*1./2.*(_ierr + _jerr));
-
-        if (2 * _nerr < _iabs + _jabs)
+        
+        if (_dnew <  _dnow - 1)
         {
         _qinc = std::min(_qinc, _qerr);
         _lmax = std::max(_lmax,
                          _lmax+ _lerr);
+
+        _qinc/= std::cbrt( _iout ) ; // no oscl. wrt. div
         }
 
     /*--------------------------------- get edge h-sizing */
@@ -211,6 +272,7 @@
             return  ;
 
     /*--------------------------------- get disjoint sets */
+        _aset.set_count(0) ;
         for (auto _cell  = _iset.head();
                   _cell != _iset.tend();
                 ++_cell  )
@@ -259,6 +321,7 @@
             _aset.push_tail( *_cell ) ;
         }
 
+        _bset.set_count(0) ;
         for (auto _cell  = _jset.head();
                   _cell != _jset.tend();
                 ++_cell  )
@@ -446,6 +509,7 @@
         _hval[_nnew] = (real_type)-1. ;
 
     /*--------------------------------- push a new cavity */
+        _cset.set_count(0) ;
         for (auto _cell  = _aset.head();
                   _cell != _aset.tend();
                 ++_cell  )
@@ -564,7 +628,7 @@
 
     /*--------------------------------- optim. node coord */
         iptr_type static
-            constexpr _INUM = (iptr_type) +8;
+            constexpr _INUM = (iptr_type) +4;
 
         iptr_type _move = -1;
         for (auto _iter = +0; _iter != _INUM;

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 Jul., 2021
+     * Last updated: 18 Aug., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -87,7 +87,8 @@
 
         char_type                     _fdim = +0 ;
         char_type                     _feat = +0 ;
-        char_type                     _topo = +0 ;
+
+        char_type                     _topo [ 2] = {+0} ;
 
         public  :
     /*------------------------------------ "write" access */
@@ -103,9 +104,12 @@
             )
         {   return  this->_fdim ;
         }
-        __inline_call char_type&       topo (
+        __inline_call char_type      & topo (
+            char_type _kind = filt_topo
             )
-        {   return  this->_topo ;
+        {   return ( _kind == filt_topo ) ? 
+                    this->_topo[ +0] : 
+                    this->_topo[ +1] ;
         }
     /*------------------------------------ "const" access */
         __inline_call iptr_type const& itag (
@@ -121,8 +125,11 @@
         {   return  this->_fdim ;
         }
         __inline_call char_type const& topo (
+            char_type _kind = filt_topo
             ) const
-        {   return  this->_topo ;
+        {   return ( _kind == filt_topo ) ? 
+                    this->_topo[ +0] : 
+                    this->_topo[ +1] ;
         }
 
         } ;
@@ -154,7 +161,8 @@
         iptr_type                     _itag = +0 ;
 
         char_type                     _feat = +0 ;
-        char_type                     _topo = +0 ;
+
+        char_type                     _topo [ 2] = {+0} ;
 
         public  :
     /*------------------------------------ "write" access */
@@ -162,26 +170,32 @@
             )
         {   return  this->_itag ;
         }
-        __inline_call char_type&       topo (
-            )
-        {   return  this->_topo ;
-        }
         __inline_call char_type&       feat (
             )
         {   return  this->_feat ;
+        }
+        __inline_call char_type      & topo (
+            char_type _kind = filt_topo
+            )
+        {   return ( _kind == filt_topo ) ? 
+                    this->_topo[ +0] : 
+                    this->_topo[ +1] ;
         }
     /*------------------------------------ "const" access */
         __inline_call iptr_type const& itag (
             ) const
         {   return  this->_itag ;
         }
-        __inline_call char_type const& topo (
-            ) const
-        {   return  this->_topo ;
-        }
         __inline_call char_type const& feat (
             ) const
         {   return  this->_feat ;
+        }
+        __inline_call char_type const& topo (
+            char_type _kind = filt_topo
+            ) const
+        {   return ( _kind == filt_topo ) ? 
+                    this->_topo[ +0] : 
+                    this->_topo[ +1] ;
         }
 
         } ;
@@ -391,6 +405,7 @@
         list_type &_aset ,
         char_type &_feat ,
         char_type &_topo ,
+        char_type &_full ,
         user_opts &_opts
         )
     {
@@ -399,8 +414,8 @@
        (real_type)+3.141592653589793 / 180. ;
 
         real_type _ZERO = -1. +
-            std::numeric_limits
-                <real_type>::epsilon();
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(),.50) ;
 
         real_type _phi1 =
        (real_type)+180. - _opts.phi1();
@@ -416,6 +431,7 @@
 
         _feat =  null_feat ;
         _topo = (char_type)_aset.count () ;
+        _full = (char_type)_aset.count () ; // unfiltered
 
         for (auto _ipos  = _aset.head() ;
                   _ipos != _aset.tend() ;
@@ -514,34 +530,6 @@
         typename
             mesh_type::connector _eadj ;
 
-    /*---------------------------------- init. geom feat. */
-        for (auto _iter  =
-             this->_tria.node().head() ;
-                  _iter !=
-             this->_tria.node().tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0)
-            {
-                _iter->fdim () = +0  ;
-                _iter->feat () = null_feat ;
-                _iter->topo () = +2  ;
-            }
-        }
-
-        for (auto _iter  =
-             this->_tria.edge().head() ;
-                  _iter !=
-             this->_tria.edge().tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0)
-            {
-                _iter->feat () = null_feat ;
-                _iter->topo () = +2  ;
-            }
-        }
-
     /*---------------------------------- find sharp feat. */
         for (auto _iter  =
              this->_tria.node().head() ;
@@ -565,7 +553,8 @@
                &_iter->node (0),
                 _eadj ,
                 _iter->feat () ,
-                _iter->topo () ,
+                _iter->topo (0),
+                _iter->topo (1),
                 _opts ) ;
 
             if (_iter->itag() <= -1)
@@ -917,8 +906,12 @@
                         = _iter->feat() ;
 
                 _mesh._tria.node
-                    (_node)->topo()
-                        = _iter->topo() ;
+                    (_node)->topo(0)
+                        = _iter->topo(0);
+
+                _mesh._tria.node
+                    (_node)->topo(1)
+                        = _iter->topo(1);
 
                 _mesh._tria.node
                     (_node)->part()
@@ -947,9 +940,13 @@
                         = _iter->feat() ;
 
                 _mesh._tria.node
-                    (_node)->topo()
-                        = _iter->topo() ;
-
+                    (_node)->topo(0)
+                        = _iter->topo(0);
+                
+                _mesh._tria.node
+                    (_node)->topo(1)
+                        = _iter->topo(1);
+                
                 _mesh._tria.node
                     (_node)->part()
                         = _iter->itag() ;
@@ -1046,8 +1043,12 @@
                             = _best->feat() ;
 
                     _mesh._tria.node
-                        (_node)->topo()
-                            = _best->topo() ;
+                        (_node)->topo(0)
+                            = _best->topo(0);
+
+                    _mesh._tria.node
+                        (_node)->topo(1)
+                            = _best->topo(1);
 
                     _mesh._tria.node
                         (_node)->part()
@@ -1185,8 +1186,8 @@
                     this->_hfun (_xpos, _HITS ,
                     _geom._tria .
                      edge(_epos).feat() ,
-                    _geom._tria .
-                     edge(_epos).topo() ,
+                   &_geom._tria .
+                     edge(_epos).topo(0),
                     _geom._tria .
                      edge(_epos).itag() ) ;
 
@@ -1294,8 +1295,8 @@
                 this->_hfun (_jpos, _HITS ,
                     _geom._tria .
                      edge(_epos).feat() ,
-                    _geom._tria .
-                     edge(_epos).topo() ,
+                   &_geom._tria .
+                     edge(_epos).topo(0),
                     _geom._tria .
                      edge(_epos).itag() ) ;
 
@@ -1308,8 +1309,8 @@
                 this->_hfun (_ipos, _HITS ,
                     _geom._tria .
                      edge(_epos).feat() ,
-                    _geom._tria .
-                     edge(_epos).topo() ,
+                   &_geom._tria .
+                     edge(_epos).topo(0),
                     _geom._tria .
                      edge(_epos).itag() ) ;
 
@@ -1526,7 +1527,7 @@
         real_type*_ppos,
         char_type _hits,
         char_type _feat,
-        char_type _topo,
+        char_type*_topo,
         iptr_type _itag
         )
     {
@@ -1542,6 +1543,15 @@
         real_type *_ppos
         )
     {
+    /*--------------------------- check against full bbox */
+        if (_ppos[0] < this->_bmin[0] ||
+            _ppos[1] < this->_bmin[1] )
+            return (iptr_type) -1 ;
+
+        if (_ppos[0] > this->_bmax[0] ||
+            _ppos[1] > this->_bmax[1] )
+            return (iptr_type) -1 ;
+
     /*--------------------------- calc. axis-aligned dir. */
         iptr_type _vdim = (iptr_type)+0;
         iptr_type _sign = (iptr_type)+0;
@@ -1588,21 +1598,13 @@
             }
         }
 
-        _vlen *= (real_type)+2. ;
+        _vlen *= (real_type)+4. ;
 
     /*--------------------------- calc. "is-inside" state */
         if (this->_ptag.empty() )
         {
 
     /*--------------------------- null PART specification */
-
-        if (_ppos[0] < this->_bmin[0] ||
-            _ppos[1] < this->_bmin[1] )
-            return (iptr_type) -1 ;
-
-        if (_ppos[0] > this->_bmax[0] ||
-            _ppos[1] > this->_bmax[1] )
-            return (iptr_type) -1 ;
 
         for(auto _iter = +0; _iter++ != +8; )
         {
@@ -1672,6 +1674,10 @@
             if((_func._hnum % 2) != +0)
             {
             return ( (iptr_type) +0 ) ;
+            }
+            else
+            {
+            return ( (iptr_type) -1 ) ;
             }
         }
 
@@ -1768,6 +1774,7 @@
             {
             return this->_ptag[_pnum] ;
             }
+            else { break ; }    // outside: try next part
         }
         }
 

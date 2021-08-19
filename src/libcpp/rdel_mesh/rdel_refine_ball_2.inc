@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Apr., 2021
+     * Last updated: 18 Aug., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -251,8 +251,8 @@
         _ball._ball[2] = std::sqrt (
             _ball._ball [ 2]) ;
 
-         auto _ndeg =
-        _mesh._tria.node(_base)->topo() ;
+         auto _topo = 
+        _mesh._tria.node(_base)->topo(1);
 
     /*--------------------- find intersections with GEOM. */
         typename
@@ -295,7 +295,7 @@
                 continue ;
             }
             else
-            if (_pred._inum !=  _ndeg)
+            if (_pred._inum !=  _topo)
             {
                 _ball._ball[2] *=   // reduce R for TOPO.
                     (real_type) +.67 ;
@@ -312,7 +312,7 @@
                 continue ;
             }
             else
-            if (_halo._inum !=  _ndeg)
+            if (_halo._inum !=  _topo)
             {
                 _ball._ball[2] *=   // reduce R for TOPO.
                     (real_type) +.67 ;
@@ -346,7 +346,6 @@
         __unreferenced(_hfun) ;
         __unreferenced(_mode) ;
         __unreferenced(_pass) ;
-        __unreferenced(_args) ;
 
         iptr_list _mark  ;
         for (auto
@@ -374,8 +373,12 @@
             iptr_type _base =
                 _ball->_data._node[0] ;
 
-            mesh::keep_all_2d <
-                real_type, iptr_type>  _halo ;
+            real_type _near = 
+                _hdat._rrad * _args.near() ;
+
+            mesh::filt_all_2d <
+                real_type, 
+                iptr_type >  _halo( _near) ;
 
             _geom.intersect( _hdat, _halo) ;
 

@@ -61,7 +61,7 @@
         edge_data &_edat,
         iptr_type &_part,
         char_type &_feat,
-        char_type &_topo,
+        char_type *_topo,
         char_type &_kind,
         real_type *_ebal,
         real_type *_pmax

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 Jul., 2021
+     * Last updated: 18 Aug., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -91,7 +91,8 @@
 
         char_type                     _fdim = +0 ;
         char_type                     _feat = +0 ;
-        char_type                     _topo = +0 ;
+        
+        char_type                     _topo [ 2] = {+0} ;
 
         public  :
     /*------------------------------------ "write" access */
@@ -107,9 +108,12 @@
             )
         {   return  this->_fdim ;
         }
-        __inline_call char_type&       topo (
+        __inline_call char_type      & topo (
+            char_type _kind = filt_topo
             )
-        {   return  this->_topo ;
+        {   return ( _kind == filt_topo ) ? 
+                    this->_topo[ +0] : 
+                    this->_topo[ +1] ;
         }
     /*------------------------------------ "const" access */
         __inline_call iptr_type const& itag (
@@ -125,8 +129,11 @@
         {   return  this->_fdim ;
         }
         __inline_call char_type const& topo (
+            char_type _kind = filt_topo
             ) const
-        {   return  this->_topo ;
+        {   return ( _kind == filt_topo ) ? 
+                    this->_topo[ +0] : 
+                    this->_topo[ +1] ;
         }
 
         } ;
@@ -158,7 +165,8 @@
         iptr_type                     _itag = +0 ;
 
         char_type                     _feat = +0 ;
-        char_type                     _topo = +0 ;
+        
+        char_type                     _topo [ 2] = {+0} ;
 
         public  :
     /*------------------------------------ "write" access */
@@ -166,26 +174,32 @@
             )
         {   return  this->_itag ;
         }
-        __inline_call char_type&       topo (
-            )
-        {   return  this->_topo ;
-        }
         __inline_call char_type&       feat (
             )
         {   return  this->_feat ;
+        }
+        __inline_call char_type      & topo (
+            char_type _kind = filt_topo
+            )
+        {   return ( _kind == filt_topo ) ? 
+                    this->_topo[ +0] : 
+                    this->_topo[ +1] ;
         }
     /*------------------------------------ "const" access */
         __inline_call iptr_type const& itag (
             ) const
         {   return  this->_itag ;
         }
-        __inline_call char_type const& topo (
-            ) const
-        {   return  this->_topo ;
-        }
         __inline_call char_type const& feat (
             ) const
         {   return  this->_feat ;
+        }
+        __inline_call char_type const& topo (
+            char_type _kind = filt_topo
+            ) const
+        {   return ( _kind == filt_topo ) ? 
+                    this->_topo[ +0] : 
+                    this->_topo[ +1] ;
         }
 
         } ;
@@ -305,6 +319,7 @@
         list_type &_aset ,
         char_type &_feat ,
         char_type &_topo ,
+        char_type &_full ,
         user_opts &_opts
         )
     {
@@ -313,8 +328,8 @@
        (real_type)+3.141592653589793 / 180. ;
 
         real_type _ZERO = -1. +
-            std::numeric_limits
-                <real_type>::epsilon();
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(),.50) ;
 
         real_type _phi1 =
        (real_type)+180. - _opts.phi1();
@@ -330,6 +345,7 @@
 
         _feat =  null_feat ;
         _topo = (char_type)_aset.count () ;
+        _full = (char_type)_aset.count () ; // unfiltered
 
         for (auto _ipos  = _aset.head() ;
                   _ipos != _aset.tend() ;
@@ -428,34 +444,6 @@
         typename
             mesh_type::connector _eadj ;
 
-    /*---------------------------------- init. geom feat. */
-        for (auto _iter  =
-             this->_mesh.node().head() ;
-                  _iter !=
-             this->_mesh.node().tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0)
-            {
-                _iter->fdim () = +0  ;
-                _iter->feat () = null_feat ;
-                _iter->topo () = +2  ;
-            }
-        }
-
-        for (auto _iter  =
-             this->_mesh.edge().head() ;
-                  _iter !=
-             this->_mesh.edge().tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0)
-            {
-                _iter->feat () = null_feat ;
-                _iter->topo () = +2  ;
-            }
-        }
-
     /*---------------------------------- find sharp feat. */
         for (auto _iter  =
              this->_mesh.node().head() ;
@@ -479,7 +467,8 @@
                &_iter->node (0),
                 _eadj ,
                 _iter->feat () ,
-                _iter->topo () ,
+                _iter->topo (0),
+                _iter->topo (1),
                 _opts ) ;
 
             if (_iter->itag() <= -1)
@@ -744,8 +733,12 @@
                         = _iter->feat() ;
 
                 _rdel._tria.node
-                    (_node)->topo()
-                        = _iter->topo() ;
+                    (_node)->topo(0)
+                        = _iter->topo(0);
+
+                _rdel._tria.node
+                    (_node)->topo(1)
+                        = _iter->topo(1);
 
                 _rdel._tria.node
                     (_node)->part()
@@ -775,8 +768,12 @@
                         = _iter->feat() ;
 
                 _rdel._tria.node
-                    (_node)->topo()
-                        = _iter->topo() ;
+                    (_node)->topo(0)
+                        = _iter->topo(0);
+
+                _rdel._tria.node
+                    (_node)->topo(1)
+                        = _iter->topo(1);
 
                 _rdel._tria.node
                     (_node)->part()
@@ -1144,8 +1141,12 @@
                             = _best->feat() ;
 
                     _rdel._tria.node
-                        (_node)->topo()
-                            = _best->topo() ;
+                        (_node)->topo(0)
+                            = _best->topo(0);
+
+                    _rdel._tria.node
+                        (_node)->topo(1)
+                            = _best->topo(1);
 
                     _rdel._tria.node
                         (_node)->part()
@@ -1538,7 +1539,7 @@
             {
                 _hfun(&_pprj[0], _htmp ,
                     _edge.feat() ,
-                    _edge.topo() ,
+                   &_edge.topo(0),
                     _edge.itag() )  ;
 
                 _hnum += +1 ;
@@ -1572,12 +1573,12 @@
             {
                 _hfun(&_pprj[0], _htmp ,
                     _edge.feat() ,
-                    _edge.topo() ,
+                   &_edge.topo(0),
                     _edge.itag() )  ;
 
                 _hfun(&_qprj[0], _htmp ,
                     _edge.feat() ,
-                    _edge.topo() ,
+                   &_edge.topo(0),
                     _edge.itag() )  ;
 
                 _hnum += +2 ;
@@ -1670,7 +1671,7 @@
             {
                 _hfun(&_xprj[0], _htmp ,
                     _edge.feat() ,
-                    _edge.topo() ,
+                   &_edge.topo(0),
                     _edge.itag() )  ;
 
                 _hnum +=   +1 ;
@@ -2092,8 +2093,8 @@
             char_type _hits =
                 geometry::face_hits ;
             char_type _feat = +2;
-            char_type _topo = +2;
             iptr_type _itag = +0;
+            char_type _topo[2] = {2};
 
             real_type  _apos[3] ;
             _apos[0] = _APOS[0] ;
@@ -2118,8 +2119,8 @@
             char_type _hits =
                 geometry::face_hits ;
             char_type _feat = +2;
-            char_type _topo = +2;
             iptr_type _itag = +0;
+            char_type _topo[2] = {2};
 
             real_type  _bpos[3] ;
             _bpos[0] = _BPOS[0] ;
@@ -2188,8 +2189,8 @@
             char_type _hits =
                 geometry::face_hits ;
             char_type _feat = +2;
-            char_type _topo = +2;
             iptr_type _itag = +0;
+            char_type _topo[2] = {2};
 
             _hfun( _proj ,
             _hits, _feat , _topo, _itag) ;

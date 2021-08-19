@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 Mar., 2021
+     * Last updated: 16 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -72,6 +72,9 @@
             mesh_type::real_type        real_type ;
     typedef typename
             mesh_type::iptr_type        iptr_type ;
+
+    iptr_type static constexpr min_subit = +1 ;
+    iptr_type static constexpr max_subit = +8 ;
 
     iptr_type static constexpr
             topo_dims =      pred_type::topo_dims ;
@@ -383,8 +386,7 @@
             +std::numeric_limits
                 <real_type>::infinity();
 
-        real_type _GOOD =
-            +std::pow(_good, +7./8.);
+        _good = std::pow(_good, +7./8.);
 
         real_type _msrc, _mdst;
         _msrc = (real_type) +0. ;
@@ -399,7 +401,7 @@
             std::min(_0src, *_iter) ;
 
             _msrc += std::pow(
-            (real_type)1. / *_iter, +9);
+            (real_type)1. / *_iter, +5);
         }
         for (auto _iter  = _cdst.head(),
                   _tend  = _cdst.tend();
@@ -410,24 +412,21 @@
             std::min(_0dst, *_iter) ;
 
             _mdst += std::pow (
-            (real_type)1. / *_iter, +9);
+            (real_type)1. / *_iter, +5);
         }
 
-        _qtol *= std::max(_0src, _zero);
-
         _msrc  = std::pow(
-        _csrc.count() / _msrc, +1./9.0);
+        _csrc.count() / _msrc, +1./5.0);
         _mdst  = std::pow(
-        _cdst.count() / _mdst, +1./9.0);
+        _cdst.count() / _mdst, +1./5.0);
 
         _qtol /=
-        std::pow(_csrc.count(), 1./9.0);
+        std::pow(_csrc.count(), 1./5.0);
         _qtol /=
-        std::pow(_cdst.count(), 1./9.0);
+        std::pow(_cdst.count(), 1./5.0);
 
     /*---------------------------- test move = "okay" */
-        if (_0dst >= _GOOD)
-        if (_0src >= _GOOD)
+        if (_0dst >= _good)
         {
     /*--------------------- okay if moves unconverged */
             if (_xdel > _xtol)
@@ -784,9 +783,7 @@
             real_type _lmov =
             pred_type::length_sq(_save, _proj) ;
 
-            _lmov = _lmov / _lsqr;
-
-            if (_lmov <= _XEPS) break ;
+            if (_lmov <= _XEPS * _lsqr) break;
 
           //_move  = +1 ; return ;
 
@@ -800,7 +797,7 @@
 
             move_okay( _qnew, _qold, _move,
                 _QLIM, _opts.qtol(),
-                _lmov, _XTOL ) ;
+                _lmov, _XTOL* _lsqr) ;
 
             if (_move >= +0) break ;
         }
@@ -1104,7 +1101,8 @@
                            _sset.tend() ,
             cost_pred () ) ;
 
-        iptr_type _FLAG  = _iout - 8 ;  // append "recent"
+        iptr_type _FLAG  = 
+            _iout - (3 * max_subit) / 2 ; // only "recent"
 
         for (auto _iter  = _sset.head() ;
                   _iter != _sset.tend() ;
@@ -1267,7 +1265,7 @@
 
             iptr_type _move = -1 ;
 
-            if(_move < +0)
+            if (_move < +0 )
             {
         /*---------------- do optimisation of node coord. */
                 move_node( _geom, _mesh,
@@ -1278,7 +1276,7 @@
                     _QMIN, _QLIM )  ;
             }
 
-            if (_move > +0)
+            if (_move > +0 )
             {
         /*---------------- update when state is improving */
             _hval[*_apos] = (real_type)-1;
@@ -1378,7 +1376,7 @@
 
             iptr_type _move = -1 ;
 
-            if(_move < +0)
+            if (_move < +0 )
             {
         /*---------------- do optimisation of node weight */
                 move_dual( _geom, _mesh,
@@ -1389,7 +1387,7 @@
                     _DMIN, _DLIM ) ;
             }
 
-            if (_move > +0)
+            if (_move > +0 )
             {
         /*---------------- update when state is improving */
             if (std::abs(
@@ -1647,15 +1645,16 @@
 
             if (_iter->mark() >= +0 &&
                (    std::abs (
-            _mark._node[_inod]) > _imrk - 4 ||
+            _mark._node[_inod]) > _imrk - max_subit ||
                     std::abs (
-            _mark._node[_jnod]) > _imrk - 4 ))
+            _mark._node[_jnod]) > _imrk - max_subit ))
             {
                 float _lsqr  =
                (float)pred_type::length_sq (
                     & _iptr->pval(0) ,
                     & _jptr->pval(0) ) ;
 
+                /*
                 _iset.set_count(
                     0, containers::loose_alloc);
                 _jset.set_count(
@@ -1668,6 +1667,7 @@
 
                 _lsqr *= (_iset.count() +
                           _jset.count() ) / 2  ;
+                */
 
                 _sort.push_tail(
                  sort_pair(_inod, _jnod, _lsqr)) ;
@@ -1694,6 +1694,9 @@
 
             if (MARKNODE(_enod[0]) < +0 &&
                 MARKNODE(_enod[1]) < +0 ) continue ;
+
+            if (MARKNODE(_enod[0])>_imrk&&
+                MARKNODE(_enod[1])>_imrk) continue ;
 
             if(!_mesh.find_edge(
                           _enod, _eadj) ) continue ;
@@ -1735,6 +1738,9 @@
             if (MARKNODE(_enod[0]) < +0 ||
                 MARKNODE(_enod[1]) < +0 ) continue ;
 
+            if (MARKNODE(_enod[0])>_imrk||
+                MARKNODE(_enod[1])>_imrk) continue ;
+
             if(!_mesh.find_edge(
                           _enod, _eadj) ) continue ;
 
@@ -1746,7 +1752,7 @@
                 bool_type  _move;
                 _zip_edge( _geom, _mesh,
                     _hfun, _hval, _opts,
-                    _eadj,
+                    _imrk, _eadj,
                     _kern, _move, _nnew,
                     _iset, _jset,
                     _aset, _bset, _cset,
@@ -1921,9 +1927,9 @@
         static constexpr ITER_FLIP = true;
 
         iptr_type
-        static constexpr ITER_MIN_ =  +1 ;
+        static constexpr ITER_MIN_ = min_subit ;
         iptr_type
-        static constexpr ITER_MAX_ =  +8 ;
+        static constexpr ITER_MAX_ = max_subit ;
 
         real_type _QMIN = (real_type) +1.;
 
@@ -2175,6 +2181,8 @@
     #       endif//__use_timers
 
     /*------------------------------ update mesh topology */
+            /*
+
     #       ifdef  __use_timers
             _ttic = _time.now() ;
     #       endif//__use_timers
@@ -2198,6 +2206,8 @@
             _tcpu._topo_flip +=
                 _tcpu.time_span(_ttic, _ttoc);
     #       endif//__use_timers
+
+            */
 
     /*------------------------------ dump optim. progress */
             if (_opts.verb() >= 0)

@@ -739,7 +739,7 @@
 
         __testINTS("MESH-DIMS",
             _jcfg._mesh_opts.dims(),
-            (iptr_type) + 1,
+            (iptr_type) + 0,
             (iptr_type) + 3)
 
         __testREAL("MESH-SIZ1",

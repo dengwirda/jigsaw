@@ -18,6 +18,7 @@
     MESH_FILE = out/earth.msh
     VERBOSITY = 1
     MESH_DIMS = 2
+    MESH_RAD2 = 1.25
     HFUN_HMAX = 0.0075
 
 

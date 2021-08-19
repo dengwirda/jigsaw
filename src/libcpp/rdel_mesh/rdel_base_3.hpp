@@ -299,7 +299,7 @@
         real_type *_ebal,
         real_type *_sbal,
         char_type &_feat,
-        char_type &_topo,
+        char_type *_topo,
         iptr_type &_part
         )
     {
@@ -579,7 +579,9 @@
 
         _part     = _iful->itag ();
         _feat     = _iful->feat ();
-        _topo     = _iful->topo ();
+
+        _topo[ 0] = _iful->topo(0);
+        _topo[ 1] = _iful->topo(1);
 
     /*--------------------------- eval. surf. ball radius */
         _sbal[ 3]+=
@@ -606,7 +608,9 @@
 
         _part     = _imin->itag ();
         _feat     = _imin->feat ();
-        _topo     = _imin->topo ();
+
+        _topo[ 0] = _imin->topo(0);
+        _topo[ 1] = _imin->topo(1);
 
     /*--------------------------- eval. surf. ball radius */
         _sbal[ 3]+=
@@ -642,7 +646,7 @@
         real_type *_fbal,
         real_type *_sbal,
         char_type &_feat,
-        char_type &_topo,
+        char_type *_topo,
         iptr_type &_part
         )
     {
@@ -914,7 +918,9 @@
 
         _part     = _iful->itag ();
         _feat     = _iful->feat ();
-        _topo     = _iful->topo ();
+
+        _topo[ 0] = _iful->topo(0);
+        _topo[ 1] = _iful->topo(1);
 
     /*--------------------------- eval. surf. ball radius */
         _sbal[ 3]+=
@@ -945,7 +951,9 @@
 
         _part     = _imin->itag ();
         _feat     = _imin->feat ();
-        _topo     = _imin->topo ();
+
+        _topo[ 0] = _imin->topo(0);
+        _topo[ 1] = _imin->topo(1);
 
     /*--------------------------- eval. surf. ball radius */
         _sbal[ 3]+=

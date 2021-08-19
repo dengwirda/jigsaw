@@ -199,7 +199,8 @@
             if(_epro.find(
                     _edat, _same)) continue ;
 
-            char_type _feat, _topo ;
+            char_type _feat; 
+            char_type _topo[ +2] ;
             iptr_type _part;
             real_type _fbal[ +3] ;
             real_type _sbal[ +3] ;

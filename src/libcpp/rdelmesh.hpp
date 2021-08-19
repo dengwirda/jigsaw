@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 20 February, 2019
+ * Last updated: 18 Aug., 2021
  *
- * Copyright 2013-2019
+ * Copyright 2013-2021
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -56,6 +56,9 @@
 
     char_type constexpr null_ball = 0 ;
     char_type constexpr feat_ball = 1 ;
+
+    char_type constexpr filt_topo = 0 ;
+    char_type constexpr full_topo = 1 ;
     }
 
 #   include "containers.hpp"
