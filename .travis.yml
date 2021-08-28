@@ -125,6 +125,7 @@ matrix:
         - cmake --build . --config Debug --target install
         - cd ..
         - rm -r build
+        - cp lib/jigsaw.dll uni
         - cd uni
         - mkdir build
         - cd build
