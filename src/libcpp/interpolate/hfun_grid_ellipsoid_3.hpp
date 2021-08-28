@@ -197,8 +197,9 @@
         )
     {
         real_type static const _FTOL =
-            std::pow(std::numeric_limits
-       <real_type>::epsilon(), (real_type)+.80) ;
+            std::pow (
+            std::numeric_limits<real_type>
+            ::epsilon(), (real_type) +.75) ;
 
         this->_xvar = false ;
         this->_yvar = false ;

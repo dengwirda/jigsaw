@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 Jul., 2020
+     * Last updated: 20 Aug., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -73,16 +73,11 @@
         real_type  _lmin
             = (real_type) +1.00E+00 ,
         real_type  _qinc
-            = (real_type) +1.25E-02
+            = (real_type) +1.00E-02
         )
     {
         iptr_type static constexpr
-            _last = pred_type::geom_dims+0 ;
-
-        iptr_type static constexpr
-            _DEG_TRIA3 = (iptr_type)+6 ;
-    //  iptr_type static constexpr
-    //      _DEG_QUAD4 = (iptr_type)+4 ;
+            _last = pred_type::geom_dims + 0 ;
 
     /*--------------------------------- get edge indexing */
          auto _eptr =
@@ -121,85 +116,6 @@
         if (_cset.count()<=1) return ;
 
     /*--------------------------------- get edge h-sizing */
-        real_type _pmid[_last + 1] ;
-        for (auto _idim =
-        pred_type::real_dims; _idim-- != 0; )
-        {
-            _pmid[_idim]  = (real_type)0. ;
-            _pmid[_idim] +=
-                _iptr->pval(_idim) ;
-            _pmid[_idim] +=
-                _jptr->pval(_idim) ;
-
-            _pmid[_idim] /= (real_type)2. ;
-        }
-
-        real_type _isiz, _jsiz, _msiz ;
-        _isiz = _hfun.eval(
-            &_iptr->pval(0), _iptr->hidx()) ;
-        _jsiz = _hfun.eval(
-            &_jptr->pval(0), _jptr->hidx()) ;
-
-         auto _hint = _iptr->hidx();
-
-        _msiz = _hfun.eval(_pmid , _hint) ;
-
-        real_type _lsqr =
-            pred_type::length_sq (
-           &_iptr->pval(0),&_jptr->pval(0)) ;
-
-        real_type _hbar =
-            _isiz * (real_type)(1./4.) +
-            _jsiz * (real_type)(1./4.) +
-            _msiz * (real_type)(2./4.) ;
-
-    /*--------------------------------- exit if too small */
-        if (_lsqr <= _hbar * _lmin *
-                     _hbar * _lmin )
-            return  ;
-
-    /*--------------------------------- split if too long */
-        real_type static constexpr
-            _lBIG  = (real_type) +1.38750 ;
-
-        if (_lsqr >= _hbar * _lBIG *
-                     _hbar * _lBIG )
-        {
-    //  if more regular geom. is constructed via the edge
-    //  div, make it easier to do so!
-
-        _qinc  = 0.5 * (_hbar / std::sqrt(_lsqr) - 1.0) ;
-
-        _qinc /= std::sqrt( _iout ); // no oscl. wrt. zip
-
-        }
-        else
-        {
-    /*--------------------------------- get adjacent face */
-        _mesh.connect_2(_eptr->node(+0),
-            POINT_tag , _iset) ;
-        _mesh.connect_2(_eptr->node(+1),
-            POINT_tag , _jset) ;
-
-    /*--------------------------------- calc. local topo. */
-        auto _ideg = _iset.count() ;
-        auto _ierr =
-            (iptr_type)(_ideg-_DEG_TRIA3) ;
-
-        auto _jdeg = _jset.count() ;
-        auto _jerr =
-            (iptr_type)(_jdeg-_DEG_TRIA3) ;
-
-        if (std::max(_ierr, _jerr) < 2)
-            return ;
-
-        }   // if (_lBIG)
-
-    /*--------------------------------- get adjacent cost */
-        real_type  _qmin = loop_cost(
-            _mesh, _cset, _qsrc, cell_kind()) ;
-
-    /*--------------------------------- get adjacent ball */
         real_type _ball[_last + 1] ;
         for (auto _idim =
         pred_type::real_dims; _idim-- != 0; )
@@ -215,6 +131,76 @@
 
         pred_type::
         proj_node(_geom, _ball, _ball);
+
+        real_type _isiz, _jsiz, _bsiz ;
+        _isiz = _hfun.eval(
+            &_iptr->pval(0), _iptr->hidx()) ;
+        _jsiz = _hfun.eval(
+            &_jptr->pval(0), _jptr->hidx()) ;
+
+         auto _hint = _iptr->hidx();
+
+        _bsiz = _hfun.eval(_ball , _hint) ;
+
+        real_type _lsqr =
+            pred_type::length_sq (
+           &_iptr->pval(0),&_jptr->pval(0)) ;
+
+        real_type _hbar =
+            _isiz * (real_type)(1./4.) +
+            _jsiz * (real_type)(1./4.) +
+            _bsiz * (real_type)(2./4.) ;
+
+    /*--------------------------------- exit if too small */
+        if (_lsqr <= _hbar * _lmin *
+                     _hbar * _lmin )
+            return  ;
+
+        _mesh.connect_2(_eptr->node(+0),
+            POINT_tag , _iset) ;
+        _mesh.connect_2(_eptr->node(+1),
+            POINT_tag , _jset) ;
+
+        auto _ideg = _iset.count() ;
+        auto _jdeg = _jset.count() ;
+
+    /*--------------------------------- split if too long */
+        real_type static constexpr
+            _lBIG  = (real_type)+1.375 ;
+
+        iptr_type static constexpr
+            _dMAX  = (iptr_type)+9 ;
+
+        real_type _lmax =
+            _lBIG *std::pow( _iout ,  +1./8.) ;
+
+        if (_lsqr >= _hbar * _lmax * // no oscl. wrt. zip
+                     _hbar * _lmax )
+        {
+    //  if more regular geom. is constructed via the edge
+    //  div, make it easier to do so!
+
+        _qinc = (real_type)(+0.50 *
+            (_hbar / std::sqrt(_lsqr) - 1.0)) ;
+
+        }
+        else
+        if (_ideg >= _dMAX || _jdeg >= _dMAX)
+        {
+    //  try to reduce large vertex valence via refinement
+
+        _qinc = (real_type) -0.25 ;
+
+        }
+        else
+        {
+    //  don't refine otherwise: bail-out early!
+            return  ;
+        }
+
+    /*--------------------------------- get adjacent cost */
+        real_type  _qmin = loop_cost(
+            _mesh, _cset, _qsrc, cell_kind()) ;
 
     /*--------------------------------- try to split edge */
     #   define NULLFEAT null_feat

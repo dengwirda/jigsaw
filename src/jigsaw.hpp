@@ -1057,6 +1057,8 @@
         mesh_data _mesh ;               // MESH data
         jcfg_data _jcfg ;
 
+        float     _xoff[3] = {+0.f} ;   // to origin
+
 #       ifdef  __use_timers
         typename std ::chrono::
         high_resolution_clock::time_point  _ttic ;
@@ -1146,6 +1148,13 @@
                 return  _retv ;
             }
 
+            if ((_retv = separator (
+                 _jcfg, _jlog ,
+                 _geom, _xoff)) != __no_error)
+            {
+                return  _retv ;
+            }
+
 #           ifdef  __use_timers
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
@@ -1163,7 +1172,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _geom.init_geom(_jcfg) ;
+            _geom.init_geom(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1228,10 +1237,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _mesh._euclidean_mesh_2d.
-                _mesh.make_link();
-            _mesh._euclidean_mesh_3d.
-                _mesh.make_link();
+            _mesh.init_mesh(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1303,7 +1309,7 @@
                 return  _retv ;
             }
 
-            _hfun.init_hfun (_jcfg);
+            _hfun.init_hfun(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1449,6 +1455,7 @@
 
             if ((_retv = save_rdel (
                  _jcfg, _jlog ,
+                 _xoff,
                  _mesh,*_mmsh)) != __no_error)
             {
                 return  _retv ;
@@ -1460,6 +1467,7 @@
 
             if ((_retv = save_mesh (
                  _jcfg, _jlog ,
+                 _xoff,
                  _mesh,*_mmsh)) != __no_error)
             {
                 return  _retv ;
@@ -1490,6 +1498,8 @@
         hfun_data _hfun ;               // HFUN data
         geom_data _geom ;               // GEOM data
         mesh_data _mesh ;               // MESH data
+
+        float     _xoff[3] = {+0.f} ;   // to origin
 
 #       ifdef  __use_timers
         typename std ::chrono::
@@ -1624,6 +1634,13 @@
                 return  _retv ;
             }
 
+            if ((_retv = separator (
+                 _jcfg, _jlog ,
+                 _geom, _xoff)) != __no_error)
+            {
+                return  _retv ;
+            }
+
 #           ifdef  __use_timers
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
@@ -1641,7 +1658,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _geom.init_geom(_jcfg) ;
+            _geom.init_geom(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1706,10 +1723,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _mesh._euclidean_mesh_2d.
-                _mesh.make_link();
-            _mesh._euclidean_mesh_3d.
-                _mesh.make_link();
+            _mesh.init_mesh(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1781,7 +1795,7 @@
                 return  _retv ;
             }
 
-            _hfun.init_hfun (_jcfg);
+            _hfun.init_hfun(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1846,8 +1860,8 @@
 #           endif//__use_timers
 
             if ((_retv = save_tria (
-                 _jcfg,
-                 _jlog, _mesh)) != __no_error)
+                 _jcfg, _jlog,
+                 _xoff, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -1952,8 +1966,8 @@
             {
 
             if ((_retv = save_rdel (
-                 _jcfg,
-                 _jlog, _mesh)) != __no_error)
+                 _jcfg, _jlog,
+                 _xoff, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -1963,8 +1977,8 @@
             {
 
             if ((_retv = save_mesh (
-                 _jcfg,
-                 _jlog, _mesh)) != __no_error)
+                 _jcfg, _jlog,
+                 _xoff, _mesh)) != __no_error)
             {
                 return  _retv ;
             }

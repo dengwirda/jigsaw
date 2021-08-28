@@ -251,7 +251,7 @@
         _ball._ball[2] = std::sqrt (
             _ball._ball [ 2]) ;
 
-         auto _topo = 
+         auto _topo =
         _mesh._tria.node(_base)->topo(1);
 
     /*--------------------- find intersections with GEOM. */
@@ -373,11 +373,11 @@
             iptr_type _base =
                 _ball->_data._node[0] ;
 
-            real_type _near = 
+            real_type _near =
                 _hdat._rrad * _args.near() ;
 
             mesh::filt_all_2d <
-                real_type, 
+                real_type,
                 iptr_type >  _halo( _near) ;
 
             _geom.intersect( _hdat, _halo) ;

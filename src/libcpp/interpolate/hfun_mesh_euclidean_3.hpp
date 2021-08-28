@@ -146,6 +146,9 @@
      */
 
     __normal_call void_type init (
+        float _xoff = + 0.f ,
+        float _yoff = + 0.f ,
+        float _zoff = + 0.f
         )
     {
         class tria_pred
@@ -181,6 +184,10 @@
         {
             if (_iter->mark() >= +0)
             {
+            _iter->pval(0) -= _xoff;
+            _iter->pval(1) -= _yoff;
+            _iter->pval(2) -= _zoff;
+
             this->_bmin[0] = std::min (
             this->_bmin[0] ,
             _iter->pval(0) ) ;
@@ -206,7 +213,7 @@
         float     static const _RTOL =
             std::pow (
             std::numeric_limits<float>
-            ::epsilon(), (float) +0.8) ;
+            ::epsilon(), (float) +.75) ;
 
         iptr_type static
         constexpr _NBOX=(iptr_type)+8  ;

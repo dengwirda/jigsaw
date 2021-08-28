@@ -14,7 +14,7 @@
      * MARCHE: "fast-marching" eikonal equation solver.
     --------------------------------------------------------
      *
-     * Last updated: 16 Apr., 2021
+     * Last updated: 27 Aug., 2021
      *
      * Copyright 2013 -- 2021
      * Darren Engwirda
@@ -95,6 +95,8 @@
 
         hfun_data _ffun ;               // FUNC data
         jcfg_data _jcfg ;
+
+        float     _xoff[3] = {+0.f} ;   // to origin
 
 #       ifdef  __use_timers
         typename std ::chrono::
@@ -182,6 +184,13 @@
                 return  _retv ;
             }
 
+            if ((_retv = separator (
+                 _jcfg, _jlog ,
+                 _ffun, _xoff)) != __no_error)
+            {
+                return  _retv ;
+            }
+
 #           ifdef  __use_timers
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
@@ -199,7 +208,8 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _ffun.init_hfun(_jcfg, true) ;
+            _ffun.init_hfun(
+                _jcfg, _xoff, true ) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -254,6 +264,7 @@
 
             if ((_retv = save_hfun (
                  _jcfg, _jlog,
+                 _xoff,
                  _ffun,*_fmsh)) != __no_error)
             {
                 return  _retv ;
@@ -280,6 +291,8 @@
         )
     {
         hfun_data _ffun ;               // FUNC data
+
+        float     _xoff[3] = {+0.f} ;   // to origin
 
 #       ifdef  __use_timers
         typename std ::chrono::
@@ -414,6 +427,13 @@
                 return  _retv ;
             }
 
+            if ((_retv = separator (
+                 _jcfg, _jlog ,
+                 _ffun, _xoff)) != __no_error)
+            {
+                return  _retv ;
+            }
+
 #           ifdef  __use_timers
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
@@ -431,7 +451,8 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _ffun.init_hfun(_jcfg, true) ;
+            _ffun.init_hfun(
+                _jcfg, _xoff, true ) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -485,8 +506,8 @@
 #           endif//__use_timers
 
             if ((_retv = save_hfun (
-                 _jcfg,
-                 _jlog, _ffun)) != __no_error)
+                 _jcfg, _jlog,
+                 _xoff, _ffun)) != __no_error)
             {
                 return  _retv ;
             }

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 Feb., 2021
+     * Last updated: 27 Aug., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -98,6 +98,7 @@
     __normal_call iptr_type save_rdel (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
+        float     *_xoff ,
         mesh_data &_rdel
         )
     {
@@ -209,8 +210,8 @@
                     PRINTCHARS(snprintf(&_fbuf[_next],
                         PRINTCHUNK,
                         "%.17g;%.17g;%d\n",
-                        _iter->pval(0) ,
-                        _iter->pval(1) ,
+                        _iter->pval(0) + _xoff[0] ,
+                        _iter->pval(1) + _xoff[1] ,
                         _iter->part()) , VERT2CHUNK )
                     }
                 }
@@ -429,9 +430,9 @@
                     PRINTCHARS(snprintf(&_fbuf[_next],
                         PRINTCHUNK,
                         "%.17g;%.17g;%.17g;%d\n",
-                        _iter->pval(0) ,
-                        _iter->pval(1) ,
-                        _iter->pval(2) ,
+                        _iter->pval(0) + _xoff[0] ,
+                        _iter->pval(1) + _xoff[1] ,
+                        _iter->pval(2) + _xoff[2] ,
                         _iter->part()) , VERT3CHUNK )
                     }
                 }
@@ -603,6 +604,7 @@
     __normal_call iptr_type save_rdel (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
+        float     *_xoff ,
         mesh_data &_rdel ,
         jigsaw_msh_t &_mmsh
         )
@@ -694,10 +696,12 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0 )
                     {
-                    _mmsh._vert2._data[_nout].
-                        _ppos[0] = _iter->pval(0) ;
-                    _mmsh._vert2._data[_nout].
-                        _ppos[1] = _iter->pval(1) ;
+                    _mmsh._vert2.
+                        _data[_nout]._ppos[0] =
+                            _iter->pval(0) + _xoff[0];
+                    _mmsh._vert2.
+                        _data[_nout]._ppos[1] =
+                            _iter->pval(1) + _xoff[1];
 
                     _mmsh._vert2._data[_nout].
                         _itag    = _iter->part () ;
@@ -896,12 +900,15 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0 )
                     {
-                    _mmsh._vert3._data[_nout].
-                        _ppos[0] = _iter->pval(0) ;
-                    _mmsh._vert3._data[_nout].
-                        _ppos[1] = _iter->pval(1) ;
-                    _mmsh._vert3._data[_nout].
-                        _ppos[2] = _iter->pval(2) ;
+                    _mmsh._vert3.
+                        _data[_nout]._ppos[0] =
+                            _iter->pval(0) + _xoff[0];
+                    _mmsh._vert3.
+                        _data[_nout]._ppos[1] =
+                            _iter->pval(1) + _xoff[1];
+                    _mmsh._vert3.
+                        _data[_nout]._ppos[2] =
+                            _iter->pval(2) + _xoff[2];
 
                     _mmsh._vert3._data[_nout].
                         _itag    = _iter->part () ;
@@ -1070,6 +1077,7 @@
     __normal_call iptr_type save_tria (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
+        float     *_xoff ,
         mesh_data &_rdel
         )
     {
@@ -1157,8 +1165,9 @@
                     PRINTCHARS(snprintf(&_fbuf[_next],
                         PRINTCHUNK,
                         "%.17g;%.17g;+0\n",
-                        _iter->pval(0) ,
-                        _iter->pval(1) ), VERT2CHUNK)
+                        _iter->pval(0) + _xoff[0] ,
+                        _iter->pval(1) + _xoff[1]),
+                        VERT2CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -1258,9 +1267,10 @@
                     PRINTCHARS(snprintf(&_fbuf[_next],
                         PRINTCHUNK,
                         "%.17g;%.17g;%.17g;+0\n",
-                        _iter->pval(0) ,
-                        _iter->pval(1) ,
-                        _iter->pval(2) ), VERT3CHUNK)
+                        _iter->pval(0) + _xoff[0] ,
+                        _iter->pval(1) + _xoff[1] ,
+                        _iter->pval(2) + _xoff[2]),
+                        VERT3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -1325,6 +1335,7 @@
     __normal_call iptr_type save_tria (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
+        float     *_xoff ,
         mesh_data &_rdel ,
         jigsaw_msh_t &_mmsh
         )
@@ -1397,10 +1408,12 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0 )
                     {
-                    _mmsh._vert2._data[_nout].
-                        _ppos[0] = _iter->pval(0) ;
-                    _mmsh._vert2._data[_nout].
-                        _ppos[1] = _iter->pval(1) ;
+                    _mmsh._vert2.
+                        _data[_nout]._ppos[0] =
+                            _iter->pval(0) + _xoff[0];
+                    _mmsh._vert2.
+                        _data[_nout]._ppos[1] =
+                            _iter->pval(1) + _xoff[1];
 
                     _mmsh._vert2.
                         _data[_nout]._itag = 0 ;
@@ -1519,12 +1532,15 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0 )
                     {
-                    _mmsh._vert3._data[_nout].
-                        _ppos[0] = _iter->pval(0) ;
-                    _mmsh._vert3._data[_nout].
-                        _ppos[1] = _iter->pval(1) ;
-                    _mmsh._vert3._data[_nout].
-                        _ppos[2] = _iter->pval(2) ;
+                    _mmsh._vert3.
+                        _data[_nout]._ppos[0] =
+                            _iter->pval(0) + _xoff[0];
+                    _mmsh._vert3.
+                        _data[_nout]._ppos[1] =
+                            _iter->pval(1) + _xoff[1];
+                    _mmsh._vert3.
+                        _data[_nout]._ppos[2] =
+                            _iter->pval(2) + _xoff[2];
 
                     _mmsh._vert3.
                         _data[_nout]._itag = 0 ;
@@ -1607,6 +1623,7 @@
     __normal_call iptr_type save_mesh (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
+        float     *_xoff ,
         mesh_data &_mesh
         )
     {
@@ -1729,8 +1746,8 @@
                     PRINTCHARS(snprintf(&_fbuf[_next] ,
                         PRINTCHUNK,
                         "%.17g;%.17g;%d\n" ,
-                        _iter->pval(0) ,
-                        _iter->pval(1) ,
+                        _iter->pval(0) + _xoff[0] ,
+                        _iter->pval(1) + _xoff[1] ,
                         _iter->itag()) , VERT2CHUNK )
                     }
                 }
@@ -1971,10 +1988,10 @@
                     {
                     PRINTCHARS(snprintf(&_fbuf[_next] ,
                         PRINTCHUNK,
-                        "%.17g;%.17g;%.17g;%d\n" ,
-                        _iter->pval(0) ,
-                        _iter->pval(1) ,
-                        _iter->pval(2) ,
+                        "%.17g;%.17g;%.17g;%d\n",
+                        _iter->pval(0) + _xoff[0] ,
+                        _iter->pval(1) + _xoff[1] ,
+                        _iter->pval(2) + _xoff[2] ,
                         _iter->itag()) , VERT3CHUNK )
                     }
                 }
@@ -2157,6 +2174,7 @@
     __normal_call iptr_type save_mesh (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
+        float     *_xoff ,
         mesh_data &_mesh ,
         jigsaw_msh_t &_mmsh
         )
@@ -2265,10 +2283,12 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0 )
                     {
-                    _mmsh._vert2._data[_nout].
-                        _ppos[0] = _iter->pval(0) ;
-                    _mmsh._vert2._data[_nout].
-                        _ppos[1] = _iter->pval(1) ;
+                    _mmsh._vert2.
+                        _data[_nout]._ppos[0] =
+                            _iter->pval(0) + _xoff[ 0] ;
+                    _mmsh._vert2.
+                        _data[_nout]._ppos[1] =
+                            _iter->pval(1) + _xoff[ 1] ;
 
                     _mmsh._vert2._data[_nout].
                         _itag    = _iter->itag () ;
@@ -2532,12 +2552,15 @@
                     if (_iter->mark() >= 0 &&
                         _nmap[_npos ] >= 0 )
                     {
-                    _mmsh._vert3._data[_nout].
-                        _ppos[0] = _iter->pval(0) ;
-                    _mmsh._vert3._data[_nout].
-                        _ppos[1] = _iter->pval(1) ;
-                    _mmsh._vert3._data[_nout].
-                        _ppos[2] = _iter->pval(2) ;
+                    _mmsh._vert3.
+                        _data[_nout]._ppos[0] =
+                            _iter->pval(0) + _xoff[ 0] ;
+                    _mmsh._vert3.
+                        _data[_nout]._ppos[1] =
+                            _iter->pval(1) + _xoff[ 1] ;
+                    _mmsh._vert3.
+                        _data[_nout]._ppos[2] =
+                            _iter->pval(2) + _xoff[ 2] ;
 
                     _mmsh._vert3._data[_nout].
                         _itag    = _iter->itag () ;
@@ -2760,6 +2783,8 @@
              >
     __normal_call void_type save_vals (
         file_type &_file,
+            typename
+        list_type::data_type  _xoff ,
         list_type &_list
         )
     {
@@ -2806,6 +2831,7 @@
     __normal_call iptr_type save_hfun (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
+        float     *_xoff ,
         hfun_data &_ffun
         )
     {
@@ -2890,8 +2916,9 @@
                     PRINTCHARS(snprintf(&_fbuf[_next] ,
                         PRINTCHUNK,
                         "%.17g;%.17g;+0\n" ,
-                        _iter->pval(0) ,
-                        _iter->pval(1) ), VERT2CHUNK)
+                        _iter->pval(0) + _xoff[0] ,
+                        _iter->pval(1) + _xoff[1]),
+                        VERT2CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -2903,7 +2930,7 @@
                 _file << "VALUE="
                       << _nnum << ";1" << "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, +0.f,
                     _ffun._euclidean_mesh_2d._hval);
                 }
 
@@ -2996,10 +3023,11 @@
                     {
                     PRINTCHARS(snprintf(&_fbuf[_next] ,
                         PRINTCHUNK,
-                        "%.17g;%.17g;%.17g;+0\n" ,
-                        _iter->pval(0) ,
-                        _iter->pval(1) ,
-                        _iter->pval(2) ), VERT3CHUNK)
+                        "%.17g;%.17g;%.17g;+0\n",
+                        _iter->pval(0) + _xoff[0] ,
+                        _iter->pval(1) + _xoff[1] ,
+                        _iter->pval(2) + _xoff[2]),
+                        VERT3CHUNK)
                     }
                 }
                     PRINTFINAL;
@@ -3011,7 +3039,7 @@
                 _file << "VALUE="
                       << _nnum << ";1" << "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, +0.f,
                     _ffun._euclidean_mesh_3d._hval);
                 }
 
@@ -3143,7 +3171,7 @@
                 _file << "VALUE="
                       << _nnum << ";1" << "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, +0.f,
                     _ffun._ellipsoid_mesh_3d._hval);
                 }
 
@@ -3197,7 +3225,7 @@
                     _ffun._euclidean_grid_2d.
                         _xpos.count() << "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, _xoff[0],
                     _ffun._euclidean_grid_2d._xpos);
                 }
 
@@ -3209,7 +3237,7 @@
                     _ffun._euclidean_grid_2d.
                         _ypos.count() << "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, _xoff[1],
                     _ffun._euclidean_grid_2d._ypos);
                 }
 
@@ -3221,7 +3249,7 @@
                     _ffun._euclidean_grid_2d.
                         _hmat.count() << ";1" "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, +0.f ,
                     _ffun._euclidean_grid_2d._hmat);
                 }
 
@@ -3248,7 +3276,7 @@
                     _ffun._euclidean_grid_3d.
                         _xpos.count() << "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, _xoff[0],
                     _ffun._euclidean_grid_3d._xpos);
                 }
 
@@ -3260,7 +3288,7 @@
                     _ffun._euclidean_grid_3d.
                         _ypos.count() << "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, _xoff[1],
                     _ffun._euclidean_grid_3d._ypos);
                 }
 
@@ -3272,7 +3300,7 @@
                     _ffun._euclidean_grid_3d.
                         _zpos.count() << "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, _xoff[2],
                     _ffun._euclidean_grid_3d._zpos);
                 }
 
@@ -3284,7 +3312,7 @@
                     _ffun._euclidean_grid_3d.
                         _hmat.count() << ";1" "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, +0.f ,
                     _ffun._euclidean_grid_3d._hmat);
                 }
 
@@ -3323,7 +3351,7 @@
                     _ffun._ellipsoid_grid_3d.
                         _xpos.count() << "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, +0.0,
                     _ffun._ellipsoid_grid_3d._xpos);
                 }
 
@@ -3335,7 +3363,7 @@
                     _ffun._ellipsoid_grid_3d.
                         _ypos.count() << "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, +0.0,
                     _ffun._ellipsoid_grid_3d._ypos);
                 }
 
@@ -3347,7 +3375,7 @@
                     _ffun._ellipsoid_grid_3d.
                         _hmat.count() << ";1" "\n" ;
 
-                save_vals(_file,
+                save_vals(_file, +0.f ,
                     _ffun._ellipsoid_grid_3d._hmat);
                 }
 
@@ -3377,11 +3405,33 @@
      */
 
     template <
+    typename      _dst_list ,
+    typename      _src_list
+             >
+    __normal_call void_type copy_vals (
+        _dst_list &_ldst,
+            typename
+        _src_list::data_type  _xoff ,
+        _src_list &_lsrc
+        )
+    {
+    /*--------------------- copy msh_t REALS data to data */
+        iptr_type _ipos  = +0 ;
+        for (auto _iter  = _lsrc.head() ;
+                  _iter != _lsrc.tend() ;
+                ++_iter, ++_ipos)
+        {
+            _ldst._data[_ipos] = *_iter + _xoff ;
+        }
+    }
+
+    template <
     typename      jlog_data
              >
     __normal_call iptr_type save_hfun (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
+        float     *_xoff ,
         hfun_data &_ffun ,
         jigsaw_msh_t &_fmsh
         )
@@ -3389,8 +3439,8 @@
         iptr_type _errv  = __no_error  ;
 
     //  NB. this routine handles output for MARCHE --- only
-    //  *overwriting* the "value" arrays in FMSH, since all
-    //  else is passed read-only...
+    //  *overwriting* the "value" arrays in FMSH - all else
+    //  is passed read-only...
 
         try
         {
@@ -3412,16 +3462,8 @@
                                _hval.count() &&
                 "savemsh: inconsistent VALUE array") ;
 
-                iptr_type _ipos  = +0 ;
-                for (auto _iter  = _ffun.
-                    _euclidean_mesh_2d._hval.head();
-                          _iter != _ffun.
-                    _euclidean_mesh_2d._hval.tend();
-                        ++_iter, ++_ipos)
-                {
-                    _fmsh._value.
-                        _data[_ipos] = *_iter ;
-                }
+                copy_vals(_fmsh._value, +0.f,
+                    _ffun._euclidean_mesh_2d._hval ) ;
                 }
 
             }
@@ -3441,16 +3483,8 @@
                                _hval.count() &&
                 "savemsh: inconsistent VALUE array") ;
 
-                iptr_type _ipos  = +0 ;
-                for (auto _iter  = _ffun.
-                    _euclidean_mesh_3d._hval.head();
-                          _iter != _ffun.
-                    _euclidean_mesh_3d._hval.tend();
-                        ++_iter, ++_ipos)
-                {
-                    _fmsh._value.
-                        _data[_ipos] = *_iter ;
-                }
+                copy_vals(_fmsh._value, +0.f,
+                    _ffun._euclidean_mesh_3d._hval ) ;
                 }
 
             }
@@ -3470,16 +3504,8 @@
                                _hval.count() &&
                 "savemsh: inconsistent VALUE array") ;
 
-                iptr_type _ipos  = +0 ;
-                for (auto _iter  = _ffun.
-                    _ellipsoid_mesh_3d._hval.head();
-                          _iter != _ffun.
-                    _ellipsoid_mesh_3d._hval.tend();
-                        ++_iter, ++_ipos)
-                {
-                    _fmsh._value.
-                        _data[_ipos] = *_iter ;
-                }
+                copy_vals(_fmsh._value, +0.f,
+                    _ffun._ellipsoid_mesh_3d._hval ) ;
                 }
 
             }
@@ -3499,16 +3525,8 @@
                                _hmat.count() &&
                 "savemsh: inconsistent VALUE array") ;
 
-                iptr_type _ipos  = +0 ;
-                for (auto _iter  = _ffun.
-                    _euclidean_grid_2d._hmat.head();
-                          _iter != _ffun.
-                    _euclidean_grid_2d._hmat.tend();
-                        ++_iter, ++_ipos)
-                {
-                    _fmsh._value.
-                        _data[_ipos] = *_iter ;
-                }
+                copy_vals(_fmsh._value, +0.f,
+                    _ffun._euclidean_grid_2d._hmat ) ;
                 }
 
             }
@@ -3528,16 +3546,8 @@
                                _hmat.count() &&
                 "savemsh: inconsistent VALUE array") ;
 
-                iptr_type _ipos  = +0 ;
-                for (auto _iter  = _ffun.
-                    _euclidean_grid_3d._hmat.head();
-                          _iter != _ffun.
-                    _euclidean_grid_3d._hmat.tend();
-                        ++_iter, ++_ipos)
-                {
-                    _fmsh._value.
-                        _data[_ipos] = *_iter ;
-                }
+                copy_vals(_fmsh._value, +0.f,
+                    _ffun._euclidean_grid_3d._hmat ) ;
                 }
 
             }
@@ -3557,16 +3567,8 @@
                                _hmat.count() &&
                 "savemsh: inconsistent VALUE array") ;
 
-                iptr_type _ipos  = +0 ;
-                for (auto _iter  = _ffun.
-                    _ellipsoid_grid_3d._hmat.head();
-                          _iter != _ffun.
-                    _ellipsoid_grid_3d._hmat.tend();
-                        ++_iter, ++_ipos)
-                {
-                    _fmsh._value.
-                        _data[_ipos] = *_iter ;
-                }
+                copy_vals(_fmsh._value, +0.f,
+                    _ffun._ellipsoid_grid_3d._hmat ) ;
                 }
 
             }

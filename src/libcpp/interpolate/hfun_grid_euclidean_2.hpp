@@ -393,17 +393,28 @@
      */
 
     __inline_call void_type init (
+        float _xoff = + 0.f ,
+        float _yoff = + 0.f
         )
     {
         real_type static const _FTOL =
-            std::pow(std::numeric_limits
-       <real_type>::epsilon(), (real_type).8);
+            std::pow (
+            std::numeric_limits<real_type>
+            ::epsilon(), (real_type) +.75) ;
 
         this->_xvar = false ;
         this->_yvar = false ;
 
         if (this->_xpos.empty()) return ;
         if (this->_ypos.empty()) return ;
+
+        for (auto
+            _iter  = this->_xpos.head() ;
+            _iter != this->_xpos.tend() ;
+          ++_iter  )
+        {
+           *_iter -=  _xoff ;
+        }
 
         real_type _xbar, _xmin, _xmax ;
         _xbar = *this->_xpos.tail() -
@@ -413,6 +424,14 @@
 
         _xmin = _xbar - _FTOL * _xbar ;
         _xmax = _xbar + _FTOL * _xbar ;
+
+        for (auto
+            _iter  = this->_ypos.head() ;
+            _iter != this->_ypos.tend() ;
+          ++_iter  )
+        {
+           *_iter -=  _yoff ;
+        }
 
         real_type _ybar, _ymin, _ymax ;
         _ybar = *this->_ypos.tail() -

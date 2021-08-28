@@ -267,7 +267,7 @@
         float     static const _RTOL =
             std::pow (
             std::numeric_limits<float>
-            ::epsilon(), (float) +0.8) ;
+            ::epsilon(), (float) +.75) ;
 
         iptr_type static
         constexpr _NBOX=(iptr_type)+8  ;

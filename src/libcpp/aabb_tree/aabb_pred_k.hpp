@@ -311,9 +311,9 @@
         this->_rmax[1] = std::max(
               _isrc[1] , _jsrc[1]) ;
 
-        this->_xdiv[0] = 
+        this->_xdiv[0] =
               _jsrc[0] - _isrc[0];
-        this->_xdiv[1] = 
+        this->_xdiv[1] =
               _jsrc[1] - _isrc[1];
     }
 

@@ -118,15 +118,15 @@
         __inline_call char_type      & topo (
             char_type _kind = filt_topo
             )
-        {   return ( _kind == filt_topo ) ? 
-                    this->_topo[ +0] : 
+        {   return ( _kind == filt_topo ) ?
+                    this->_topo[ +0] :
                     this->_topo[ +1] ;
         }
         __inline_call char_type const& topo (
             char_type _kind = filt_topo
             ) const
-        {   return ( _kind == filt_topo ) ? 
-                    this->_topo[ +0] : 
+        {   return ( _kind == filt_topo ) ?
+                    this->_topo[ +0] :
                     this->_topo[ +1] ;
         }
         } ;

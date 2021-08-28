@@ -1,7 +1,7 @@
 
 /*
 ------------------------------------------------------------
- * data-structures for discrete function rep. in R^d.
+ * data-structures for discrete interpolation in R^d.
 ------------------------------------------------------------
  *
  * This program may be freely redistributed under the
@@ -43,8 +43,8 @@
 
 #   pragma once
 
-#   ifndef __MESHFUNC__
-#   define __MESHFUNC__
+#   ifndef __INTERPOLATE__
+#   define __INTERPOLATE__
 
 #   include "containers.hpp"
 #   include "algorithms.hpp"
@@ -55,23 +55,23 @@
 #   include "aabbtree.hpp"
 #   include "meshtype.hpp"
 
-#   include "mesh_func/hfun_base_k.hpp"
-#   include "mesh_func/hfun_clip_k.hpp"
+#   include "interpolate/hfun_base_k.hpp"
+#   include "interpolate/hfun_clip_k.hpp"
 
-#   include "mesh_func/hfun_constant_value_k.hpp"
+#   include "interpolate/hfun_constant_value_k.hpp"
 
-#   include "mesh_func/hfun_mesh_euclidean_2.hpp"
-#   include "mesh_func/hfun_mesh_euclidean_3.hpp"
+#   include "interpolate/hfun_mesh_euclidean_2.hpp"
+#   include "interpolate/hfun_mesh_euclidean_3.hpp"
 
-#   include "mesh_func/hfun_mesh_ellipsoid_3.hpp"
+#   include "interpolate/hfun_mesh_ellipsoid_3.hpp"
 
-#   include "mesh_func/hfun_grid_euclidean_2.hpp"
-#   include "mesh_func/hfun_grid_euclidean_3.hpp"
+#   include "interpolate/hfun_grid_euclidean_2.hpp"
+#   include "interpolate/hfun_grid_euclidean_3.hpp"
 
-#   include "mesh_func/hfun_grid_ellipsoid_3.hpp"
+#   include "interpolate/hfun_grid_ellipsoid_3.hpp"
 
 
-#   endif//__MESHFUNC__
+#   endif//__INTERPOLATE__
 
 
 

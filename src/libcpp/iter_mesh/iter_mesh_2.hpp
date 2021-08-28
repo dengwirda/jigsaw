@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 Jul., 2021
+     * Last updated: 20 Aug., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -664,7 +664,7 @@
     {
     /*---------------- optimise single node's coordinates */
         iptr_type static
-        constexpr _ITER = (iptr_type) +4  ;
+        constexpr _ITER = (iptr_type) +5  ;
 
         _move = (iptr_type)-1 ;
 
@@ -715,7 +715,7 @@
        (real_type)+0.01*_opts.qtol() ;
 
         real_type _xtol =           // delta_x reltol
-       +std::sqrt(_opts.qtol()) / +10.0 ;
+       +std::sqrt(_opts.qtol()) / +10.0  ;
 
         if (_kern == dqdx_kern)     // test cost-only
         {
@@ -730,15 +730,19 @@
         _xeps = std::pow(_xeps, 2) ;
         _xtol = std::pow(_xtol, 2) ;
 
-        real_type _scal =           // overrelaxation
-       (real_type) std::sqrt( 2.0 );
+        real_type _SCAL[_ITER] = {  // overrelaxation
+            (real_type) std::sqrt( 2.0 ) ,
+            (real_type) +1.00,
+            (real_type) +0.50,
+            (real_type) +0.25,
+            (real_type) +.125  } ;
 
     /*---------------- do backtracking line search iter's */
 
         if (_kern == dqdx_kern)     // "relax" dQ./dx
         {
         real_type _BIAS =
-       (real_type) std::sqrt( 0.5 );
+            (real_type) std::sqrt( 0.5 ) ;
 
         for (auto _idim =
         pred_type::geom_dims; _idim-- != +0; )
@@ -760,6 +764,7 @@
                 _iter != _ITER; ++_iter )
         {
     /*---------------- push update along search direction */
+            real_type _scal  = _SCAL[_iter] ;
             for (auto _idim  =
             pred_type::geom_dims; _idim-- != +0; )
             {
@@ -786,8 +791,6 @@
             if (_lmov <= _XEPS * _lsqr) break;
 
           //_move  = +1 ; return ;
-
-            _scal *= (real_type).5 ;
 
     /*---------------- test quasi-monotonicity w.r.t. Q^T */
             _qnew.set_count(0) ;
@@ -843,7 +846,7 @@
     {
     /*---------------- optimise single node's coordinates */
         iptr_type static
-        constexpr _ITER = (iptr_type) +4  ;
+        constexpr _ITER = (iptr_type) +5  ;
 
         __unreferenced(_geom);
         __unreferenced(_hfun);
@@ -864,19 +867,24 @@
 
     /*---------------- scale line search direction vector */
         real_type _weps =           // delta_w ~= 0.0
-       (real_type)+0.01*_opts.qtol() ;
-
-        real_type _scal =           // overrelaxation
-       (real_type) std::sqrt( 2.0 );
+            (real_type) .01*_opts.qtol();
 
         _save = _node->pval(
-            pred_type::real_dims- 1) ;
+            pred_type::real_dims - 1);
+
+        real_type _SCAL[_ITER] = {  // overrelaxation
+            (real_type) std::sqrt( 2.0 ),
+            (real_type) +1.00,
+            (real_type) +0.50,
+            (real_type) +0.25,
+            (real_type) +.125  } ;
 
     /*---------------- do backtracking line search iter's */
 
         for (auto _iter = +0 ;
                 _iter != _ITER; ++_iter )
         {
+            real_type _scal(_SCAL[_iter]) ;
             _node->pval(real_dims-1) =
                 _save + ( _scal * _step ) ;
 
@@ -894,8 +902,6 @@
 
             if (_wmov <=
             _weps * _scal * _wadj) break;
-
-            _scal *= (real_type).5 ;
 
     /*---------------- test quasi-monotonicity w.r.t. Q^D */
             _dnew.set_count(0) ;
@@ -1101,8 +1107,8 @@
                            _sset.tend() ,
             cost_pred () ) ;
 
-        iptr_type _FLAG  = 
-            _iout - (3 * max_subit) / 2 ; // only "recent"
+        iptr_type _FLAG  =
+            _iout - (1 * max_subit) / 2 ; // only "recent"
 
         for (auto _iter  = _sset.head() ;
                   _iter != _sset.tend() ;
@@ -1112,6 +1118,7 @@
             if (std::abs(
             _nmrk[_iter->_node]) >= _FLAG )
             {
+            _amrk[_iter->_node]   = _isub ;
             _aset.push_tail( _iter->_node ) ;
             }
         }
@@ -1124,18 +1131,18 @@
                   _iter != _nset.tend() ;
                 ++_iter  )
         {
-            _amrk[*_iter]  = _isub;
-            _aset.push_tail(*_iter) ;
+                PUSHCONN( *_iter )
+        }
         }
 
-        for (auto _iter  = _nset.head() ;
-                  _iter != _nset.tend() ;
-                ++_iter  )
+    /*-------------------- add adj.: 1-ring neighbourhood */
+        for (auto _iter =
+            _aset.count() ; _iter-- != 0; )
         {
         /*-------------------- push any 1-cell neighbours */
             _conn.set_count(0) ;
             _mesh.connect_1(
-                &*_iter, POINT_tag, _conn);
+               &_aset[_iter], POINT_tag, _conn) ;
 
             for (auto _next  = _conn.head();
                       _next != _conn.tend();
@@ -1154,7 +1161,7 @@
         /*-------------------- push any 2-cell neighbours */
             _conn.set_count(0) ;
             _mesh.connect_2(
-                &*_iter, POINT_tag, _conn);
+               &_aset[_iter], POINT_tag, _conn) ;
 
             for (auto _next  = _conn.head();
                       _next != _conn.tend();
@@ -1183,7 +1190,6 @@
             }
         }
 
-        }
     #   undef   PUSHCOST
     #   undef   PUSHSORT
     #   undef   PUSHCONN
@@ -1643,31 +1649,18 @@
              auto _jptr = _mesh.
              node().head()+_iter->node(1) ;
 
+             auto _flag = (1 * max_subit) / 2 ; // recent
+
             if (_iter->mark() >= +0 &&
                (    std::abs (
-            _mark._node[_inod]) > _imrk - max_subit ||
+            _mark._node[_inod]) > _imrk - _flag ||
                     std::abs (
-            _mark._node[_jnod]) > _imrk - max_subit ))
+            _mark._node[_jnod]) > _imrk - _flag ))
             {
                 float _lsqr  =
                (float)pred_type::length_sq (
                     & _iptr->pval(0) ,
                     & _jptr->pval(0) ) ;
-
-                /*
-                _iset.set_count(
-                    0, containers::loose_alloc);
-                _jset.set_count(
-                    0, containers::loose_alloc);
-
-                _mesh.connect_2(_iter->node(0) ,
-                    POINT_tag , _iset) ;
-                _mesh.connect_2(_iter->node(1) ,
-                    POINT_tag , _jset) ;
-
-                _lsqr *= (_iset.count() +
-                          _jset.count() ) / 2  ;
-                */
 
                 _sort.push_tail(
                  sort_pair(_inod, _jnod, _lsqr)) ;
@@ -1695,7 +1688,7 @@
             if (MARKNODE(_enod[0]) < +0 &&
                 MARKNODE(_enod[1]) < +0 ) continue ;
 
-            if (MARKNODE(_enod[0])>_imrk&&
+            if (MARKNODE(_enod[0])>_imrk||
                 MARKNODE(_enod[1])>_imrk) continue ;
 
             if(!_mesh.find_edge(
@@ -2148,17 +2141,20 @@
             _tcpu._topo_flip +=
                 _tcpu.time_span(_ttic, _ttoc);
     #       endif//__use_timers
+
             }
 
     /*------------------------------ 3. ZIP + DIV SUBFACE */
 
+            if (_iter < _opts.iter())
+            {
+    /*------------------------------ change mesh topology */
     #       ifdef  __use_timers
             _ttic = _time.now() ;
     #       endif//__use_timers
 
             _nset.set_count(+0) ;    // don't flip twice!
 
-            if (_iter  < _opts.iter())
             if (_opts.zip_ () ||
                 _opts.div_ () )
             {
@@ -2181,7 +2177,6 @@
     #       endif//__use_timers
 
     /*------------------------------ update mesh topology */
-            /*
 
     #       ifdef  __use_timers
             _ttic = _time.now() ;
@@ -2207,7 +2202,7 @@
                 _tcpu.time_span(_ttic, _ttoc);
     #       endif//__use_timers
 
-            */
+            } // if (_iter < _opts.iter())
 
     /*------------------------------ dump optim. progress */
             if (_opts.verb() >= 0)

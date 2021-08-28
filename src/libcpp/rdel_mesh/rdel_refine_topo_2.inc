@@ -186,7 +186,7 @@
             _mesh._tria.node(_enod[1]) ;
 
             algorithms::isort (
-                &_enod[0], &_enod[1],
+                &_enod[0], &_enod[2],
                     std::less<iptr_type>()) ;
 
             edge_data _edat;
@@ -199,7 +199,7 @@
             if(_epro.find(
                     _edat, _same)) continue ;
 
-            char_type _feat; 
+            char_type _feat;
             char_type _topo[ +2] ;
             iptr_type _part;
             real_type _fbal[ +3] ;

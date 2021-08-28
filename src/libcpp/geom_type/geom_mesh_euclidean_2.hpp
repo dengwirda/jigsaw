@@ -107,8 +107,8 @@
         __inline_call char_type      & topo (
             char_type _kind = filt_topo
             )
-        {   return ( _kind == filt_topo ) ? 
-                    this->_topo[ +0] : 
+        {   return ( _kind == filt_topo ) ?
+                    this->_topo[ +0] :
                     this->_topo[ +1] ;
         }
     /*------------------------------------ "const" access */
@@ -127,8 +127,8 @@
         __inline_call char_type const& topo (
             char_type _kind = filt_topo
             ) const
-        {   return ( _kind == filt_topo ) ? 
-                    this->_topo[ +0] : 
+        {   return ( _kind == filt_topo ) ?
+                    this->_topo[ +0] :
                     this->_topo[ +1] ;
         }
 
@@ -177,8 +177,8 @@
         __inline_call char_type      & topo (
             char_type _kind = filt_topo
             )
-        {   return ( _kind == filt_topo ) ? 
-                    this->_topo[ +0] : 
+        {   return ( _kind == filt_topo ) ?
+                    this->_topo[ +0] :
                     this->_topo[ +1] ;
         }
     /*------------------------------------ "const" access */
@@ -193,8 +193,8 @@
         __inline_call char_type const& topo (
             char_type _kind = filt_topo
             ) const
-        {   return ( _kind == filt_topo ) ? 
-                    this->_topo[ +0] : 
+        {   return ( _kind == filt_topo ) ?
+                    this->_topo[ +0] :
                     this->_topo[ +1] ;
         }
 
@@ -778,7 +778,9 @@
         typename  user_opts
              >
     __normal_call void_type init_geom (
-        user_opts &_opts
+        user_opts &_opts ,
+        float _xoff = + 0.f ,
+        float _yoff = + 0.f
         )
     {
         class edge_pred
@@ -814,6 +816,9 @@
         {
             if (_iter->mark() >= +0 )
             {
+            _iter->pval(0) -= _xoff;
+            _iter->pval(1) -= _yoff;
+
             this->_bmin[0] = std::min (
             this->_bmin[0] ,
             _iter->pval(0) ) ;
@@ -833,7 +838,7 @@
         float     static const _RTOL =
             std::pow (
             std::numeric_limits<float>
-            ::epsilon(), (float).625) ;
+            ::epsilon(), (float).675) ;
 
         float      _BTOL[2] ;
         _BTOL[0] =
@@ -942,11 +947,11 @@
                 _mesh._tria.node
                     (_node)->topo(0)
                         = _iter->topo(0);
-                
+
                 _mesh._tria.node
                     (_node)->topo(1)
                         = _iter->topo(1);
-                
+
                 _mesh._tria.node
                     (_node)->part()
                         = _iter->itag() ;
@@ -1809,7 +1814,7 @@
             real_type static const  _RTOL=
                 std::pow (
             std::numeric_limits<real_type>
-            ::epsilon(), (real_type)+.625) ;
+            ::epsilon(), (real_type)+.675) ;
 
             real_type  _BTOL =  (
                  this->_bmax[0] -

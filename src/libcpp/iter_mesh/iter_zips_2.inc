@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 Jul., 2021
+     * Last updated: 20 Aug., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -74,11 +74,11 @@
         real_type  _lmax
             = (real_type) +8.00E-01 ,
         real_type  _qinc
-            = (real_type) +1.25E-02
+            = (real_type) +1.00E-02
         )
     {
         iptr_type static constexpr
-            _last = pred_type::geom_dims+0 ;
+            _last = pred_type::geom_dims + 0 ;
 
         iptr_type static constexpr
             _DEG_TRIA3 = (iptr_type)+6 ;
@@ -138,9 +138,9 @@
 
         if (_cset.count() != 2) return ;
 
-        auto _atri = 
+        auto _atri =
        _mesh.tri3().head()+_cset[0]._cell ;
-        auto _btri = 
+        auto _btri =
        _mesh.tri3().head()+_cset[1]._cell ;
 
         iptr_type _anod;                // find cell apex
@@ -202,7 +202,7 @@
             (iptr_type)(_DEG_TRIA3-_BDEG) ;
 
         auto _dnow = std::abs(_ierr) +  // current defect
-                     std::abs(_jerr) + 
+                     std::abs(_jerr) +
                      std::abs(_aerr) +
                      std::abs(_berr) ;
 
@@ -213,8 +213,8 @@
     //  bail-out early if the topological defect would be
     //  made worse if the zip is done
 
-        if (_dnew >= _dnow + 1) return;
-        
+        if (_dnew > _dnow + 1) return;
+
     //  if more regular topo. is constructed via the edge
     //  zip, make it easier to do so!
 
@@ -223,14 +223,23 @@
 
         real_type _lerr = (real_type)(
             +1./16.*1./2.*(_ierr + _jerr));
-        
-        if (_dnew <  _dnow - 1)
-        {
-        _qinc = std::min(_qinc, _qerr);
-        _lmax = std::max(_lmax,
-                         _lmax+ _lerr);
 
-        _qinc/= std::cbrt( _iout ) ; // no oscl. wrt. div
+        if (_dnew < _dnow - 0)
+        {                            // no oscl. wrt. div
+        _qerr/= std::pow ( _iout, +1./8.) ;
+        _qinc = std::min ( _qinc,
+                           _qinc + _qerr) ;
+        _lmax = std::max ( _lmax,
+                           _lmax + _lerr) ;
+        }
+
+        iptr_type static constexpr
+            _dMIN  = (iptr_type)+4 ;
+
+        if (_ideg <= _dMIN || _jdeg <= _dMIN)
+        {
+        _qinc = (real_type) -0.250 ; // force a quad. zip
+        _lmax = (real_type) +1.250 ;
         }
 
     /*--------------------------------- get edge h-sizing */
@@ -246,6 +255,9 @@
 
             _pmid[_idim] /= (real_type)2. ;
         }
+
+        pred_type::
+        proj_node(_geom, _pmid, _pmid);
 
         real_type _isiz, _jsiz, _msiz ;
         _isiz = _hfun.eval(

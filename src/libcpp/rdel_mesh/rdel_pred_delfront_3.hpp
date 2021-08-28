@@ -502,7 +502,7 @@
          tria(_tadj)->node(_enod[ 1]) ;
 
     /*--------------------------------- calc. circumballs */
-        char_type _feat;        
+        char_type _feat;
         char_type _topo[ +2] ;
         iptr_type _part;
         real_type _ebal[ +4] ;
@@ -586,7 +586,7 @@
          tria(_tadj)->node(_fnod[ 2]) ;
 
     /*--------------------------------- calc. circumballs */
-        char_type _feat;        
+        char_type _feat;
         char_type _topo[ +2] ;
         iptr_type _part;
         real_type _fbal[ +4] ;

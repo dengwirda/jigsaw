@@ -91,7 +91,7 @@
 
         char_type                     _fdim = +0 ;
         char_type                     _feat = +0 ;
-        
+
         char_type                     _topo [ 2] = {+0} ;
 
         public  :
@@ -111,8 +111,8 @@
         __inline_call char_type      & topo (
             char_type _kind = filt_topo
             )
-        {   return ( _kind == filt_topo ) ? 
-                    this->_topo[ +0] : 
+        {   return ( _kind == filt_topo ) ?
+                    this->_topo[ +0] :
                     this->_topo[ +1] ;
         }
     /*------------------------------------ "const" access */
@@ -131,8 +131,8 @@
         __inline_call char_type const& topo (
             char_type _kind = filt_topo
             ) const
-        {   return ( _kind == filt_topo ) ? 
-                    this->_topo[ +0] : 
+        {   return ( _kind == filt_topo ) ?
+                    this->_topo[ +0] :
                     this->_topo[ +1] ;
         }
 
@@ -165,7 +165,7 @@
         iptr_type                     _itag = +0 ;
 
         char_type                     _feat = +0 ;
-        
+
         char_type                     _topo [ 2] = {+0} ;
 
         public  :
@@ -181,8 +181,8 @@
         __inline_call char_type      & topo (
             char_type _kind = filt_topo
             )
-        {   return ( _kind == filt_topo ) ? 
-                    this->_topo[ +0] : 
+        {   return ( _kind == filt_topo ) ?
+                    this->_topo[ +0] :
                     this->_topo[ +1] ;
         }
     /*------------------------------------ "const" access */
@@ -197,8 +197,8 @@
         __inline_call char_type const& topo (
             char_type _kind = filt_topo
             ) const
-        {   return ( _kind == filt_topo ) ? 
-                    this->_topo[ +0] : 
+        {   return ( _kind == filt_topo ) ?
+                    this->_topo[ +0] :
                     this->_topo[ +1] ;
         }
 

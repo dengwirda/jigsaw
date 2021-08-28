@@ -216,7 +216,7 @@
             }
 
     /*-------------------------------- sink must inc ball */
-            char_type _feat;        
+            char_type _feat;
             char_type _topo[ +2] ;
             iptr_type _itag;
             real_type _sbal[ +4] ;

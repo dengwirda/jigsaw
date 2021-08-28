@@ -479,7 +479,7 @@
             _mesh._tria.node(_enod[1]) ;
 
             algorithms::isort (
-                &_enod[0], &_enod[1],
+                &_enod[0], &_enod[2],
                     std::less<iptr_type>()) ;
 
             edge_data _edat;
@@ -703,7 +703,7 @@
             _mesh._tria.node(_fnod[2]) ;
 
             algorithms::isort (
-                &_fnod[0], &_fnod[2],
+                &_fnod[0], &_fnod[3],
                     std::less<iptr_type>()) ;
 
             face_data _fdat;

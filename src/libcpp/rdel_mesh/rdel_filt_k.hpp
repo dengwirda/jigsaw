@@ -92,8 +92,8 @@
         __inline_call char_type      & topo (
             char_type _kind = filt_topo
             )
-        {   return ( _kind == filt_topo ) ? 
-                   this-> _topo[  +0 ] : 
+        {   return ( _kind == filt_topo ) ?
+                   this-> _topo[  +0 ] :
                    this-> _topo[  +1 ] ;
         }
         __inline_call real_type const& pval (
@@ -116,8 +116,8 @@
         __inline_call char_type const& topo (
             char_type _kind = filt_topo
             ) const
-        {   return ( _kind == filt_topo ) ? 
-                   this-> _topo[  +0 ] : 
+        {   return ( _kind == filt_topo ) ?
+                   this-> _topo[  +0 ] :
                    this-> _topo[  +1 ] ;
         }
         } ;
@@ -167,8 +167,8 @@
         __inline_call char_type      & topo (
             char_type _kind = filt_topo
             )
-        {   return ( _kind == filt_topo ) ? 
-                   this-> _topo[  +0 ] : 
+        {   return ( _kind == filt_topo ) ?
+                   this-> _topo[  +0 ] :
                    this-> _topo[  +1 ] ;
         }
         __inline_call real_type const& pval (
@@ -191,8 +191,8 @@
         __inline_call char_type const& topo (
             char_type _kind = filt_topo
             ) const
-        {   return ( _kind == filt_topo ) ? 
-                   this-> _topo[  +0 ] : 
+        {   return ( _kind == filt_topo ) ?
+                   this-> _topo[  +0 ] :
                    this-> _topo[  +1 ] ;
         }
         } ;
@@ -254,12 +254,12 @@
             ->hits () = _hits ;
         this->_list.tail()
             ->feat () = _feat ;
-        
+
         this->_list.tail()
             ->topo(0) = _topo[0];
         this->_list.tail()
             ->topo(1) = _topo[1];
-        
+
         this->_list.tail()
             ->itag () = _itag ;
 
@@ -333,7 +333,7 @@
             ->topo(0) = _topo[0];
         this->_list.tail()
             ->topo(1) = _topo[1];
-        
+
         this->_list.tail()
             ->itag () = _itag ;
 
@@ -402,15 +402,15 @@
         iptr_type _itag
         )
     {
-        for (auto 
+        for (auto
             _iter  = this->_list.head() ;
             _iter != this->_list.tend() ;
           ++_iter  )
         {
     /*----------------------------- exit if too close */
-            real_type _dsqr = 
+            real_type _dsqr =
             geometry::lensqr_2d (
-                _xpos, 
+                _xpos,
                &_iter->pval(0)) ;
 
             if (_dsqr < this->_near) return;
@@ -429,7 +429,7 @@
             ->topo(0) = _topo[0];
         this->_list.tail()
             ->topo(1) = _topo[1];
-        
+
         this->_list.tail()
             ->itag () = _itag ;
 
@@ -496,15 +496,15 @@
         iptr_type _itag
         )
     {
-        for (auto 
+        for (auto
             _iter  = this->_list.head() ;
             _iter != this->_list.tend() ;
           ++_iter  )
         {
     /*----------------------------- exit if too close */
-            real_type _dsqr = 
+            real_type _dsqr =
             geometry::lensqr_3d (
-                _xpos, 
+                _xpos,
                &_iter->pval(0)) ;
 
             if (_dsqr < this->_near) return;
@@ -518,7 +518,7 @@
             ->hits () = _hits ;
         this->_list.tail()
             ->feat () = _feat ;
-        
+
         this->_list.tail()
             ->topo(0) = _topo[0];
         this->_list.tail()
@@ -615,7 +615,7 @@
            _pmin.hits () = _hits;
             this->
            _pmin.feat () = _feat;
-            
+
             this->
            _pmin.topo(0) = _topo[0];
             this->
@@ -643,7 +643,7 @@
            _pmax.hits () = _hits;
             this->
            _pmax.feat () = _feat;
-            
+
             this->
            _pmax.topo(0) = _topo[0];
             this->
@@ -744,7 +744,7 @@
            _pmin.hits () = _hits;
             this->
            _pmin.feat () = _feat;
-            
+
             this->
            _pmin.topo(0) = _topo[0];
             this->
@@ -771,7 +771,7 @@
            _pmax.hits () = _hits;
             this->
            _pmax.feat () = _feat;
-            
+
             this->
            _pmax.topo(0) = _topo[0];
             this->
@@ -877,7 +877,7 @@
            _proj.hits () = _hits;
             this->
            _proj.feat () = _feat;
-            
+
             this->
            _proj.topo(0) = _topo[0];
             this->
@@ -989,7 +989,7 @@
            _proj.hits () = _hits;
             this->
            _proj.feat () = _feat;
-            
+
             this->
            _proj.topo(0) = _topo[0];
             this->

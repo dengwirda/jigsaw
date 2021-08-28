@@ -70,8 +70,9 @@
 #   include "tessellate.hpp"
 
 #   include "geomtype.hpp"
-#   include "meshfunc.hpp"
 #   include "meshtype.hpp"
+
+#   include "interpolate.hpp"
 
 #   include "rdel_mesh/rdel_complex_2.hpp"
 #   include "rdel_mesh/rdel_complex_3.hpp"

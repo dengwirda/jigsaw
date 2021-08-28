@@ -214,7 +214,7 @@
         __unreferenced(_args);
 
     /*--------------------------------- calc. circumballs */
-        char_type _feat;        
+        char_type _feat;
         char_type _topo[ +2] ;
         iptr_type _part;
         real_type _ebal[ +4] ;
@@ -263,7 +263,7 @@
         __unreferenced(_args);
 
     /*--------------------------------- calc. circumballs */
-        char_type _feat;        
+        char_type _feat;
         char_type _topo[ +2] ;
         iptr_type _part;
         real_type _fbal[ +4] ;

@@ -393,11 +393,11 @@
             iptr_type _base =
                 _ball->_data._node[0] ;
 
-            real_type _near = 
+            real_type _near =
                 _hdat._rrad * _args.near() ;
 
             mesh::filt_all_3d <
-                real_type, 
+                real_type,
                 iptr_type >  _halo( _near) ;
 
             _geom.intersect( _hdat, _halo) ;
@@ -521,11 +521,11 @@
             _hdat._rrad =
                 _DTOL * std::sqrt(_ebal[3]) ;
 
-            real_type _near = 
+            real_type _near =
                 _hdat._rrad * _args.near() ;
 
             mesh::filt_all_3d <
-                real_type, 
+                real_type,
                 iptr_type >  _halo( _near) ;
 
             real_type _junk[3] = { +0. } ;

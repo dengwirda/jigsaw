@@ -187,6 +187,33 @@
 
     mesh_type                         _mesh ;
 
+    public  :
+
+    /*
+    --------------------------------------------------------
+     * INIT-MESH: impose (optional) offsets
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type init (
+        float _xoff = + 0.f ,
+        float _yoff = + 0.f
+        )
+    {
+        for (auto  _iter  =
+             this->_mesh.node().head () ;
+                   _iter !=
+             this->_mesh.node().tend () ;
+                 ++_iter  )
+        {
+            if (_iter->mark() >= +0)
+            {
+                _iter->pval(0) -= _xoff ;
+                _iter->pval(1) -= _yoff ;
+            }
+        }
+    }
+
     } ;
 
 

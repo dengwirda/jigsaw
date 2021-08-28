@@ -52,8 +52,9 @@
 #   include "geometry.hpp"
 
 #   include "geomtype.hpp"
-#   include "meshfunc.hpp"
 #   include "meshtype.hpp"
+
+#   include "interpolate.hpp"
 
 #   include "iter_mesh/iter_timers.hpp"
 
