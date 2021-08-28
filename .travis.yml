@@ -14,16 +14,17 @@ matrix:
         - export CXX=g++-8
         - mkdir build
         - cd build
-        - cmake .. -DCMAKE_BUILD_TYPE=Release
-        - cmake --build . --config Release --target install
+        - cmake .. -DCMAKE_BUILD_TYPE=Debug
+        - cmake --build . --config Debug --target install
         - cd ..
-        - ./bin/jigsaw example.jig
+        - rm -r build
         - cd uni
         - mkdir build
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Debug
         - cmake --build . --config Debug --target install
         - cd ..
+        - rm -r build
         - ./test_2d_a
         - ./test_3d_a
         - ./test_2s_a
@@ -32,7 +33,7 @@ matrix:
         - ./test_2s_b
         - ./test_2d_c
         - ./test_3d_c
-        - ./test_2s_c         
+        - ./test_2s_c
         - ./test_2d_d
         - ./test_3d_d
         - ./test_2d_e
@@ -48,22 +49,36 @@ matrix:
         - ./test_2s_h
         - ./test_2d_i
         - ./test_2s_i
+        - cd ..
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Release
+        - cmake --build . --config Release --target install
+        - cd ..
+        - rm -r build
+        - ./bin/jigsaw example.jig
+        - ./bin/jigsaw geo/airfoil.jig
+        - ./bin/jigsaw geo/bunny.jig
+        - ./bin/jigsaw geo/parts.jig
+        - ./bin/jigsaw geo/earth.jig
+        - ./bin/jigsaw geo/lakes.jig
         
     - os: osx
       osx_image: xcode11
       script:
         - mkdir build
         - cd build
-        - cmake .. -DCMAKE_BUILD_TYPE=Release
-        - cmake --build . --config Release --target install
+        - cmake .. -DCMAKE_BUILD_TYPE=Debug
+        - cmake --build . --config Debug --target install
         - cd ..
-        - ./bin/jigsaw example.jig
+        - rm -r build
         - cd uni
         - mkdir build
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Debug
         - cmake --build . --config Debug --target install
         - cd ..
+        - rm -r build
         - ./test_2d_a
         - ./test_3d_a
         - ./test_2s_a
@@ -72,7 +87,7 @@ matrix:
         - ./test_2s_b
         - ./test_2d_c
         - ./test_3d_c
-        - ./test_2s_c         
+        - ./test_2s_c
         - ./test_2d_d
         - ./test_3d_d
         - ./test_2d_e
@@ -88,22 +103,35 @@ matrix:
         - ./test_2s_h
         - ./test_2d_i
         - ./test_2s_i
+        - cd ..
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Release
+        - cmake --build . --config Release --target install
+        - cd ..
+        - rm -r build
+        - ./bin/jigsaw example.jig
+        - ./bin/jigsaw geo/airfoil.jig
+        - ./bin/jigsaw geo/bunny.jig
+        - ./bin/jigsaw geo/parts.jig
+        - ./bin/jigsaw geo/earth.jig
+        - ./bin/jigsaw geo/lakes.jig
       
     - os: windows
       script:
         - mkdir build
         - cd build
-        - cmake .. -DCMAKE_BUILD_TYPE=Release
-        - cmake --build . --config Release --target install
+        - cmake .. -DCMAKE_BUILD_TYPE=Debug
+        - cmake --build . --config Debug --target install
         - cd ..
-        - ./bin/jigsaw.exe example.jig
-        - cp lib/jigsaw.dll uni
+        - rm -r build
         - cd uni
         - mkdir build
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Debug
         - cmake --build . --config Debug --target install
         - cd ..
+        - rm -r build
         - ./test_2d_a
         - ./test_3d_a
         - ./test_2s_a
@@ -112,7 +140,7 @@ matrix:
         - ./test_2s_b
         - ./test_2d_c
         - ./test_3d_c
-        - ./test_2s_c         
+        - ./test_2s_c
         - ./test_2d_d
         - ./test_3d_d
         - ./test_2d_e
@@ -128,3 +156,16 @@ matrix:
         - ./test_2s_h
         - ./test_2d_i
         - ./test_2s_i
+        - cd ..
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Release
+        - cmake --build . --config Release --target install
+        - cd ..
+        - rm -r build
+        - ./bin/jigsaw example.jig
+        - ./bin/jigsaw geo/airfoil.jig
+        - ./bin/jigsaw geo/bunny.jig
+        - ./bin/jigsaw geo/parts.jig
+        - ./bin/jigsaw geo/earth.jig
+        - ./bin/jigsaw geo/lakes.jig
