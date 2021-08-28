@@ -50,11 +50,11 @@
             } ;
 
         fp32_t _hfun_value[6] = {
-            2., 2., 2., 2., 1., 2.
+            2.f, 2.f, 2.f, 2.f, 1.f, 2.f
             } ;
 
         fp32_t _hfun_slope[1] = {
-            .1
+            .1f
             } ;
 
         _hfun._flags
