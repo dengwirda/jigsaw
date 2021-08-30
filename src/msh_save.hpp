@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 Aug., 2021
+     * Last updated: 28 Aug., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -3431,7 +3431,7 @@
     __normal_call iptr_type save_hfun (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        float     *_xoff ,
+        float*   /*_xoff*/ ,
         hfun_data &_ffun ,
         jigsaw_msh_t &_fmsh
         )

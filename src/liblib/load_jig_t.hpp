@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 October, 2019
+     * Last updated: 28 Aug., 2021
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -283,13 +283,19 @@
             this->
            _jjig->_optm_kern = _kern;
         }
-
         __normal_call void_type push_optm_iter (
             std::int32_t  _iter
             )
         {
             this->
            _jjig->_optm_iter = _iter;
+        }
+        __normal_call void_type push_optm_cost (
+            std::int32_t  _cost
+            )
+        {
+            this->
+           _jjig->_optm_cost = _cost;
         }
         __normal_call void_type push_optm_qtol (
             double        _qtol

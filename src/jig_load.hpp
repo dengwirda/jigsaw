@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Jul., 2021
+     * Last updated: 28 Aug., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -355,6 +355,14 @@
         (jcfg_data::iter_pred::enum_data)_kern ;
         }
 
+        __normal_call void_type push_optm_cost (
+            std::int32_t  _cost
+            )
+        {
+            this->_jjig->_iter_cost =
+        (jcfg_data::iter_cost::enum_data)_cost ;
+        }
+
         __normal_call void_type push_optm_iter (
             std::int32_t  _iter
             )
@@ -596,6 +604,18 @@
                     JIGSAW_KERN_H95_DQDX)
             _jcfg._iter_pred =
                 jcfg_data::iter_pred::h95_dqdx ;
+            else
+            _errv = __invalid_useropts ;
+
+            if (_jjig._optm_cost ==
+                    JIGSAW_KERN_AREA_LEN)
+            _jcfg._iter_cost =
+                jcfg_data::iter_cost::area_len ;
+            else
+            if (_jjig._optm_cost ==
+                    JIGSAW_KERN_SKEW_COS)
+            _jcfg._iter_cost =
+                jcfg_data::iter_cost::skew_cos ;
             else
             _errv = __invalid_useropts ;
 
@@ -1003,6 +1023,14 @@
 
         _jlog.push("  OPTM-ITER = " +
             __pushIVAL(_jcfg._iter_opts.iter()));
+
+        if(_jcfg._iter_cost ==
+         jcfg_data::iter_cost::area_len)
+        _jlog.push("  OPTM-COST = AREA-LEN \n") ;
+        else
+        if(_jcfg._iter_cost ==
+         jcfg_data::iter_cost::skew_cos)
+        _jlog.push("  OPTM-COST = SKEW-COS \n") ;
 
         _jlog.push("  OPTM-QTOL = " +
             __pushRVAL(_jcfg._iter_opts.qtol()));

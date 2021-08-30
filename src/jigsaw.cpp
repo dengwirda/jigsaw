@@ -42,7 +42,7 @@
      *
      * JIGSAW release 0.9.15.x
      *
-     * Last updated: 18 August, 2021
+     * Last updated: 28 August, 2021
      *
      * Copyright 2013 -- 2021
      * Darren Engwirda
@@ -374,6 +374,17 @@
 
         iter_pred::enum_data
             _iter_pred = iter_pred::odt_dqdx ;
+
+        struct iter_cost {
+            enum enum_data {
+            nullkern ,
+            area_len = JIGSAW_KERN_AREA_LEN,
+            skew_cos = JIGSAW_KERN_SKEW_COS
+            } ;
+            } ;
+
+        iter_cost::enum_data
+            _iter_cost = iter_cost::area_len ;
 
     /*--------------------------------- H(x) fun. scaling */
         struct hfun_scal {

@@ -143,7 +143,7 @@
         auto _btri =
        _mesh.tri3().head()+_cset[1]._cell ;
 
-        iptr_type _anod;                // find cell apex
+        iptr_type _anod = -1;           // find cell apex
         if (_atri->node(0) != _inod &&
             _atri->node(0) != _jnod )
             _anod = _atri->node( 0 ) ;
@@ -154,7 +154,7 @@
             _atri->node(2) != _jnod )
             _anod = _atri->node( 2 ) ;
 
-        iptr_type _bnod;                // find cell apex
+        iptr_type _bnod = -1;           // find cell apex
         if (_btri->node(0) != _inod &&
             _btri->node(0) != _jnod )
             _bnod = _btri->node( 0 ) ;

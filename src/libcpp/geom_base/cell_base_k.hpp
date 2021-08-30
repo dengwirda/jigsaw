@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Dec., 2020
+     * Last updated: 28 Aug., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -179,8 +179,9 @@
         return ((_a1+_a2) + (_a3+_a4)) / +2.;
 
         /*
-    //  real_type _x1[2], _x2[2], _nc;
-    //  quad_axes_2d(_p1, _p2, _p3, _p4, _x1, _x2);
+        real_type _x1[2], _x2[2], _nc;
+        quad_axes_2d(
+            _p1, _p2, _p3, _p4, _x1, _x2);
 
         real_type _v1[2], _a1;
         real_type _v2[2], _a2;
@@ -223,7 +224,8 @@
 
         /*
         real_type _x1[3], _x2[3], _nc[3];
-        quad_axes_3d(_p1, _p2, _p3, _p4, _x1, _x2);
+        quad_axes_3d(
+            _p1, _p2, _p3, _p4, _x1, _x2);
 
         real_type _v1[3], _n1[3];
         real_type _v2[3], _n2[3];
@@ -339,6 +341,120 @@
                    _v24[1] * _v34[0]);
 
         return _vdet / (real_type)6. ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * skew "quality" scores.
+    --------------------------------------------------------
+     */
+
+    template <
+    typename      real_type
+             >
+    __inline_call
+        real_type tria_skewcos_2d (
+    __const_ptr  (real_type) _p1,
+    __const_ptr  (real_type) _p2,
+    __const_ptr  (real_type) _p3
+        )
+    {   // "skewed-cosine"; penalty for obtuse
+
+        real_type _vv12[2] ;
+        real_type _vv23[2] ;
+        real_type _vv31[2] ;
+        geometry::vector_2d(_p1, _p2, _vv12) ;
+        geometry::vector_2d(_p2, _p3, _vv23) ;
+        geometry::vector_2d(_p3, _p1, _vv31) ;
+
+        real_type _ll12 = 
+        geometry::length_2d (_vv12) ;
+        real_type _ll23 = 
+        geometry::length_2d (_vv23) ;
+        real_type _ll31 = 
+        geometry::length_2d (_vv31) ;
+
+        real_type _dd11 =
+        geometry::dot_2d(_vv12, _vv23) ;
+        real_type _dd22 = 
+        geometry::dot_2d(_vv23, _vv31) ;
+        real_type _dd33 =
+        geometry::dot_2d(_vv31, _vv12) ;
+
+        _dd11 = (real_type)-1. * (
+            _dd11 / _ll12 / _ll23 ) ;
+        _dd22 = (real_type)-1. * (
+            _dd22 / _ll23 / _ll31 ) ;
+        _dd33 = (real_type)-1. * (
+            _dd33 / _ll31 / _ll12 ) ;
+
+        _dd11 = (real_type) 2./3. * (
+            _dd11 - (real_type) .5) ;
+        _dd22 = (real_type) 2./3. * (
+            _dd22 - (real_type) .5) ;
+        _dd33 = (real_type) 2./3. * (
+            _dd33 - (real_type) .5) ;
+
+        real_type _skew = (real_type) (
+            std::pow(_dd11, 2) +
+            std::pow(_dd22, 2) +
+            std::pow(_dd33, 2) )  ;
+
+        return ((real_type)+1. - _skew);
+    }
+
+    template <
+    typename      real_type
+             >
+    __inline_call
+        real_type tria_skewcos_3d (
+    __const_ptr  (real_type) _p1,
+    __const_ptr  (real_type) _p2,
+    __const_ptr  (real_type) _p3
+        )
+    {   // "skewed-cosine"; penalty for obtuse
+
+        real_type _vv12[3] ;
+        real_type _vv23[3] ;
+        real_type _vv31[3] ;
+        geometry::vector_3d(_p1, _p2, _vv12) ;
+        geometry::vector_3d(_p2, _p3, _vv23) ;
+        geometry::vector_3d(_p3, _p1, _vv31) ;
+
+        real_type _ll12 = 
+        geometry::length_3d (_vv12) ;
+        real_type _ll23 = 
+        geometry::length_3d (_vv23) ;
+        real_type _ll31 = 
+        geometry::length_3d (_vv31) ;
+
+        real_type _dd11 =
+        geometry::dot_3d(_vv12, _vv23) ;
+        real_type _dd22 = 
+        geometry::dot_3d(_vv23, _vv31) ;
+        real_type _dd33 =
+        geometry::dot_3d(_vv31, _vv12) ;
+
+        _dd11 = (real_type)-1. * (
+            _dd11 / _ll12 / _ll23 ) ;
+        _dd22 = (real_type)-1. * (
+            _dd22 / _ll23 / _ll31 ) ;
+        _dd33 = (real_type)-1. * (
+            _dd33 / _ll31 / _ll12 ) ;
+
+        _dd11 = (real_type) 2./3. * (
+            _dd11 - (real_type) .5) ;
+        _dd22 = (real_type) 2./3. * (
+            _dd22 - (real_type) .5) ;
+        _dd33 = (real_type) 2./3. * (
+            _dd33 - (real_type) .5) ;
+
+        real_type _skew = (real_type) (
+            std::pow(_dd11, 2) +
+            std::pow(_dd22, 2) +
+            std::pow(_dd33, 2) )  ;
+
+        return ((real_type)+1. - _skew);
     }
 
     /*
@@ -586,10 +702,10 @@
        (_q1+_q2+_q3) / (real_type)+3. ;
 
         real_type _qq =
-      ((real_type)+1.-.33) * _qb +
-      ((real_type)+0.+.33) * _qe ;
+      ((real_type)+1.0-.33) * _qb +
+      ((real_type)+0.0+.33) * _qe ;
 
-        return (real_type)1.-_qq ;
+        return (real_type)1.0-_qq ;
     }
 
     template <
@@ -645,32 +761,15 @@
        (_q1+_q2+_q3) / (real_type)+3. ;
 
         real_type _qq =
-      ((real_type)+1.-.33) * _qb +
-      ((real_type)+0.+.33) * _qe ;
+      ((real_type)+1.0-.33) * _qb +
+      ((real_type)+0.0+.33) * _qe ;
 
-        return (real_type)1.-_qq ;
+        return (real_type)1.0-_qq ;
     }
 
-    /*
-    template <
-    typename      real_type
-             >
-    __normal_call
-        real_type tria_duality_3d (
-    __const_ptr  (real_type) _p1,
-    __const_ptr  (real_type) _p2,
-    __const_ptr  (real_type) _p3,
-    __const_ptr  (real_type) _p4
-        )
-    {
-        //!! to-do...
-
-        return    _qq ;
-    }
-    */
 
     }
 
-#   endif//__CELL_BASE_K__
+#   endif   // __CELL_BASE_K__
 
 

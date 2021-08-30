@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Jul., 2021
+     * Last updated: 28 Aug., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -119,6 +119,8 @@
         _jcfg->_optm_kern = JIGSAW_KERN_ODT_DQDX ;
 
         _jcfg->_optm_iter = (indx_t) +16;
+
+        _jcfg->_optm_cost = JIGSAW_KERN_AREA_LEN ;
 
         _jcfg->_optm_qtol = (real_t) +1.E-04 ;
         _jcfg->_optm_qlim = (real_t) +14./15.;

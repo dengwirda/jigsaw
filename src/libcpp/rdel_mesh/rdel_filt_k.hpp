@@ -375,10 +375,10 @@
     public  :
 /*------------------------------ construct from _src. */
     __inline_call filt_all_2d (
-        real_type  _near
+        real_type  _nsrc
         )
     {
-        this->_near = std::pow( _near, 2) ;
+        this->_near = std::pow( _nsrc, 2) ;
 
         this->_find = false;
         this->_inum =   +0 ;
@@ -469,10 +469,10 @@
     public  :
 /*------------------------------ construct from _src. */
     __inline_call filt_all_3d (
-        real_type  _near
+        real_type  _nsrc
         )
     {
-        this->_near = std::pow( _near, 2) ;
+        this->_near = std::pow( _nsrc, 2) ;
 
         this->_find = false;
         this->_inum =   +0 ;

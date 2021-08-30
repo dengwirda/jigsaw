@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 July, 2020
+     * Last updated: 28 Aug., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -195,6 +195,16 @@
                         JIGSAW_KERN_H95_DQDX)
                 _file << "OPTM_KERN = "
                       << "H95+DQDX\n" ;
+
+                if (_jcfg->_optm_cost ==
+                        JIGSAW_KERN_AREA_LEN)
+                _file << "OPTM_COST = "
+                      << "AREA-LEN\n" ;
+                else
+                if (_jcfg->_optm_cost ==
+                        JIGSAW_KERN_SKEW_COS)
+                _file << "OPTM_COST = "
+                      << "SKEW-COS\n" ;
 
         /*--------------------------------- OPTM keywords */
                 _file << "OPTM_ITER = " <<

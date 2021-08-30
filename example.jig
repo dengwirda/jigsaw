@@ -309,9 +309,22 @@
 #   OPTM_KERN = CVT+DQDX
 
 
+#   ---> OPTM_COST - {default='area-len'} mesh optimisation
+        cost metric, choice of area-length (COST='area-len') 
+        or skewed-cosine (COST='skew-cos') functions.
+        The area-length metric is symmetric wrt. both small 
+        and large cell angles, and is typically appropriate
+        for simplex-only meshes. The skewed-cosine metric is 
+        based on an asymmetric penalisation of large cell
+        angles, and may be useful for staggered primal-dual 
+        tessellations.
+
+#   OPTM_COST = SKEW-COS
+
+
 #   ---> OPTM_ITER - {default=16} max. number of mesh optim-
 #       isation iterations. Set ITER=N to see progress after 
-#       N iterations. 
+#       N iterations.
 #
 
 #   OPTM_ITER = 32
