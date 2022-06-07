@@ -92,7 +92,7 @@
         char_type                     _fdim = +0 ;
         char_type                     _feat = +0 ;
 
-        char_type                     _topo [ 2] = {+0} ;
+        char_type                     _topo [ 2] = {+2} ;
 
         public  :
     /*------------------------------------ "write" access */
@@ -166,7 +166,7 @@
 
         char_type                     _feat = +0 ;
 
-        char_type                     _topo [ 2] = {+0} ;
+        char_type                     _topo [ 2] = {+2} ;
 
         public  :
     /*------------------------------------ "write" access */

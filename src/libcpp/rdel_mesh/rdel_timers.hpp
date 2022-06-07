@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 February, 2019
+     * Last updated: 20 Jan., 2022
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -67,15 +67,15 @@
 
         typedef rdel_timers<R, I>       self_type ;
 
-        real_type   _mesh_seed = (real_type)  +0. ;
-        real_type   _node_init = (real_type)  +0. ;
-        real_type   _node_rule = (real_type)  +0. ;
-        real_type   _edge_init = (real_type)  +0. ;
-        real_type   _edge_rule = (real_type)  +0. ;
-        real_type   _face_init = (real_type)  +0. ;
-        real_type   _face_rule = (real_type)  +0. ;
-        real_type   _tria_init = (real_type)  +0. ;
-        real_type   _tria_rule = (real_type)  +0. ;
+        double      _mesh_seed = (double   )  +0. ;
+        double      _node_init = (double   )  +0. ;
+        double      _node_rule = (double   )  +0. ;
+        double      _edge_init = (double   )  +0. ;
+        double      _edge_rule = (double   )  +0. ;
+        double      _face_init = (double   )  +0. ;
+        double      _face_rule = (double   )  +0. ;
+        double      _tria_init = (double   )  +0. ;
+        double      _tria_rule = (double   )  +0. ;
 
         public  :
 
@@ -96,6 +96,21 @@
                 std::chrono::duration_cast<
                 std::chrono::microseconds >
                 (_ttoc-_ttic).count()) / +1.0E+06 ;
+        }
+
+        __inline_call double nano_span (
+            typename std::
+                chrono::high_resolution_clock
+                    ::time_point const& _ttic,
+            typename std::
+                chrono::high_resolution_clock
+                    ::time_point const& _ttoc
+            )
+        {
+            return (double)(
+                std::chrono::duration_cast<
+                std::chrono:: nanoseconds >
+                (_ttoc-_ttic).count()) / +1.0E+09 ;
         }
 
     #   endif//__use_timers

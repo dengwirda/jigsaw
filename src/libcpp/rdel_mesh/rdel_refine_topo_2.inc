@@ -125,7 +125,7 @@
         }
         }
 
-        return ( _eset.count() == _topo ) ;
+        return ( _eset.count() <= _topo ) ;
     }
 
     /*

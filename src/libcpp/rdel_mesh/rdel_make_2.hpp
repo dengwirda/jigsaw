@@ -856,39 +856,32 @@
     /*------------------------- push rDEL scheme metrics */
 
         _dump.push("\n")  ;
-        _dump.push("**DELTRI statistics... \n") ;
-        _dump.push("\n")  ;
+        _dump.push("**TIMING statistics...\n") ;
 
-        _dump.push("**FUNCTION timing: ") ;
-        _dump.push("\n")  ;
-
-        _dump.push("  MESH-SEED = ") ;
+        _dump.push(" *mesh-seed = ") ;
         _dump.push(
         std::to_string (_tcpu._mesh_seed));
         _dump.push("\n")  ;
-
-        _dump.push("  EDGE-INIT = ") ;
+        _dump.push(" *edge-init = ") ;
         _dump.push(
         std::to_string (_tcpu._edge_init));
         _dump.push("\n")  ;
-        _dump.push("  TRIA-INIT = ") ;
+        _dump.push(" *tria-init = ") ;
         _dump.push(
         std::to_string (_tcpu._tria_init));
         _dump.push("\n")  ;
-        _dump.push("\n")  ;
 
-        _dump.push("**RESTRICTED-TRIA: ") ;
         _dump.push("\n")  ;
+        _dump.push("**rDT(x) statistics...\n") ;
 
-        _dump.push("  rDEL-EDGE = ");
+        _dump.push(" *rDEL-edge = ");
         _dump.push(std::to_string (_nedg));
         _dump.push("\n")  ;
-
-        _dump.push("  rDEL-TRIA = ");
+        _dump.push(" *rDEL-tria = ");
         _dump.push(std::to_string (_ntri));
         _dump.push("\n")  ;
-        _dump.push("\n")  ;
 
+        _dump.push("\n")  ;
         }
 
         if (_args.verb() >= +3 )
@@ -896,65 +889,57 @@
     /*------------------------- push rDEL memory metrics */
 
         _dump.push("\n")  ;
-        _dump.push("**MEMORY statistics... \n") ;
-        _dump.push("\n")  ;
+        _dump.push("**MEMORY statistics...\n") ;
 
-        _dump.push("**DELAUNAY-OBJECT: ") ;
-        _dump.push("\n")  ;
-
-        _dump.push("  NODE-BYTE = ") ;
+        _dump.push("  DELAUNAY object:\n") ;
+        _dump.push(" *node-byte = ") ;
         _dump.push(std::to_string(
             sizeof(typename mesh_type::
                 tria_type:: node_type)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  NODE-LIST = ") ;
+        _dump.push(" *node-list = ") ;
         _dump.push(std::to_string(
             _mesh._tria._nset.alloc())) ;
         _dump.push("\n")  ;
-
-        _dump.push("  TRIA-BYTE = ") ;
+        _dump.push(" *tria-byte = ") ;
         _dump.push(std::to_string(
             sizeof(typename mesh_type::
                 tria_type:: tria_type)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  TRIA-LIST = ") ;
+        _dump.push(" *tria-list = ") ;
         _dump.push(std::to_string(
             _mesh._tria._tset.alloc())) ;
         _dump.push("\n")  ;
-        _dump.push("\n")  ;
 
-        _dump.push("**RESTRICTED-TRIA: ") ;
-        _dump.push("\n")  ;
-
-        _dump.push("  EDGE-BYTE = ") ;
+        _dump.push("  RESTRICTED tria:\n") ;
+        _dump.push(" *edge-byte = ") ;
         _dump.push(std::to_string(
             sizeof(
         typename mesh_type::edge_item)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  EDGE-HASH = ") ;
+        _dump.push(" *edge-hash = ") ;
         _dump.push(std::to_string(
             _mesh._eset._lptr.alloc())) ;
         _dump.push("\n")  ;
-        _dump.push("  POOL-BYTE = ") ;
+        _dump.push(" *pool-byte = ") ;
         _dump.push(
         std::to_string(_mesh._epol.bytes())) ;
         _dump.push("\n")  ;
-
-        _dump.push("  TRIA-BYTE = ") ;
+        _dump.push(" *tria-byte = ") ;
         _dump.push(std::to_string(
             sizeof(
         typename mesh_type::tria_item)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  TRIA-HASH = ") ;
+        _dump.push(" *tria-hash = ") ;
         _dump.push(std::to_string(
             _mesh._tset._lptr.alloc())) ;
         _dump.push("\n")  ;
-        _dump.push("  POOL-BYTE = ") ;
+        _dump.push(" *pool-byte = ") ;
         _dump.push(
         std::to_string(_mesh._tpol.bytes())) ;
         _dump.push("\n")  ;
-        _dump.push("\n")  ;
 
+        _dump.push("\n")  ;
         }
     }
 

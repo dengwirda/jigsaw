@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Apr., 2021
+     * Last updated: 28 Mar., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -446,6 +446,8 @@
 
             vals_type _hnow = _hmat[_base] ;
 
+            if (_hnow < (vals_type)+0.) continue ;
+
             for (auto _IPOS = _ipos - 1 ;
                       _IPOS < _ipos + 1 ;
                     ++_IPOS )
@@ -484,16 +486,6 @@
                 iptr_type  _lnod;
                 indx_from_subs(
                     _lpii, _lpjj, _lnod);
-
-    /*-------------------- skip any cells with null nodes */
-                if (_keys[_inod] == _null &&
-                    _inod != _base) continue ;
-                if (_keys[_jnod] == _null &&
-                    _jnod != _base) continue ;
-                if (_keys[_knod] == _null &&
-                    _knod != _base) continue ;
-                if (_keys[_lnod] == _null &&
-                    _lnod != _base) continue ;
 
     /*-------------------- skip cells due to sorted order */
                 vals_type _hmax;
@@ -558,16 +550,23 @@
                 vals_type _lold =
                      this->_hmat[_lnod] ;
 
+                vals_type _inew =
+                     this->_hmat[_inod] ;
+                vals_type _jnew =
+                     this->_hmat[_jnod] ;
+                vals_type _knew =
+                     this->_hmat[_knod] ;
+                vals_type _lnew =
+                     this->_hmat[_lnod] ;
+
                 if (this->_dhdx.count() >1)
                 {
     /*-------------------- update adj. set, g = g(x) case */
                 if (eikonal_quad_3d (
                    _IXYZ , _JXYZ ,
                    _KXYZ , _LXYZ ,
-                    this->_hmat[_inod],
-                    this->_hmat[_jnod],
-                    this->_hmat[_knod],
-                    this->_hmat[_lnod],
+                   _inew , _jnew ,
+                   _knew , _lnew ,
                     this->_dhdx[_inod],
                     this->_dhdx[_jnod],
                     this->_dhdx[_knod],
@@ -575,24 +574,36 @@
                 {
 
                 if (_keys[_inod] != _null)
-                if (_hmat[_inod] != _iold)
-                    _sort.update(
+                if (_inew != _iold)
+                {
+                    _hmat[_inod] =  _inew;
+                    _sort.reduce(
                     _keys[_inod] ,  _inod) ;
+                }
 
                 if (_keys[_jnod] != _null)
-                if (_hmat[_jnod] != _jold)
-                    _sort.update(
+                if (_knew != _jold)
+                {
+                    _hmat[_jnod] =  _jnew;
+                    _sort.reduce(
                     _keys[_jnod] ,  _jnod) ;
+                }
 
                 if (_keys[_knod] != _null)
-                if (_hmat[_knod] != _kold)
-                    _sort.update(
+                if (_knew != _kold)
+                {
+                    _hmat[_knod] =  _knew;
+                    _sort.reduce(
                     _keys[_knod] ,  _knod) ;
+                }
 
                 if (_keys[_lnod] != _null)
-                if (_hmat[_lnod] != _lold)
-                    _sort.update(
+                if (_lnew != _lold)
+                {
+                    _hmat[_lnod] =  _lnew;
+                    _sort.reduce(
                     _keys[_lnod] ,  _lnod) ;
+                }
 
                 if (this->_wrap)
                 {
@@ -608,7 +619,7 @@
 
                 if (_keys[_pair] != _null)
                 if (_hmat[_inod] != _iold)
-                    _sort.update(
+                    _sort.reduce(
                     _keys[_pair] ,  _pair) ;
                 }
 
@@ -623,7 +634,7 @@
 
                 if (_keys[_pair] != _null)
                 if (_hmat[_jnod] != _jold)
-                    _sort.update(
+                    _sort.reduce(
                     _keys[_pair] ,  _pair) ;
                 }
 
@@ -638,7 +649,7 @@
 
                 if (_keys[_pair] != _null)
                 if (_hmat[_knod] != _kold)
-                    _sort.update(
+                    _sort.reduce(
                     _keys[_pair] ,  _pair) ;
                 }
 
@@ -653,7 +664,7 @@
 
                 if (_keys[_pair] != _null)
                 if (_hmat[_lnod] != _lold)
-                    _sort.update(
+                    _sort.reduce(
                     _keys[_pair] ,  _pair) ;
                 }
                 }
@@ -667,10 +678,8 @@
                 if (eikonal_quad_3d (
                    _IXYZ , _JXYZ ,
                    _KXYZ , _LXYZ ,
-                    this->_hmat[_inod],
-                    this->_hmat[_jnod],
-                    this->_hmat[_knod],
-                    this->_hmat[_lnod],
+                   _inew , _jnew ,
+                   _knew , _lnew ,
                     this->_dhdx[  +0 ],
                     this->_dhdx[  +0 ],
                     this->_dhdx[  +0 ],
@@ -678,24 +687,36 @@
                 {
 
                 if (_keys[_inod] != _null)
-                if (_hmat[_inod] != _iold)
-                    _sort.update(
+                if (_inew != _iold)
+                {
+                    _hmat[_inod] =  _inew;
+                    _sort.reduce(
                     _keys[_inod] ,  _inod) ;
+                }
 
                 if (_keys[_jnod] != _null)
-                if (_hmat[_jnod] != _jold)
-                    _sort.update(
+                if (_knew != _jold)
+                {
+                    _hmat[_jnod] =  _jnew;
+                    _sort.reduce(
                     _keys[_jnod] ,  _jnod) ;
+                }
 
                 if (_keys[_knod] != _null)
-                if (_hmat[_knod] != _kold)
-                    _sort.update(
+                if (_knew != _kold)
+                {
+                    _hmat[_knod] =  _knew;
+                    _sort.reduce(
                     _keys[_knod] ,  _knod) ;
+                }
 
                 if (_keys[_lnod] != _null)
-                if (_hmat[_lnod] != _lold)
-                    _sort.update(
+                if (_lnew != _lold)
+                {
+                    _hmat[_lnod] =  _lnew;
+                    _sort.reduce(
                     _keys[_lnod] ,  _lnod) ;
+                }
 
                 if (this->_wrap)
                 {
@@ -711,7 +732,7 @@
 
                 if (_keys[_pair] != _null)
                 if (_hmat[_inod] != _iold)
-                    _sort.update(
+                    _sort.reduce(
                     _keys[_pair] ,  _pair) ;
                 }
 
@@ -726,7 +747,7 @@
 
                 if (_keys[_pair] != _null)
                 if (_hmat[_jnod] != _jold)
-                    _sort.update(
+                    _sort.reduce(
                     _keys[_pair] ,  _pair) ;
                 }
 
@@ -741,7 +762,7 @@
 
                 if (_keys[_pair] != _null)
                 if (_hmat[_knod] != _kold)
-                    _sort.update(
+                    _sort.reduce(
                     _keys[_pair] ,  _pair) ;
                 }
 
@@ -756,7 +777,7 @@
 
                 if (_keys[_pair] != _null)
                 if (_hmat[_lnod] != _lold)
-                    _sort.update(
+                    _sort.reduce(
                     _keys[_pair] ,  _pair) ;
                 }
                 }

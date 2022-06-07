@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Apr., 2021
+     * Last updated: 30 Mar., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -516,16 +516,22 @@
         real_type _a2 =
         geometry::tria_area_2d(_p1, _p3, _p4) ;
 
-        if (_a1*_a2 > (real_type)+0.)
+        if (_a1*_a2 > (real_type)+0. )
         {
             _okay =  true ;
     /*--------------------------------- 1st tria ordering */
+            if (_h1 >=(real_type)+0. &&
+                _h2 >=(real_type)+0. &&
+                _h3 >=(real_type)+0. )
             if (eikonal_tria_2d (
                 _p1, _p2, _p3 ,
                 _h1, _h2, _h3 ,
                 _g1, _g2, _g3 ) )
                 _clip =  true ;
 
+            if (_h1 >=(real_type)+0. &&
+                _h3 >=(real_type)+0. &&
+                _h4 >=(real_type)+0. )
             if (eikonal_tria_2d (
                 _p1, _p3, _p4 ,
                 _h1, _h3, _h4 ,
@@ -538,16 +544,22 @@
         real_type _a4 =
         geometry::tria_area_2d(_p2, _p3, _p4) ;
 
-        if (_a3*_a4 > (real_type)+0.)
+        if (_a3*_a4 > (real_type)+0. )
         {
             _okay =  true ;
     /*--------------------------------- 2nd tria ordering */
+            if (_h1 >=(real_type)+0. &&
+                _h2 >=(real_type)+0. &&
+                _h4 >=(real_type)+0. )
             if (eikonal_tria_2d (
                 _p1, _p2, _p4 ,
                 _h1, _h2, _h4 ,
                 _g1, _g2, _g4 ) )
                 _clip =  true ;
 
+            if (_h2 >=(real_type)+0. &&
+                _h3 >=(real_type)+0. &&
+                _h4 >=(real_type)+0. )
             if (eikonal_tria_2d (
                 _p2, _p3, _p4 ,
                 _h2, _h3, _h4 ,
@@ -558,21 +570,29 @@
         if (!_okay)
         {
     /*--------------------------------- a degenerate quad */
+            if (_h1 >=(real_type)+0. &&
+                _h2 >=(real_type)+0. )
             if (EIKONAL_edge_2d (
                 _p1, _h1, _g1 ,
                 _p2, _h2, _g2 ) )
                 _clip =  true ;
 
+            if (_h2 >=(real_type)+0. &&
+                _h3 >=(real_type)+0. )
             if (EIKONAL_edge_2d (
                 _p2, _h2, _g2 ,
                 _p3, _h3, _g3 ) )
                 _clip =  true ;
 
+            if (_h3 >=(real_type)+0. &&
+                _h4 >=(real_type)+0. )
             if (EIKONAL_edge_2d (
                 _p3, _h3, _g3 ,
                 _p4, _h4, _g4 ) )
                 _clip =  true ;
 
+            if (_h4 >=(real_type)+0. &&
+                _h1 >=(real_type)+0. )
             if (EIKONAL_edge_2d (
                 _p4, _h4, _g4 ,
                 _p1, _h1, _g1 ) )
@@ -617,12 +637,18 @@
         {
             _okay =  true ;
     /*--------------------------------- 1st tria ordering */
+            if (_h1 >=(real_type)+0. &&
+                _h2 >=(real_type)+0. &&
+                _h3 >=(real_type)+0. )
             if (eikonal_tria_3d (
                 _p1, _p2, _p3 ,
                 _h1, _h2, _h3 ,
                 _g1, _g2, _g3 ) )
                 _clip =  true ;
 
+            if (_h1 >=(real_type)+0. &&
+                _h3 >=(real_type)+0. &&
+                _h4 >=(real_type)+0. )
             if (eikonal_tria_3d (
                 _p1, _p3, _p4 ,
                 _h1, _h3, _h4 ,
@@ -642,12 +668,18 @@
         {
             _okay =  true ;
     /*--------------------------------- 2nd tria ordering */
+            if (_h1 >=(real_type)+0. &&
+                _h2 >=(real_type)+0. &&
+                _h4 >=(real_type)+0. )
             if (eikonal_tria_3d (
                 _p1, _p2, _p4 ,
                 _h1, _h2, _h4 ,
                 _g1, _g2, _g4 ) )
                 _clip =  true ;
 
+            if (_h2 >=(real_type)+0. &&
+                _h3 >=(real_type)+0. &&
+                _h4 >=(real_type)+0. )
             if (eikonal_tria_3d (
                 _p2, _p3, _p4 ,
                 _h2, _h3, _h4 ,
@@ -658,21 +690,29 @@
         if (!_okay)
         {
     /*--------------------------------- a degenerate quad */
+            if (_h1 >=(real_type)+0. &&
+                _h2 >=(real_type)+0. )
             if (EIKONAL_edge_3d (
                 _p1, _h1, _g1 ,
                 _p2, _h2, _g2 ) )
                 _clip =  true ;
 
+            if (_h2 >=(real_type)+0. &&
+                _h3 >=(real_type)+0. )
             if (EIKONAL_edge_3d (
                 _p2, _h2, _g2 ,
                 _p3, _h3, _g3 ) )
                 _clip =  true ;
 
+            if (_h3 >=(real_type)+0. &&
+                _h4 >=(real_type)+0. )
             if (EIKONAL_edge_3d (
                 _p3, _h3, _g3 ,
                 _p4, _h4, _g4 ) )
                 _clip =  true ;
 
+            if (_h4 >=(real_type)+0. &&
+                _h1 >=(real_type)+0. )
             if (EIKONAL_edge_3d (
                 _p4, _h4, _g4 ,
                 _p1, _h1, _g1 ) )

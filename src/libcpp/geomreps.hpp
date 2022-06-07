@@ -43,8 +43,8 @@
 
 #   pragma once
 
-#   ifndef __GEOMTYPE__
-#   define __GEOMTYPE__
+#   ifndef __GEOMREPS__
+#   define __GEOMREPS__
 
     namespace mesh
     {
@@ -60,19 +60,19 @@
 #   include "geometry.hpp"
 
 #   include "aabbtree.hpp"
-#   include "meshtype.hpp"
+#   include "meshreps.hpp"
 
 #   include "rdel_mesh/rdel_filt_k.hpp"
 
-#   include "geom_type/geom_base_2.hpp"
-#   include "geom_type/geom_base_3.hpp"
+#   include "geom_reps/geom_base_2.hpp"
+#   include "geom_reps/geom_base_3.hpp"
 
-#   include "geom_type/geom_mesh_euclidean_2.hpp"
-#   include "geom_type/geom_mesh_euclidean_3.hpp"
+#   include "geom_reps/geom_mesh_euclidean_2.hpp"
+#   include "geom_reps/geom_mesh_euclidean_3.hpp"
 
-#   include "geom_type/geom_mesh_ellipsoid_3.hpp"
+#   include "geom_reps/geom_mesh_ellipsoid_3.hpp"
 
-#   endif//__GEOMTYPE__
+#   endif//__GEOMREPS__
 
 
 

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Aug., 2021
+     * Last updated: 01 Sept., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -161,6 +161,21 @@
             _pmid[2] + _ttbb*_pdel[ 2] ;
             }
             }
+        }
+
+        __static_call
+        __inline_call void_type tri3_norm (
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos ,
+          __write_ptr(real_type) _nvec
+            )
+        {
+            geometry::tria_norm_3d (
+               &_ipos[0] ,
+               &_jpos[0] ,
+               &_kpos[0] ,
+               &_nvec[0] ) ;
         }
 
         __static_call

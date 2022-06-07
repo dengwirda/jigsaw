@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 Feb., 2021
+     * Last updated: 01 Sept., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -157,13 +157,15 @@
                     hfun_type::null_hint() ;
 
             _mesh._tria.
-             node(_node)->fdim() = 0  ;
+             node(_node)->fdim () = 0 ;
             _mesh._tria.
-             node(_node)->feat() = 0  ;
+             node(_node)->feat () = 0 ;
             _mesh._tria.
-             node(_node)->topo() = 0  ;
+             node(_node)->topo(0) = 2 ;
             _mesh._tria.
-             node(_node)->part() = 0  ;
+             node(_node)->topo(1) = 2 ;
+            _mesh._tria.
+             node(_node)->part () = 0 ;
 
             iptr_type _sign   = -1 ;
             if (_told.count() > +0 )

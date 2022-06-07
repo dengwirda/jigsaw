@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Mar., 2021
+     * Last updated: 21 Jan., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -859,14 +859,6 @@
             std::pow(std::numeric_limits
                 <real_type>::epsilon(), .50) ;
 
-        real_type static const _RMIN =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), .75) ;
-
-        real_type static const _RMAX =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), .25) ;
-
     /*------------------------------------- cell indexing */
         auto _ppos = &_node->pval(0);
 
@@ -881,22 +873,11 @@
                           _bmin[_idim] ;
 
         real_type _hdel = _HINC*_binc;
-
-        real_type _hsum = (real_type)0.;
-
-        real_type _sdel = (real_type)0.;
-        real_type _sabs = (real_type)0.;
-        real_type _sbar = (real_type)0.;
-
-        for (auto _iter = +0; _iter++ != +2; )
+        real_type _dsup , _dsdn ;
         {
     /*------------------ centred finite-diff. for dQ / dx */
             _ppos[_idim] =
                 _SAVE[_idim] + _hdel;
-
-            _hsum  = (real_type)+0. ;
-            _hsum +=
-                _ppos[_idim] - _SAVE[_idim];
 
             real_type _scr1 =
                 pred_type::tri3_cost (
@@ -910,11 +891,10 @@
                 pred_type::cell_kind ()
                     ) ;
 
+            _dsup = (_scr1 - _COST) / _hdel ;
+
             _ppos[_idim] =
                 _SAVE[_idim] - _hdel;
-
-            _hsum -=
-                _ppos[_idim] - _SAVE[_idim];
 
             real_type _scr0 =
                 pred_type::tri3_cost (
@@ -928,33 +908,15 @@
                 pred_type::cell_kind ()
                     ) ;
 
-            _sdel = _scr1 - _scr0 ;
-
-            _sbar = std::abs(_COST) ;
-            _sabs = std::abs(_sdel) ;
-
-    /*------------------ try to adjust step on rel. diff. */
-            if (_sabs > (real_type)0.)
-            {
-            if (_sabs > _RMAX * _sbar)
-            {
-                _hdel/= (real_type) +10. ;
-            }
-            else
-            if (_sabs < _RMIN * _sbar)
-            {
-                _hdel*= (real_type) +10. ;
-            }
-            else { break ; }
-            }
-            else { break ; }
+            _dsdn = (_COST - _scr0) / _hdel ;
         }
 
-        _ppos[_idim]  = _SAVE  [_idim];
+        _ppos[_idim]  = _SAVE  [_idim] ;
 
     /*------------------ finalise gradient and accumulate */
-
-        _DQDX[_idim] += _sdel / _hsum ;
+        if (_dsup * _dsdn > (real_type)0.)
+            _DQDX [ _idim ] +=
+        (real_type)+.5 * (_dsup + _dsdn) ;
 
         }
     }
@@ -1061,14 +1023,6 @@
             std::pow(std::numeric_limits
                 <real_type>::epsilon(), .50) ;
 
-        real_type static const _RMIN =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), .75) ;
-
-        real_type static const _RMAX =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), .25) ;
-
     /*------------------------------------- cell indexing */
         auto _ppos = &_node->pval(0);
 
@@ -1083,22 +1037,11 @@
                           _bmin[_idim] ;
 
         real_type _hdel = _HINC*_binc;
-
-        real_type _hsum = (real_type)0.;
-
-        real_type _sdel = (real_type)0.;
-        real_type _sabs = (real_type)0.;
-        real_type _sbar = (real_type)0.;
-
-        for (auto _iter = +0; _iter++ != +2; )
+        real_type _dsup , _dsdn ;
         {
     /*------------------ centred finite-diff. for dQ / dx */
             _ppos[_idim] =
-                _SAVE[_idim] + _hdel;
-
-            _hsum  = (real_type)+0. ;
-            _hsum +=
-                _ppos[_idim] - _SAVE[_idim];
+                _SAVE[_idim] + _hdel ;
 
             real_type _scr1 =
                 pred_type::quad_cost (
@@ -1114,11 +1057,10 @@
                 pred_type::cell_kind ()
                     ) ;
 
-            _ppos[_idim] =
-                _SAVE[_idim] - _hdel;
+            _dsup = (_scr1 - _COST) / _hdel ;
 
-            _hsum -=
-                _ppos[_idim] - _SAVE[_idim];
+            _ppos[_idim] =
+                _SAVE[_idim] - _hdel ;
 
             real_type _scr0 =
                 pred_type::quad_cost (
@@ -1134,33 +1076,15 @@
                 pred_type::cell_kind ()
                     ) ;
 
-            _sdel = _scr1 - _scr0 ;
-
-            _sbar = std::abs(_COST) ;
-            _sabs = std::abs(_sdel) ;
-
-    /*------------------ try to adjust step on rel. diff. */
-            if (_sabs > (real_type)0.)
-            {
-            if (_sabs > _RMAX * _sbar)
-            {
-                _hdel/= (real_type) +10. ;
-            }
-            else
-            if (_sabs < _RMIN * _sbar)
-            {
-                _hdel*= (real_type) +10. ;
-            }
-            else { break ; }
-            }
-            else { break ; }
+            _dsdn = (_COST - _scr0) / _hdel ;
         }
 
-        _ppos[_idim]  = _SAVE  [_idim];
+        _ppos[_idim]  = _SAVE  [_idim] ;
 
     /*------------------ finalise gradient and accumulate */
-
-        _DQDX[_idim] += _sdel / _hsum ;
+        if (_dsup * _dsdn > (real_type)0.)
+            _DQDX [ _idim ] +=
+        (real_type)+.5 * (_dsup + _dsdn) ;
 
         }
     }

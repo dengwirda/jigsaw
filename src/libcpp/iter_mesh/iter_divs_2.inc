@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Aug., 2021
+     * Last updated: 01 Sept., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -59,7 +59,7 @@
         iter_opts &_opts ,
         iptr_type  _iout ,
         iptr_type  _enum ,
-        char_type  _kern ,
+        kern_kind  _kern ,
         bool_type &_okay ,
         iptr_type &_inew ,
         conn_list &_cset ,
@@ -70,6 +70,7 @@
         real_list &_qdst ,
         real_list &_qtmp ,
         real_type  _QLIM ,
+        iter_stat &_tcpu ,
         real_type  _lmin
             = (real_type) +1.00E+00 ,
         real_type  _qinc
@@ -78,6 +79,11 @@
     {
         iptr_type static constexpr
             _last = pred_type::geom_dims + 0 ;
+
+        iptr_type static constexpr
+            _DEG_TRIA3 = (iptr_type)+6 ;
+    //  iptr_type static constexpr
+    //      _DEG_QUAD4 = (iptr_type)+4 ;
 
     /*--------------------------------- get edge indexing */
          auto _eptr =
@@ -156,20 +162,22 @@
                      _hbar * _lmin )
             return  ;
 
-        _mesh.connect_2(_eptr->node(+0),
-            POINT_tag , _iset) ;
-        _mesh.connect_2(_eptr->node(+1),
-            POINT_tag , _jset) ;
+        auto _ideg = _mesh.
+            node(_enod[0]).ndeg(TRIA3_tag ) ;
+        auto _ierr =
+            (iptr_type)(_ideg-_DEG_TRIA3) ;
 
-        auto _ideg = _iset.count() ;
-        auto _jdeg = _jset.count() ;
+        auto _jdeg = _mesh.
+            node(_enod[1]).ndeg(TRIA3_tag ) ;
+        auto _jerr =
+            (iptr_type)(_jdeg-_DEG_TRIA3) ;
 
     /*--------------------------------- split if too long */
         real_type static constexpr
             _lBIG  = (real_type)+1.375 ;
 
         iptr_type static constexpr
-            _dMAX  = (iptr_type)+9 ;
+            _dMAX  = (iptr_type)+3 ;
 
         real_type _lmax =
             _lBIG *std::pow( _iout ,  +1./8.) ;
@@ -185,11 +193,22 @@
 
         }
         else
-        if (_ideg >= _dMAX || _jdeg >= _dMAX)
+        if (_ierr >= _dMAX || _jerr >= _dMAX)
         {
     //  try to reduce large vertex valence via refinement
 
         _qinc = (real_type) -0.25 ;
+        _qinc/=  std::pow ( _iout ,   +1./8.) ;
+
+        }
+        else
+        if (_ierr > 0 && _jerr > 0 &&
+                    (_ierr + _jerr) >= _dMAX)
+        {
+    //  try to reduce large vertex valence via refinement
+
+        _qinc = (real_type) -.125 ;
+        _qinc/=  std::pow ( _iout ,   +1./8.) ;
 
         }
         else
@@ -342,7 +361,7 @@
 
     /*--------------------------------- optim. node coord */
         iptr_type static
-            constexpr _INUM = (iptr_type) +4;
+            constexpr _INUM = (iptr_type) +2;
 
         iptr_type _move = -1;
         for (auto _iloc = +0; _iloc != _INUM;
@@ -361,9 +380,9 @@
                 _opts, _nptr, _kern,
                 _move, _cnew,
                 _qtmp, _qdst,
-                _minC, _QLIM ) ;
+                _minC, _QLIM, _tcpu)  ;
 
-            if (_move <= +0) break ;
+            if (_move <= +0 ) break;
         }
 
     /*--------------------------------- is cost improved? */

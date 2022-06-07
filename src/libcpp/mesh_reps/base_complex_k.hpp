@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Sept., 2020
+     * Last updated: 01 Sept., 2021
      *
-     * Copyright 2020--
+     * Copyright 2020--2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -569,6 +569,7 @@
        _ipos = (IPTR_TYPE)_get_node(_mesh) ;
 
         _mesh._llN1[_ipos]  = _ndat ;
+        _mesh._llN1[_ipos].null() ;
         _mesh._llN1[_ipos].mark() = 0 ;
 
         _mesh._llN1[_ipos].self() = 1 ;
@@ -589,6 +590,7 @@
        _ipos = (IPTR_TYPE)_get_node(_mesh) ;
 
         _mesh._llN1[_ipos]  = _ndat ;
+        _mesh._llN1[_ipos].null() ;
         _mesh._llN1[_ipos].mark() = 0 ;
         _mesh._llN1[_ipos].self() = 1 ;
 
@@ -642,6 +644,14 @@
         __unreferenced(_kind);      // maybe, per TOPODIM
 
         IPTR_TYPE _ipos =  -1, _npos;
+
+        if (_itop == -1)
+        {
+        _mesh.node(_edat.node(0)).
+                ndeg(EDGE2_tag)  += 1 ;
+        _mesh.node(_edat.node(1)).
+                ndeg(EDGE2_tag)  += 1 ;
+        }
 
         if (!_link)
         {
@@ -758,6 +768,16 @@
         __unreferenced(_kind);      // maybe, per TOPODIM
 
         IPTR_TYPE _ipos =  -1, _epos;
+
+        if (_itop == -1)
+        {
+        _mesh.node(_tdat.node(0)).
+                ndeg(TRIA3_tag)  += 1 ;
+        _mesh.node(_tdat.node(1)).
+                ndeg(TRIA3_tag)  += 1 ;
+        _mesh.node(_tdat.node(2)).
+                ndeg(TRIA3_tag)  += 1 ;
+        }
 
         if (!_link)
         {
@@ -883,6 +903,18 @@
 
         IPTR_TYPE _ipos =  -1, _epos;
 
+        if (_itop == -1)
+        {
+        _mesh.node(_qdat.node(0)).
+                ndeg(QUAD4_tag)  += 1 ;
+        _mesh.node(_qdat.node(1)).
+                ndeg(QUAD4_tag)  += 1 ;
+        _mesh.node(_qdat.node(2)).
+                ndeg(QUAD4_tag)  += 1 ;
+        _mesh.node(_qdat.node(3)).
+                ndeg(QUAD4_tag)  += 1 ;
+        }
+
         if (!_link)
         {
 
@@ -1006,6 +1038,18 @@
         __unreferenced(_kind);      // maybe, per TOPODIM
 
         IPTR_TYPE _ipos =  -1, _fpos;
+
+        if (_itop == -1)
+        {
+        _mesh.node(_tdat.node(0)).
+                ndeg(TRIA4_tag)  += 1 ;
+        _mesh.node(_tdat.node(1)).
+                ndeg(TRIA4_tag)  += 1 ;
+        _mesh.node(_tdat.node(2)).
+                ndeg(TRIA4_tag)  += 1 ;
+        _mesh.node(_tdat.node(3)).
+                ndeg(TRIA4_tag)  += 1 ;
+        }
 
         if (!_link)
         {
@@ -1448,9 +1492,11 @@
         {
     /*---- deleteing (d+k)-face: scan adj. and _pop _itop */
         if constexpr ( TOPO_DIMS > 0 )
+        {
             _pop_list(_mesh. _aaN1 ,
                 _npos,
             conn_pair(_itop, _kind)) ;
+        }
         }
         else
         {
@@ -1511,6 +1557,14 @@
         IPTR_TYPE _npos = -1 ;
 
         __unreferenced(_kind);      // maybe, per TOPODIM
+
+        if (_itop == -1)
+        {
+        _mesh.node(_mesh.edge(_epos).node(0)).
+                ndeg(EDGE2_tag) -= 1 ;
+        _mesh.node(_mesh.edge(_epos).node(1)).
+                ndeg(EDGE2_tag) -= 1 ;
+        }
 
         if (_itop != -1)
         {
@@ -1596,6 +1650,16 @@
         IPTR_TYPE _epos = -1 ;
 
         __unreferenced(_kind);      // maybe, per TOPODIM
+
+        if (_itop == -1)
+        {
+        _mesh.node(_mesh.tri3(_tpos).node(0)).
+                ndeg(TRIA3_tag) -= 1 ;
+        _mesh.node(_mesh.tri3(_tpos).node(1)).
+                ndeg(TRIA3_tag) -= 1 ;
+        _mesh.node(_mesh.tri3(_tpos).node(2)).
+                ndeg(TRIA3_tag) -= 1 ;
+        }
 
         if (_itop != -1)
         {
@@ -1693,6 +1757,18 @@
         IPTR_TYPE _epos = -1 ;
 
         __unreferenced(_kind);      // maybe, per TOPODIM
+
+        if (_itop == -1)
+        {
+        _mesh.node(_mesh.quad(_qpos).node(0)).
+                ndeg(QUAD4_tag) -= 1 ;
+        _mesh.node(_mesh.quad(_qpos).node(1)).
+                ndeg(QUAD4_tag) -= 1 ;
+        _mesh.node(_mesh.quad(_qpos).node(2)).
+                ndeg(QUAD4_tag) -= 1 ;
+        _mesh.node(_mesh.quad(_qpos).node(3)).
+                ndeg(QUAD4_tag) -= 1 ;
+        }
 
         if (_itop != -1)
         {
@@ -1792,6 +1868,18 @@
         IPTR_TYPE _fpos = -1 ;
 
         __unreferenced(_kind);      // maybe, per TOPODIM
+
+        if (_itop == -1)
+        {
+        _mesh.node(_mesh.tri4(_tpos).node(0)).
+                ndeg(TRIA4_tag) -= 1 ;
+        _mesh.node(_mesh.tri4(_tpos).node(1)).
+                ndeg(TRIA4_tag) -= 1 ;
+        _mesh.node(_mesh.tri4(_tpos).node(2)).
+                ndeg(TRIA4_tag) -= 1 ;
+        _mesh.node(_mesh.tri4(_tpos).node(3)).
+                ndeg(TRIA4_tag) -= 1 ;
+        }
 
         if (_itop != -1)
         {
@@ -2500,6 +2588,8 @@
     {
         _mesh._tmp1.set_count(  +0 ) ;
 
+         auto _ioff = _conn.count () ;
+
         switch ( _kind )
         {
     /*-------------------------- init. "source" adj. list */
@@ -2535,7 +2625,7 @@
         }
 
     /*-------------------------- flip d-face marker lists */
-        for (auto _iter  = _conn.head() ;
+        for (auto _iter  = _conn.head()+_ioff ;
                   _iter != _conn.tend() ;
                 ++_iter  )
         {
@@ -2561,6 +2651,8 @@
     {
         _mesh._tmp1.set_count(  +0 ) ;
 
+         auto _ioff = _conn.count () ;
+
         switch ( _kind )
         {
     /*-------------------------- init. "source" adj. list */
@@ -2596,7 +2688,7 @@
         }
 
     /*-------------------------- flip d-face marker lists */
-        for (auto _iter  = _conn.head() ;
+        for (auto _iter  = _conn.head()+_ioff ;
                   _iter != _conn.tend() ;
                 ++_iter  )
         {
@@ -2673,6 +2765,8 @@
         _mesh._tmp1.set_count(  +0 ) ;
         _mesh._tmp2.set_count(  +0 ) ;
 
+         auto _ioff = _conn.count () ;
+
         switch ( _kind )
         {
     /*-------------------------- init. "source" adj. list */
@@ -2739,7 +2833,7 @@
         }
 
     /*-------------------------- flip d-face marker lists */
-        for (auto _iter  = _conn.head() ;
+        for (auto _iter  = _conn.head()+_ioff ;
                   _iter != _conn.tend() ;
                 ++_iter  )
         {
@@ -2776,6 +2870,8 @@
     {
         _mesh._tmp1.set_count(  +0 ) ;
         _mesh._tmp2.set_count(  +0 ) ;
+
+         auto _ioff = _conn.count () ;
 
         switch ( _kind )
         {
@@ -2852,7 +2948,7 @@
         }
 
     /*-------------------------- flip d-face marker lists */
-        for (auto _iter  = _conn.head() ;
+        for (auto _iter  = _conn.head()+_ioff ;
                   _iter != _conn.tend() ;
                 ++_iter  )
         {
@@ -2946,6 +3042,8 @@
         _mesh._tmp1.set_count(  +0 ) ;
         _mesh._tmp2.set_count(  +0 ) ;
         _mesh._tmp3.set_count(  +0 ) ;
+
+         auto _ioff = _conn.count () ;
 
         switch ( _kind )
         {
@@ -3044,7 +3142,7 @@
         }
 
     /*-------------------------- flip d-face marker lists */
-        for (auto _iter  = _conn.head() ;
+        for (auto _iter  = _conn.head()+_ioff ;
                   _iter != _conn.tend() ;
                 ++_iter  )
         {
@@ -3093,6 +3191,8 @@
         _mesh._tmp1.set_count(  +0 ) ;
         _mesh._tmp2.set_count(  +0 ) ;
         _mesh._tmp3.set_count(  +0 ) ;
+
+         auto _ioff = _conn.count () ;
 
         switch ( _kind )
         {
@@ -3255,7 +3355,7 @@
         }
 
     /*-------------------------- flip d-face marker lists */
-        for (auto _iter  = _conn.head() ;
+        for (auto _iter  = _conn.head()+_ioff ;
                   _iter != _conn.tend() ;
                 ++_iter  )
         {

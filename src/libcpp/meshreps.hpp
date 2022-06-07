@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 27 April, 2020
+ * Last updated: 01 Sept., 2021
  *
- * Copyright 2013-2020
+ * Copyright 2013-2021
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -43,41 +43,49 @@
 
 #   pragma once
 
-#   ifndef __MESHTYPE__
-#   define __MESHTYPE__
+#   ifndef __MESHREPS__
+#   define __MESHREPS__
 
     namespace mesh
     {
 /*-------------------------- classification of mesh cells */
     char_type constexpr EMPTY_tag = +0 ;
-    char_type constexpr POINT_tag = 10 ;
-    char_type constexpr EDGE2_tag = 20 ;
-    char_type constexpr TRIA3_tag = 30 ;
-    char_type constexpr QUAD4_tag = 40 ;
-    char_type constexpr TRIA4_tag = 50 ;
-    char_type constexpr HEXA8_tag = 60 ;
-    char_type constexpr WEDG6_tag = 70 ;
-    char_type constexpr PYRA5_tag = 80 ;
+    char_type constexpr
+        POINT_tag = JIGSAW_POINT_TAG ;
+    char_type constexpr
+        EDGE2_tag = JIGSAW_EDGE2_TAG ;
+    char_type constexpr
+        TRIA3_tag = JIGSAW_TRIA3_TAG ;
+    char_type constexpr
+        QUAD4_tag = JIGSAW_QUAD4_TAG ;
+    char_type constexpr
+        TRIA4_tag = JIGSAW_TRIA4_TAG ;
+    char_type constexpr
+        HEXA8_tag = JIGSAW_HEXA8_TAG ;
+    char_type constexpr
+        WEDG6_tag = JIGSAW_WEDG6_TAG ;
+    char_type constexpr
+        PYRA5_tag = JIGSAW_PYRA5_TAG ;
     }
 
 #   include "containers.hpp"
 
 #   include "hashfunc.hpp"
 
-#   include "mesh_type/mesh_complex_type_k.hpp"
+#   include "mesh_reps/mesh_complex_type_k.hpp"
 
-#   include "mesh_type/hash_complex_k.hpp"
-#   include "mesh_type/base_complex_k.hpp"
+#   include "mesh_reps/hash_complex_k.hpp"
+#   include "mesh_reps/base_complex_k.hpp"
 
-#   include "mesh_type/tria_complex_1.hpp"
-#   include "mesh_type/tria_complex_2.hpp"
-#   include "mesh_type/tria_complex_3.hpp"
+#   include "mesh_reps/tria_complex_1.hpp"
+#   include "mesh_reps/tria_complex_2.hpp"
+#   include "mesh_reps/tria_complex_3.hpp"
 
-#   include "mesh_type/mesh_complex_1.hpp"
-#   include "mesh_type/mesh_complex_2.hpp"
-#   include "mesh_type/mesh_complex_3.hpp"
+#   include "mesh_reps/mesh_complex_1.hpp"
+#   include "mesh_reps/mesh_complex_2.hpp"
+#   include "mesh_reps/mesh_complex_3.hpp"
 
-#   endif//__MESHTYPE__
+#   endif//__MESHREPS__
 
 
 

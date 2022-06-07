@@ -53,7 +53,7 @@
 #   include "geometry.hpp"
 
 #   include "aabbtree.hpp"
-#   include "meshtype.hpp"
+#   include "meshreps.hpp"
 
 #   include "interpolate/hfun_base_k.hpp"
 #   include "interpolate/hfun_clip_k.hpp"

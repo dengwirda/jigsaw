@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Aug., 2021
+     * Last updated: 05 Jun., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -73,7 +73,7 @@
     typedef typename
             mesh_type::iptr_type        iptr_type ;
 
-    iptr_type static constexpr min_subit = +1 ;
+    iptr_type static constexpr min_subit = +2 ;
     iptr_type static constexpr max_subit = +8 ;
 
     iptr_type static constexpr
@@ -83,17 +83,28 @@
     iptr_type static constexpr
             real_dims =      pred_type::real_dims ;
 
-    char_type static                // optim. kern. selector
-        constexpr _odt_kern = +1 ;
-    char_type static
-        constexpr _cvt_kern = +2 ;
-    char_type static
-        constexpr _h95_kern = +3 ;
-    char_type static
-        constexpr dqdx_kern = +5 ;
+    typedef char_type                   kern_kind ;
 
-    class   cell_kind {} ;           // dummies for overload
-    class   dual_kind {} ;
+    char_type static                // optm. kern. selector
+        constexpr _odt_optimise = +1 ;
+    char_type static
+        constexpr _cvt_optimise = +2 ;
+    char_type static
+        constexpr _h95_optimise = +3 ;
+    char_type static
+        constexpr dqdx_optimise = +5 ;
+
+    typedef char_type                   flip_kind ;
+
+    flip_kind static                // optm. kern. selector
+        constexpr laguerre_flip = +1 ;
+    flip_kind static
+        constexpr delaunay_flip = +2 ;
+    flip_kind static
+        constexpr topology_flip = +3 ;
+
+    class   cell_kind{} ;           // dummies for overload
+    class   dual_kind{} ;
 
     typedef mesh::iter_params  <
             real_type ,
@@ -108,17 +119,26 @@
     typedef containers
             ::array< real_type >        real_list ;
 
-    class mark_list                  // integer cell markers
+    class mark_list                 // integer cell markers
         {
         public  :
         iptr_list                      _node;
         iptr_list                      _edge;
         iptr_list                      _tri3;
         iptr_list                      _quad;
-        };
+        } ;
 
     typedef typename
         mesh_type::connector            conn_list ;
+
+    class conn_sets
+        {
+        public  :
+        conn_list                      _adj1;
+        iptr_list                      _idx1;
+        conn_list                      _adj2;
+        iptr_list                      _idx2;
+        } ;
 
     public  :
 
@@ -386,6 +406,7 @@
             +std::numeric_limits
                 <real_type>::infinity();
 
+    /*--------------------- compute harmonic averages */
         _good = std::pow(_good, +7./8.);
 
         real_type _msrc, _mdst;
@@ -401,7 +422,7 @@
             std::min(_0src, *_iter) ;
 
             _msrc += std::pow(
-            (real_type)1. / *_iter, +5);
+            (real_type)1. / *_iter, +7);
         }
         for (auto _iter  = _cdst.head(),
                   _tend  = _cdst.tend();
@@ -412,18 +433,18 @@
             std::min(_0dst, *_iter) ;
 
             _mdst += std::pow (
-            (real_type)1. / *_iter, +5);
+            (real_type)1. / *_iter, +7);
         }
 
         _msrc  = std::pow(
-        _csrc.count() / _msrc, +1./5.0);
+        _csrc.count() / _msrc, +1./7.0);
         _mdst  = std::pow(
-        _cdst.count() / _mdst, +1./5.0);
+        _cdst.count() / _mdst, +1./7.0);
 
         _qtol /=
-        std::pow(_csrc.count(), 1./5.0);
+        std::pow(_csrc.count(), 1./7.0);
         _qtol /=
-        std::pow(_cdst.count(), 1./5.0);
+        std::pow(_cdst.count(), 1./7.0);
 
     /*---------------------------- test move = "okay" */
         if (_0dst >= _good)
@@ -611,32 +632,31 @@
         real_list &_hval ,
         iter_opts &_opts ,
         node_iter  _node ,
-        char_type  _kern ,
+        kern_kind  _kern ,
         iptr_type &_move ,
         conn_list &_conn ,
         real_list &_qold ,
         real_list &_qnew ,
         real_type  _QMIN ,
-        real_type  _QLIM
+        real_type  _QLIM ,
+        iter_stat &_tcpu
         )
     {
     /*---------------- try variational; fallback on dQ/dx */
-        real_type _last[geom_dims] =
-            {(real_type) +0.00};
-
         move_kern( _geom, _mesh, _hfun,
-            _hval, _opts, _node, _last,
+            _hval, _opts, _node,
             _kern, _move, _conn,
             _qold, _qnew,
-            _QMIN, _QLIM) ;         // variational
+            _QMIN, _QLIM, _tcpu) ;  // variational
 
         if (_move >= +0 ) return ;
 
         move_kern( _geom, _mesh, _hfun,
-            _hval, _opts, _node, _last,
-        dqdx_kern, _move, _conn,
+            _hval, _opts, _node,
+             dqdx_optimise,
+            _move, _conn,
             _qold, _qnew,
-            _QMIN, _QLIM) ;         // local dQ/dx
+            _QMIN, _QLIM, _tcpu) ;  // local dQ/dx
 
         if (_move >= +0 ) return ;
     }
@@ -652,23 +672,33 @@
         real_list &_hval ,
         iter_opts &_opts ,
         node_iter  _node ,
-        real_type *_last ,
-        char_type  _kern ,
+        kern_kind  _kern ,
         iptr_type &_move ,
         conn_list &_conn ,
         real_list &_qold ,
         real_list &_qnew ,
         real_type  _QMIN ,
-        real_type  _QLIM
+        real_type  _QLIM ,
+        iter_stat &_tcpu
         )
     {
     /*---------------- optimise single node's coordinates */
         iptr_type static
-        constexpr _ITER = (iptr_type) +5  ;
+        constexpr _ITER = (iptr_type) +4  ;
+
+    #   ifdef  __use_timers
+        typename std ::chrono::
+        high_resolution_clock::time_point  _ttic ;
+        typename std ::chrono::
+        high_resolution_clock::time_point  _ttoc ;
+        typename std ::chrono::
+        high_resolution_clock _time ;
+
+        __unreferenced(_time) ; // why does MSVC need this??
+    #   endif//__use_timers
 
         _move = (iptr_type)-1 ;
 
-    /*---------------- calc. line search direction vector */
         real_type _line[geom_dims] =
             {(real_type)+0.0} ;
 
@@ -678,9 +708,15 @@
         real_type _proj[geom_dims] =
             {(real_type)+0.0} ;
 
+    /*---------------- calc. line search direction vector */
+
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
         real_type _ladj = (real_type) +0. ;
 
-        if (_kern == _odt_kern)
+        if (_kern == _odt_optimise)
         {
     /*--------------------------- ODT-style update vector */
             _odt_move_2 (
@@ -689,7 +725,7 @@
                 _line, _ladj) ;
         }
         else
-        if (_kern == _cvt_kern)
+        if (_kern == _cvt_optimise)
         {
     /*--------------------------- CVT-style update vector */
             _cvt_move_2 (
@@ -698,7 +734,7 @@
                 _line, _ladj) ;
         }
         else
-        if (_kern == dqdx_kern)
+        if (_kern == dqdx_optimise)
         {
             if (_QMIN<=_QLIM)
             {
@@ -710,6 +746,11 @@
             else { return ; }
         }
 
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;
+        _tcpu._ldir_node += _tcpu.nano_span(_ttic, _ttoc) ;
+    #   endif//__use_timers
+
     /*---------------- scale line search direction vector */
         real_type _xeps =           // delta_x ~= 0.0
        (real_type)+0.01*_opts.qtol() ;
@@ -717,7 +758,7 @@
         real_type _xtol =           // delta_x reltol
        +std::sqrt(_opts.qtol()) / +10.0  ;
 
-        if (_kern == dqdx_kern)     // test cost-only
+        if (_kern == dqdx_optimise) // test cost-only
         {
             _QLIM  =
        +std::numeric_limits<real_type>::infinity() ;
@@ -730,41 +771,25 @@
         _xeps = std::pow(_xeps, 2) ;
         _xtol = std::pow(_xtol, 2) ;
 
-        real_type _SCAL[_ITER] = {  // overrelaxation
-            (real_type) std::sqrt( 2.0 ) ,
-            (real_type) +1.00,
-            (real_type) +0.50,
-            (real_type) +0.25,
-            (real_type) +.125  } ;
+        real_type _scal =           // overrelaxation
+            (real_type) std::sqrt( 2.0 ) ;
 
     /*---------------- do backtracking line search iter's */
 
-        if (_kern == dqdx_kern)     // "relax" dQ./dx
-        {
-        real_type _BIAS =
-            (real_type) std::sqrt( 0.5 ) ;
-
-        for (auto _idim =
-        pred_type::geom_dims; _idim-- != +0; )
-        {
-            _line[_idim] =
-           (+0. + _BIAS) * _line [_idim] +
-           (+1. - _BIAS) * _last [_idim] ;
-        }
-        }
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
 
         for (auto _idim =
         pred_type::geom_dims; _idim-- != +0; )
         {
             _save[_idim] = _ppos [_idim] ;
-            _last[_idim] = _line [_idim] ;
         }
 
         for (auto _iter = +0 ;
                 _iter != _ITER; ++_iter )
         {
     /*---------------- push update along search direction */
-            real_type _scal  = _SCAL[_iter] ;
             for (auto _idim  =
             pred_type::geom_dims; _idim-- != +0; )
             {
@@ -792,6 +817,8 @@
 
           //_move  = +1 ; return ;
 
+            _scal *= (real_type)+0.5 ;
+
     /*---------------- test quasi-monotonicity w.r.t. Q^T */
             _qnew.set_count(0) ;
 
@@ -814,6 +841,11 @@
                 _ppos[_idim] = _save[_idim] ;
             }
         }
+
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;
+        _tcpu._lopt_node += _tcpu.nano_span(_ttic, _ttoc) ;
+    #   endif//__use_timers
 
     }
 
@@ -841,12 +873,24 @@
         real_list &_dold ,
         real_list &_dnew ,
         real_type  _DMIN ,
-        real_type  _DLIM
+        real_type  _DLIM ,
+        iter_stat &_tcpu
         )
     {
     /*---------------- optimise single node's coordinates */
         iptr_type static
-        constexpr _ITER = (iptr_type) +5  ;
+        constexpr _ITER = (iptr_type) +4  ;
+
+    #   ifdef  __use_timers
+        typename std ::chrono::
+        high_resolution_clock::time_point  _ttic ;
+        typename std ::chrono::
+        high_resolution_clock::time_point  _ttoc ;
+        typename std ::chrono::
+        high_resolution_clock _time ;
+
+        __unreferenced(_time) ; // why does MSVC need this??
+    #   endif//__use_timers
 
         __unreferenced(_geom);
         __unreferenced(_hfun);
@@ -857,6 +901,11 @@
         real_type _wadj, _step, _save;
 
     /*---------------- calc. line search direction vector */
+
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
         if (_DMIN <= _DLIM)
         {
             dqdw_move_2 (
@@ -865,26 +914,30 @@
         }
         else { return ; }
 
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;
+        _tcpu._ldir_dual += _tcpu.nano_span(_ttic, _ttoc) ;
+    #   endif//__use_timers
+
     /*---------------- scale line search direction vector */
         real_type _weps =           // delta_w ~= 0.0
-            (real_type) .01*_opts.qtol();
+            (real_type) .01*_opts.qtol() ;
 
         _save = _node->pval(
             pred_type::real_dims - 1);
 
-        real_type _SCAL[_ITER] = {  // overrelaxation
-            (real_type) std::sqrt( 2.0 ),
-            (real_type) +1.00,
-            (real_type) +0.50,
-            (real_type) +0.25,
-            (real_type) +.125  } ;
+        real_type _scal =           // overrelaxation
+            (real_type) std::sqrt( 2.0 ) ;
 
     /*---------------- do backtracking line search iter's */
+
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
 
         for (auto _iter = +0 ;
                 _iter != _ITER; ++_iter )
         {
-            real_type _scal(_SCAL[_iter]) ;
             _node->pval(real_dims-1) =
                 _save + ( _scal * _step ) ;
 
@@ -903,6 +956,8 @@
             if (_wmov <=
             _weps * _scal * _wadj) break;
 
+            _scal *= (real_type)+0.5 ;
+
     /*---------------- test quasi-monotonicity w.r.t. Q^D */
             _dnew.set_count(0) ;
 
@@ -910,7 +965,7 @@
                  dual_kind ()) ;
 
             move_okay( _dnew, _dold, _move,
-                +1.  , _opts.qtol()) ;
+                _DLIM, _opts.qtol()) ;
 
             if (_move >= +0) break ;
         }
@@ -921,6 +976,71 @@
             _node->pval(real_dims-1) = _save ;
         }
 
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;
+        _tcpu._lopt_dual += _tcpu.nano_span(_ttic, _ttoc) ;
+    #   endif//__use_timers
+
+    }
+
+    /*
+    --------------------------------------------------------
+     * PULL-CONN: cache node-to-cell adjacency lists.
+    --------------------------------------------------------
+     */
+
+    __static_call
+    __normal_call void_type pull_conn (
+        mesh_type &_mesh ,
+        conn_sets &_conn
+        )
+    {
+        _conn._adj1.set_count( +0 ) ;
+        _conn._idx1.set_count(
+            _mesh.node().count() + 1,
+                containers::tight_alloc , +0 ) ;
+
+        _conn._adj2.set_count( +0 ) ;
+        _conn._idx2.set_count(
+            _mesh.node().count() + 1,
+                containers::tight_alloc , +0 ) ;
+
+        _conn._adj1.set_alloc(
+            _mesh.edge().count() * 2) ;
+        _conn._adj2.set_alloc(
+            _mesh.tri3().count() * 3 +
+            _mesh.quad().count() * 4) ;
+
+        iptr_type _npos  = +0 ;
+        for (auto _node  = _mesh.node().head() ;
+                  _node != _mesh.node().tend() ;
+                ++_node, ++_npos)
+        {
+        if (_node->mark() >= + 0)
+        {
+    /*-------------------- append adj. lists per node */
+            _mesh.connect_1(
+            _npos, POINT_tag, _conn._adj1) ;
+
+            _conn._idx1[_npos+1] =
+                _conn._adj1.count() ;
+
+            _mesh.connect_2(
+            _npos, POINT_tag, _conn._adj2) ;
+
+            _conn._idx2[_npos+1] =
+                _conn._adj2.count() ;
+        }
+        else
+        {
+    /*-------------------- empty lists for null nodes */
+            _conn._idx1[_npos+1] =
+                _conn._idx1[ _npos] ;
+
+            _conn._idx2[_npos+1] =
+                _conn._idx2[ _npos] ;
+        }
+        }
     }
 
     /*
@@ -932,12 +1052,15 @@
     __static_call
     __normal_call void_type sort_node (
         mesh_type &_mesh ,
-        iptr_list &_nset ,
+        conn_sets &_CONN ,
+        iptr_list &_lset ,
         iptr_list &_aset ,
         iptr_list &_nmrk ,
         iptr_list &_amrk ,
         iptr_type  _iout ,
         iptr_type  _isub ,
+        real_type  _QLIM ,
+        real_type  _DLIM ,
         iter_opts &_opts
         )
     {
@@ -996,10 +1119,10 @@
 
         real_list _qbar, _qmin ;
         iptr_list _nadj ;
-        conn_list _conn ;
         cost_list _sset ;
 
-        __unreferenced(_opts) ;
+        __unreferenced ( _DLIM ) ;
+        __unreferenced ( _opts ) ;
 
         if (_isub == (iptr_type) +0)
         {
@@ -1007,14 +1130,17 @@
         _qbar.set_count(
             _mesh.node().count(),
                 containers::tight_alloc, +0.0) ;
-
         _qmin.set_count(
             _mesh.node().count(),
                 containers::tight_alloc, +1.0) ;
-
         _nadj.set_count(
             _mesh.node().count(),
                 containers::tight_alloc, + 0 ) ;
+
+        _sset.set_alloc(
+            _mesh.node().count())  ;
+
+        pull_conn(_mesh, _CONN) ;
 
         for (auto _tria  = _mesh.tri3().head() ;
                   _tria != _mesh.tri3().tend() ;
@@ -1107,8 +1233,7 @@
                            _sset.tend() ,
             cost_pred () ) ;
 
-        iptr_type _FLAG  =
-            _iout - (1 * max_subit) / 2 ; // only "recent"
+        iptr_type _FLAG  = _iout - 2 ; // only "recent"
 
         for (auto _iter  = _sset.head() ;
                   _iter != _sset.tend() ;
@@ -1116,7 +1241,8 @@
         {
     /*------------------------ push sorted wrt. min.-cost */
             if (std::abs(
-            _nmrk[_iter->_node]) >= _FLAG )
+            _nmrk[_iter->_node]) >= _FLAG || // recent
+            _qmin[_iter->_node]  <= _QLIM )  // skewed
             {
             _amrk[_iter->_node]   = _isub ;
             _aset.push_tail( _iter->_node ) ;
@@ -1127,25 +1253,24 @@
         else
         {
     /*-------------------- NTH sub-iter: init. from prev. */
-        for (auto _iter  = _nset.head() ;
-                  _iter != _nset.tend() ;
+        for (auto _iter  = _lset.head() ;
+                  _iter != _lset.tend() ;
                 ++_iter  )
         {
                 PUSHCONN( *_iter )
-        }
         }
 
     /*-------------------- add adj.: 1-ring neighbourhood */
         for (auto _iter =
             _aset.count() ; _iter-- != 0; )
         {
-        /*-------------------- push any 1-cell neighbours */
-            _conn.set_count(0) ;
-            _mesh.connect_1(
-               &_aset[_iter], POINT_tag, _conn) ;
+             auto _apos =   _aset [_iter] ;
 
-            for (auto _next  = _conn.head();
-                      _next != _conn.tend();
+        /*-------------------- push any 1-cell neighbours */
+            for (auto _next  =
+            _CONN._adj1.head()+_CONN._idx1[_apos+0] ;
+                      _next !=
+            _CONN._adj1.head()+_CONN._idx1[_apos+1] ;
                     ++_next  )
             {
             if (_next->_kind == EDGE2_tag)
@@ -1159,12 +1284,10 @@
             }
 
         /*-------------------- push any 2-cell neighbours */
-            _conn.set_count(0) ;
-            _mesh.connect_2(
-               &_aset[_iter], POINT_tag, _conn) ;
-
-            for (auto _next  = _conn.head();
-                      _next != _conn.tend();
+            for (auto _next  =
+            _CONN._adj2.head()+_CONN._idx2[_apos+0] ;
+                      _next !=
+            _CONN._adj2.head()+_CONN._idx2[_apos+1] ;
                     ++_next  )
             {
             if (_next->_kind == TRIA3_tag)
@@ -1190,6 +1313,7 @@
             }
         }
 
+        }
     #   undef   PUSHCOST
     #   undef   PUSHSORT
     #   undef   PUSHCONN
@@ -1205,17 +1329,22 @@
     __normal_call void_type move_node (
         geom_type &_geom ,
         mesh_type &_mesh ,
+        conn_sets &_CONN ,
         hfun_type &_hfun ,
         char_type  _kern ,
         real_list &_hval ,
         iptr_list &_nset ,
+        iptr_list &_lset ,
+        iptr_list &_aset ,
         iptr_list &_amrk ,
         mark_list &_mark ,
         iptr_type  _iout ,
         iptr_type  _isub ,
         iter_opts &_opts ,
         iptr_type &_nmov ,
-        real_type  _QLIM
+        real_type  _QLIM ,
+        real_type  _DLIM ,
+        iter_stat &_tcpu
         )
     {
     #   define MARK(_NODE) _mark._node[_NODE]
@@ -1230,19 +1359,48 @@
 
     #   define ITER(_PASS)(_PASS == +0 ? +1 : -1)
 
-        iptr_list _aset;
         conn_list _conn;
         real_list _qold, _qnew, _dold, _dnew;
 
-    /*-------------------- permute nodes for optimisation */
-        sort_node(_mesh, _nset, _aset,
-            _mark._node, _amrk, _iout, _isub,
-            _opts) ;
+    #   ifdef  __use_timers
+        typename std ::chrono::
+        high_resolution_clock::time_point  _ttic;
+        typename std ::chrono::
+        high_resolution_clock::time_point  _ttoc;
+        typename std ::chrono::
+        high_resolution_clock _time ;
 
-        _nmov = (iptr_type) +0;
+        __unreferenced(_time) ; // why does MSVC need this??
+    #   endif//__use_timers
+
+    /*-------------------- permute nodes for optimisation */
+
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
+        _aset.set_count(+0) ;
+
+        sort_node(_mesh, _CONN, _lset, _aset,
+            _mark._node, _amrk, _iout, _isub,
+            _QLIM,_DLIM, _opts) ;
+
+        _nmov = (iptr_type)0;
+
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;
+        _tcpu._init_node += _tcpu.time_span(_ttic, _ttoc) ;
+    #   endif//__use_timers
 
     /*-------------------- SYMMETRIC GAUSS-SEIDEL on CELL */
-        if (_opts .tria())
+
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
+        _lset.set_count(+0) ;
+
+        if (_opts .tria())  // 1=>GS, 2=>SGS
         {
         for (auto _pass  = 0; _pass < 2; ++_pass)
         for (auto _apos  = HEAD(_pass) ;
@@ -1254,8 +1412,10 @@
 
         /*---------------- assemble a local tria. stencil */
             _conn.set_count( +0) ;
-            _mesh.connect_2(
-                &*_apos, POINT_tag, _conn);
+            _conn.push_tail(
+            _CONN._adj2.head()+_CONN._idx2[*_apos+0],
+            _CONN._adj2.head()+_CONN._idx2[*_apos+1]
+                ) ;
 
             if (_conn.empty()) continue ;
 
@@ -1279,7 +1439,7 @@
                     _opts, _node, _kern,
                     _move, _conn,
                     _qold, _qnew,
-                    _QMIN, _QLIM )  ;
+                    _QMIN, _QLIM, _tcpu) ;
             }
 
             if (_move > +0 )
@@ -1288,7 +1448,7 @@
             _hval[*_apos] = (real_type)-1;
 
             if (std::abs(
-               MARK( *_apos )) != _iout)
+                MARK( *_apos )) !=_iout)
             {
                 if (MARK( *_apos ) >= 0)
                 MARK( *_apos ) = +_iout;
@@ -1298,11 +1458,19 @@
                 _nset.push_tail (*_apos) ;
             }
 
+            _lset.push_tail (*_apos) ;
+
             _nmov += +1 ;
             }
             }
         }
         }
+
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;
+        _tcpu._core_node += _tcpu.time_span(_ttic, _ttoc) ;
+    #   endif//__use_timers
+
     #   undef   MARK
     #   undef   HEAD
     #   undef   STOP
@@ -1319,16 +1487,21 @@
     __normal_call void_type move_dual (
         geom_type &_geom ,
         mesh_type &_mesh ,
+        conn_sets &_CONN ,
         hfun_type &_hfun ,
         real_list &_hval ,
         iptr_list &_nset ,
+        iptr_list &_lset ,
+        iptr_list &_aset ,
         iptr_list &_amrk ,
         mark_list &_mark ,
         iptr_type  _iout ,
         iptr_type  _isub ,
         iter_opts &_opts ,
         iptr_type &_nmov ,
-        real_type  _DLIM
+        real_type  _QLIM ,
+        real_type  _DLIM ,
+        iter_stat &_tcpu
         )
     {
     #   define MARK(_NODE) _mark._node[_NODE]
@@ -1343,19 +1516,48 @@
 
     #   define ITER(_PASS)(_PASS == +0 ? +1 : -1)
 
-        iptr_list _aset;
         conn_list _conn;
         real_list _qold, _qnew, _dold, _dnew;
 
-    /*-------------------- permute nodes for optimisation */
-        sort_node(_mesh, _nset, _aset,
-            _mark._node, _amrk, _iout, _isub,
-            _opts) ;
+    #   ifdef  __use_timers
+        typename std ::chrono::
+        high_resolution_clock::time_point  _ttic ;
+        typename std ::chrono::
+        high_resolution_clock::time_point  _ttoc ;
+        typename std ::chrono::
+        high_resolution_clock _time ;
 
-        _nmov = (iptr_type) +0;
+        __unreferenced(_time) ; // why does MSVC need this??
+    #   endif//__use_timers
+
+    /*-------------------- permute nodes for optimisation */
+
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
+        _aset.set_count(+0) ;
+
+        sort_node(_mesh, _CONN, _lset, _aset,
+            _mark._node, _amrk, _iout, _isub,
+            _QLIM,_DLIM, _opts) ;
+
+        _nmov = (iptr_type)0;
+
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;
+        _tcpu._init_dual += _tcpu.time_span(_ttic, _ttoc) ;
+    #   endif//__use_timers
 
     /*-------------------- SYMMETRIC GAUSS-SEIDEL on DUAL */
-        if (_opts .dual())
+
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
+        _lset.set_count(+0) ;
+
+        if (_opts .dual())  // 1=>GS, 2=>SGS
         {
         for (auto _pass  = 0; _pass < 2; ++_pass)
         for (auto _apos  = HEAD(_pass) ;
@@ -1367,8 +1569,10 @@
 
         /*---------------- assemble a local tria. stencil */
             _conn.set_count( +0) ;
-            _mesh.connect_2(
-                &*_apos, POINT_tag, _conn);
+            _conn.push_tail(
+            _CONN._adj2.head()+_CONN._idx2[*_apos+0],
+            _CONN._adj2.head()+_CONN._idx2[*_apos+1]
+                ) ;
 
             if (_conn.empty()) continue ;
 
@@ -1390,14 +1594,14 @@
                     _opts, _node,
                     _move, _conn,
                     _dold, _dnew,
-                    _DMIN, _DLIM ) ;
+                    _DMIN, _DLIM, _tcpu) ;
             }
 
             if (_move > +0 )
             {
         /*---------------- update when state is improving */
             if (std::abs(
-               MARK( *_apos )) != _iout)
+                MARK( *_apos )) !=_iout)
             {
                 if (MARK( *_apos ) >= 0)
                 MARK( *_apos ) = +_iout;
@@ -1407,10 +1611,18 @@
                 _nset.push_tail (*_apos) ;
             }
 
+            _lset.push_tail(*_apos) ;
+
             _nmov += +1 ;
             }
         }
         }
+
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;
+        _tcpu._core_dual += _tcpu.time_span(_ttic, _ttoc) ;
+    #   endif//__use_timers
+
     #   undef   MARK
     #   undef   HEAD
     #   undef   STOP
@@ -1445,22 +1657,20 @@
         init_mark(_mesh, _mark ,
             std::max(+0, _imrk - 1) ) ;
 
-        __unreferenced ( _hfun);
+        _nflp = +0 ;
+
+        conn_list _flip, _conn ;
 
     /*--------------------- init. flip stack as ADJ(NSET) */
-        conn_list _flip, _next ;
-        conn_list _conn, _CONN ;
-        real_list _qold, _qnew ;
-
         for (auto _iter  = _nset.head();
                   _iter != _nset.tend();
                 ++_iter  )
         {
-            if (_mesh.node(*_iter).mark() >= +0)
+            if (_mesh.node(*_iter).mark() >= 0)
             {
                 _conn.set_count(0);
                 _mesh.connect_2(
-                    &*_iter, POINT_tag, _conn);
+                  &*_iter, POINT_tag, _conn) ;
 
                 for (auto _cell  = _conn.head();
                           _cell != _conn.tend();
@@ -1470,8 +1680,9 @@
                 {
                 if (MARKTRI3( _cell ) != _imrk)
                 {
-                    MARKTRI3( _cell )  = _imrk;
-                    _flip.push_tail(*_cell) ;
+                    MARKTRI3( _cell )  = _imrk ;
+
+                    _flip.push_tail( *_cell) ;
                 }
                 }
                 else
@@ -1479,17 +1690,105 @@
                 {
                 if (MARKQUAD( _cell ) != _imrk)
                 {
-                    MARKQUAD( _cell )  = _imrk;
-                    _flip.push_tail(*_cell) ;
+                    MARKQUAD( _cell )  = _imrk ;
+
+                    _flip.push_tail( *_cell) ;
                 }
                 }
                 }
             }
         }
 
-    /*--------------------- exhaustive, incremental flips */
+        flip_core(_geom, _mesh, _hfun, _flip, _mark,
+            _nflp) ;
+
+    #   undef   MARKQUAD
+    #   undef   MARKTRI3
+    }
+
+    __static_call
+    __normal_call void_type flip_mesh (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        hfun_type &_hfun ,
+        conn_sets &_CONN ,
+        iptr_list &_nset ,
+        mark_list &_mark ,
+        iptr_type  _imrk ,
+        iptr_type &_nflp
+        )
+    {
+    #   define MARKTRI3(_CELL) \
+                _mark._tri3[_CELL->_cell]
+
+    #   define MARKQUAD(_CELL) \
+                _mark._quad[_CELL->_cell]
+
+        init_mark(_mesh, _mark ,
+            std::max(+0, _imrk - 1) ) ;
+
         _nflp = +0 ;
 
+        conn_list _flip  ;
+
+    /*--------------------- init. flip stack as ADJ(NSET) */
+        for (auto _iter  = _nset.head();
+                  _iter != _nset.tend();
+                ++_iter  )
+        {
+            if (_mesh.node(*_iter).mark() >= 0)
+            {
+                for (auto _cell  =
+            _CONN._adj2.head()+_CONN._idx2[*_iter+0] ;
+                          _cell !=
+            _CONN._adj2.head()+_CONN._idx2[*_iter+1] ;
+                        ++_cell  )
+                {
+                if (_cell->_kind == TRIA3_tag)
+                {
+                if (MARKTRI3( _cell ) != _imrk)
+                {
+                    MARKTRI3( _cell )  = _imrk ;
+
+                    _flip.push_tail( *_cell) ;
+                }
+                }
+                else
+                if (_cell->_kind == QUAD4_tag)
+                {
+                if (MARKQUAD( _cell ) != _imrk)
+                {
+                    MARKQUAD( _cell )  = _imrk ;
+
+                    _flip.push_tail( *_cell) ;
+                }
+                }
+                }
+            }
+        }
+
+        flip_core(_geom, _mesh, _hfun, _flip, _mark,
+            _nflp) ;
+
+    #   undef   MARKQUAD
+    #   undef   MARKTRI3
+    }
+
+    __static_call
+    __normal_call void_type flip_core (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        hfun_type &_hfun ,
+        conn_list &_flip ,
+        mark_list &_mark ,
+        iptr_type &_nflp
+        )
+    {
+        __unreferenced ( _hfun ) ;
+
+    /*--------------------- exhaustive, incremental flips */
+        conn_list _next, _conn, _CONN;
+        real_list _qold, _qnew ;
         for ( ; !_flip.empty() ; )
         {
         for (auto _cell  = _flip.head();
@@ -1502,20 +1801,17 @@
                 tri3(_cell->_cell).mark() >= +0)
             {
                 bool_type  _okay = false ;
-
                 flip_tri3( _geom, _mesh,
+                    _mark. _node,
                     _cell->_cell,
                     _okay, _conn, _CONN,
-                    _qold, _qnew );
+                    _qold, _qnew,
+               (flip_kind)laguerre_flip) ;
 
                 if (_okay) _nflp += +1 ;
 
-                for (auto _iter  = _CONN.head();
-                          _iter != _CONN.tend();
-                        ++_iter  )
-                {
-                    _next. push_tail(*_iter) ;
-                }
+                _next.push_tail(
+                    _CONN.head(), _CONN.tend());
             }
             }
             else
@@ -1525,28 +1821,22 @@
                 quad(_cell->_cell).mark() >= +0)
             {
                 bool_type  _okay = false ;
-
               //flip_quad( _geom, _mesh,
+              //    _mark. _node,
               //    _cell->_cell,
               //    _okay, _conn, _CONN,
-              //    _qold, _qnew );
+              //    _qold, _qnew,
+            // (flip_kind)laguerre_flip) ;
 
                 if (_okay) _nflp += +1 ;
 
-                for (auto _iter  = _CONN.head();
-                          _iter != _CONN.tend();
-                        ++_iter  )
-                {
-                    _next. push_tail(*_iter) ;
-                }
+                _next.push_tail(
+                    _CONN.head(), _CONN.tend());
             }
             }
         }
             _flip = std::move (_next) ;
         }
-
-    #   undef   MARKQUAD
-    #   undef   MARKTRI3
     }
 
     /*
@@ -1572,7 +1862,8 @@
         real_type  _QLIM ,
         real_type  _DLIM ,
         iptr_type &_nzip ,
-        iptr_type &_ndiv
+        iptr_type &_ndiv ,
+        iter_stat &_tcpu
         )
     {
         class sort_pair
@@ -1637,6 +1928,9 @@
 
     //  assemble list of edges attached to "recent" nodes
 
+        _sort.set_alloc(
+            _mesh.edge().count()) ;
+
         for (auto _iter  = _mesh.edge().head() ;
                   _iter != _mesh.edge().tend() ;
                 ++_iter  )
@@ -1649,13 +1943,13 @@
              auto _jptr = _mesh.
              node().head()+_iter->node(1) ;
 
-             auto _flag = (1 * max_subit) / 2 ; // recent
+             auto _flag = _imrk - 2 ; // recent
 
             if (_iter->mark() >= +0 &&
-               (    std::abs (
-            _mark._node[_inod]) > _imrk - _flag ||
-                    std::abs (
-            _mark._node[_jnod]) > _imrk - _flag ))
+               (    std::abs(
+                _mark._node[_inod]) > _flag ||
+                    std::abs(
+                _mark._node[_jnod]) > _flag ))
             {
                 float _lsqr  =
                (float)pred_type::length_sq (
@@ -1699,7 +1993,7 @@
     /*--------------------------- "div" for topo. + score */
                 iptr_type  _nnew = -1;
 
-                bool_type  _move;
+                bool_type  _move = false ;
                 _div_edge( _geom, _mesh,
                     _hfun, _hval, _opts,
                     _imrk, _eadj,
@@ -1707,7 +2001,7 @@
                     _iset, _jset,
                     _aset, _bset,
                     _qold, _qnew,
-                    _qtmp, _QLIM) ;
+                    _qtmp, _QLIM, _tcpu) ;
 
                 if (_move)
                 {
@@ -1742,15 +2036,16 @@
     /*--------------------------- "zip" for topo. + score */
                 iptr_type  _nnew = -1;
 
-                bool_type  _move;
+                bool_type  _move = false ;
                 _zip_edge( _geom, _mesh,
                     _hfun, _hval, _opts,
+                    _mark. _node,
                     _imrk, _eadj,
                     _kern, _move, _nnew,
                     _iset, _jset,
                     _aset, _bset, _cset,
                     _qold, _qnew,
-                    _qtmp, _QLIM) ;
+                    _qtmp, _QLIM, _tcpu) ;
 
                 if (_move)
                 {
@@ -1828,7 +2123,7 @@
         geom_type &_geom ,
         hfun_type &_hfun ,
         mesh_type &_mesh ,
-        char_type  _kern ,
+        kern_kind  _kern ,
         iter_opts &_opts ,
         text_dump &_dump
         )
@@ -1988,11 +2283,6 @@
                 _mesh. node().count(),
         containers::tight_alloc, (real_type)-1.);
 
-            iptr_list _amrk;
-            _amrk.set_count(
-                _mesh. node().count(),
-        containers::tight_alloc, (iptr_type)-1 );
-
             _nset.set_count(  +0);
 
             iptr_type _nmov = +0 ;
@@ -2008,16 +2298,15 @@
             _nsub =
             std::max(ITER_MIN_, _nsub) ;
 
+            real_type _DLIM =
+           (real_type)+1.-_opts.qtol() ;
+
             real_type _QLIM =
            (real_type)+.750 * _QMIN +
            (real_type)+.075 * _iter ;
 
             _QLIM = std::min(
-                _opts.qlim(), _QLIM);
-
-            real_type _DLIM =
-                (real_type)(1. -
-            .5 * std::pow(1.0-_QLIM, +2)) ;
+                _opts.qlim () , _QLIM) ;
 
     /*------------------------------ 1. CELL GEOM. PASSES */
 
@@ -2028,30 +2317,41 @@
             _ttic = _time.now() ;
     #       endif//__use_timers
 
+            iptr_list _amrk, _aset, _lset ;
+            _amrk.set_count(
+                _mesh.node().count() ,
+                    containers::tight_alloc,-1) ;
+
+            _lset.set_alloc(
+                _mesh.node().count()) ;
+            _aset.set_alloc(
+                _mesh.node().count()) ;
+
+            conn_sets _conn ;
             for (auto _isub = + 0 ;
-                _isub != _nsub/1; ++_isub )
+                _isub != _nsub; ++_isub )
             {
                 if (_opts.verb() >= +3)
                     _dump.push(
                 "**CALL MOVE-NODE...\n" ) ;
 
                 iptr_type  _nloc;
-                move_node( _geom, _mesh ,
+                move_node( _geom, _mesh , _conn ,
                     _hfun, _kern, _hval ,
-                    _nset, _amrk, _mark ,
-                    _iter, _isub,
-                    _opts, _nloc, _QLIM ) ;
+                    _nset, _lset, _aset ,
+                    _amrk, _mark,
+                    _iter, _isub, _opts ,
+                    _nloc, _QLIM, _DLIM , _tcpu);
 
                 _nloc = _nloc / 2 ;
 
-                _nmov = std::max (_nmov ,
-                                  _nloc ) ;
+                _nmov = std::max (_nmov , _nloc);
             }
 
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
             _tcpu._move_node +=
-                _tcpu.time_span(_ttic, _ttoc);
+                  _tcpu.time_span(_ttic , _ttoc);
     #       endif//__use_timers
 
     /*------------------------------ update mesh topology */
@@ -2066,8 +2366,8 @@
                 "**CALL FLIP-MESH...\n" ) ;
 
                 iptr_type  _nloc;
-                flip_mesh( _geom, _mesh ,
-                    _hfun, _nset, _mark ,
+                flip_mesh( _geom, _mesh , _hfun ,
+                    _conn, _nset, _mark ,
                 +3 * _iter - 2  , _nloc ) ;
 
                 _nflp +=   _nloc;
@@ -2076,7 +2376,7 @@
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
             _tcpu._topo_flip +=
-                _tcpu.time_span(_ttic, _ttoc);
+                  _tcpu.time_span(_ttic , _ttoc);
     #       endif//__use_timers
             }
 
@@ -2089,32 +2389,43 @@
             _ttic = _time.now() ;
     #       endif//__use_timers
 
-            _amrk.fill( -1 );
+            iptr_list _amrk, _lset, _aset ;
+            _amrk.set_count(
+                _mesh.node().count() ,
+                    containers::tight_alloc,-1) ;
 
+            _lset.set_alloc(
+                _mesh.node().count()) ;
+            _aset.set_alloc(
+                _mesh.node().count()) ;
+
+            _nsub = std::max(_nsub/2, +1) ;
+
+            conn_sets _conn ;
             for (auto _isub = + 0 ;
-                _isub != _nsub/2; ++_isub )
+                _isub != _nsub; ++_isub )
             {
                 if (_opts.verb() >= +3)
                     _dump.push(
                 "**CALL MOVE-DUAL...\n" ) ;
 
                 iptr_type  _nloc;
-                move_dual( _geom, _mesh ,
+                move_dual( _geom, _mesh , _conn ,
                     _hfun, _hval,
-                    _nset, _amrk, _mark ,
-                    _iter, _isub,
-                    _opts, _nloc, _DLIM ) ;
+                    _nset, _lset, _aset ,
+                    _amrk, _mark,
+                    _iter, _isub, _opts ,
+                    _nloc, _QLIM, _DLIM , _tcpu);
 
                 _nloc = _nloc / 2 ;
 
-                _nmov = std::max (_nmov ,
-                                  _nloc ) ;
+                _nmov = std::max (_nmov , _nloc);
             }
 
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
             _tcpu._move_dual +=
-                _tcpu.time_span(_ttic, _ttoc);
+                  _tcpu.time_span(_ttic , _ttoc);
     #       endif//__use_timers
 
     /*------------------------------ update mesh topology */
@@ -2129,8 +2440,8 @@
                 "**CALL FLIP-MESH...\n" ) ;
 
                 iptr_type  _nloc;
-                flip_mesh( _geom, _mesh ,
-                    _hfun, _nset, _mark ,
+                flip_mesh( _geom, _mesh , _hfun ,
+                    _conn, _nset, _mark ,
                 +3 * _iter - 1  , _nloc ) ;
 
                 _nflp +=   _nloc;
@@ -2139,7 +2450,7 @@
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
             _tcpu._topo_flip +=
-                _tcpu.time_span(_ttic, _ttoc);
+                  _tcpu.time_span(_ttic , _ttoc);
     #       endif//__use_timers
 
             }
@@ -2162,18 +2473,17 @@
                     _dump.push(
                 "**CALL _ZIP-MESH...\n" ) ;
 
-                _zip_mesh( _geom, _mesh ,
-                    _hfun, _kern,
-                    _hval, _nset,
+                _zip_mesh( _geom, _mesh , _hfun ,
+                    _kern, _hval, _nset ,
                     _mark, _iter, _opts ,
                     _QLIM, _DLIM,
-                    _nzip, _ndiv) ;
+                    _nzip, _ndiv, _tcpu ) ;
             }
 
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
             _tcpu._topo_zips +=
-                _tcpu.time_span(_ttic, _ttoc);
+                  _tcpu.time_span(_ttic , _ttoc);
     #       endif//__use_timers
 
     /*------------------------------ update mesh topology */
@@ -2189,8 +2499,8 @@
                 "**CALL FLIP-MESH...\n" ) ;
 
                 iptr_type  _nloc;
-                flip_mesh( _geom, _mesh ,
-                    _hfun, _nset, _mark ,
+                flip_mesh( _geom, _mesh , _hfun ,
+                    _nset, _mark,
                 +3 * _iter - 0  , _nloc ) ;
 
                 _nflp +=   _nloc;
@@ -2199,7 +2509,7 @@
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
             _tcpu._topo_flip +=
-                _tcpu.time_span(_ttic, _ttoc);
+                  _tcpu.time_span(_ttic , _ttoc);
     #       endif//__use_timers
 
             } // if (_iter < _opts.iter())
@@ -2228,19 +2538,49 @@
         {
     /*------------------------------ print method metrics */
             _dump.push("\n");
-
-            _dump.push("**FUNCTION timing: ") ;
-            _dump.push("\n");
+            _dump.push("**TIMING statistics...\n") ;
 
             _dump.push("  MOVE-NODE: ");
             _dump.push(
             std::to_string(_tcpu._move_node)) ;
             _dump.push("\n");
+            _dump.push(" *init-node: ");
+            _dump.push(
+            std::to_string(_tcpu._init_node)) ;
+            _dump.push("\n");
+            _dump.push(" *core-node: ");
+            _dump.push(
+            std::to_string(_tcpu._core_node)) ;
+            _dump.push("\n");
+            _dump.push(" *xDIR-node: ");
+            _dump.push(
+            std::to_string(_tcpu._ldir_node)) ;
+            _dump.push("\n");
+            _dump.push(" *xOPT-node: ");
+            _dump.push(
+            std::to_string(_tcpu._lopt_node)) ;
+            _dump.push("\n\n");
 
             _dump.push("  MOVE-DUAL: ");
             _dump.push(
             std::to_string(_tcpu._move_dual)) ;
             _dump.push("\n");
+            _dump.push(" *init-dual: ");
+            _dump.push(
+            std::to_string(_tcpu._init_dual)) ;
+            _dump.push("\n");
+            _dump.push(" *core-dual: ");
+            _dump.push(
+            std::to_string(_tcpu._core_dual)) ;
+            _dump.push("\n");
+            _dump.push(" *xDIR-dual: ");
+            _dump.push(
+            std::to_string(_tcpu._ldir_dual)) ;
+            _dump.push("\n");
+            _dump.push(" *xOPT-dual: ");
+            _dump.push(
+            std::to_string(_tcpu._lopt_dual)) ;
+            _dump.push("\n\n");
 
             _dump.push("  TOPO-FLIP: ");
             _dump.push(

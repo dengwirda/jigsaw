@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 March, 2020
+     * Last updated: 01 Sept., 2021
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -47,6 +47,30 @@
 #   define __MESH_COMPLEX_TYPE_K__
 
     namespace mesh {
+
+    /*------------------- helper: cell-to-degree indexing */
+
+    template <
+    typename      iptr_type
+             >
+    __inline_call iptr_type _tag_to_ndeg (
+        iptr_type _cell
+        )
+    {
+        switch (_cell)
+            {
+        case POINT_tag : return +0 ;
+        case EDGE2_tag : return +1 ;
+        case TRIA3_tag : return +2 ;
+        case QUAD4_tag : return +3 ;
+        case TRIA4_tag : return +4 ;
+        case HEXA8_tag : return +5 ;
+        case WEDG6_tag : return +6 ;
+        case PYRA5_tag : return +7 ;
+
+        default: return -1;// suppress compiler warning
+            }
+    }
 
     /*
     --------------------------------------------------------
@@ -69,7 +93,9 @@
     typedef R                 real_type ;
     typedef I                 iptr_type ;
 
-    iptr_type static constexpr _dims = +2 ;
+    iptr_type static constexpr    _dims = +2 ;
+
+    typedef std::uint16_t     ndeg_type ;
 
     containers::
     fixed_array<real_type, +2>    _pval ;  // node coord.'s
@@ -80,7 +106,16 @@
     char                          _mark ;
     char                          _self ;
 
+    containers::
+    fixed_array<ndeg_type, +8>    _ndeg ;
+
     public  :
+/*---------------------------------------- obj. utilities */
+    __inline_call void_type        null (
+        )
+    {   this->_ndeg.fill(0) ;
+    }
+
 /*---------------------------------------- "write" access */
     __inline_call real_type      & pval (
         iptr_type  _ipos
@@ -91,6 +126,12 @@
         iptr_type  _ipos
         )
     {   return this->_ndat [_ipos];
+    }
+
+    __inline_call ndeg_type      & ndeg (
+        iptr_type  _cell
+        )
+    {   return this->_ndeg[_tag_to_ndeg(_cell)] ;
     }
 
     __inline_call char           & mark (
@@ -111,7 +152,13 @@
     __inline_call iptr_type const& node (
         iptr_type  _ipos
         ) const
-    {   return this->_ndat[_ipos];
+    {   return this->_ndat [_ipos];
+    }
+
+    __inline_call ndeg_type const& ndeg (
+        iptr_type  _cell
+        ) const
+    {   return this->_ndeg[_tag_to_ndeg(_cell)] ;
     }
 
     __inline_call char      const& mark (
@@ -146,7 +193,9 @@
     typedef R                 real_type ;
     typedef I                 iptr_type ;
 
-    iptr_type static constexpr _dims = +3 ;
+    typedef std::uint16_t     ndeg_type ;
+
+    iptr_type static constexpr    _dims = +3 ;
 
     containers::
     fixed_array<real_type, +3>    _pval ;  // node coord.'s
@@ -157,7 +206,16 @@
     char                          _mark ;
     char                          _self ;
 
+    containers::
+    fixed_array<ndeg_type, +8>    _ndeg ;
+
     public  :
+/*---------------------------------------- obj. utilities */
+    __inline_call void_type        null (
+        )
+    {   this->_ndeg.fill(0) ;
+    }
+
 /*---------------------------------------- "write" access */
     __inline_call real_type      & pval (
         iptr_type  _ipos
@@ -168,6 +226,12 @@
         iptr_type  _ipos
         )
     {   return this->_ndat [_ipos];
+    }
+
+    __inline_call ndeg_type      & ndeg (
+        iptr_type  _cell
+        )
+    {   return this->_ndeg[_tag_to_ndeg(_cell)] ;
     }
 
     __inline_call char           & mark (
@@ -188,7 +252,13 @@
     __inline_call iptr_type const& node (
         iptr_type  _ipos
         ) const
-    {   return this->_ndat[_ipos];
+    {   return this->_ndat [_ipos];
+    }
+
+    __inline_call ndeg_type const& ndeg (
+        iptr_type  _cell
+        ) const
+    {   return this->_ndeg[_tag_to_ndeg(_cell)] ;
     }
 
     __inline_call char      const& mark (
@@ -223,7 +293,9 @@
     typedef R                 real_type ;
     typedef I                 iptr_type ;
 
-    iptr_type static constexpr _dims = +4 ;
+    typedef std::uint16_t     ndeg_type ;
+
+    iptr_type static constexpr    _dims = +4 ;
 
     containers::
     fixed_array<real_type, +4>    _pval ;  // node coord.'s
@@ -234,7 +306,16 @@
     char                          _mark ;
     char                          _self ;
 
+    containers::
+    fixed_array<ndeg_type, +8>    _ndeg ;
+
     public  :
+/*---------------------------------------- obj. utilities */
+    __inline_call void_type        null (
+        )
+    {   this->_ndeg.fill(0) ;
+    }
+
 /*---------------------------------------- "write" access */
     __inline_call real_type      & pval (
         iptr_type  _ipos
@@ -245,6 +326,12 @@
         iptr_type  _ipos
         )
     {   return this->_ndat [_ipos];
+    }
+
+    __inline_call ndeg_type      & ndeg (
+        iptr_type  _cell
+        )
+    {   return this->_ndeg[_tag_to_ndeg(_cell)] ;
     }
 
     __inline_call char           & mark (
@@ -265,7 +352,13 @@
     __inline_call iptr_type const& node (
         iptr_type  _ipos
         ) const
-    {   return this->_ndat[_ipos];
+    {   return this->_ndat [_ipos];
+    }
+
+    __inline_call ndeg_type const& ndeg (
+        iptr_type  _cell
+        ) const
+    {   return this->_ndeg[_tag_to_ndeg(_cell)] ;
     }
 
     __inline_call char      const& mark (

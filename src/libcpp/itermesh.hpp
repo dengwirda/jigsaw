@@ -51,8 +51,8 @@
 
 #   include "geometry.hpp"
 
-#   include "geomtype.hpp"
-#   include "meshtype.hpp"
+#   include "geomreps.hpp"
+#   include "meshreps.hpp"
 
 #   include "interpolate.hpp"
 
