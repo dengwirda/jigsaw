@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Apr., 2021
+     * Last updated: 06 Jun., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -68,25 +68,22 @@
 
     /*--------------------------------- find GEOM scaling */
         real_type _scal = (real_type) +1. ;
-
-        if (_jcfg._hfun_scal ==
-        jcfg_data::hfun_scal::relative)
-        {
+        real_type _blen = (real_type) +0. ;
 
         if (_geom._ndim == +2 &&
             _geom._kind ==
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-2d */
-            _scal  = (real_type) +0. ;
-            _scal +=
+            _blen  = (real_type) +0. ;
+            _blen +=
         _geom._euclidean_mesh_2d._bmax[0] -
         _geom._euclidean_mesh_2d._bmin[0] ;
-            _scal +=
+            _blen +=
         _geom._euclidean_mesh_2d._bmax[1] -
         _geom._euclidean_mesh_2d._bmin[1] ;
 
-            _scal /= (real_type) +2. ;
+            _blen /= (real_type) +2. ;
         }
         else
         if (_geom._ndim == +3 &&
@@ -94,46 +91,63 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-3d */
-            _scal  = (real_type) +0. ;
-            _scal +=
+            _blen  = (real_type) +0. ;
+            _blen +=
         _geom._euclidean_mesh_3d._bmax[0] -
         _geom._euclidean_mesh_3d._bmin[0] ;
-            _scal +=
+            _blen +=
         _geom._euclidean_mesh_3d._bmax[1] -
         _geom._euclidean_mesh_3d._bmin[1] ;
-            _scal +=
+            _blen +=
         _geom._euclidean_mesh_3d._bmax[2] -
         _geom._euclidean_mesh_3d._bmin[2] ;
 
-            _scal /= (real_type) +3. ;
+            _blen /= (real_type) +3. ;
         }
         else
         if (_geom._kind ==
              jmsh_kind::ellipsoid_mesh)
         {
     /*--------------------------------- ellipsoid-mesh-3d */
-            _scal  = (real_type) +0. ;
-            _scal +=
+            _blen  = (real_type) +0. ;
+            _blen +=
         _geom._ellipsoid_mesh_3d._bmax[0] -
         _geom._ellipsoid_mesh_3d._bmin[0] ;
-            _scal +=
+            _blen +=
         _geom._ellipsoid_mesh_3d._bmax[1] -
         _geom._ellipsoid_mesh_3d._bmin[1] ;
-            _scal +=
+            _blen +=
         _geom._ellipsoid_mesh_3d._bmax[2] -
         _geom._ellipsoid_mesh_3d._bmin[2] ;
 
-            _scal /= (real_type) +3. ;
-        }
-
+            _blen /= (real_type) +3. ;
         }
 
     /*--------------------------------- push GEOM scaling */
+        real_type _hmin , _hmax;
+        if (_jcfg._hfun_scal ==
+        jcfg_data::hfun_scal::relative)
+        {
+            _scal = _blen ;          // swap to abs scale
+            _hmax =
+             std::min( +1.0 , _jcfg._hfun_hmax);
+            _hmin =
+             std::max( +0.0 , _jcfg._hfun_hmin);
+        }
+        else
+        {
+            _hmax =
+             std::min(_blen , _jcfg._hfun_hmax);
+            _hmin =
+             std::max( +0.0 , _jcfg._hfun_hmin);
+        }
+
         if (_hfun._ndim == +0)
         {
     /*--------------------------------- constant-value-kd */
-            _hfun._constant_value_kd.
-                _hval = _scal*_jcfg._hfun_hmax ;
+            _hfun.
+        _constant_value_kd._hval = _scal*_hmax ;
+
         }
         else
         if (_hfun._ndim == +2)
@@ -148,13 +162,12 @@
             _euclidean_mesh_2d._hval.tend();
                 ++_iter  )
         {
-           *_iter*= (fp32_t)  _scal;
+           *_iter*= (fp32_t) _scal ;
 
-           *_iter = std::min(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmax));
-
-           *_iter = std::max(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmin));
+           *_iter = std::min(
+           *_iter, (fp32_t) (_scal * _hmax)) ;
+           *_iter = std::max(
+           *_iter, (fp32_t) (_scal * _hmin)) ;
         }
 
         }
@@ -168,13 +181,12 @@
             _euclidean_grid_2d._hmat.tend();
                 ++_iter  )
         {
-           *_iter*= (fp32_t)  _scal;
+           *_iter*= (fp32_t) _scal ;
 
-           *_iter = std::min(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmax));
-
-           *_iter = std::max(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmin));
+           *_iter = std::min(
+           *_iter, (fp32_t) (_scal * _hmax)) ;
+           *_iter = std::max(
+           *_iter, (fp32_t) (_scal * _hmin)) ;
         }
 
         }
@@ -192,13 +204,12 @@
             _euclidean_mesh_3d._hval.tend();
                 ++_iter  )
         {
-           *_iter*= (fp32_t)  _scal;
+           *_iter*= (fp32_t) _scal ;
 
-           *_iter = std::min(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmax));
-
-           *_iter = std::max(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmin));
+           *_iter = std::min(
+           *_iter, (fp32_t) (_scal * _hmax)) ;
+           *_iter = std::max(
+           *_iter, (fp32_t) (_scal * _hmin)) ;
         }
 
         }
@@ -212,13 +223,12 @@
             _euclidean_grid_3d._hmat.tend();
                 ++_iter  )
         {
-           *_iter*= (fp32_t)  _scal;
+           *_iter*= (fp32_t) _scal ;
 
-           *_iter = std::min(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmax));
-
-           *_iter = std::max(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmin));
+           *_iter = std::min(
+           *_iter, (fp32_t) (_scal * _hmax)) ;
+           *_iter = std::max(
+           *_iter, (fp32_t) (_scal * _hmin)) ;
         }
 
         }
@@ -234,13 +244,12 @@
             _ellipsoid_mesh_3d._hval.tend();
                 ++_iter  )
         {
-           *_iter*= (fp32_t)  _scal;
+           *_iter*= (fp32_t) _scal ;
 
-           *_iter = std::min(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmax));
-
-           *_iter = std::max(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmin));
+           *_iter = std::min(
+           *_iter, (fp32_t) (_scal * _hmax)) ;
+           *_iter = std::max(
+           *_iter, (fp32_t) (_scal * _hmin)) ;
         }
 
         }
@@ -255,13 +264,12 @@
             _ellipsoid_grid_3d._hmat.tend();
                 ++_iter  )
         {
-           *_iter*= (fp32_t)  _scal;
+           *_iter*= (fp32_t) _scal ;
 
-           *_iter = std::min(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmax));
-
-           *_iter = std::max(*_iter,
-        (fp32_t) (_scal *_jcfg._hfun_hmin));
+           *_iter = std::min(
+           *_iter, (fp32_t) (_scal * _hmax)) ;
+           *_iter = std::max(
+           *_iter, (fp32_t) (_scal * _hmin)) ;
         }
 
         }
