@@ -37,7 +37,7 @@ endif ()
 find_path (NETCDF_INCLUDES netcdf.h)
 find_library (NETCDF_LIBRARY NAMES netcdf)
 
-if (DEFINED NETCDF_LIBRARY)
+if (NETCDF_LIBRARY)
   message (">> NetCDF library found")
   message (STATUS "NetCDF inc. dir: ${NETCDF_INCLUDES}")
   message (STATUS "NetCDF inc. lib: ${NETCDF_LIBRARY}")
@@ -47,7 +47,7 @@ endif ()
 
 
 add_executable (jigsaw-cmd jigsaw.cpp)
-if (DEFINED NETCDF_LIBRARY)
+if (NETCDF_LIBRARY)
   target_compile_definitions (jigsaw-cmd PRIVATE CMD_JIGSAW USE_NETCDF)
   target_link_libraries (jigsaw-cmd netcdf)
 else ()
@@ -63,7 +63,7 @@ endif ()
 
 
 add_executable (tripod-cmd jigsaw.cpp)
-if (DEFINED NETCDF_LIBRARY)
+if (NETCDF_LIBRARY)
   target_compile_definitions (tripod-cmd PRIVATE CMD_TRIPOD USE_NETCDF)
   target_link_libraries (tripod-cmd netcdf)
 else ()
@@ -80,7 +80,7 @@ endif ()
 
 
 add_executable (marche-cmd jigsaw.cpp)
-if (DEFINED NETCDF_LIBRARY)
+if (NETCDF_LIBRARY)
   target_compile_definitions (marche-cmd PRIVATE CMD_MARCHE USE_NETCDF)
   target_link_libraries (marche-cmd netcdf)
 else ()
@@ -96,7 +96,7 @@ endif ()
 
 
 add_library (jigsaw-lib SHARED jigsaw.cpp)
-if (DEFINED NETCDF_LIBRARY)
+if (NETCDF_LIBRARY)
   target_compile_definitions (jigsaw-lib PRIVATE LIB_JIGSAW USE_NETCDF)
   target_link_libraries (jigsaw-lib netcdf)
 else ()
