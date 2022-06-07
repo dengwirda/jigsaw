@@ -117,6 +117,8 @@
     typedef containers
             ::array< iptr_type >        iptr_list ;
     typedef containers
+            ::array< size_t    >        uint_list ;
+    typedef containers
             ::array< real_type >        real_list ;
 
     class mark_list                 // integer cell markers
@@ -135,9 +137,9 @@
         {
         public  :
         conn_list                      _adj1;
-        iptr_list                      _idx1;
+        uint_list                      _idx1;
         conn_list                      _adj2;
-        iptr_list                      _idx2;
+        uint_list                      _idx2;
         } ;
 
     public  :
