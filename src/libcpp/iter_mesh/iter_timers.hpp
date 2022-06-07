@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 20 Jan., 2022
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -67,12 +67,28 @@
 
         typedef iter_timers<R, I>       self_type ;
 
-        real_type   _iter_full = (real_type)  +0. ;
+        double      _iter_full = (double   )  +0. ;
 
-        real_type   _move_node = (real_type)  +0. ;
-        real_type   _move_dual = (real_type)  +0. ;
-        real_type   _topo_flip = (real_type)  +0. ;
-        real_type   _topo_zips = (real_type)  +0. ;
+        double      _move_node = (double   )  +0. ;
+        double      _init_node = (double   )  +0. ;
+        double      _core_node = (double   )  +0. ;
+        double      _ldir_node = (double   )  +0. ;
+        double      _lopt_node = (double   )  +0. ;
+
+        double      _move_dual = (double   )  +0. ;
+        double      _init_dual = (double   )  +0. ;
+        double      _core_dual = (double   )  +0. ;
+        double      _ldir_dual = (double   )  +0. ;
+        double      _lopt_dual = (double   )  +0. ;
+
+        double      _topo_flip = (double   )  +0. ;
+        double      _init_flip = (double   )  +0. ;
+        double      _core_flip = (double   )  +0. ;
+
+        double      _topo_zips = (double   )  +0. ;
+        double      _init_zips = (double   )  +0. ;
+        double      _core_zips = (double   )  +0. ;
+        double      _core_divs = (double   )  +0. ;
 
         public  :
 
@@ -93,6 +109,21 @@
                 std::chrono::duration_cast<
                 std::chrono::microseconds >
                 (_ttoc-_ttic).count()) / +1.0E+06 ;
+        }
+
+        __inline_call double nano_span (
+            typename std::
+                chrono::high_resolution_clock
+                    ::time_point const& _ttic,
+            typename std::
+                chrono::high_resolution_clock
+                    ::time_point const& _ttoc
+            )
+        {
+            return (double)(
+                std::chrono::duration_cast<
+                std::chrono:: nanoseconds >
+                (_ttoc-_ttic).count()) / +1.0E+09 ;
         }
 
     #   endif//__use_timers

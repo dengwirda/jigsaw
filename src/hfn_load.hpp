@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Jul., 2021
+     * Last updated: 28 Mar., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -1114,7 +1114,8 @@
     __normal_call iptr_type test_hfun (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        hfun_data &_hfun
+        hfun_data &_hfun ,
+        bool_type  _nneg = true     // require non-negative
         )
     {
         iptr_type _errv  = __no_error ;
@@ -1206,7 +1207,7 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <  (fp32_type) +0.)
+            if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: HFUN. values must be non-negative.\n") ;
@@ -1214,7 +1215,7 @@
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <  (fp32_type) +0.)
+            if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: DHDX. values must be non-negative.\n") ;
@@ -1317,7 +1318,7 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <  (fp32_type) +0.)
+            if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: HFUN. values must be non-negative.\n") ;
@@ -1325,7 +1326,7 @@
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <  (fp32_type) +0.)
+            if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: DHDX. values must be non-negative.\n") ;
@@ -1431,7 +1432,7 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <  (fp32_type) +0.)
+            if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: HFUN. values must be non-negative.\n") ;
@@ -1439,7 +1440,7 @@
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <  (fp32_type) +0.)
+            if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: DHDX. values must be non-negative.\n") ;
@@ -1558,7 +1559,7 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <  (fp32_type) +0.)
+            if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: HFUN. values must be non-negative.\n") ;
@@ -1566,7 +1567,7 @@
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <  (fp32_type) +0.)
+            if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: DHDX. values must be non-negative.\n") ;
@@ -1730,7 +1731,7 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <  (fp32_type) +0.)
+            if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: HFUN. values must be non-negative.\n") ;
@@ -1738,7 +1739,7 @@
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <  (fp32_type) +0.)
+            if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: DHDX. values must be non-negative.\n") ;
@@ -1902,7 +1903,7 @@
                 _errv = __invalid_arraydim ;
             }
 
-            if (_hmin <  (fp32_type) +0.)
+            if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: HFUN. values must be non-negative.\n") ;
@@ -1910,7 +1911,7 @@
                 _errv = __invalid_argument ;
             }
 
-            if (_smin <  (fp32_type) +0.)
+            if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
     "**input error: DHDX. values must be non-negative.\n") ;
@@ -1942,7 +1943,8 @@
     __normal_call iptr_type echo_hfun (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        hfun_data &_hfun
+        hfun_data &_hfun ,
+        bool_type  _nneg = true     // require non-negative
         )
     {
         iptr_type _errv  = __no_error ;
@@ -1964,7 +1966,7 @@
                 "  CONSTANT-VALUE\n\n") ;
 
             _jlog.push(
-                "  .VAL(H). = " + 
+                "  .VAL(H). = " +
                 to_string_prec (
                 _hfun._constant_value_kd._hval, 2) + "\n") ;
         }
@@ -1984,6 +1986,7 @@
 
             iptr_type _num1 = +0 ;
             iptr_type _num3 = +0 ;
+            iptr_type _nmsk = +0 ;
 
             for (auto _iter  = _hfun.
                 _euclidean_mesh_2d._hval.head() ;
@@ -1991,10 +1994,22 @@
                 _euclidean_mesh_2d._hval.tend() ;
                     ++_iter  )
             {
+                if (_nneg)
+                {
                 _hmin = std::min(
                             _hmin,*_iter) ;
                 _hmax = std::max(
                             _hmax,*_iter) ;
+                }
+                else
+                if (*_iter >= (fp32_type)+0.)
+                {
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
+                }
+                else _nmsk += +1 ;
             }
 
             _jlog.push(
@@ -2003,6 +2018,11 @@
             _jlog.push(
                 "  .MAX(H). = " +
                 to_string_prec(_hmax, 2) + "\n");
+
+            _jlog.push("  \n") ;
+            _jlog.push(
+                "  |MASKED| = "
+                + std::to_string (_nmsk) + "\n");
 
             _jlog.push("  \n") ;
 
@@ -2019,7 +2039,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_num1) + "\n");
 
             for (auto _iter  =
@@ -2032,7 +2052,7 @@
             }
 
             _jlog.push(
-                "  |TRIA-3| = " 
+                "  |TRIA-3| = "
                 + std::to_string(_num3) + "\n");
 
         }
@@ -2050,16 +2070,30 @@
 
             _jlog.push("\n") ;
 
+            iptr_type _nmsk = +0 ;
+
             for (auto _iter  = _hfun.
             _euclidean_grid_2d._hmat.head() ;
                       _iter != _hfun.
             _euclidean_grid_2d._hmat.tend() ;
                     ++_iter )
             {
-                _hmin =
-                    std::min(_hmin, *_iter) ;
-                _hmax =
-                    std::max(_hmax, *_iter) ;
+                if (_nneg)
+                {
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
+                }
+                else
+                if (*_iter >= (fp32_type)+0.)
+                {
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
+                }
+                else _nmsk += +1 ;
             }
 
             _jlog.push(
@@ -2070,6 +2104,11 @@
                 to_string_prec(_hmax, 2) + "\n");
 
             _jlog.push("  \n") ;
+            _jlog.push(
+                "  |MASKED| = "
+                + std::to_string (_nmsk) + "\n");
+
+            _jlog.push("  \n") ;
 
             auto _xnum = _hfun.
                 _euclidean_grid_2d._xpos.count();
@@ -2078,10 +2117,10 @@
                 _euclidean_grid_2d._ypos.count();
 
             _jlog.push(
-                "  |XGRID.| = " 
+                "  |XGRID.| = "
                 + std::to_string(_xnum) + "\n") ;
             _jlog.push(
-                "  |YGRID.| = " 
+                "  |YGRID.| = "
                 + std::to_string(_ynum) + "\n") ;
         }
         else
@@ -2100,6 +2139,7 @@
 
             iptr_type _num1 = +0 ;
             iptr_type _num4 = +0 ;
+            iptr_type _nmsk = +0 ;
 
             for (auto _iter  = _hfun.
                 _euclidean_mesh_3d._hval.head() ;
@@ -2107,10 +2147,22 @@
                 _euclidean_mesh_3d._hval.tend() ;
                     ++_iter  )
             {
+                if (_nneg)
+                {
                 _hmin = std::min(
                             _hmin,*_iter) ;
                 _hmax = std::max(
                             _hmax,*_iter) ;
+                }
+                else
+                if (*_iter >= (fp32_type)+0.)
+                {
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
+                }
+                else _nmsk += +1 ;
             }
 
             _jlog.push(
@@ -2119,6 +2171,11 @@
             _jlog.push(
                 "  .MAX(H). = " +
                 to_string_prec(_hmax, 2) + "\n");
+
+            _jlog.push("  \n") ;
+            _jlog.push(
+                "  |MASKED| = "
+                + std::to_string (_nmsk) + "\n");
 
             _jlog.push("  \n") ;
 
@@ -2135,7 +2192,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_num1) + "\n");
 
             for (auto _iter  =
@@ -2148,7 +2205,7 @@
             }
 
             _jlog.push(
-                "  |TRIA-4| = " 
+                "  |TRIA-4| = "
                 + std::to_string(_num4) + "\n");
 
         }
@@ -2166,16 +2223,30 @@
 
             _jlog.push("\n") ;
 
+            iptr_type _nmsk = +0 ;
+
             for (auto _iter  = _hfun.
             _euclidean_grid_3d._hmat.head() ;
                       _iter != _hfun.
             _euclidean_grid_3d._hmat.tend() ;
                     ++_iter )
             {
-                _hmin =
-                    std::min(_hmin, *_iter) ;
-                _hmax =
-                    std::max(_hmax, *_iter) ;
+                if (_nneg)
+                {
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
+                }
+                else
+                if (*_iter >= (fp32_type)+0.)
+                {
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
+                }
+                else _nmsk += +1 ;
             }
 
             _jlog.push(
@@ -2184,6 +2255,11 @@
             _jlog.push(
                 "  .MAX(H). = " +
                 to_string_prec(_hmax, 2) + "\n");
+
+            _jlog.push("  \n") ;
+            _jlog.push(
+                "  |MASKED| = "
+                + std::to_string (_nmsk) + "\n");
 
             _jlog.push("  \n") ;
 
@@ -2197,13 +2273,13 @@
                 _euclidean_grid_3d._zpos.count();
 
             _jlog.push(
-                "  |XGRID.| = " 
+                "  |XGRID.| = "
                 + std::to_string(_xnum) + "\n") ;
             _jlog.push(
-                "  |YGRID.| = " 
+                "  |YGRID.| = "
                 + std::to_string(_ynum) + "\n") ;
             _jlog.push(
-                "  |ZGRID.| = " 
+                "  |ZGRID.| = "
                 + std::to_string(_znum) + "\n") ;
 
         }
@@ -2220,6 +2296,7 @@
 
             iptr_type _num1 = +0 ;
             iptr_type _num3 = +0 ;
+            iptr_type _nmsk = +0 ;
 
             for (auto _iter  = _hfun.
                 _ellipsoid_mesh_3d._hval.head() ;
@@ -2227,10 +2304,22 @@
                 _ellipsoid_mesh_3d._hval.tend() ;
                     ++_iter  )
             {
+                if (_nneg)
+                {
                 _hmin = std::min(
                             _hmin,*_iter) ;
                 _hmax = std::max(
                             _hmax,*_iter) ;
+                }
+                else
+                if (*_iter >= (fp32_type)+0.)
+                {
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
+                }
+                else _nmsk += +1 ;
             }
 
             _jlog.push(
@@ -2239,6 +2328,11 @@
             _jlog.push(
                 "  .MAX(H). = " +
                 to_string_prec(_hmax, 2) + "\n");
+
+            _jlog.push("  \n") ;
+            _jlog.push(
+                "  |MASKED| = "
+                + std::to_string (_nmsk) + "\n");
 
             _jlog.push("  \n") ;
 
@@ -2255,7 +2349,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_num1) + "\n");
 
             for (auto _iter  =
@@ -2268,7 +2362,7 @@
             }
 
             _jlog.push(
-                "  |TRIA-3| = " 
+                "  |TRIA-3| = "
                 + std::to_string(_num3) + "\n");
 
         }
@@ -2283,16 +2377,30 @@
             _jlog.push(
                 "  |NDIMS.| = " + std::to_string(2) + "\n");
 
+            iptr_type _nmsk = +0 ;
+
             for (auto _iter  = _hfun.
             _ellipsoid_grid_3d._hmat.head() ;
                       _iter != _hfun.
             _ellipsoid_grid_3d._hmat.tend() ;
                     ++_iter )
             {
-                _hmin =
-                    std::min(_hmin, *_iter) ;
-                _hmax =
-                    std::max(_hmax, *_iter) ;
+                if (_nneg)
+                {
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
+                }
+                else
+                if (*_iter >= (fp32_type)+0.)
+                {
+                _hmin = std::min(
+                            _hmin,*_iter) ;
+                _hmax = std::max(
+                            _hmax,*_iter) ;
+                }
+                else _nmsk += +1 ;
             }
 
             _jlog.push(
@@ -2303,6 +2411,11 @@
                 to_string_prec(_hmax, 2) + "\n");
 
             _jlog.push("  \n") ;
+            _jlog.push(
+                "  |MASKED| = "
+                + std::to_string (_nmsk) + "\n");
+
+            _jlog.push("  \n") ;
 
             auto _xnum = _hfun.
                 _ellipsoid_grid_3d._xpos.count();
@@ -2311,10 +2424,10 @@
                 _ellipsoid_grid_3d._ypos.count();
 
             _jlog.push(
-                "  |XGRID.| = " 
+                "  |XGRID.| = "
                 + std::to_string(_xnum) + "\n") ;
             _jlog.push(
-                "  |YGRID.| = " 
+                "  |YGRID.| = "
                 + std::to_string(_ynum) + "\n") ;
 
             _jlog.push("  \n") ;

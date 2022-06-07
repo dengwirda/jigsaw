@@ -1183,7 +1183,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_nnPT) + "\n");
 
             for (auto _iter  = _geom.
@@ -1196,7 +1196,7 @@
             }
 
             _jlog.push(
-                "  |EDGE-2| = " 
+                "  |EDGE-2| = "
                 + std::to_string(_nnE2) + "\n");
 
             _jlog.push("\n") ;
@@ -1213,15 +1213,15 @@
             }
 
             _jlog.push(
-                "  |SEEDS.| = " 
+                "  |SEEDS.| = "
                 + std::to_string(_nnSD) + "\n");
 
             _jlog.push("\n") ;
 
             _jlog.push("  |BOUND.| = " +
                 std::to_string(_geom.
-                _euclidean_mesh_2d._ptag.count()) + 
-                " (" + 
+                _euclidean_mesh_2d._ptag.count()) +
+                " (" +
                 std::to_string(_geom.
                 _euclidean_mesh_2d._part.count()) +
                 ") " + "\n") ;
@@ -1254,7 +1254,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_nnPT) + "\n");
 
             for (auto _iter  = _geom.
@@ -1267,7 +1267,7 @@
             }
 
             _jlog.push(
-                "  |EDGE-2| = " 
+                "  |EDGE-2| = "
                 + std::to_string(_nnE2) + "\n");
 
             for (auto _iter  = _geom.
@@ -1280,7 +1280,7 @@
             }
 
             _jlog.push(
-                "  |TRIA-3| = " 
+                "  |TRIA-3| = "
                 + std::to_string(_nnT3) + "\n");
 
             _jlog.push("\n") ;
@@ -1297,15 +1297,15 @@
             }
 
             _jlog.push(
-                "  |SEEDS.| = " 
+                "  |SEEDS.| = "
                 + std::to_string(_nnSD) + "\n");
 
             _jlog.push("\n") ;
 
             _jlog.push("  |BOUND.| = " +
                 std::to_string(_geom.
-                _euclidean_mesh_3d._ptag.count()) + 
-                " (" + 
+                _euclidean_mesh_3d._ptag.count()) +
+                " (" +
                 std::to_string(_geom.
                 _euclidean_mesh_3d._part.count()) +
                 ") " + "\n") ;
@@ -1350,7 +1350,7 @@
             }
 
             _jlog.push(
-                "  |COORD.| = " 
+                "  |COORD.| = "
                 + std::to_string(_nnPT) + "\n");
 
             for (auto _iter  = _geom.
@@ -1363,7 +1363,7 @@
             }
 
             _jlog.push(
-                "  |EDGE-2| = " 
+                "  |EDGE-2| = "
                 + std::to_string(_nnE2) + "\n");
 
             _jlog.push("\n") ;
@@ -1380,7 +1380,7 @@
             }
 
             _jlog.push(
-                "  |SEEDS.| = " 
+                "  |SEEDS.| = "
                 + std::to_string(_nnSD) + "\n");
         }
 

@@ -14,9 +14,9 @@
      * MARCHE: "fast-marching" eikonal equation solver.
     --------------------------------------------------------
      *
-     * Last updated: 16 Apr., 2021
+     * Last updated: 28 Mar., 2022
      *
-     * Copyright 2013 -- 2021
+     * Copyright 2013 -- 2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -95,6 +95,8 @@
 
         hfun_data _ffun ;               // FUNC data
         jcfg_data _jcfg ;
+
+        float     _xoff[3] = {+0.f} ;   // to origin
 
 #       ifdef  __use_timers
         typename std ::chrono::
@@ -176,8 +178,15 @@
             }
 
             if ((_retv = test_hfun (
-                 _jcfg,
-                 _jlog, _ffun)) != __no_error)
+                 _jcfg, _jlog ,
+                 _ffun, false)) != __no_error)
+            {
+                return  _retv ;
+            }
+
+            if ((_retv = separator (
+                 _jcfg, _jlog ,
+                 _ffun, _xoff)) != __no_error)
             {
                 return  _retv ;
             }
@@ -199,7 +208,8 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _ffun.init_hfun(_jcfg, true) ;
+            _ffun.init_hfun(
+                _jcfg, _xoff, true ) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -208,8 +218,8 @@
                 "  FFUN data summary...\n\n" ) ;
 
             if ((_retv = echo_hfun (
-                 _jcfg,
-                 _jlog, _ffun)) != __no_error)
+                 _jcfg, _jlog ,
+                 _ffun, false)) != __no_error)
             {
                 return  _retv ;
             }
@@ -254,6 +264,7 @@
 
             if ((_retv = save_hfun (
                  _jcfg, _jlog,
+                 _xoff,
                  _ffun,*_fmsh)) != __no_error)
             {
                 return  _retv ;
@@ -280,6 +291,8 @@
         )
     {
         hfun_data _ffun ;               // FUNC data
+
+        float     _xoff[3] = {+0.f} ;   // to origin
 
 #       ifdef  __use_timers
         typename std ::chrono::
@@ -408,8 +421,15 @@
             }
 
             if ((_retv = test_hfun (
-                 _jcfg,
-                 _jlog, _ffun)) != __no_error)
+                 _jcfg, _jlog ,
+                 _ffun, false)) != __no_error)
+            {
+                return  _retv ;
+            }
+
+            if ((_retv = separator (
+                 _jcfg, _jlog ,
+                 _ffun, _xoff)) != __no_error)
             {
                 return  _retv ;
             }
@@ -431,7 +451,8 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _ffun.init_hfun(_jcfg, true) ;
+            _ffun.init_hfun(
+                _jcfg, _xoff, true ) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -440,8 +461,8 @@
                 "  FFUN data summary...\n\n" ) ;
 
             if ((_retv = echo_hfun (
-                 _jcfg,
-                 _jlog, _ffun)) != __no_error)
+                 _jcfg, _jlog ,
+                 _ffun, false)) != __no_error)
             {
                 return  _retv ;
             }
@@ -485,8 +506,8 @@
 #           endif//__use_timers
 
             if ((_retv = save_hfun (
-                 _jcfg,
-                 _jlog, _ffun)) != __no_error)
+                 _jcfg, _jlog,
+                 _xoff, _ffun)) != __no_error)
             {
                 return  _retv ;
             }

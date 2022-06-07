@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 Feb., 2021
+     * Last updated: 15 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -134,7 +134,7 @@ template <
     /*------------------------- edge type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -153,7 +153,7 @@ template <
     /*------------------------- face type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -172,7 +172,7 @@ template <
     /*------------------------- face type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -191,7 +191,7 @@ template <
     /*------------------------- cell type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -210,7 +210,7 @@ template <
     /*------------------------- cell type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -229,7 +229,7 @@ template <
     /*------------------------- cell type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -248,7 +248,7 @@ template <
     /*------------------------- cell type for ITER-MESH-3 */
         public  :
 
-        iptr_type                     _itag ;
+        iptr_type                     _itag = 0 ;
 
         public  :
 
@@ -273,6 +273,35 @@ template <
     public  :
 
     mesh_type                         _mesh ;
+
+    public  :
+
+    /*
+    --------------------------------------------------------
+     * INIT-MESH: impose (optional) offsets
+    --------------------------------------------------------
+     */
+
+    __normal_call void_type init (
+        float _xoff = + 0.f ,
+        float _yoff = + 0.f ,
+        float _zoff = + 0.f
+        )
+    {
+        for (auto  _iter  =
+             this->_mesh.node().head () ;
+                   _iter !=
+             this->_mesh.node().tend () ;
+                 ++_iter  )
+        {
+            if (_iter->mark() >= +0)
+            {
+                _iter->pval(0) -= _xoff ;
+                _iter->pval(1) -= _yoff ;
+                _iter->pval(2) -= _zoff ;
+            }
+        }
+    }
 
     } ;
 

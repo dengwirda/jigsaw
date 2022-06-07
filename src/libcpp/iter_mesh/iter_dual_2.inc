@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 21 Jan., 2022
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -71,14 +71,6 @@
             std::pow(std::numeric_limits
                 <real_type>::epsilon(), .50) ;
 
-        real_type static const _RMIN =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), .75) ;
-
-        real_type static const _RMAX =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), .25) ;
-
     /*------------------------------------- cell indexing */
         auto _ppos = &_node->pval(0);
 
@@ -87,20 +79,10 @@
 
     /*------------------ local iter. on finite-diff. step */
         real_type _wdel = _WINC * _STEP;
-
-        real_type _wsum = (real_type)0.;
-
-        real_type _sdel = (real_type)0.;
-        real_type _sabs = (real_type)0.;
-        real_type _sbar = (real_type)0.;
-
-        for (auto _iter = +0; _iter++ != +2; )
+        real_type _dsup , _dsdn ;
         {
     /*------------------ centred finite-diff. for dQ / dw */
             _ppos[_last] = _SAVE  + _wdel;
-
-            _wsum  = (real_type)+0. ;
-            _wsum += _ppos[_last] - _SAVE;
 
             real_type _scr1 =
                 pred_type::tri3_cost (
@@ -114,9 +96,9 @@
                 pred_type::dual_kind ()
                     ) ;
 
-            _ppos[_last] = _SAVE  - _wdel;
+            _dsup = (_scr1-_COST) / _wdel;
 
-            _wsum -= _ppos[_last] - _SAVE;
+            _ppos[_last] = _SAVE  - _wdel;
 
             real_type _scr0 =
                 pred_type::tri3_cost (
@@ -130,33 +112,15 @@
                 pred_type::dual_kind ()
                     ) ;
 
-            _sdel = _scr1 - _scr0 ;
-
-            _sbar = std::abs(_COST) ;
-            _sabs = std::abs(_sdel) ;
-
-    /*------------------ try to adjust step on rel. diff. */
-            if (_sabs > (real_type)0.)
-            {
-            if (_sabs > _RMAX * _sbar)
-            {
-                _wdel/= (real_type) +10. ;
-            }
-            else
-            if (_sabs < _RMIN * _sbar)
-            {
-                _wdel*= (real_type) +10. ;
-            }
-            else { break ; }
-            }
-            else { break ; }
+            _dsdn = (_COST-_scr0) / _wdel;
         }
 
         _ppos [_last]  = _SAVE ;
 
     /*------------------ finalise gradient and accumulate */
-
-        _DQDW += _sdel / _wsum ;
+        if (_dsup * _dsdn > (real_type)0.)
+            _DQDW +=
+        (real_type)+.5 * (_dsup + _dsdn) ;
     }
 
     /*
@@ -186,14 +150,6 @@
             std::pow(std::numeric_limits
                 <real_type>::epsilon(), .50) ;
 
-        real_type static const _RMIN =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), .75) ;
-
-        real_type static const _RMAX =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), .25) ;
-
     /*------------------------------------- cell indexing */
         auto _ppos = &_node->pval(0);
 
@@ -202,20 +158,10 @@
 
     /*------------------ local iter. on finite-diff. step */
         real_type _wdel = _WINC * _STEP;
-
-        real_type _wsum = (real_type)0.;
-
-        real_type _sdel = (real_type)0.;
-        real_type _sabs = (real_type)0.;
-        real_type _sbar = (real_type)0.;
-
-        for (auto _iter = +0; _iter++ != +2; )
+        real_type _dsup , _dsdn ;
         {
     /*------------------ centred finite-diff. for dQ / dw */
             _ppos[_last] = _SAVE  + _wdel;
-
-            _wsum  = (real_type)+0. ;
-            _wsum += _ppos[_last] - _SAVE;
 
             real_type _scr1 =
                 pred_type::quad_cost (
@@ -231,9 +177,9 @@
                 pred_type::dual_kind ()
                     ) ;
 
-            _ppos[_last] = _SAVE  - _wdel;
+            _dsup = (_scr1-_COST) / _wdel;
 
-            _wsum -= _ppos[_last] - _SAVE;
+            _ppos[_last] = _SAVE  - _wdel;
 
             real_type _scr0 =
                 pred_type::quad_cost (
@@ -249,33 +195,15 @@
                 pred_type::dual_kind ()
                     ) ;
 
-            _sdel = _scr1 - _scr0 ;
-
-            _sbar = std::abs(_COST) ;
-            _sabs = std::abs(_sdel) ;
-
-    /*------------------ try to adjust step on rel. diff. */
-            if (_sabs > (real_type)0.)
-            {
-            if (_sabs > _RMAX * _sbar)
-            {
-                _wdel/= (real_type) +10. ;
-            }
-            else
-            if (_sabs < _RMIN * _sbar)
-            {
-                _wdel*= (real_type) +10. ;
-            }
-            else { break ; }
-            }
-            else { break ; }
+            _dsdn = (_COST-_scr0) / _wdel;
         }
 
         _ppos [_last]  = _SAVE ;
 
     /*------------------ finalise gradient and accumulate */
-
-        _DQDW += _sdel / _wsum ;
+        if (_dsup * _dsdn > (real_type)0.)
+            _DQDW +=
+        (real_type)+.5 * (_dsup + _dsdn) ;
     }
 
     /*
@@ -355,6 +283,11 @@
         real_type _qlim = _qmin +
             (real_type)+1.0E-002 ;
 
+        real_type _dmax =
+       -std::numeric_limits<real_type>::infinity() ;
+        real_type _dmin =
+       +std::numeric_limits<real_type>::infinity() ;
+
         real_type _DQDW = (real_type) 0.;
 
         real_type _SAVE =
@@ -363,7 +296,7 @@
         real_type _qbar = (real_type) 1.;
         real_type _qlow = (real_type) 0.;
 
-        iptr_type _lnum  = 0, _hnum  = 1, _nnum  = 0;
+        iptr_type _lnum  = 0, _hnum = 1, _nnum = 0 ;
         for (auto _next  = _conn.head() ,
                   _tend  = _conn.tend() ;
                   _next != _tend ;
@@ -390,6 +323,11 @@
                     _DQDW ) ;
                 }
 
+                _dmax =
+                 std::max(_dmax, _DQDW) ;
+                _dmin =
+                 std::min(_dmin, _DQDW) ;
+
                 _qlow += _COST ; _lnum += +1 ;
             }
             else
@@ -397,6 +335,10 @@
                 _qbar += _COST ; _hnum += +1 ;
             }
         }
+
+        if (_dmax *
+            _dmin < (real_type) +0. )
+            _DQDW = (real_type) +0. ;
 
         if (_nnum > +0)
         {

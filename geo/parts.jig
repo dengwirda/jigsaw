@@ -1,0 +1,25 @@
+
+#
+#   PARTS.JIG: mechanical part 
+#
+
+#   To run on WIN platforms:
+#
+#       bin\jigsaw.exe geo\parts.jig
+#
+#   To run on LNX platforms:
+#
+#       bin/jigsaw     geo/parts.jig
+#
+#   from jigsaw root folder.
+#
+
+    GEOM_FILE = geo/parts.msh
+    MESH_FILE = out/parts.msh
+    VERBOSITY = 1
+    GEOM_FEAT = TRUE
+    MESH_TOP1 = TRUE
+    MESH_DIMS = 2
+
+
+

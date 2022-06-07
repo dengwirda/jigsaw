@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 July, 2020
+     * Last updated: 28 Aug., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -170,6 +170,9 @@
     __normal_call void_type push_optm_iter (
         std::int32_t /*_iter*/
         ) { }
+    __normal_call void_type push_optm_cost (
+        std::int32_t /*_cost*/
+        ) { }
     __normal_call void_type push_optm_qtol (
         double       /*_qtol*/
         ) { }
@@ -282,6 +285,26 @@
                     std::string::npos ) \
                 _dest.__fun (           \
                     jcfg_data::iter_pred::h95_dqdx) ;   \
+            else                        \
+           _errs.push_tail(_line) ;     \
+            }                           \
+            else                        \
+           _errs.push_tail(_line) ;
+
+    /*---------------------------------- read "COST" pred */
+        #define __putCOST(__fun, __str)     \
+            if (__str.count() == 2 )    \
+            {                           \
+                __toUPPER(__str [1])    \
+            if (__str[1].find("AREA-LEN")!= \
+                    std::string::npos ) \
+                _dest.__fun (           \
+                    jcfg_data::iter_cost::area_len) ;   \
+            else                        \
+            if (__str[1].find("SKEW-COS")!= \
+                    std::string::npos ) \
+                _dest.__fun (           \
+                    jcfg_data::iter_cost::skew_cos) ;   \
             else                        \
            _errs.push_tail(_line) ;     \
             }                           \
@@ -591,6 +614,11 @@
             __putINTS(push_optm_iter, _stok) ;
                 }
             else
+            if (_stok[0] == "OPTM_COST")
+                {
+            __putCOST(push_optm_cost, _stok) ;
+                }
+            else
             if (_stok[0] == "OPTM_QTOL")
                 {
             __putREAL(push_optm_qtol, _stok) ;
@@ -623,8 +651,7 @@
             }
             catch (...)
             {
-                this->
-               _errs.push_tail (_line) ;
+                this->_errs.push_tail(_line) ;
             }
         }
 
@@ -634,6 +661,7 @@
         #undef  __putSCAL
         #undef  __putMESH
         #undef  __putOPTM
+        #undef  __putCOST
         #undef  __putBNDS
         #undef  __putREAL
         #undef  __putINTS

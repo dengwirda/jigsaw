@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 Apr., 2021
+     * Last updated: 01 Sept., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -57,8 +57,10 @@
         hfun_type &_hfun ,
         real_list &_hval ,
         iter_opts &_opts ,
+        iptr_list &_nmrk ,
+        iptr_type  _iout ,
         iptr_type  _edge ,
-        char_type  _kern ,
+        kern_kind  _kern ,
         bool_type &_okay ,
         iptr_type &_nnew ,
         conn_list &_iset ,
@@ -70,14 +72,15 @@
         real_list &_qdst ,
         real_list &_qtmp ,
         real_type  _QLIM ,
+        iter_stat &_tcpu ,
         real_type  _lmax
             = (real_type) +8.00E-01 ,
         real_type  _qinc
-            = (real_type) +2.50E-02
+            = (real_type) +1.00E-02
         )
     {
         iptr_type static constexpr
-            _last = pred_type::geom_dims+0 ;
+            _last = pred_type::geom_dims + 0 ;
 
         iptr_type static constexpr
             _DEG_TRIA3 = (iptr_type)+6 ;
@@ -127,49 +130,112 @@
             return ;
 
     /*--------------------------------- get adjacent face */
-        _mesh.connect_2(_eptr->node(+0),
-            POINT_tag , _iset) ;
-        _mesh.connect_2(_eptr->node(+1),
-            POINT_tag , _jset) ;
+        _mesh.connect_2(&_eptr->node(0),
+            EDGE2_tag , _cset) ;
+
+        if (_cset.count() != 2) return ;
+
+        auto _atri =
+       _mesh.tri3().head()+_cset[0]._cell ;
+        auto _btri =
+       _mesh.tri3().head()+_cset[1]._cell ;
+
+        iptr_type _anod = -1;           // find cell apex
+        if (_atri->node(0) != _inod &&
+            _atri->node(0) != _jnod )
+            _anod = _atri->node( 0 ) ;
+        if (_atri->node(1) != _inod &&
+            _atri->node(1) != _jnod )
+            _anod = _atri->node( 1 ) ;
+        if (_atri->node(2) != _inod &&
+            _atri->node(2) != _jnod )
+            _anod = _atri->node( 2 ) ;
+
+        iptr_type _bnod = -1;           // find cell apex
+        if (_btri->node(0) != _inod &&
+            _btri->node(0) != _jnod )
+            _bnod = _btri->node( 0 ) ;
+        if (_btri->node(1) != _inod &&
+            _btri->node(1) != _jnod )
+            _bnod = _btri->node( 1 ) ;
+        if (_btri->node(2) != _inod &&
+            _btri->node(2) != _jnod )
+            _bnod = _btri->node( 2 ) ;
 
     /*--------------------------------- calc. local topo. */
-        auto _ndeg = _iset.count()
-                   + _jset.count() - 4 ;
+        auto _ideg =
+       _mesh .node(_inod).ndeg(TRIA3_tag) ;
+        auto _jdeg =
+       _mesh .node(_jnod).ndeg(TRIA3_tag) ;
+        auto _adeg =
+       _mesh .node(_anod).ndeg(TRIA3_tag) ;
+        auto _bdeg =
+       _mesh .node(_bnod).ndeg(TRIA3_tag) ;
 
-        auto _ideg = _iset.count() ;
+        if (_nmrk[_inod] < 0) _ideg = 6 ;
+        if (_nmrk[_jnod] < 0) _jdeg = 6 ;
+        if (_nmrk[_anod] < 0) _adeg = 6 ;
+        if (_nmrk[_bnod] < 0) _bdeg = 6 ;
+
         auto _ierr =
             (iptr_type)(_DEG_TRIA3-_ideg) ;
-
-        auto _jdeg = _jset.count() ;
         auto _jerr =
             (iptr_type)(_DEG_TRIA3-_jdeg) ;
+        auto _aerr =
+            (iptr_type)(_DEG_TRIA3-_adeg) ;
+        auto _berr =
+            (iptr_type)(_DEG_TRIA3-_bdeg) ;
 
-        auto _iabs = std::abs(_ierr) ;
-        auto _jabs = std::abs(_jerr) ;
+        auto _ndeg = _ideg + _jdeg -  4 ;
+        auto _ADEG = _adeg - 1 ;
+        auto _BDEG = _bdeg - 1 ;
 
-        auto _nerr = std::abs(
-            (iptr_type)(_DEG_TRIA3-_ndeg));
+        auto _nerr =
+            (iptr_type)(_DEG_TRIA3-_ndeg) ;
+        auto _AERR =
+            (iptr_type)(_DEG_TRIA3-_ADEG) ;
+        auto _BERR =
+            (iptr_type)(_DEG_TRIA3-_BDEG) ;
+
+        auto _dnow = std::abs(_ierr) +  // current defect
+                     std::abs(_jerr) +
+                     std::abs(_aerr) +
+                     std::abs(_berr) ;
+
+        auto _dnew = std::abs(_nerr) +  // updated defect
+                     std::abs(_AERR) +
+                     std::abs(_BERR) ;
 
     //  bail-out early if the topological defect would be
     //  made worse if the zip is done
 
-        if (_nerr> std::max(_ierr, _jerr))
-            return  ;
+        if (_dnew > _dnow + 1) return;
 
     //  if more regular topo. is constructed via the edge
     //  zip, make it easier to do so!
 
         real_type _qerr = (real_type)(
-            -2./16.*1./2.*(_ierr + _jerr));
+            -1./16.*1./2.*(_ierr + _jerr));
 
         real_type _lerr = (real_type)(
             +1./16.*1./2.*(_ierr + _jerr));
 
-        if (2 * _nerr < _iabs + _jabs)
+        if (_dnew < _dnow - 0)
+        {                            // no oscl. wrt. div
+        _qerr/= std::pow ( _iout, +1./8.) ;
+        _qinc = std::min ( _qinc,
+                           _qinc + _qerr) ;
+        _lmax = std::max ( _lmax,
+                           _lmax + _lerr) ;
+        }
+
+        iptr_type static constexpr
+            _dMIN  = (iptr_type)+2 ;
+
+        if (_ierr >= _dMIN || _jerr >= _dMIN)
         {
-        _qinc = std::min(_qinc, _qerr);
-        _lmax = std::max(_lmax,
-                         _lmax+ _lerr);
+        _qinc = (real_type) -0.250 ; // force a quad. zip
+        _lmax = (real_type) +1.250 ;
         }
 
     /*--------------------------------- get edge h-sizing */
@@ -185,6 +251,9 @@
 
             _pmid[_idim] /= (real_type)2. ;
         }
+
+        pred_type::
+        proj_node(_geom, _pmid, _pmid);
 
         real_type _isiz, _jsiz, _msiz ;
         _isiz = _hfun.eval(
@@ -211,6 +280,11 @@
             return  ;
 
     /*--------------------------------- get disjoint sets */
+        _mesh.connect_2(_eptr->node(+0),
+            POINT_tag , _iset) ;
+        _mesh.connect_2(_eptr->node(+1),
+            POINT_tag , _jset) ;
+
         for (auto _cell  = _iset.head();
                   _cell != _iset.tend();
                 ++_cell  )
@@ -446,6 +520,7 @@
         _hval[_nnew] = (real_type)-1. ;
 
     /*--------------------------------- push a new cavity */
+        _cset.set_count(0) ;
         for (auto _cell  = _aset.head();
                   _cell != _aset.tend();
                 ++_cell  )
@@ -564,7 +639,7 @@
 
     /*--------------------------------- optim. node coord */
         iptr_type static
-            constexpr _INUM = (iptr_type) +8;
+            constexpr _INUM = (iptr_type) +4;
 
         iptr_type _move = -1;
         for (auto _iter = +0; _iter != _INUM;
@@ -583,9 +658,9 @@
                 _opts, _nptr, _kern,
                 _move, _cset,
                 _qtmp, _qdst,
-                _minC, _QLIM ) ;
+                _minC, _QLIM, _tcpu)  ;
 
-            if (_move <= +0) break ;
+            if (_move <= +0 ) break;
         }
 
     /*--------------------------------- is cost improved? */

@@ -14,7 +14,7 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * Last updated: 16 Apr., 2021
+     * Last updated: 28 Aug., 2021
      *
      * Copyright 2013 -- 2021
      * Darren Engwirda
@@ -563,12 +563,16 @@
         )
     {
         if (_args._iter_pred ==
-                jcfg_data::iter_pred::odt_dqdx)
+                jcfg_data::iter_pred::odt_dqdx &&
+            _args._iter_cost ==
+                jcfg_data::iter_cost::area_len)
         {
     /*-------------------------- call ODT-ITER kernel */
             typedef mesh::
                 iter_pred_euclidean_2d <
                 geom_type ,
+                jcfg_data::
+                iter_cost::area_len ,
                 typename
                 mesh_type::
                 mesh_type >         pred_type ;
@@ -590,17 +594,57 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_odt_kern ,
+            iter_func::_odt_optimise,
                *_opts, _jlog )   ;
         }
         else
         if (_args._iter_pred ==
-                jcfg_data::iter_pred::cvt_dqdx)
+                jcfg_data::iter_pred::odt_dqdx &&
+            _args._iter_cost ==
+                jcfg_data::iter_cost::skew_cos)
+        {
+    /*-------------------------- call ODT-ITER kernel */
+            typedef mesh::
+                iter_pred_euclidean_2d <
+                geom_type ,
+                jcfg_data::
+                iter_cost::skew_cos ,
+                typename
+                mesh_type::
+                mesh_type >         pred_type ;
+
+            typedef mesh::iter_mesh_2  <
+                geom_type ,
+                typename
+                mesh_type::
+                mesh_type ,
+                hfun_type ,
+                pred_type >         iter_func ;
+
+            typedef
+            jcfg_data::iter_opts    iter_opts ;
+
+            iter_opts *_opts =
+               &_args._iter_opts ;
+
+            iter_func::iter_mesh (
+                _geom, _hfun ,
+                _mesh. _mesh ,
+            iter_func::_odt_optimise,
+               *_opts, _jlog )   ;
+        }
+        else
+        if (_args._iter_pred ==
+                jcfg_data::iter_pred::cvt_dqdx &&
+            _args._iter_cost ==
+                jcfg_data::iter_cost::area_len)
         {
     /*-------------------------- call CVT-ITER kernel */
             typedef mesh::
                 iter_pred_euclidean_2d <
                 geom_type ,
+                jcfg_data::
+                iter_cost::area_len ,
                 typename
                 mesh_type::
                 mesh_type >         pred_type ;
@@ -622,17 +666,21 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_cvt_kern ,
+            iter_func::_cvt_optimise,
                *_opts, _jlog )   ;
         }
         else
         if (_args._iter_pred ==
-                jcfg_data::iter_pred::h95_dqdx)
+                jcfg_data::iter_pred::cvt_dqdx &&
+            _args._iter_cost ==
+                jcfg_data::iter_cost::skew_cos)
         {
-    /*-------------------------- call H95-ITER kernel */
+    /*-------------------------- call CVT-ITER kernel */
             typedef mesh::
                 iter_pred_euclidean_2d <
                 geom_type ,
+                jcfg_data::
+                iter_cost::skew_cos ,
                 typename
                 mesh_type::
                 mesh_type >         pred_type ;
@@ -654,7 +702,7 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_h95_kern ,
+            iter_func::_cvt_optimise,
                *_opts, _jlog )   ;
         }
     }
@@ -674,12 +722,16 @@
         )
     {
         if (_args._iter_pred ==
-                jcfg_data::iter_pred::odt_dqdx)
+                jcfg_data::iter_pred::odt_dqdx &&
+            _args._iter_cost ==
+                jcfg_data::iter_cost::area_len)
         {
     /*-------------------------- call ODT-ITER kernel */
             typedef mesh::
                 iter_pred_ellipsoid_3d <
                 geom_type ,
+                jcfg_data::
+                iter_cost::area_len ,
                 typename
                 mesh_type::
                 mesh_type >         pred_type ;
@@ -701,17 +753,57 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_odt_kern ,
+            iter_func::_odt_optimise,
                *_opts, _jlog )   ;
         }
         else
         if (_args._iter_pred ==
-                jcfg_data::iter_pred::cvt_dqdx)
+                jcfg_data::iter_pred::odt_dqdx &&
+            _args._iter_cost ==
+                jcfg_data::iter_cost::skew_cos)
+        {
+    /*-------------------------- call ODT-ITER kernel */
+            typedef mesh::
+                iter_pred_ellipsoid_3d <
+                geom_type ,
+                jcfg_data::
+                iter_cost::skew_cos ,
+                typename
+                mesh_type::
+                mesh_type >         pred_type ;
+
+            typedef mesh::iter_mesh_2  <
+                geom_type ,
+                typename
+                mesh_type::
+                mesh_type ,
+                hfun_type ,
+                pred_type >         iter_func ;
+
+            typedef
+            jcfg_data::iter_opts    iter_opts ;
+
+            iter_opts *_opts =
+               &_args._iter_opts ;
+
+            iter_func::iter_mesh (
+                _geom, _hfun ,
+                _mesh. _mesh ,
+            iter_func::_odt_optimise,
+               *_opts, _jlog )   ;
+        }
+        else
+        if (_args._iter_pred ==
+                jcfg_data::iter_pred::cvt_dqdx &&
+            _args._iter_cost ==
+                jcfg_data::iter_cost::area_len)
         {
     /*-------------------------- call CVT-ITER kernel */
             typedef mesh::
                 iter_pred_ellipsoid_3d <
                 geom_type ,
+                jcfg_data::
+                iter_cost::area_len ,
                 typename
                 mesh_type::
                 mesh_type >         pred_type ;
@@ -733,17 +825,21 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_cvt_kern ,
+            iter_func::_cvt_optimise,
                *_opts, _jlog )   ;
         }
         else
         if (_args._iter_pred ==
-                jcfg_data::iter_pred::h95_dqdx)
+                jcfg_data::iter_pred::cvt_dqdx &&
+            _args._iter_cost ==
+                jcfg_data::iter_cost::skew_cos)
         {
-    /*-------------------------- call H95-ITER kernel */
+    /*-------------------------- call CVT-ITER kernel */
             typedef mesh::
                 iter_pred_ellipsoid_3d <
                 geom_type ,
+                jcfg_data::
+                iter_cost::skew_cos ,
                 typename
                 mesh_type::
                 mesh_type >         pred_type ;
@@ -765,7 +861,7 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_h95_kern ,
+            iter_func::_cvt_optimise,
                *_opts, _jlog )   ;
         }
     }
@@ -1057,6 +1153,8 @@
         mesh_data _mesh ;               // MESH data
         jcfg_data _jcfg ;
 
+        float     _xoff[3] = {+0.f} ;   // to origin
+
 #       ifdef  __use_timers
         typename std ::chrono::
         high_resolution_clock::time_point  _ttic ;
@@ -1146,6 +1244,13 @@
                 return  _retv ;
             }
 
+            if ((_retv = separator (
+                 _jcfg, _jlog ,
+                 _geom, _xoff)) != __no_error)
+            {
+                return  _retv ;
+            }
+
 #           ifdef  __use_timers
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
@@ -1163,7 +1268,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _geom.init_geom(_jcfg) ;
+            _geom.init_geom(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1228,10 +1333,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _mesh._euclidean_mesh_2d.
-                _mesh.make_link();
-            _mesh._euclidean_mesh_3d.
-                _mesh.make_link();
+            _mesh.init_mesh(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1303,7 +1405,7 @@
                 return  _retv ;
             }
 
-            _hfun.init_hfun (_jcfg);
+            _hfun.init_hfun(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1449,6 +1551,7 @@
 
             if ((_retv = save_rdel (
                  _jcfg, _jlog ,
+                 _xoff,
                  _mesh,*_mmsh)) != __no_error)
             {
                 return  _retv ;
@@ -1460,6 +1563,7 @@
 
             if ((_retv = save_mesh (
                  _jcfg, _jlog ,
+                 _xoff,
                  _mesh,*_mmsh)) != __no_error)
             {
                 return  _retv ;
@@ -1490,6 +1594,8 @@
         hfun_data _hfun ;               // HFUN data
         geom_data _geom ;               // GEOM data
         mesh_data _mesh ;               // MESH data
+
+        float     _xoff[3] = {+0.f} ;   // to origin
 
 #       ifdef  __use_timers
         typename std ::chrono::
@@ -1624,6 +1730,13 @@
                 return  _retv ;
             }
 
+            if ((_retv = separator (
+                 _jcfg, _jlog ,
+                 _geom, _xoff)) != __no_error)
+            {
+                return  _retv ;
+            }
+
 #           ifdef  __use_timers
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
@@ -1641,7 +1754,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _geom.init_geom(_jcfg) ;
+            _geom.init_geom(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1706,10 +1819,7 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
-            _mesh._euclidean_mesh_2d.
-                _mesh.make_link();
-            _mesh._euclidean_mesh_3d.
-                _mesh.make_link();
+            _mesh.init_mesh(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1781,7 +1891,7 @@
                 return  _retv ;
             }
 
-            _hfun.init_hfun (_jcfg);
+            _hfun.init_hfun(_jcfg, _xoff) ;
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1846,8 +1956,8 @@
 #           endif//__use_timers
 
             if ((_retv = save_tria (
-                 _jcfg,
-                 _jlog, _mesh)) != __no_error)
+                 _jcfg, _jlog,
+                 _xoff, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -1952,8 +2062,8 @@
             {
 
             if ((_retv = save_rdel (
-                 _jcfg,
-                 _jlog, _mesh)) != __no_error)
+                 _jcfg, _jlog,
+                 _xoff, _mesh)) != __no_error)
             {
                 return  _retv ;
             }
@@ -1963,8 +2073,8 @@
             {
 
             if ((_retv = save_mesh (
-                 _jcfg,
-                 _jlog, _mesh)) != __no_error)
+                 _jcfg, _jlog,
+                 _xoff, _mesh)) != __no_error)
             {
                 return  _retv ;
             }

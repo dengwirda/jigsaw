@@ -90,10 +90,10 @@
             jigsaw_jig_t _jjig ;
             jigsaw_null_jig_t( &_jjig ) ;
 
-            this->_verb = 
+            this->_verb =
             iptr_type(_jjig._verbosity) ;
-            
-            this->_iter = 
+
+            this->_iter =
             iptr_type(_jjig._optm_iter) ;
 
             this->_qtol =

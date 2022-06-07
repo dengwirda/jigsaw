@@ -216,10 +216,11 @@
             }
 
     /*-------------------------------- sink must inc ball */
-            char_type  _feat, _topo;
-            iptr_type  _itag;
-            real_type  _sbal[4];
-            real_type  _junk[4];
+            char_type _feat;
+            char_type _topo[ +2] ;
+            iptr_type _itag;
+            real_type _sbal[ +4] ;
+            real_type _junk[ +4] ;
             base_type::face_ball(_geom ,
                 _mesh , *_tpos , _fpos ,
                 _junk ,  _sbal , _feat ,

@@ -180,7 +180,7 @@
                 _mesh.
                 _tria.roll_back(_tnew, _told);
 
-                _qdat._mark = 
+                _qdat._mark =
                  std::max(1,_qdat._mark+1) ;
 
                 _kind = rdel_opts::null_kind ;
@@ -346,7 +346,7 @@
                 _mesh.
                 _tria.roll_back(_tnew, _told);
 
-                _qdat._mark = 
+                _qdat._mark =
                  std::max(1,_qdat._mark+1) ;
 
                 _kind = rdel_opts::null_kind ;
@@ -512,8 +512,8 @@
                 _mesh.
                 _tria.roll_back(_tnew, _told);
 
-                _qdat._mark = 
-                 std::max(1,_qdat._mark+1) ; 
+                _qdat._mark =
+                 std::max(1,_qdat._mark+1) ;
 
                 _kind = rdel_opts::null_kind ;
 

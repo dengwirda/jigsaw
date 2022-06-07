@@ -1,0 +1,25 @@
+
+#
+#   LAKES.JIG: lake superior 
+#
+
+#   To run on WIN platforms:
+#
+#       bin\jigsaw.exe geo\lakes.jig
+#
+#   To run on LNX platforms:
+#
+#       bin/jigsaw     geo/lakes.jig
+#
+#   from jigsaw root folder.
+#
+
+    GEOM_FILE = geo/lakes.msh
+    MESH_FILE = out/lakes.msh
+    VERBOSITY = 1
+    GEOM_FEAT = TRUE
+    MESH_TOP1 = TRUE
+    MESH_DIMS = 2
+
+
+

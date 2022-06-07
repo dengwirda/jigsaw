@@ -19,6 +19,11 @@
   - Use of "symmetric" Gauss-Seidel sweeping within
     mesh optimisation kernels.
 
+  - New "skewed-cosine" optimisation metric, useful
+    to build "well-centred" primal-dual meshes.
+
+  - Support "masked-out" entries in MARCHE solvers.
+
   - Fix a point-location bug wrt. unstructured h(x)
     data types.
 
@@ -27,6 +32,8 @@
     leads to slightly sparser tessellatons. 
 
   - Support ellipsoidal-type initial conditions.
+
+  - Translate-to-origin to reduce precision issues.
 
   - BREAKING: encode h(x) values as 32-bit floating
     point data, to support "very-large" h(x) types.

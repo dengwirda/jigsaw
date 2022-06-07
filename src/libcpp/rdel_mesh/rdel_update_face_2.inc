@@ -250,7 +250,7 @@
                                  // only in hash-set
 
         /*--------------------------- call face predicate */
-            char_type _feat, _topo;
+            char_type _topo[ 2], _feat;
             real_type _fbal[ 3];
             real_type _sbal[ 3];
             mesh_pred::edge_cost (

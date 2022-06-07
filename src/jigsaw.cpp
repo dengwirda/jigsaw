@@ -19,7 +19,7 @@
     //
     // more option(s):
     //
-    // -DUSE_NETCDF
+    // -DUSE_NETCDF -lnetcdf
     // -DUSE_TIMERS
     //
     // -Wfloat-conversion -Wsign-conversion -Wshadow
@@ -42,9 +42,9 @@
      *
      * JIGSAW release 0.9.15.x
      *
-     * Last updated: 10 July, 2021
+     * Last updated: 28 May, 2022
      *
-     * Copyright 2013 -- 2021
+     * Copyright 2013 -- 2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -249,15 +249,6 @@
 #   include <chrono>
 #   endif//__use_timers
 
-    /*---------------------------------- to do netcdf i/o */
-
-    extern  "C"
-    {
-#   ifdef  __use_netcdf
-#   include "netcdf/lib_netcdf.h"
-#   endif//__use_netcdf
-    }
-
     /*---------------------------------- JIGSAW's backend */
 
     extern  "C"
@@ -277,6 +268,12 @@
     typedef real_t real_type ;        // double-precision
     typedef fp32_t fp32_type ;        // single-precision
     typedef indx_t iptr_type ;        // 32bit signed int
+
+    /*---------------------------------- to do netcdf i/o */
+
+#   ifdef  __use_netcdf
+#   include "netcdf/ncutil.h"
+#   endif//__use_netcdf
 
     /*---------------------------------- JIGSAW mesh kind */
 
@@ -304,6 +301,8 @@
         __file_not_located      = +2 ;
     iptr_type static constexpr
         __file_not_created      = +3 ;
+    iptr_type static constexpr
+        __netcdf_not_available  = +9 ;
 
     iptr_type static constexpr
         __invalid_argument      = +4 ;
@@ -375,6 +374,17 @@
         iter_pred::enum_data
             _iter_pred = iter_pred::odt_dqdx ;
 
+        struct iter_cost {
+            enum enum_data {
+            nullkern ,
+            area_len = JIGSAW_KERN_AREA_LEN,
+            skew_cos = JIGSAW_KERN_SKEW_COS
+            } ;
+            } ;
+
+        iter_cost::enum_data
+            _iter_cost = iter_cost::area_len ;
+
     /*--------------------------------- H(x) fun. scaling */
         struct hfun_scal {
             enum enum_data {
@@ -442,23 +452,34 @@
         public  :
     /*------------------------- helper: init. everything! */
         __normal_call void_type init_geom (
-            jcfg_data &_jcfg
+            jcfg_data &_jcfg,
+            float     *_xoff,
+            bool_type  _link =  true
             )
         {
+            if (_link)
+            this->_euclidean_mesh_2d._tria.
+                make_link () ;
             this->_euclidean_mesh_2d.
-                _tria.make_link() ;
-            this->_euclidean_mesh_2d.
-                init_geom(_jcfg._mesh_opts) ;
+                init_geom(_jcfg._mesh_opts,
+                _xoff[ +0 ],
+                _xoff[ +1 ]) ;
 
+            if (_link)
+            this->_euclidean_mesh_3d._tria.
+                make_link () ;
             this->_euclidean_mesh_3d.
-                _tria.make_link() ;
-            this->_euclidean_mesh_3d.
-                init_geom(_jcfg._mesh_opts) ;
+                init_geom(_jcfg._mesh_opts,
+                _xoff[ +0 ],
+                _xoff[ +1 ],
+                _xoff[ +2 ]) ;
 
+            if (_link)
+            this->_ellipsoid_mesh_3d._mesh.
+                make_link () ;
             this->_ellipsoid_mesh_3d.
-                _mesh.make_link() ;
-            this->_ellipsoid_mesh_3d.
-                init_geom(_jcfg._mesh_opts) ;
+                init_geom(_jcfg._mesh_opts
+                )    ;
         }
 
         } ;
@@ -528,37 +549,47 @@
     /*------------------------- helper: init. everything! */
         __normal_call void_type init_hfun (
             jcfg_data &_jcfg,
+            float     *_xoff,
             bool_type  _link = false
             )
         {
             __unreferenced(_jcfg) ;
 
+            this->_constant_value_kd. init(
+                ) ;
+
             if (_link)
-            {
-            this->
-           _euclidean_mesh_2d._mesh.make_link () ;
-            this->
-           _euclidean_mesh_3d._mesh.make_link () ;
-            this->
-           _ellipsoid_mesh_3d._mesh.make_link () ;
-            }
+            this->_euclidean_mesh_2d._mesh.
+                make_link () ;
+            this->_euclidean_mesh_2d. init(
+                _xoff[ +0 ],
+                _xoff[ +1 ]) ;
 
-            this->
-           _constant_value_kd.init() ;
+            if (_link)
+            this->_euclidean_mesh_3d._mesh.
+                make_link () ;
+            this->_euclidean_mesh_3d. init(
+                _xoff[ +0 ],
+                _xoff[ +1 ],
+                _xoff[ +2 ]) ;
 
-            this->
-           _euclidean_mesh_2d.init() ;
-            this->
-           _euclidean_mesh_3d.init() ;
-            this->
-           _ellipsoid_mesh_3d.init() ;
+            if (_link)
+            this->_ellipsoid_mesh_3d._mesh.
+                make_link () ;
+            this->_ellipsoid_mesh_3d. init(
+                ) ;
 
-            this->
-           _euclidean_grid_2d.init() ;
-            this->
-           _euclidean_grid_3d.init() ;
-            this->
-           _ellipsoid_grid_3d.init() ;
+            this->_euclidean_grid_2d. init(
+                _xoff[ +0 ],
+                _xoff[ +1 ]) ;
+
+            this->_euclidean_grid_3d. init(
+                _xoff[ +0 ],
+                _xoff[ +1 ],
+                _xoff[ +2 ]) ;
+
+            this->_ellipsoid_grid_3d. init(
+                ) ;
         }
 
     /*------------------------- helper: limit everything! */
@@ -568,22 +599,22 @@
         {
             __unreferenced(_jcfg) ;
 
-            this->
-           _constant_value_kd.clip() ;
+            this->_constant_value_kd.clip(
+                ) ;
 
-            this->
-           _euclidean_mesh_2d.clip() ;
-            this->
-           _euclidean_mesh_3d.clip() ;
-            this->
-           _ellipsoid_mesh_3d.clip() ;
+            this->_euclidean_mesh_2d.clip(
+                ) ;
+            this->_euclidean_mesh_3d.clip(
+                ) ;
+            this->_ellipsoid_mesh_3d.clip(
+                ) ;
 
-            this->
-           _euclidean_grid_2d.clip() ;
-            this->
-           _euclidean_grid_3d.clip() ;
-            this->
-           _ellipsoid_grid_3d.clip() ;
+            this->_euclidean_grid_2d.clip(
+                ) ;
+            this->_euclidean_grid_3d.clip(
+                ) ;
+            this->_ellipsoid_grid_3d.clip(
+                ) ;
         }
 
         } ;
@@ -637,6 +668,32 @@
 
         euclidean_mesh_2d       _euclidean_mesh_2d ;
         euclidean_mesh_3d       _euclidean_mesh_3d ;
+
+        public  :
+    /*------------------------- helper: init. everything! */
+        __normal_call void_type init_mesh (
+            jcfg_data &_jcfg,
+            float     *_xoff,
+            bool_type  _link =  true
+            )
+        {
+            __unreferenced(_jcfg) ;
+
+            if (_link)
+            this->_euclidean_mesh_2d._mesh.
+                make_link () ;
+            this->_euclidean_mesh_2d. init(
+                _xoff[ +0 ],
+                _xoff[ +1 ]) ;
+
+            if (_link)
+            this->_euclidean_mesh_3d._mesh.
+                make_link () ;
+            this->_euclidean_mesh_3d. init(
+                _xoff[ +0 ],
+                _xoff[ +1 ],
+                _xoff[ +2 ]) ;
+        }
 
         } ;
 
@@ -839,6 +896,8 @@
      * Jumping-off points for CMD + LIB JIGSAW!
     --------------------------------------------------------
      */
+
+    #   include "offset.hpp"
 
     #   include "jigsaw.hpp"
     #   include "tripod.hpp"

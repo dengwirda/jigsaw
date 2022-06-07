@@ -1,0 +1,26 @@
+
+#
+#   AIRFOIL.JIG: simple airfoil 
+#
+
+#   To run on WIN platforms:
+#
+#       bin\jigsaw.exe geo\airfoil.jig
+#
+#   To run on LNX platforms:
+#
+#       bin/jigsaw     geo/airfoil.jig
+#
+#   from jigsaw root folder.
+#
+
+    GEOM_FILE = geo/airfoil.msh
+    MESH_FILE = out/airfoil.msh
+    VERBOSITY = 1
+    GEOM_FEAT = TRUE
+    MESH_TOP1 = TRUE
+    MESH_DIMS = 2
+    HFUN_HMAX = 0.01
+
+
+

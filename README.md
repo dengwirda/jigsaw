@@ -50,7 +50,9 @@ The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`<
     * cmake --build . --config BUILD_MODE --target install
     * Delete the temporary BUILD directory.
 
-This process will build a series of executables and shared libraries: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, `marche` - a fast-marching solver designed to optimise mesh-spacing configurations, as well as `libjigsaw` - `JIGSAW`'s shared `API`. `BUILD_MODE` can be used to select different compiler configurations and should generally either be `Release` or `Debug`. 
+This process will build a series of executables and shared libraries: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, `marche` - a fast-marching solver designed to optimise mesh-spacing configurations, as well as `libjigsaw` - `JIGSAW`'s shared `API`. 
+
+`BUILD_MODE` can be used to select different compiler configurations and should generally either be `Release` or `Debug`. 
 
 See `example.jig` for documentation on calling the command-line executables, and the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 

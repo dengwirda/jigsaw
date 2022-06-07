@@ -103,7 +103,7 @@
             _node.fdim () = _iter->fdim () ;
             _node.feat () = _iter->feat () ;
 
-            _nmap[_npos] = 
+            _nmap[_npos] =
             _mesh._euclidean_mesh_2d.
                 _mesh.push_node (_node, false) ;
             }
@@ -224,7 +224,7 @@
             _node.fdim () = _iter->fdim () ;
             _node.feat () = _iter->feat () ;
 
-            _nmap[_npos] = 
+            _nmap[_npos] =
             _mesh._euclidean_mesh_3d.
                 _mesh.push_node (_node, false) ;
             }

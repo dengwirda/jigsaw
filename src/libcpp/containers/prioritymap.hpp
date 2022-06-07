@@ -39,9 +39,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 25 April, 2020
+ * Last updated: 30 Mar., 2022
  *
- * Copyright 2013-2020
+ * Copyright 2013-2022
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -574,16 +574,9 @@
             this->_keys[_kptr];
         _write_it _ipos =
             this->_heap.tend();
-        if (this->_pred(_data ,
-            this->_heap[_hpos]. _data))
-        /*-------------------- push "hole" to upper level */
-            _ipos = push_upper (
-            this-> _heap.head(),
-            this-> _heap.head()+_hpos ,
-        __copy(data_type,_data)) ;
-        else
-        /*-------------------- push "hole" to lower level */
-            _ipos = push_lower (
+
+    /*------------------------ push "hole" to lower level */
+        _ipos = push_lower (
             this-> _heap.head(),
             this-> _heap.tail(),
             this-> _heap.head()+_hpos ,
@@ -608,16 +601,9 @@
             this->_keys[_kptr];
         _write_it _ipos =
             this->_heap.tend();
-        if (this->_pred(_data ,
-            this->_heap[_hpos]. _data))
-        /*-------------------- push "hole" to upper level */
-            _ipos = push_upper (
-            this-> _heap.head(),
-            this-> _heap.head()+_hpos ,
-        __copy(data_type,_data)) ;
-        else
-        /*-------------------- push "hole" to lower level */
-            _ipos = push_lower (
+
+    /*------------------------ push "hole" to lower level */
+        _ipos = push_lower (
             this-> _heap.head(),
             this-> _heap.tail(),
             this-> _heap.head()+_hpos ,
@@ -704,8 +690,8 @@
                 (_ipos - 1)/_nfan ;
 
             if (this->_pred(
-                this->_heap[_ipos],
-                this->_heap[_ppos]
+                this->_heap[_ipos]._data,
+                this->_heap[_ppos]._data
                 )   )
                 return false ;
         }

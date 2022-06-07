@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 01 Sept., 2021
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2021
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -42,12 +42,6 @@
      */
 
     // from iter_mesh_2.hpp
-
-
-    /*
-    __static_call
-    __normal_call bool_type need_flip_costfunc (
-     */
 
 
     __static_call
@@ -227,6 +221,71 @@
         }
     }
 
+    __static_call
+    __normal_call bool_type need_flip_topology (
+        geom_type &/*_geom*/ ,
+        mesh_type &_mesh,
+        iptr_list &_nmrk,
+      __const_ptr(iptr_type) _enod,
+      __const_ptr(iptr_type) _inod,
+      __const_ptr(iptr_type) _jnod
+        )
+    {
+        iptr_type static constexpr
+            _DEG_TRIA3 = (iptr_type)+6 ;
+    //  iptr_type static constexpr
+    //      _DEG_QUAD4 = (iptr_type)+4 ;
+
+    /*----------------------------- assess flip criterion */
+        auto _ideg = _mesh.
+            node(_enod[0]).ndeg(TRIA3_tag);
+        auto _jdeg = _mesh.
+            node(_enod[1]).ndeg(TRIA3_tag);
+        auto _adeg = _mesh.
+            node(_inod[2]).ndeg(TRIA3_tag);
+        auto _bdeg = _mesh.
+            node(_jnod[2]).ndeg(TRIA3_tag);
+
+        if(_nmrk[_enod[0]] < 0) return false ;
+        if(_nmrk[_enod[1]] < 0) return false ;
+        if(_nmrk[_inod[2]] < 0) return false ;
+        if(_nmrk[_jnod[2]] < 0) return false ;
+
+        auto _ierr =
+            (iptr_type)(_DEG_TRIA3-_ideg) ;
+        auto _jerr =
+            (iptr_type)(_DEG_TRIA3-_jdeg) ;
+        auto _aerr =
+            (iptr_type)(_DEG_TRIA3-_adeg) ;
+        auto _berr =
+            (iptr_type)(_DEG_TRIA3-_bdeg) ;
+
+        auto _IDEG = _ideg - 1;
+        auto _IERR =
+            (iptr_type)(_DEG_TRIA3-_IDEG) ;
+        auto _JDEG = _jdeg - 1;
+        auto _JERR =
+            (iptr_type)(_DEG_TRIA3-_JDEG) ;
+        auto _ADEG = _adeg + 1;
+        auto _AERR =
+            (iptr_type)(_DEG_TRIA3-_ADEG) ;
+        auto _BDEG = _bdeg + 1;
+        auto _BERR =
+            (iptr_type)(_DEG_TRIA3-_BDEG) ;
+
+        auto _dnow = std::abs(_ierr) +  // current defect
+                     std::abs(_jerr) +
+                     std::abs(_aerr) +
+                     std::abs(_berr) ;
+
+        auto _dnew = std::abs(_IERR) +  // updated defect
+                     std::abs(_JERR) +
+                     std::abs(_AERR) +
+                     std::abs(_BERR) ;
+
+        return _dnew < _dnow - 1 ? true : false ;
+    }
+
     /*
     --------------------------------------------------------
      * FLIP-T2T2: 2-simplex topological flip.
@@ -243,12 +302,14 @@
     __normal_call void_type flip_t2t2 (
         geom_type &_geom ,
         mesh_type &_mesh ,
+        iptr_list &_nmrk ,
         iptr_type *_enod ,
         conn_list &_conn ,
         conn_list &_next ,
         bool_type &_flip ,
         real_list &_qold ,
-        real_list &_qnew
+        real_list &_qnew ,
+        flip_kind  _kind
         )
     {
         iptr_type _epos =  -1 ;
@@ -315,10 +376,49 @@
         "ITER.FLIP-T2T2: bad orientation!") ;
 
     /*----------------------------- flip cells about edge */
+        if ( _kind == laguerre_flip )
+        {
         if(!need_flip_laguerre (
                 _geom, _mesh ,
                 _inod, _jnod)) return ;
+        }
+        else
+        if ( _kind == delaunay_flip )
+        {
+        if(!need_flip_delaunay (
+                _geom, _mesh ,
+                _inod, _jnod)) return ;
+        }
+        else
+        if ( _kind == topology_flip )
+        {
+        if(!need_flip_topology (
+                _geom, _mesh ,
+                _nmrk, _enod ,
+                _inod, _jnod)) return ;
+        }
 
+    /*----------------------------- break if cells tangle */
+        real_type _ivec[ +3 ] ;
+        pred_type::tri3_norm (
+           &_mesh.node(_inod[0]).pval(0),
+           &_mesh.node(_jnod[2]).pval(0),
+           &_mesh.node(_inod[2]).pval(0),
+           &_ivec[0]  ) ;
+
+        real_type _jvec[ +3 ] ;
+        pred_type::tri3_norm (
+           &_mesh.node(_jnod[0]).pval(0),
+           &_mesh.node(_inod[2]).pval(0),
+           &_mesh.node(_jnod[2]).pval(0),
+           &_jvec[0]  ) ;
+
+        real_type _sign =
+        geometry::dot_3d (_ivec, _jvec) ;
+
+        if (_sign <= (real_type)+0.) return ;
+
+    /*----------------------------- update local topology */
         _mesh._pop_tri3(_itri) ;
         _mesh._pop_tri3(_jtri) ;
 
@@ -356,12 +456,14 @@
     __inline_call void_type flip_tri3 (
         geom_type &_geom ,
         mesh_type &_mesh ,
+        iptr_list &_nmrk ,
         iptr_type  _cell ,
         bool_type &_flip ,
         conn_list &_conn ,
         conn_list &_next ,
         real_list &_qold ,
-        real_list &_qnew
+        real_list &_qnew ,
+        flip_kind  _kind
         )
     {
         auto _coin = (std::rand() % 3) + 1  ;
@@ -387,17 +489,17 @@
             if (_conn[0]._kind==TRIA3_tag &&
                 _conn[1]._kind==TRIA3_tag )
             {
-                flip_t2t2( _geom, _mesh, _enod,
+                flip_t2t2( _geom, _mesh, _nmrk, _enod,
                     _conn, _next, _flip,
-                    _qold, _qnew) ;
+                    _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
             }
             else
             {
-            //  flip_t1q1( _geom, _mesh, _enod,
+            //  flip_t1q1( _geom, _mesh, _nmrk, _enod,
             //      _conn, _next, _flip,
-            //      _qold, _qnew) ;
+            //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
             }
@@ -425,17 +527,17 @@
             if (_conn[0]._kind==TRIA3_tag &&
                 _conn[1]._kind==TRIA3_tag )
             {
-                flip_t2t2( _geom, _mesh, _enod,
+                flip_t2t2( _geom, _mesh, _nmrk, _enod,
                     _conn, _next, _flip,
-                    _qold, _qnew) ;
+                    _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
             }
             else
             {
-            //  flip_t1q1( _geom, _mesh, _enod,
+            //  flip_t1q1( _geom, _mesh, _nmrk, _enod,
             //      _conn, _next, _flip,
-            //      _qold, _qnew) ;
+            //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
             }
@@ -453,12 +555,14 @@
     __inline_call void_type flip_quad (
         geom_type &/*_geom*/ ,
         mesh_type &_mesh ,
+        iptr_list &_nmrk ,
         iptr_type  _cell ,
         bool_type &_flip ,
         conn_list &_conn ,
         conn_list &_next ,
         real_list &/*_qold*/ ,
-        real_list &/*_qnew*/
+        real_list &/*_qnew*/ ,
+        flip_kind  /*_kind*/
         )
     {
         auto _coin = (std::rand() % 4) + 1  ;
@@ -484,17 +588,17 @@
             if (_conn[0]._kind==QUAD4_tag &&
                 _conn[1]._kind==QUAD4_tag )
             {
-            //  flip_q2q2( _geom, _mesh, _enod,
+            //  flip_q2q2( _geom, _mesh, _enod, _nmrk,
             //      _conn, _next, _flip,
-            //      _qold, _qnew) ;
+            //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
             }
             else
             {
-            //  flip_t1q1( _geom, _mesh, _enod,
+            //  flip_t1q1( _geom, _mesh, _enod, _nmrk,
             //      _conn, _next, _flip,
-            //      _qold, _qnew) ;
+            //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
             }
@@ -522,17 +626,17 @@
             if (_conn[0]._kind==QUAD4_tag &&
                 _conn[1]._kind==QUAD4_tag )
             {
-            //  flip_q2q2( _geom, _mesh, _enod,
+            //  flip_q2q2( _geom, _mesh, _enod, _nmrk,
             //      _conn, _next, _flip,
-            //      _qold, _qnew) ;
+            //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
             }
             else
             {
-            //  flip_t1q1( _geom, _mesh, _enod,
+            //  flip_t1q1( _geom, _mesh, _enod, _nmrk,
             //      _conn, _next, _flip,
-            //      _qold, _qnew) ;
+            //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
             }

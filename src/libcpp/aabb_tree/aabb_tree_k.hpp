@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 28 Sept., 2020
+ * Last updated: 12 Jul., 2021
  *
- * Copyright 2013-2020
+ * Copyright 2013-2021
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -507,6 +507,8 @@
                    _cnum += +1 ;
                 }
             }
+
+            if (_cnum == +0) continue ;
 
         /*---------- split pos. - mean of non-long aabb's */
             double _SPOS = +0. ;

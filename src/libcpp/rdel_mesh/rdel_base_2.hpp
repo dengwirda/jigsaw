@@ -31,7 +31,7 @@
      *
      --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2021
+     * Last updated: 12 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -212,7 +212,7 @@
         real_type *_ebal,
         real_type *_sbal,
         char_type &_feat,
-        char_type &_topo,
+        char_type *_topo,
         iptr_type &_part
         )
     {
@@ -445,8 +445,7 @@
             }
         }
 
-        if (_iful !=
-                _pred._list.tend() )
+        if (_iful != _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _iful->pval(0);
@@ -454,7 +453,9 @@
 
         _part     = _iful->itag ();
         _feat     = _iful->feat ();
-        _topo     = _iful->topo ();
+
+        _topo[ 0] = _iful->topo(0);
+        _topo[ 1] = _iful->topo(1);
 
     /*--------------------------- eval. surf. ball radius */
         _sbal[ 2]+=
@@ -472,8 +473,7 @@
         return (  true ) ;
         }
         else
-        if (_imin !=
-                _pred._list.tend() )
+        if (_imin != _pred._list.tend() )
         {
     /*--------------------------- keep best intersections */
         _sbal[ 0] = _imin->pval(0);
@@ -481,7 +481,9 @@
 
         _part     = _imin->itag ();
         _feat     = _imin->feat ();
-        _topo     = _imin->topo ();
+
+        _topo[ 0] = _imin->topo(0);
+        _topo[ 1] = _imin->topo(1);
 
     /*--------------------------- eval. surf. ball radius */
         _sbal[ 2]+=
@@ -549,9 +551,35 @@
 
         _tbal[2]/= (real_type)+3. ;
 
+    /*--------------------------- init. local inpoly ball */
+
+    //  nudge away from orthoball, to sanitise degenerate
+    //  cases adj. to sharp boundaries
+
+        real_type static const _bump =
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), +0.5) ;
+
+        real_type _test[2] ;
+        _test[0] = (real_type)1./3. * (
+        _mesh._tria.node(_tnod[0])->pval(0) +
+        _mesh._tria.node(_tnod[1])->pval(0) +
+        _mesh._tria.node(_tnod[2])->pval(0)
+            ) ;
+        _test[1] = (real_type)1./3. * (
+        _mesh._tria.node(_tnod[0])->pval(1) +
+        _mesh._tria.node(_tnod[1])->pval(1) +
+        _mesh._tria.node(_tnod[2])->pval(1)
+            ) ;
+
+        _test[0] = (1.0 - _bump) * _tbal[0] +
+                   (0.0 + _bump) * _test[0] ;
+        _test[1] = (1.0 - _bump) * _tbal[1] +
+                   (0.0 + _bump) * _test[1] ;
+
     /*------------------------- evaluate "in--out" status */
         if (_part <= -1 && (_part =
-            _geom.is_inside(_tbal)) < +0)
+            _geom.is_inside(_test)) < +0)
         {
     /*------------------------- is not a restricted facet */
             return false ;

@@ -7,66 +7,124 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - gcc-8
-            - g++-8
+            - gcc-9
+            - g++-9
       script:
-        - export CC=gcc-8
-        - export CXX=g++-8
+        - export CC=gcc-9
+        - export CXX=g++-9
         - mkdir build
         - cd build
-        - cmake .. -DCMAKE_BUILD_TYPE=Release
-        - cmake --build . --config Release --target install
+        - cmake .. -DCMAKE_BUILD_TYPE=Debug
+        - cmake --build . --config Debug --target install
         - cd ..
-        - ./bin/jigsaw example.jig
+        - rm -r build
         - cd uni
         - mkdir build
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Debug
         - cmake --build . --config Debug --target install
         - cd ..
-        - ./test_1
-        - ./test_2
-        - ./test_3
-        - ./test_4
-        - ./test_5
-        - ./test_6
-        - ./test_7
-        - ./test_8
-        - ./test_9
-         
+        - rm -r build
+        - ./test2d_a
+        - ./test3d_a
+        - ./test2s_a
+        - ./test2d_b
+        - ./test3d_b
+        - ./test2s_b
+        - ./test2d_c
+        - ./test3d_c
+        - ./test2s_c
+        - ./test2d_d
+        - ./test3d_d
+        - ./test2d_e
+        - ./test3d_e
+        - ./test2s_e
+        - ./test2d_f
+        - ./test3d_f
+        - ./test2s_f
+        - ./test2d_g
+        - ./test3d_g
+        - ./test2s_g
+        - ./test2d_h
+        - ./test2s_h
+        - ./test2d_i
+        - ./test2s_i
+        - cd ..
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Release
+        - cmake --build . --config Release --target install
+        - cd ..
+        - rm -r build
+        - ./bin/jigsaw example.jig
+        - ./bin/jigsaw geo/airfoil.jig
+        - ./bin/jigsaw geo/bunny.jig
+        - ./bin/jigsaw geo/parts.jig
+        - ./bin/jigsaw geo/earth.jig
+        - ./bin/jigsaw geo/lakes.jig
+        
     - os: osx
-      osx_image: xcode11
+      osx_image: xcode12
       script:
         - mkdir build
         - cd build
-        - cmake .. -DCMAKE_BUILD_TYPE=Release
-        - cmake --build . --config Release --target install
+        - cmake .. -DCMAKE_BUILD_TYPE=Debug
+        - cmake --build . --config Debug --target install
         - cd ..
-        - ./bin/jigsaw example.jig
+        - rm -r build
         - cd uni
         - mkdir build
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Debug
         - cmake --build . --config Debug --target install
         - cd ..
-        - ./test_1
-        - ./test_2
-        - ./test_3
-        - ./test_4
-        - ./test_5
-        - ./test_6
-        - ./test_7
-        - ./test_8
-        - ./test_9
+        - rm -r build
+        - ./test2d_a
+        - ./test3d_a
+        - ./test2s_a
+        - ./test2d_b
+        - ./test3d_b
+        - ./test2s_b
+        - ./test2d_c
+        - ./test3d_c
+        - ./test2s_c
+        - ./test2d_d
+        - ./test3d_d
+        - ./test2d_e
+        - ./test3d_e
+        - ./test2s_e
+        - ./test2d_f
+        - ./test3d_f
+        - ./test2s_f
+        - ./test2d_g
+        - ./test3d_g
+        - ./test2s_g
+        - ./test2d_h
+        - ./test2s_h
+        - ./test2d_i
+        - ./test2s_i
+        - cd ..
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Release
+        - cmake --build . --config Release --target install
+        - cd ..
+        - rm -r build
+        - ./bin/jigsaw example.jig
+        - ./bin/jigsaw geo/airfoil.jig
+        - ./bin/jigsaw geo/bunny.jig
+        - ./bin/jigsaw geo/parts.jig
+        - ./bin/jigsaw geo/earth.jig
+        - ./bin/jigsaw geo/lakes.jig
       
     - os: windows
       script:
         - mkdir build
         - cd build
-        - cmake .. -DCMAKE_BUILD_TYPE=Release
-        - cmake --build . --config Release --target install
+        - cmake .. -DCMAKE_BUILD_TYPE=Debug
+        - cmake --build . --config Debug --target install
         - cd ..
-        - ./bin/jigsaw.exe example.jig
+        - rm -r build
         - cp lib/jigsaw.dll uni
         - cd uni
         - mkdir build
@@ -74,12 +132,41 @@ matrix:
         - cmake .. -DCMAKE_BUILD_TYPE=Debug
         - cmake --build . --config Debug --target install
         - cd ..
-        - ./test_1.exe
-        - ./test_2.exe
-        - ./test_3.exe
-        - ./test_4.exe
-        - ./test_5.exe
-        - ./test_6.exe
-        - ./test_7.exe
-        - ./test_8.exe
-        - ./test_9.exe
+        - rm -r build
+        - ./test2d_a
+        - ./test3d_a
+        - ./test2s_a
+        - ./test2d_b
+        - ./test3d_b
+        - ./test2s_b
+        - ./test2d_c
+        - ./test3d_c
+        - ./test2s_c
+        - ./test2d_d
+        - ./test3d_d
+        - ./test2d_e
+        - ./test3d_e
+        - ./test2s_e
+        - ./test2d_f
+        - ./test3d_f
+        - ./test2s_f
+        - ./test2d_g
+        - ./test3d_g
+        - ./test2s_g
+        - ./test2d_h
+        - ./test2s_h
+        - ./test2d_i
+        - ./test2s_i
+        - cd ..
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_BUILD_TYPE=Release
+        - cmake --build . --config Release --target install
+        - cd ..
+        - rm -r build
+        - ./bin/jigsaw example.jig
+        - ./bin/jigsaw geo/airfoil.jig
+        - ./bin/jigsaw geo/bunny.jig
+        - ./bin/jigsaw geo/parts.jig
+        - ./bin/jigsaw geo/earth.jig
+        - ./bin/jigsaw geo/lakes.jig

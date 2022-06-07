@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 Feb., 2021
+     * Last updated: 12 Jul., 2021
      *
      * Copyright 2013-2021
      * Darren Engwirda
@@ -698,9 +698,9 @@
         _scal =  std::max(
             _scal , _plen[ 2]);
 
-        _plen[ 0]*= (real_type)+4.0 ;
-        _plen[ 1]*= (real_type)+4.0 ;
-        _plen[ 2]*= (real_type)+4.0 ;
+        _plen[ 0]*= (real_type)+8.0 ;
+        _plen[ 1]*= (real_type)+8.0 ;
+        _plen[ 2]*= (real_type)+8.0 ;
 
         _pmin[ 0]-= _plen[ 0] ;
         _pmin[ 1]-= _plen[ 1] ;
@@ -1009,7 +1009,7 @@
     #       ifdef _DEBUG
             iptr_type _jlog_freq = +250 ;
     #       else
-            iptr_type _jlog_freq = +12500 ;
+            iptr_type _jlog_freq = +37500 ;
     #       endif
 
             if(++_pass>_args.iter()) break;
@@ -1528,17 +1528,12 @@
     /*-------------------- push refinement scheme metrics */
 
         _dump.push("\n")  ;
-        _dump.push("**REFINE statistics... \n") ;
-        _dump.push("\n")  ;
-
-        _dump.push("**FUNCTION timing: ") ;
-        _dump.push("\n")  ;
+        _dump.push("**TIMING statistics...\n") ;
 
         _dump.push("  MESH-SEED = ") ;
         _dump.push(
         std::to_string (_tcpu._mesh_seed));
         _dump.push("\n")  ;
-
         _dump.push("  NODE-INIT = ") ;
         _dump.push(
         std::to_string (_tcpu._node_init));
@@ -1547,7 +1542,6 @@
         _dump.push(
         std::to_string (_tcpu._node_rule));
         _dump.push("\n")  ;
-
         _dump.push("  EDGE-INIT = ") ;
         _dump.push(
         std::to_string (_tcpu._edge_init));
@@ -1556,7 +1550,6 @@
         _dump.push(
         std::to_string (_tcpu._edge_rule));
         _dump.push("\n")  ;
-
         _dump.push("  FACE-INIT = ") ;
         _dump.push(
         std::to_string (_tcpu._face_init));
@@ -1565,7 +1558,6 @@
         _dump.push(
         std::to_string (_tcpu._face_rule));
         _dump.push("\n")  ;
-
         _dump.push("  TRIA-INIT = ") ;
         _dump.push(
         std::to_string (_tcpu._tria_init));
@@ -1573,12 +1565,9 @@
         _dump.push("  TRIA-RULE = ") ;
         _dump.push(
         std::to_string (_tcpu._tria_rule));
-        _dump.push("\n")  ;
-        _dump.push("\n")  ;
+        _dump.push("\n\n");
 
-        _dump.push("**INSERTION rules: ") ;
-        _dump.push("\n")  ;
-
+        _dump.push("**REFINE statistics...\n") ;
         _dump.push("  EDGE-CIRC = ") ;
         _dump.push(std::to_string(
              _enod[rdel_opts::circ_kind]));
@@ -1591,8 +1580,6 @@
         _dump.push(std::to_string(
              _enod[rdel_opts::offT_kind]));
         _dump.push("\n")  ;
-        _dump.push("\n")  ;
-
         _dump.push("  FACE-CIRC = ") ;
         _dump.push(std::to_string(
              _fnod[rdel_opts::circ_kind]));
@@ -1613,8 +1600,6 @@
         _dump.push(std::to_string(
              _fnod[rdel_opts::offT_kind]));
         _dump.push("\n")  ;
-        _dump.push("\n")  ;
-
         _dump.push("  TRIA-CIRC = ") ;
         _dump.push(std::to_string(
              _tnod[rdel_opts::circ_kind]));
@@ -1631,7 +1616,6 @@
         _dump.push(std::to_string(
              _tnod[rdel_opts::offC_kind]));
         _dump.push("\n")  ;
-        _dump.push("\n")  ;
 
         }
 
@@ -1640,141 +1624,123 @@
     /*-------------------- push refinement memory metrics */
 
         _dump.push("\n")  ;
-        _dump.push("**MEMORY statistics... \n") ;
-        _dump.push("\n")  ;
+        _dump.push("**MEMORY statistics...\n") ;
 
-        _dump.push("**DELAUNAY-OBJECT: ") ;
-        _dump.push("\n")  ;
-
-        _dump.push("  NODE-BYTE = ") ;
+        _dump.push("  DELAUNAY-OBJECT:\n");
+        _dump.push(" *node-byte = ") ;
         _dump.push(std::to_string(
             sizeof(typename mesh_type::
                 tria_type:: node_type)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  NODE-LIST = ") ;
+        _dump.push(" *node-list = ") ;
         _dump.push(std::to_string(
             _mesh._tria._nset.alloc())) ;
         _dump.push("\n")  ;
-
-        _dump.push("  TRIA-BYTE = ") ;
+        _dump.push(" *tria-byte = ") ;
         _dump.push(std::to_string(
             sizeof(typename mesh_type::
                 tria_type:: tria_type)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  TRIA-LIST = ") ;
+        _dump.push(" *tria-list = ") ;
         _dump.push(std::to_string(
             _mesh._tria._tset.alloc())) ;
-        _dump.push("\n")  ;
-        _dump.push("\n")  ;
+        _dump.push("\n\n");
 
-        _dump.push("**RESTRICTED-TRIA: ") ;
-        _dump.push("\n")  ;
-
-        _dump.push("  BALL-BYTE = ") ;
+        _dump.push("  RESTRICTED-TRIA:\n");
+        _dump.push(" *ball-byte = ") ;
         _dump.push(std::to_string(
             sizeof(
         typename mesh_type::ball_item)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  BALL-HASH = ") ;
+        _dump.push(" *ball-hash = ") ;
         _dump.push(std::to_string(
             _mesh._bset._lptr.alloc())) ;
         _dump.push("\n")  ;
-        _dump.push("  POOL-BYTE = ") ;
-        _dump.push(std::to_string(
-            _mesh._bpol.bytes () ) ) ;
+        _dump.push(" *pool-byte = ") ;
+        _dump.push(
+        std::to_string(_mesh._bpol.bytes())) ;
         _dump.push("\n")  ;
-
-        _dump.push("  NODE-BYTE = ") ;
+        _dump.push(" *node-byte = ") ;
         _dump.push(std::to_string(
             sizeof(
         typename mesh_type::node_item)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  NODE-HASH = ") ;
+        _dump.push(" *node-hash = ") ;
         _dump.push(std::to_string(
             _mesh._nset._lptr.alloc())) ;
         _dump.push("\n")  ;
-        _dump.push("  POOL-BYTE = ") ;
+        _dump.push(" *pool-byte = ") ;
         _dump.push(std::to_string(
             _mesh._npol.bytes () ) ) ;
         _dump.push("\n")  ;
-
-        _dump.push("  EDGE-BYTE = ") ;
+        _dump.push(" *edge-byte = ") ;
         _dump.push(std::to_string(
             sizeof(
         typename mesh_type::edge_item)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  EDGE-HASH = ") ;
+        _dump.push(" *edge-hash = ") ;
         _dump.push(std::to_string(
             _mesh._eset._lptr.alloc())) ;
         _dump.push("\n")  ;
-        _dump.push("  POOL-BYTE = ") ;
-        _dump.push(std::to_string(
-            _mesh._epol.bytes () ) ) ;
+        _dump.push(" *pool-byte = ") ;
+        _dump.push(
+        std::to_string(_mesh._epol.bytes())) ;
         _dump.push("\n")  ;
-
-        _dump.push("  FACE-BYTE = ") ;
+        _dump.push(" *face-byte = ") ;
         _dump.push(std::to_string(
             sizeof(
         typename mesh_type::face_item)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  FACE-HASH = ") ;
+        _dump.push(" *face-hash = ") ;
         _dump.push(std::to_string(
             _mesh._fset._lptr.alloc())) ;
         _dump.push("\n")  ;
-        _dump.push("  POOL-BYTE = ") ;
-        _dump.push(std::to_string(
-            _mesh._fpol.bytes () ) ) ;
+        _dump.push(" *pool-byte = ") ;
+        _dump.push(
+        std::to_string(_mesh._fpol.bytes())) ;
         _dump.push("\n")  ;
-
-        _dump.push("  TRIA-BYTE = ") ;
+        _dump.push(" *tria-byte = ") ;
         _dump.push(std::to_string(
             sizeof(
         typename mesh_type::tria_item)) ) ;
         _dump.push("\n")  ;
-        _dump.push("  TRIA-HASH = ") ;
+        _dump.push(" *tria-hash = ") ;
         _dump.push(std::to_string(
             _mesh._tset._lptr.alloc())) ;
         _dump.push("\n")  ;
-        _dump.push("  POOL-BYTE = ") ;
-        _dump.push(std::to_string(
-            _mesh._tpol.bytes () ) ) ;
-        _dump.push("\n")  ;
-        _dump.push("\n")  ;
+        _dump.push(" *pool-byte = ") ;
+        _dump.push(
+        std::to_string(_mesh._tpol.bytes())) ;
+        _dump.push("\n\n");
 
-        _dump.push("**PRIORITY-QUEUES: ") ;
-        _dump.push("\n")  ;
-
-        _dump.push("  BSCR-BYTE = ") ;
+        _dump.push("  PRIORITY-QUEUES:\n");
+        _dump.push(" *bscr-byte = ") ;
         _dump.push(
         std::to_string(sizeof(ball_data)));
         _dump.push("\n")  ;
-        _dump.push("  BBPQ-ITEM = ") ;
+        _dump.push(" *bbpq-item = ") ;
         _dump.push(std::to_string(_Nbpq)) ;
         _dump.push("\n")  ;
-
-        _dump.push("  ESCR-BYTE = ") ;
+        _dump.push(" *escr-byte = ") ;
         _dump.push(
         std::to_string(sizeof(edge_cost)));
         _dump.push("\n")  ;
-        _dump.push("  EEPQ-ITEM = ") ;
+        _dump.push(" *eepq-item = ") ;
         _dump.push(std::to_string(_Nepq)) ;
         _dump.push("\n")  ;
-
-        _dump.push("  FSCR-BYTE = ") ;
+        _dump.push(" *fscr-byte = ") ;
         _dump.push(
         std::to_string(sizeof(face_cost)));
         _dump.push("\n")  ;
-        _dump.push("  FFPQ-ITEM = ") ;
+        _dump.push(" *ffpq-item = ") ;
         _dump.push(std::to_string(_Nfpq)) ;
         _dump.push("\n")  ;
-
-        _dump.push("  TSCR-BYTE = ") ;
+        _dump.push(" *tscr-byte = ") ;
         _dump.push(
         std::to_string(sizeof(tria_cost)));
         _dump.push("\n")  ;
-        _dump.push("  TTPQ-ITEM = ") ;
+        _dump.push(" *ttpq-item = ") ;
         _dump.push(std::to_string(_Ntpq)) ;
-        _dump.push("\n")  ;
         _dump.push("\n")  ;
 
         }
