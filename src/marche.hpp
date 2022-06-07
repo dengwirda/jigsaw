@@ -14,9 +14,9 @@
      * MARCHE: "fast-marching" eikonal equation solver.
     --------------------------------------------------------
      *
-     * Last updated: 27 Aug., 2021
+     * Last updated: 28 Mar., 2022
      *
-     * Copyright 2013 -- 2021
+     * Copyright 2013 -- 2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -178,8 +178,8 @@
             }
 
             if ((_retv = test_hfun (
-                 _jcfg,
-                 _jlog, _ffun)) != __no_error)
+                 _jcfg, _jlog , 
+                 _ffun, false)) != __no_error)
             {
                 return  _retv ;
             }
@@ -218,8 +218,8 @@
                 "  FFUN data summary...\n\n" ) ;
 
             if ((_retv = echo_hfun (
-                 _jcfg,
-                 _jlog, _ffun)) != __no_error)
+                 _jcfg, _jlog , 
+                 _ffun, false)) != __no_error)
             {
                 return  _retv ;
             }
@@ -421,8 +421,8 @@
             }
 
             if ((_retv = test_hfun (
-                 _jcfg,
-                 _jlog, _ffun)) != __no_error)
+                 _jcfg, _jlog , 
+                 _ffun, false)) != __no_error)
             {
                 return  _retv ;
             }
@@ -461,8 +461,8 @@
                 "  FFUN data summary...\n\n" ) ;
 
             if ((_retv = echo_hfun (
-                 _jcfg,
-                 _jlog, _ffun)) != __no_error)
+                 _jcfg, _jlog , 
+                 _ffun, false)) != __no_error)
             {
                 return  _retv ;
             }
