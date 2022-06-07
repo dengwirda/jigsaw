@@ -2156,11 +2156,12 @@
 
     /*------------------------------ push boundary marker */
         iptr_list _nset ;
-        conn_list _conn ;
         mark_list _mark ;
 
         init_mark(_mesh, _mark) ;
 
+        {
+        conn_list _conn ;
         iptr_type _nnN1  = +0 ;
         for (auto _node  = _mesh.node().head() ;
                   _node != _mesh.node().tend() ;
@@ -2206,6 +2207,7 @@
                 }
             }
             }
+        }
         }
 
         flip_sign(_mesh) ;

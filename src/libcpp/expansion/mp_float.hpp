@@ -55,7 +55,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 April, 2020
+     * Last updated: 05 Jun., 2022
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -95,7 +95,7 @@
 
     indx_type static constexpr _size = N ;
 
-    real_type                  _xdat [ N ] ;
+    real_type                  _xdat [ N ]  = { 0. } ;
     indx_type                  _xlen = 0 ;
 
     public  :
