@@ -7,11 +7,11 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - gcc-10
-            - g++-10
+            - gcc-9
+            - g++-9
       script:
-        - export CC=gcc-10
-        - export CXX=g++-10
+        - export CC=gcc-9
+        - export CXX=g++-9
         - mkdir build
         - cd build
         - cmake .. -DCMAKE_BUILD_TYPE=Debug

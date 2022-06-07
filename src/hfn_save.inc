@@ -680,7 +680,7 @@
         iptr_type _errv  = __no_error  ;
 
     //  NB. this routine handles output for MARCHE --- only
-    //  *overwriting* the "value" arrays in FMSH - all else
+    //  *overwriting* the "value" arrays in *.NC - all else
     //  is passed read-only...
 
         try
@@ -712,11 +712,6 @@
                         _hval.count() > +0)
                 {
             /*-------------------------- write VALUE data */
-                __assert( _fmsh._value._size ==
-                    _ffun._euclidean_mesh_2d.
-                               _hval.count() &&
-                "savemsh: inconsistent VALUE array") ;
-
                 ncutil::put_var(
                     _jcfg._hfun_file, "value_mat",
                 &_ffun._euclidean_mesh_2d._hval [0]) ;
@@ -736,11 +731,6 @@
                         _hval.count() > +0)
                 {
             /*-------------------------- write VALUE data */
-                __assert( _fmsh._value._size ==
-                    _ffun._euclidean_mesh_3d.
-                               _hval.count() &&
-                "savemsh: inconsistent VALUE array") ;
-
                 ncutil::put_var(
                     _jcfg._hfun_file, "value_mat",
                 &_ffun._euclidean_mesh_3d._hval [0]) ;
@@ -760,11 +750,6 @@
                         _hval.count() > +0)
                 {
             /*-------------------------- write VALUE data */
-                __assert( _fmsh._value._size ==
-                    _ffun._ellipsoid_mesh_3d.
-                               _hval.count() &&
-                "savemsh: inconsistent VALUE array") ;
-
                 ncutil::put_var(
                     _jcfg._hfun_file, "value_mat",
                 &_ffun._ellipsoid_mesh_3d._hval [0]) ;
@@ -784,11 +769,6 @@
                         _hmat.count() > +0)
                 {
             /*-------------------------- write VALUE data */
-                __assert( _fmsh._value._size ==
-                    _ffun._euclidean_grid_2d.
-                               _hmat.count() &&
-                "savemsh: inconsistent VALUE array") ;
-
                 ncutil::put_var(
                     _jcfg._hfun_file, "value_mat",
                 &_ffun._euclidean_grid_2d._hmat [0]) ;
@@ -808,11 +788,6 @@
                         _hmat.count() > +0)
                 {
             /*-------------------------- write VALUE data */
-                __assert( _fmsh._value._size ==
-                    _ffun._euclidean_grid_3d.
-                               _hmat.count() &&
-                "savemsh: inconsistent VALUE array") ;
-
                 ncutil::put_var(
                     _jcfg._hfun_file, "value_mat",
                 &_ffun._euclidean_grid_3d._hmat [0]) ;
@@ -831,12 +806,7 @@
                 if (_ffun._ellipsoid_grid_3d.
                         _hmat.count() > +0)
                 {
-            /*-------------------------- write VALUE data */
-                __assert( _fmsh._value._size ==
-                    _ffun._ellipsoid_grid_3d.
-                               _hmat.count() &&
-                "savemsh: inconsistent VALUE array") ;
-
+            /*-------------------------- write VALUE data */                
                 ncutil::put_var(
                     _jcfg._hfun_file, "value_mat",
                 &_ffun._ellipsoid_grid_3d._hmat [0]) ;

@@ -3,7 +3,7 @@
 #   include <stdexcept>
 #   include <initializer_list>
 
-#   include <netcdf.h>
+#   include "netcdf.h"
 
 #   pragma once
 
