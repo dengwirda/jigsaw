@@ -383,13 +383,13 @@
     /*
     --------------------------------------------------------
      * OPTM_COST - {default = 'area-len'} mesh optimisation
-     * cost metric, choice of area-length (COST='area-len') 
+     * cost metric, choice of area-length (COST='area-len')
      * or skewed-cosine (COST='skew-cos') functions.
-     * The area-length metric is symmetric wrt. both small 
+     * The area-length metric is symmetric wrt. both small
      * and large cell angles, and is typically appropriate
-     * for simplex-only meshes. The skewed-cosine metric is 
+     * for simplex-only meshes. The skewed-cosine metric is
      * based on an asymmetric penalisation of large cell
-     * angles, and may be useful for staggered primal-dual 
+     * angles, and may be useful for staggered primal-dual
      * tessellations.
     --------------------------------------------------------
      */

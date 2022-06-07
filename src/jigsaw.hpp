@@ -594,7 +594,7 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_odt_kern ,
+            iter_func::_odt_optimise,
                *_opts, _jlog )   ;
         }
         else
@@ -630,7 +630,7 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_odt_kern ,
+            iter_func::_odt_optimise,
                *_opts, _jlog )   ;
         }
         else
@@ -666,7 +666,7 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_cvt_kern ,
+            iter_func::_cvt_optimise,
                *_opts, _jlog )   ;
         }
         else
@@ -702,7 +702,7 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_cvt_kern ,
+            iter_func::_cvt_optimise,
                *_opts, _jlog )   ;
         }
     }
@@ -753,7 +753,7 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_odt_kern ,
+            iter_func::_odt_optimise,
                *_opts, _jlog )   ;
         }
         else
@@ -789,7 +789,7 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_odt_kern ,
+            iter_func::_odt_optimise,
                *_opts, _jlog )   ;
         }
         else
@@ -825,7 +825,7 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_cvt_kern ,
+            iter_func::_cvt_optimise,
                *_opts, _jlog )   ;
         }
         else
@@ -861,7 +861,7 @@
             iter_func::iter_mesh (
                 _geom, _hfun ,
                 _mesh. _mesh ,
-            iter_func::_cvt_kern ,
+            iter_func::_cvt_optimise,
                *_opts, _jlog )   ;
         }
     }

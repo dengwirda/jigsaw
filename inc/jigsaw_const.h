@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Aug., 2021
+     * Last updated: 29 May, 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -53,6 +53,7 @@
 
 #       define JIGSAW_FILE_NOT_LOCATED +2
 #       define JIGSAW_FILE_NOT_CREATED +3
+#       define JIGSAW_NETCDF_NOT_FOUND +9
 
 #       define JIGSAW_INVALID_ARGUMENT +4
 #       define JIGSAW_INVALID_INDEXING +5

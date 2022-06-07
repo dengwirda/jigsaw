@@ -19,7 +19,7 @@
     //
     // more option(s):
     //
-    // -DUSE_NETCDF
+    // -DUSE_NETCDF -lnetcdf
     // -DUSE_TIMERS
     //
     // -Wfloat-conversion -Wsign-conversion -Wshadow
@@ -42,9 +42,9 @@
      *
      * JIGSAW release 0.9.15.x
      *
-     * Last updated: 28 August, 2021
+     * Last updated: 28 May, 2022
      *
-     * Copyright 2013 -- 2021
+     * Copyright 2013 -- 2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -249,15 +249,6 @@
 #   include <chrono>
 #   endif//__use_timers
 
-    /*---------------------------------- to do netcdf i/o */
-
-    extern  "C"
-    {
-#   ifdef  __use_netcdf
-#   include "netcdf/lib_netcdf.h"
-#   endif//__use_netcdf
-    }
-
     /*---------------------------------- JIGSAW's backend */
 
     extern  "C"
@@ -277,6 +268,12 @@
     typedef real_t real_type ;        // double-precision
     typedef fp32_t fp32_type ;        // single-precision
     typedef indx_t iptr_type ;        // 32bit signed int
+
+    /*---------------------------------- to do netcdf i/o */
+
+#   ifdef  __use_netcdf
+#   include "netcdf/ncutil.h"
+#   endif//__use_netcdf
 
     /*---------------------------------- JIGSAW mesh kind */
 
@@ -304,6 +301,8 @@
         __file_not_located      = +2 ;
     iptr_type static constexpr
         __file_not_created      = +3 ;
+    iptr_type static constexpr
+        __netcdf_not_available  = +9 ;
 
     iptr_type static constexpr
         __invalid_argument      = +4 ;

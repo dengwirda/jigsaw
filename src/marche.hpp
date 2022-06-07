@@ -178,7 +178,7 @@
             }
 
             if ((_retv = test_hfun (
-                 _jcfg, _jlog , 
+                 _jcfg, _jlog ,
                  _ffun, false)) != __no_error)
             {
                 return  _retv ;
@@ -218,7 +218,7 @@
                 "  FFUN data summary...\n\n" ) ;
 
             if ((_retv = echo_hfun (
-                 _jcfg, _jlog , 
+                 _jcfg, _jlog ,
                  _ffun, false)) != __no_error)
             {
                 return  _retv ;
@@ -421,7 +421,7 @@
             }
 
             if ((_retv = test_hfun (
-                 _jcfg, _jlog , 
+                 _jcfg, _jlog ,
                  _ffun, false)) != __no_error)
             {
                 return  _retv ;
@@ -461,7 +461,7 @@
                 "  FFUN data summary...\n\n" ) ;
 
             if ((_retv = echo_hfun (
-                 _jcfg, _jlog , 
+                 _jcfg, _jlog ,
                  _ffun, false)) != __no_error)
             {
                 return  _retv ;
