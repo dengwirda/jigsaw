@@ -11,7 +11,7 @@
 
 This package provides the underlying `c++` source for `JIGSAW`; defining a basic command-line interface and a `c`-format `API`. Higher-level scripting interfaces, supporting a range of additional facilities for file I/O, mesh visualisation and post-processing operations are also available, including for <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> <a href="https://github.com/dengwirda/jigsaw-matlab">here</a> and for <a href="https://www.python.org/">`PYTHON`</a> <a href="https://github.com/dengwirda/jigsaw-python">here</a>.
 
-`JIGSAW` has been compiled and tested on various `64-bit` `Linux`, `Windows` and `MacOS` based platforms. 
+`JIGSAW` is compiled and tested on various `64-bit` `Linux`, `Windows` and `MacOS` platforms using the `g++`, `clang++` and `msvc` compilers.
 
 ### `Code Structure`
 
@@ -47,12 +47,12 @@ The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`<
     * Make a new temporary directory BUILD.
     * cd build
     * cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
-    * cmake --build . --config BUILD_MODE --target install
+    * cmake --build . --config BUILD_MODE --target install EXTRAS
     * Delete the temporary BUILD directory.
 
 This process will build a series of executables and shared libraries: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, `marche` - a fast-marching solver designed to optimise mesh-spacing configurations, as well as `libjigsaw` - `JIGSAW`'s shared `API`. 
 
-`BUILD_MODE` can be used to select different compiler configurations and should generally either be `Release` or `Debug`. 
+`BUILD_MODE` can be used to select different compiler configurations and should generally either be `Release` or `Debug`. `EXTRAS` can be used to pass additional compile-time arguments, for example `-- -j 4` will build in parallel on supported architectures.
 
 See `example.jig` for documentation on calling the command-line executables, and the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
@@ -94,16 +94,29 @@ The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> u
     * Make a new temporary directory BUILD.
     * cd build
     * cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
-    * cmake --build . --config BUILD_MODE --target install
+    * cmake --build . --config BUILD_MODE --target install EXTRAS
     * Delete the temporary BUILD directory.
 
-This process will build the unit-tests as a series of executables in <a href="../master/uni/">`../jigsaw/uni/`</a>. `BUILD_MODE` is a compiler configuration flag: either `Release` or `Debug`.
+This process will build the unit-tests as a series of executables in <a href="../master/uni/">`../jigsaw/uni/`</a>. `BUILD_MODE` is a compiler configuration flag: either `Release` or `Debug`. `EXTRAS` can be used to pass additional compile-time arguments.
+
+### `Contributors`
+
+1. [@dengwirda](github.com/dengwirda) is `JIGSAW`'s developer and maintainer --- this work was originally the focus of my PhD at the University of Sydney.
+2. [@xylar](github.com/xylar) contributed the original `cmake` build system.
+3. [@tunnellm](https://github.com/tunnellm) extended the original sequential optimisation algorithms to support thread-parallelism.
 
 ### `License`
 
 This program may be freely redistributed under the condition that the copyright notices (including this entire header) are not removed, and no compensation is received through use of the software.  Private, research, and institutional use is free.  You may distribute modified versions of this code `UNDER THE CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR NOTICE IS GIVEN OF THE MODIFICATIONS`. Distribution of this code as part of a commercial system is permissible `ONLY BY DIRECT ARRANGEMENT WITH THE AUTHOR`. (If you are not directly supplying this code to a customer, and you are instead telling them how they can obtain it for free, then you are not required to make any arrangement with me.) 
 
-`DISCLAIMER`:  Neither I nor: Columbia University, the Massachusetts Institute of Technology, the University of Sydney, nor the National Aeronautics and Space Administration warrant this code in any way whatsoever.  This code is provided "as-is" to be used at your own risk.
+`DISCLAIMER`: Neither I nor `THE CONTRIBUTORS` warrant this code in any way whatsoever.  This code is provided "as-is" to be used at your own risk.
+
+`THE CONTRIBUTORS` include:
+(a) The University of Sydney
+(b) The Massachusetts Institute of Technology
+(c) Columbia University
+(d) The National Aeronautics & Space Administration
+(e) Los Alamos National Laboratory
 
 ### `References`
 
