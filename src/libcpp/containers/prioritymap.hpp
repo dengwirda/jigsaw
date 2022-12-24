@@ -64,7 +64,7 @@
     typename T ,
     typename K
              >
-    class heap_pair
+    class _map_pair
     {
 /*----------- local data-pair for an indexed "n"-ary heap */
     public  :
@@ -76,7 +76,7 @@
     kptr_type       _kptr ; // keys iptr
     } ;
 
-#   define  D heap_pair<T, typename A::size_type>
+#   define  D _map_pair<T, typename A::size_type>
 
     template <
     typename T ,
@@ -123,7 +123,7 @@
             size_type ,
             allocator         >         free_list ;
 
-    size_type static constexpr _nfan = +4 ; // fan out
+    size_type static constexpr _nfan = +8 ; // fan out
 
     public  :
 

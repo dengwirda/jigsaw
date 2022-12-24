@@ -13,6 +13,12 @@
 #   JIGSAW: an unstructured mesh generation library 
 #------------------------------------------------------------
 
+  * Version 1.0.0:
+
+  - Initial support for thread-parallelism in optim.
+    phase. 
+
+
   * Version 0.9.15:
     --------------
 
@@ -21,6 +27,10 @@
 
   - New "skewed-cosine" optimisation metric, useful
     to build "well-centred" primal-dual meshes.
+
+  - New "momentum" type optimisation approach, with
+    the two-parameter quasi-hyperbolic method (QHM) 
+    implemented.
 
   - Support "masked-out" entries in MARCHE solvers.
 

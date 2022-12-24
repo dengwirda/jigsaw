@@ -22,16 +22,20 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 September, 2017
+     * Last updated: 01 Sept., 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -62,10 +66,10 @@
         typename  pred_type
              >
     __normal_call iter_type lower_bound (
-        iter_type _head ,
-        iter_type _tend ,
-        data_type _xval ,
-        pred_type _less
+        iter_type _head ,  // head of sequence to search
+        iter_type _tend ,  // last of sequence to search
+        data_type _xval ,  // value to search for
+        pred_type _less    // comparison predicate
         )
     {
         iter_type _iter ;
@@ -109,10 +113,10 @@
         typename  pred_type
              >
     __normal_call iter_type upper_bound (
-        iter_type _head ,
-        iter_type _tend ,
-        data_type _xval ,
-        pred_type _less
+        iter_type _head ,  // head of sequence to search
+        iter_type _tend ,  // last of sequence to search
+        data_type _xval ,  // value to search for
+        pred_type _less    // comparison predicate
         )
     {
         iter_type _iter ;

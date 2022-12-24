@@ -37,7 +37,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 11 April, 2018
+ * Last updated: 11 Apr., 2018
  *
  * Copyright 2013-2018
  * Darren Engwirda
@@ -332,7 +332,7 @@
         )
     {
     /*------------------------------ clear lists of items */
-        this->       empty(_kind) ;
+        this->       empty() ;
     /*------------------------------ resize backing array */
         this->_lptr .clear(_kind) ;
     }

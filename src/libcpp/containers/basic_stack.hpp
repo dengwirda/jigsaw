@@ -39,7 +39,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 21 December, 2018
+ * Last updated: 21 Dec., 2018
  *
  * Copyright 2013-2018
  * Darren Engwirda

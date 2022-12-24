@@ -22,16 +22,20 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Mar., 2022
+     * Last updated: 15 Jun., 2022
      *
      * Copyright 2013-2022
      * Darren Engwirda
@@ -304,13 +308,11 @@
         {
     /*-------------------- "LESS-THAN" operator for queue */
         public  :
-            typename
-            vals_list::_write_it _hptr;
+        typename vals_list::_write_it _hptr ;
 
         public  :
         __inline_call less_than  (
-            typename
-            vals_list::_write_it _hsrc
+        typename vals_list::_write_it _hsrc
             ) : _hptr(_hsrc) {}
 
         __inline_call
@@ -323,23 +325,20 @@
         }
         } ;
 
-        typedef typename
-            allocator:: size_type   uint_type ;
+        size_t static constexpr _imax = 
+        std::numeric_limits<iptr_type>::max() ;
 
-        uint_type static constexpr
-            _null =
-        std::numeric_limits<uint_type>::max() ;
-
-        containers::prioritymap <
+        containers::priorityidx <
+            iptr_type ,
             iptr_type ,
             less_than ,
             allocator >
         _sort((less_than(this->_hmat.head())));
 
-        containers:: array      <
-            typename
-            allocator:: size_type,
-            allocator >     _keys;
+    /*-------------------- check matrix size against type */
+        if (this->_hmat.count() >= _imax)
+            throw std::out_of_range( 
+        "hfun.clip: data size limit exceeded");
 
     /*-------------------- init. values for periodic bc's */
         iptr_type IBEG = +0;
@@ -375,10 +374,6 @@
         }
 
     /*-------------------- push nodes onto priority queue */
-        _keys.set_count (
-            _hmat.count(),
-        containers::tight_alloc, _null) ;
-
         {
         iptr_type _inum  = +0;
         for (auto _iter  =
@@ -387,7 +382,7 @@
                    this->_hmat.tend() ;
                 ++_iter , ++_inum)
         {
-            _keys[_inum] = _sort.push(_inum);
+            _sort.push(_inum, _inum ) ;
         }
         }
 
@@ -433,12 +428,20 @@
         }
 
     /*-------------------- compute h(x) via fast-marching */
+        vals_type static constexpr
+            _FTOL = std::pow(
+        std::numeric_limits<vals_type>::epsilon(), .75) ;
+
+    #   define ISALIVE(__idx)           \
+           (_sort.keys(__idx) != _sort.null())
+
+    #   define UPDATED(__new, __old)    \
+        std::abs(__new - __old) > _FTOL*std::abs(__new)
+
         for ( ; !_sort.empty() ; )
         {
-            iptr_type _base ;
-            _sort._pop_root(_base) ;
-
-            _keys[_base] = _null ;
+            iptr_type _base, _bidx;
+            _sort._pop_root( _bidx, _base) ;
 
             iptr_type  _ipos, _jpos ;
             subs_from_indx(
@@ -488,6 +491,15 @@
                     _lpii, _lpjj, _lnod);
 
     /*-------------------- skip cells due to sorted order */
+                if (_inod != _base && 
+                   !ISALIVE(_inod)) continue ;
+                if (_jnod != _base && 
+                   !ISALIVE(_jnod)) continue ;
+                if (_knod != _base && 
+                   !ISALIVE(_knod)) continue ;
+                if (_lnod != _base && 
+                   !ISALIVE(_lnod)) continue ;
+
                 vals_type _hmax;
                 _hmax = this->_hmat[_inod] ;
                 _hmax = std::max(
@@ -562,9 +574,9 @@
                 if (this->_dhdx.count() >1)
                 {
     /*-------------------- update adj. set, g = g(x) case */
-                if (eikonal_quad_3d (
+                if (eikonal_grid_3d (
                    _IXYZ , _JXYZ ,
-                   _KXYZ , _LXYZ ,
+                   _KXYZ , _LXYZ , _hnow ,
                    _inew , _jnew ,
                    _knew , _lnew ,
                     this->_dhdx[_inod],
@@ -573,36 +585,39 @@
                     this->_dhdx[_lnod])  )
                 {
 
-                if (_keys[_inod] != _null)
-                if (_inew != _iold)
+            //  push updates one-at-a-time to ensure heap
+            //  maintains its sorted order
+
+                if (_sort.
+                     keys(_inod) != _sort.null()) 
+                if ( UPDATED(_inew, _iold) )
                 {
-                    _hmat[_inod] =  _inew;
-                    _sort.reduce(
-                    _keys[_inod] ,  _inod) ;
+                    _hmat[_inod]  = _inew;
+                    _sort.reduce(_inod , _inod) ;
                 }
 
-                if (_keys[_jnod] != _null)
-                if (_knew != _jold)
+                if (_sort.
+                     keys(_jnod) != _sort.null()) 
+                if ( UPDATED(_jnew, _jold) )
                 {
-                    _hmat[_jnod] =  _jnew;
-                    _sort.reduce(
-                    _keys[_jnod] ,  _jnod) ;
+                    _hmat[_jnod]  = _jnew;
+                    _sort.reduce(_jnod , _jnod) ;
                 }
 
-                if (_keys[_knod] != _null)
-                if (_knew != _kold)
+                if (_sort.
+                     keys(_knod) != _sort.null()) 
+                if ( UPDATED(_knew, _kold) )
                 {
-                    _hmat[_knod] =  _knew;
-                    _sort.reduce(
-                    _keys[_knod] ,  _knod) ;
+                    _hmat[_knod]  = _knew;
+                    _sort.reduce(_knod , _knod) ;
                 }
 
-                if (_keys[_lnod] != _null)
-                if (_lnew != _lold)
+                if (_sort.
+                     keys(_lnod) != _sort.null()) 
+                if ( UPDATED(_lnew, _lold) )
                 {
-                    _hmat[_lnod] =  _lnew;
-                    _sort.reduce(
-                    _keys[_lnod] ,  _lnod) ;
+                    _hmat[_lnod]  = _lnew;
+                    _sort.reduce(_lnod , _lnod) ;
                 }
 
                 if (this->_wrap)
@@ -617,10 +632,10 @@
                 this->_hmat [_pair] =
                     this->_hmat [_inod] ;
 
-                if (_keys[_pair] != _null)
+                if (_sort.
+                     keys(_pair) != _sort.null()) 
                 if (_hmat[_inod] != _iold)
-                    _sort.reduce(
-                    _keys[_pair] ,  _pair) ;
+                    _sort.reduce(_pair , _pair) ;
                 }
 
                 if (_jpjj==JEND)
@@ -632,10 +647,10 @@
                 this->_hmat [_pair] =
                     this->_hmat [_jnod] ;
 
-                if (_keys[_pair] != _null)
+                if (_sort.
+                     keys(_pair) != _sort.null()) 
                 if (_hmat[_jnod] != _jold)
-                    _sort.reduce(
-                    _keys[_pair] ,  _pair) ;
+                    _sort.reduce(_pair , _pair) ;
                 }
 
                 if (_kpjj==JEND)
@@ -647,10 +662,10 @@
                 this->_hmat [_pair] =
                     this->_hmat [_knod] ;
 
-                if (_keys[_pair] != _null)
+                if (_sort.
+                     keys(_pair) != _sort.null()) 
                 if (_hmat[_knod] != _kold)
-                    _sort.reduce(
-                    _keys[_pair] ,  _pair) ;
+                    _sort.reduce(_pair , _pair) ;
                 }
 
                 if (_lpjj==JBEG)
@@ -662,10 +677,10 @@
                 this->_hmat [_pair] =
                     this->_hmat [_lnod] ;
 
-                if (_keys[_pair] != _null)
+                if (_sort.
+                     keys(_pair) != _sort.null()) 
                 if (_hmat[_lnod] != _lold)
-                    _sort.reduce(
-                    _keys[_pair] ,  _pair) ;
+                    _sort.reduce(_pair , _pair) ;
                 }
                 }
 
@@ -675,9 +690,9 @@
                 if (this->_dhdx.count()==1)
                 {
     /*-------------------- update adj. set, const. g case */
-                if (eikonal_quad_3d (
+                if (eikonal_grid_3d (
                    _IXYZ , _JXYZ ,
-                   _KXYZ , _LXYZ ,
+                   _KXYZ , _LXYZ , _hnow ,
                    _inew , _jnew ,
                    _knew , _lnew ,
                     this->_dhdx[  +0 ],
@@ -686,36 +701,39 @@
                     this->_dhdx[  +0 ])  )
                 {
 
-                if (_keys[_inod] != _null)
-                if (_inew != _iold)
+            //  push updates one-at-a-time to ensure heap
+            //  maintains its sorted order
+
+                if (_sort.
+                     keys(_inod) != _sort.null()) 
+                if ( UPDATED(_inew, _iold) )
                 {
-                    _hmat[_inod] =  _inew;
-                    _sort.reduce(
-                    _keys[_inod] ,  _inod) ;
+                    _hmat[_inod]  = _inew;
+                    _sort.reduce(_inod , _inod) ;
                 }
 
-                if (_keys[_jnod] != _null)
-                if (_knew != _jold)
+                if (_sort.
+                     keys(_jnod) != _sort.null()) 
+                if ( UPDATED(_jnew, _jold) )
                 {
-                    _hmat[_jnod] =  _jnew;
-                    _sort.reduce(
-                    _keys[_jnod] ,  _jnod) ;
+                    _hmat[_jnod]  = _jnew;
+                    _sort.reduce(_jnod , _jnod) ;
                 }
 
-                if (_keys[_knod] != _null)
-                if (_knew != _kold)
+                if (_sort.
+                     keys(_knod) != _sort.null()) 
+                if ( UPDATED(_knew, _kold) )
                 {
-                    _hmat[_knod] =  _knew;
-                    _sort.reduce(
-                    _keys[_knod] ,  _knod) ;
+                    _hmat[_knod]  = _knew;
+                    _sort.reduce(_knod , _knod) ;
                 }
 
-                if (_keys[_lnod] != _null)
-                if (_lnew != _lold)
+                if (_sort.
+                     keys(_lnod) != _sort.null()) 
+                if ( UPDATED(_lnew, _lold) )
                 {
-                    _hmat[_lnod] =  _lnew;
-                    _sort.reduce(
-                    _keys[_lnod] ,  _lnod) ;
+                    _hmat[_lnod]  = _lnew;
+                    _sort.reduce(_lnod , _lnod) ;
                 }
 
                 if (this->_wrap)
@@ -730,10 +748,10 @@
                 this->_hmat [_pair] =
                     this->_hmat [_inod] ;
 
-                if (_keys[_pair] != _null)
+                if (_sort.
+                     keys(_pair) != _sort.null()) 
                 if (_hmat[_inod] != _iold)
-                    _sort.reduce(
-                    _keys[_pair] ,  _pair) ;
+                    _sort.reduce(_pair , _pair) ;
                 }
 
                 if (_jpjj==JEND)
@@ -745,10 +763,10 @@
                 this->_hmat [_pair] =
                     this->_hmat [_jnod] ;
 
-                if (_keys[_pair] != _null)
+                if (_sort.
+                     keys(_pair) != _sort.null()) 
                 if (_hmat[_jnod] != _jold)
-                    _sort.reduce(
-                    _keys[_pair] ,  _pair) ;
+                    _sort.reduce(_pair , _pair) ;
                 }
 
                 if (_kpjj==JEND)
@@ -760,10 +778,10 @@
                 this->_hmat [_pair] =
                     this->_hmat [_knod] ;
 
-                if (_keys[_pair] != _null)
+                if (_sort.
+                     keys(_pair) != _sort.null()) 
                 if (_hmat[_knod] != _kold)
-                    _sort.reduce(
-                    _keys[_pair] ,  _pair) ;
+                    _sort.reduce(_pair , _pair) ;
                 }
 
                 if (_lpjj==JBEG)
@@ -775,10 +793,10 @@
                 this->_hmat [_pair] =
                     this->_hmat [_lnod] ;
 
-                if (_keys[_pair] != _null)
+                if (_sort.
+                     keys(_pair) != _sort.null()) 
                 if (_hmat[_lnod] != _lold)
-                    _sort.reduce(
-                    _keys[_pair] ,  _pair) ;
+                    _sort.reduce(_pair , _pair) ;
                 }
                 }
 
@@ -789,6 +807,8 @@
             }
         }
 
+    #   undef ISALIVE
+    #   undef UPDATED
     }
 
     /*
@@ -896,8 +916,8 @@
         }
 
     /*---------------------------- find enclosing x-range */
-        iptr_type _ipos = (iptr_type) -1 ;
-        iptr_type _jpos = (iptr_type) -1 ;
+        auto _ipos = this-> null_hint() ;
+        auto _jpos = this-> null_hint() ;
 
         if (this->_xvar)
         {

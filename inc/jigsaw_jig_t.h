@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Aug., 2021
+     * Last updated: 12 Dec., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -59,6 +63,16 @@
      */
 
         indx_t                  _verbosity ;
+
+    /*
+    --------------------------------------------------------
+     * NUMTHREAD - {default=0} control for thread-parallel
+     * implementations. Set NUMTHREAD <= 0 to autodetect a
+     * machine's max-thread allocation.
+    --------------------------------------------------------
+     */
+
+        indx_t                  _numthread ;
 
     /*
     --------------------------------------------------------
@@ -398,6 +412,30 @@
 
     /*
     --------------------------------------------------------
+     * OPTM_BETA - {default=0.4950} "momentum"-type biases
+     * for gradient descent updates, such that 
+     * DX' = BETA * DX(K-1) + (1-BETA) * DX(K).
+     * Momentum typically improves the convergence of mesh
+     * optimisation. 
+    --------------------------------------------------------
+     */
+
+        real_t                  _optm_beta ;
+
+    /*
+    --------------------------------------------------------
+     * OPTM_ZETA - {default=0.7500} "momentum"-type biases
+     * for search direction updates, such that 
+     * DX* = ZETA * DX' (K) + (1-ZETA) * DX(K).
+     * Momentum typically improves the convergence of mesh
+     * optimisation. 
+    --------------------------------------------------------
+     */
+
+        real_t                  _optm_zeta ;
+
+    /*
+    --------------------------------------------------------
      * OPTM_QTOL - {default=1.E-04} tolerance on mesh cost
      * function for convergence. Iteration on a given node
      * is terminated if adjacent element cost-functions are
@@ -409,7 +447,7 @@
 
     /*
     --------------------------------------------------------
-     * OPTM_QLIM - {default=0.9375} threshold on mesh cost
+     * OPTM_QLIM - {default=0.9333} threshold on mesh cost
      * function above which gradient-based optimisation is
      * attempted.
     --------------------------------------------------------

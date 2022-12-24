@@ -43,7 +43,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 July, 2019
+ * Last updated: 03 Jul., 2019
  *
  * Copyright 2013-2019
  * Darren Engwirda

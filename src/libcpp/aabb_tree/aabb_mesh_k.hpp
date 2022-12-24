@@ -22,16 +22,20 @@
  * how they can obtain it for free, then you are not
  * required to make any arrangement with me.)
  *
- * Disclaimer:  Neither I nor: Columbia University, The
- * Massachusetts Institute of Technology, The
- * University of Sydney, nor The National Aeronautics
- * and Space Administration warrant this code in any
- * way whatsoever.  This code is provided "as-is" to be
- * used at your own risk.
+ * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+ * this code in any way whatsoever.  This code is 
+ * provided "as-is" to be used at your own risk.
+ *
+ * THE CONTRIBUTORS include:
+ * (a) The University of Sydney
+ * (b) The Massachusetts Institute of Technology
+ * (c) Columbia University
+ * (d) The National Aeronautics & Space Administration
+ * (e) Los Alamos National Laboratory
  *
 ------------------------------------------------------------
  *
- * Last updated: 11 September, 2017
+ * Last updated: 11 Sept., 2017
  *
  * Copyright 2013-2017
  * Darren Engwirda
@@ -79,8 +83,7 @@
             bool_type operator() (
             face_type const&_fdat
             ) const
-        {
-            __unreferenced (_fdat) ;
+        {   __unreferenced (_fdat) ;
 
             return ( true ) ;
         }
@@ -102,12 +105,12 @@
                 allocators::basic_alloc
              >
     __normal_call void_type aabb_mesh (
-        node_list& _nset ,
-        face_list& _fset ,
-        tree_type& _tree ,
-        REAL_TYPE* _btol ,
-        IPTR_TYPE  _nbox =  + 32,
-        push_pred  _push =  push_aabb()
+        node_list& _nset ,  // array of mesh nodes
+        face_list& _fset ,  // array of mesh cells
+        tree_type& _tree ,  // tree to load into
+        REAL_TYPE* _btol ,  // expand tree bbox over axes
+        IPTR_TYPE  _nbox =  + 32,  // cells-per-bbox lim.
+        push_pred  _push =  push_aabb()  // filter scheme
         )
     {
         IPTR_TYPE constexpr _nnod =

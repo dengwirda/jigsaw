@@ -22,12 +22,16 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
      --------------------------------------------------------
      *
@@ -138,9 +142,9 @@
              >
     __static_call
     __normal_call bool_type clip_dual (
-        mesh_type &_mesh,
-        half_list &_hset,
-        real_type *_ppos,
+        mesh_type &_mesh,  // mesh object
+        half_list &_hset,  // list of halfspace objects
+        real_type *_ppos,  // point to test
         bool_type &_safe,
         real_type  _rtol
         )
@@ -205,15 +209,15 @@
 
     __static_call
     __normal_call bool_type edge_ball (
-        geom_type &_geom,
-        mesh_type &_mesh,
-        iptr_type  _tadj,
-        iptr_type  _eadj,
-        real_type *_ebal,
-        real_type *_sbal,
-        char_type &_feat,
-        char_type *_topo,
-        iptr_type &_part
+        geom_type &_geom,  // geometry object
+        mesh_type &_mesh,  // mesh object
+        iptr_type  _tadj,  // index of adj. simplex
+        iptr_type  _eadj,  // index of edge in adj. cell
+        real_type *_ebal,  // circumball on edge
+        real_type *_sbal,  // circumball on geometry
+        char_type &_feat,  // returned feature kind
+        char_type *_topo,  // returned topology tag
+        iptr_type &_part   // returned geometry tag
         )
     {
         real_type static const _rEPS =
@@ -512,11 +516,11 @@
 
     __static_call
     __inline_call bool_type tria_ball (
-        geom_type &_geom,
-        mesh_type &_mesh,
-        iptr_type  _tpos,
-        real_type *_tbal,
-        iptr_type &_part
+        geom_type &_geom,  // geometry object
+        mesh_type &_mesh,  // mesh object
+        iptr_type  _tpos,  // index of adj. simplex
+        real_type *_tbal,  // circumball on cell
+        iptr_type &_part   // returned geometry tag
         )
     {
     /*--------------------------- assemble local indexing */

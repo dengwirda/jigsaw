@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Aug., 2021
+     * Last updated: 12 Dec., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -84,6 +88,9 @@
         /*--------------------------------- MISC keywords */
                 _file << "VERBOSITY = " <<
                     _jcfg->_verbosity << "\n" ;
+
+                _file << "NUMTHREAD = " <<
+                    _jcfg->_numthread << "\n" ;
 
         /*--------------------------------- GEOM keywords */
                 _file << "GEOM_SEED = " <<
@@ -209,6 +216,11 @@
         /*--------------------------------- OPTM keywords */
                 _file << "OPTM_ITER = " <<
                     _jcfg->_optm_iter << "\n" ;
+
+                _file << "OPTM_BETA = " <<
+                    _jcfg->_optm_beta << "\n" ;
+                _file << "OPTM_ZETA = " <<
+                    _jcfg->_optm_zeta << "\n" ;
 
                 _file << "OPTM_QTOL = " <<
                     _jcfg->_optm_qtol << "\n" ;

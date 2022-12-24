@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 July, 2019
+     * Last updated: 02 Aug., 2022
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -56,6 +60,8 @@
         iptr_type  _tpos
         )
     {
+        if(_mesh._eset._size == +0) return ;
+
         for(auto _fpos =+3; _fpos-- != +0; )
         {
     /*--------------------------------- get edge indexing */
@@ -93,6 +99,8 @@
         iptr_type  _tpos
         )
     {
+        if (_mesh._tset._size == 0) return;
+
         {
     /*--------------------------------- get tria indexing */
             tria_data _tdat;
@@ -404,7 +412,7 @@
 
     /*---------------------- calc. ball in floating-point */
         real_type _tbal[3] ;
-        geometry::circ_ball_2d (
+        geometry::perp_ball_2d (
             _tbal ,
        &_mesh._tria.
             node(_tnod[0])->pval(0) ,
@@ -450,7 +458,6 @@
     /*------------------------- no. "restricted" subfaces */
         iptr_type _nedg = +0 ;
         iptr_type _ntri = +0 ;
-
         iptr_type _ndup = +0 ;
 
     /*------------------------- calc. voronoi-dual points */
@@ -483,12 +490,8 @@
         if (_dim0 <= edge_mode &&
             _dim1 >= edge_mode )
         {
-        typename
-            mesh_type::edge_list _eset (
-        typename mesh_type::edge_hash(),
-        typename mesh_type::edge_pred(),
-           +.8, _mesh._eset.get_alloc(),
-           _tnew.count() * +3) ;
+        _mesh._etwo.clear();
+        _mesh._etwo.set_slots(_tnew.count() * +3) ;
 
         for( auto _iter  = _tnew.head();
                   _iter != _tnew.tend();
@@ -497,8 +500,8 @@
             push_edge(_mesh, _geom ,
                       _hfun,*_iter ,
                       _edat, _escr ,
-                      _eset, _nedg ,
-                      _ndup,
+                      _mesh. _etwo , 
+                      _nedg, _ndup ,
                       _pass, _opts) ;
         }
         }
@@ -506,18 +509,14 @@
         if (_dim0 <= tria_mode &&
             _dim1 >= tria_mode )
         {
-      //typename
-      //    mesh_type::tria_list _tset (
-      //typename mesh_type::tria_hash(),
-      //typename mesh_type::tria_pred(),
-      //   +.8, _mesh._tset.get_alloc(),
-      //   _tnew.count() * +1) ;
+    //  _mesh._ttwo.clear();
+    //  _mesh._ttwo.set_slots(_tnew.count() * +1) ;
 
         bool_type _safe = true ;
 
         if (_dim0 >  +0) _safe = false ;
 
-      //if (_nedg >= +1) _safe = false ;
+    //  if (_nedg >= +1) _safe = false ;
         if (_ndup >= +1) _safe = false ;
 
         for( auto _iter  = _tnew.head();

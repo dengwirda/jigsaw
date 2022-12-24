@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Jul., 2021
+     * Last updated: 12 Dec., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -69,17 +73,21 @@
 
         typedef iter_params<R, I>       self_type ;
 
-        iptr_type        _verb ;
+        iptr_type   _verb ;     // logfile output verbosity
+        iptr_type   _nprt ;     // no. threads
 
-        iptr_type        _iter ;
+        iptr_type   _iter ;     // no. iterations
 
-        real_type        _qtol ;
-        real_type        _qlim ;
+        real_type   _beta ;     // QHM momentum coeff.
+        real_type   _zeta ;     // QHM momentum coeff.
 
-        bool_type        _zip_ ;
-        bool_type        _div_ ;
-        bool_type        _tria ;
-        bool_type        _dual ;
+        real_type   _qtol ;     // convergence tolerance
+        real_type   _qlim ;     // fallback score threshold
+
+        bool_type   _zip_ ;     // do cell merge operations
+        bool_type   _div_ ;     // do cell split operations
+        bool_type   _tria ;     // mesh cell optimisation
+        bool_type   _dual ;     // dual cell optimisation
 
         public  :
 
@@ -92,9 +100,16 @@
 
             this->_verb =
             iptr_type(_jjig._verbosity) ;
+            this->_nprt =
+            iptr_type(_jjig._numthread) ;
 
             this->_iter =
             iptr_type(_jjig._optm_iter) ;
+
+            this->_beta =
+            real_type(_jjig._optm_beta) ;
+            this->_zeta =
+            real_type(_jjig._optm_zeta) ;
 
             this->_qtol =
             real_type(_jjig._optm_qtol) ;
@@ -116,10 +131,23 @@
             )
         {   return  this->_verb ;
         }
+        __inline_call iptr_type      & nprt (
+            )
+        {   return  this->_nprt ;
+        }
 
         __inline_call iptr_type      & iter (
             )
         {   return  this->_iter ;
+        }
+
+        __inline_call real_type      & beta (
+            )
+        {   return  this->_beta ;
+        }
+        __inline_call real_type      & zeta (
+            )
+        {   return  this->_zeta ;
         }
 
         __inline_call real_type      & qtol (
@@ -153,10 +181,23 @@
             ) const
         {   return  this->_verb ;
         }
+        __inline_call iptr_type const& nprt (
+            ) const
+        {   return  this->_nprt ;
+        }
 
         __inline_call iptr_type const& iter (
             ) const
         {   return  this->_iter ;
+        }
+
+        __inline_call real_type const& beta (
+            ) const
+        {   return  this->_beta ;
+        }
+        __inline_call real_type const& zeta (
+            ) const
+        {   return  this->_zeta ;
         }
 
         __inline_call real_type const& qtol (

@@ -9,12 +9,12 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"   OR
     CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
     CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   set (GCXX_LIKE TRUE)
-  message (">> GCXX-like compiler detected")
+  message (STATUS "GCXX-like compiler detected")
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set (MSVC_LIKE TRUE)
-  message (">> MSVC-like compiler detected")
+  message (STATUS "MSVC-like compiler detected")
 endif ()
 
 if (DEFINED MSVC_LIKE)
@@ -29,28 +29,43 @@ endif ()
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set (INSTALL_LOCAL TRUE)
-  message (">> Installing locally")
+  message (STATUS "Installing locally")
 else ()
-  message (">> Installing to ${CMAKE_INSTALL_PREFIX}")
+  message (STATUS "Installing to ${CMAKE_INSTALL_PREFIX}")
 endif ()
 
 find_library (NETCDF_LIBRARY NAMES netcdf)
 
 if (NETCDF_LIBRARY)
-  message (">> NetCDF library found")
+  message (STATUS "NetCDF library found")
   message (STATUS "NetCDF inc. lib: ${NETCDF_LIBRARY}")
 else ()
-  message (">> NetCDF library not found")
+  message (STATUS "NetCDF library not found")
+endif ()
+
+find_package (OpenMP)
+
+if (OpenMP_CXX_FOUND)
+  message (STATUS "OpenMP library found")
+  message (STATUS "OpenMP inc. lib: ${OpenMP_CXX_LIB_NAMES}")
+else ()
+  message (STATUS "OpenMP library not found")
 endif ()
 
 
 add_executable (jigsaw-cmd jigsaw.cpp)
+target_compile_definitions (jigsaw-cmd PRIVATE CMD_JIGSAW)
+
 if (NETCDF_LIBRARY)
-  target_compile_definitions (jigsaw-cmd PRIVATE CMD_JIGSAW USE_NETCDF)
-  target_link_libraries (jigsaw-cmd ${NETCDF_LIBRARY})
+  target_compile_definitions (jigsaw-cmd PRIVATE USE_NETCDF)
+  target_link_libraries (jigsaw-cmd PRIVATE ${NETCDF_LIBRARY})
   set_target_properties (jigsaw-cmd PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-else ()
-  target_compile_definitions (jigsaw-cmd PRIVATE CMD_JIGSAW)
+endif ()
+
+if (OpenMP_CXX_FOUND)
+  target_compile_definitions (jigsaw-cmd PRIVATE USE_OPENMP)
+  target_link_libraries (jigsaw-cmd PRIVATE OpenMP::OpenMP_CXX)
+  set_target_properties (jigsaw-cmd PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif ()
 
 set_target_properties (jigsaw-cmd PROPERTIES OUTPUT_NAME jigsaw)
@@ -62,15 +77,20 @@ endif ()
 
 
 add_executable (tripod-cmd jigsaw.cpp)
+target_compile_definitions (tripod-cmd PRIVATE CMD_TRIPOD)
+
 if (NETCDF_LIBRARY)
-  target_compile_definitions (tripod-cmd PRIVATE CMD_TRIPOD USE_NETCDF)
-  target_link_libraries (tripod-cmd ${NETCDF_LIBRARY})
+  target_compile_definitions (tripod-cmd PRIVATE USE_NETCDF)
+  target_link_libraries (tripod-cmd PRIVATE ${NETCDF_LIBRARY})
   set_target_properties (tripod-cmd PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-else ()
-  target_compile_definitions (tripod-cmd PRIVATE CMD_TRIPOD)
 endif ()
 
-target_compile_definitions (tripod-cmd PRIVATE CMD_TRIPOD)
+if (OpenMP_CXX_FOUND)
+  target_compile_definitions (tripod-cmd PRIVATE USE_OPENMP)
+  target_link_libraries (tripod-cmd PRIVATE OpenMP::OpenMP_CXX)
+  set_target_properties (tripod-cmd PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif ()
+
 set_target_properties (tripod-cmd PROPERTIES OUTPUT_NAME tripod)
 if (DEFINED INSTALL_LOCAL)
   install (TARGETS tripod-cmd DESTINATION "${PROJECT_SOURCE_DIR}/bin")
@@ -80,12 +100,18 @@ endif ()
 
 
 add_executable (marche-cmd jigsaw.cpp)
+target_compile_definitions (marche-cmd PRIVATE CMD_MARCHE)
+
 if (NETCDF_LIBRARY)
-  target_compile_definitions (marche-cmd PRIVATE CMD_MARCHE USE_NETCDF)
-  target_link_libraries (marche-cmd ${NETCDF_LIBRARY})
+  target_compile_definitions (marche-cmd PRIVATE USE_NETCDF)
+  target_link_libraries (marche-cmd PRIVATE ${NETCDF_LIBRARY})
   set_target_properties (marche-cmd PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-else ()
-  target_compile_definitions (marche-cmd PRIVATE CMD_MARCHE)
+endif ()
+
+if (OpenMP_CXX_FOUND)
+  target_compile_definitions (marche-cmd PRIVATE USE_OPENMP)
+  target_link_libraries (marche-cmd PRIVATE OpenMP::OpenMP_CXX)
+  set_target_properties (marche-cmd PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif ()
 
 set_target_properties (marche-cmd PROPERTIES OUTPUT_NAME marche)
@@ -97,12 +123,18 @@ endif ()
 
 
 add_library (jigsaw-lib SHARED jigsaw.cpp)
+target_compile_definitions (jigsaw-lib PRIVATE LIB_JIGSAW)
+
 if (NETCDF_LIBRARY)
-  target_compile_definitions (jigsaw-lib PRIVATE LIB_JIGSAW USE_NETCDF)
-  target_link_libraries (jigsaw-lib ${NETCDF_LIBRARY})
+  target_compile_definitions (jigsaw-lib PRIVATE USE_NETCDF)
+  target_link_libraries (jigsaw-lib PRIVATE ${NETCDF_LIBRARY})
   set_target_properties (jigsaw-lib PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-else ()
-  target_compile_definitions (jigsaw-lib PRIVATE LIB_JIGSAW)
+endif ()
+
+if (OpenMP_CXX_FOUND)
+  target_compile_definitions (jigsaw-lib PRIVATE USE_OPENMP)
+  target_link_libraries (jigsaw-lib PRIVATE OpenMP::OpenMP_CXX)
+  set_target_properties (jigsaw-lib PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif ()
 
 set_target_properties (jigsaw-lib PROPERTIES OUTPUT_NAME jigsaw)

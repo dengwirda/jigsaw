@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2021
+     * Last updated: 01 Aug., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -69,6 +73,8 @@
     {
         _kind = mesh::null_item ;
 
+        _edat._mark =  (iptr_type) +0;
+
         if (_args.dims() < +1) return;
 
     /*--------------------------- assemble local indexing */
@@ -89,16 +95,17 @@
             return  ;
 
     /*------------------------- calc. refinement priority */
-        _edat._cost = (float) _pmax[2] ;
+        _edat._cost =
+        (float)(_pmax[2] + _ebal[2]) ;
 
     /*------------------------- eval. size func. at _tbal */
-        real_type _esiz = (real_type)+0.;
-        _esiz += (real_type)+1.*_hfun.eval(
+        real_type _esiz = (real_type)+0. ;
+        _esiz += (real_type)1./3.*_hfun.eval(
            &_mesh._tria.
              node(_enod[0])->pval(0) ,
             _mesh._tria.
              node(_enod[0])->idxh()) ;
-        _esiz += (real_type)+1.*_hfun.eval(
+        _esiz += (real_type)1./3.*_hfun.eval(
            &_mesh._tria.
              node(_enod[1])->pval(0) ,
             _mesh._tria.
@@ -107,14 +114,12 @@
          auto _hint =
         _mesh._tria.node(_enod[ 1])->idxh() ;
 
-        _esiz += (real_type)+1.0 *
+        _esiz += (real_type)1./3. *
                  _hfun.eval(  _pmax, _hint) ;
-
-        _esiz /= (real_type)+3.0 ;
 
         real_type _eave =_pmax [ +2] ;
         _eave /= _esiz * _esiz ;
-        _eave *= (real_type)+4.0 ;
+        _eave *= (real_type)4./1. ;
 
     /*------------------------- eval. surface-disc.-error */
         real_type _srat =
@@ -128,10 +133,8 @@
     //  least one boundary face.
 
         bool_type _trap =
-            _mesh._tria.
-        node(_enod[0])->fdim() < +1 &&
-            _mesh._tria.
-        node(_enod[1])->fdim() < +1  ;
+       _mesh._tria.node(_enod[0])->fdim() < 1 &&
+       _mesh._tria.node(_enod[1])->fdim() < 1 ;
 
         real_type _scal = 1. + _trap * .100 ;
 
@@ -167,6 +170,8 @@
         )
     {
         _kind = mesh::null_item ;
+
+        _tdat._mark =  (iptr_type) +0 ;
 
         if (_args.dims() < +2) return ;
 
@@ -222,13 +227,12 @@
         }
 
     /*------------------------- calc. refinement priority */
-        bool_type _trap = false ;
-
-        _tdat._mark =  (iptr_type) +0;
+        iptr_type _nbnd = +0 ;
 
     #   ifdef __bias_bnds
         for(_enum = +3; _enum-- != +0; )
         {
+    /*------------------------- are there bnd-adj. faces? */
             iptr_type  _enod[ +3];
             mesh_type::tria_type::
                 tria_type::
@@ -250,8 +254,7 @@
                  item_type *_eptr = nullptr ;
             if (_mesh.find_edge(_edat,_eptr))
             {
-                _trap =   true ;
-
+                _nbnd       += +1 ;
                 _tdat._mark -= +1 ;
             }
         }
@@ -270,7 +273,7 @@
     //  all nodes on lower dimensional facets and with at
     //  least one boundary face.
 
-        _trap = _trap &&
+        bool_type _trap =_nbnd > +0 &&
             _mesh._tria.
         node(_tnod[0])->fdim() < +2 &&
             _mesh._tria.
@@ -286,19 +289,24 @@
             _kind = mesh::ring_item; return ;
         }
 
+        if (_nbnd >= +3 )
+        {
+            _kind = mesh::ring_item; return ;
+        }
+
     /*------------------------- eval. size func. at _tbal */
         real_type _tsiz = (real_type)+0.;
-        _tsiz += (real_type)+1.*_hfun.eval(
+        _tsiz += (real_type)1./4.*_hfun.eval(
            &_mesh._tria.
              node(_tnod[0])->pval(0) ,
             _mesh._tria.
              node(_tnod[0])->idxh()) ;
-        _tsiz += (real_type)+1.*_hfun.eval(
+        _tsiz += (real_type)1./4.*_hfun.eval(
            &_mesh._tria.
              node(_tnod[1])->pval(0) ,
             _mesh._tria.
              node(_tnod[1])->idxh()) ;
-        _tsiz += (real_type)+1.*_hfun.eval(
+        _tsiz += (real_type)1./4.*_hfun.eval(
            &_mesh._tria.
              node(_tnod[2])->pval(0) ,
             _mesh._tria.
@@ -307,14 +315,12 @@
          auto _hint =
         _mesh._tria.node(_tnod[ 2])->idxh() ;
 
-        _tsiz += (real_type)+1.0 *
+        _tsiz += (real_type)1./4. *
                  _hfun.eval(  _tbal, _hint) ;
-
-        _tsiz /= (real_type)+4.0 ;
 
         real_type _eave = _tbal[ +2] ;
         _eave /= _tsiz * _tsiz;
-        _eave *= (real_type)+3.0 ;
+        _eave *= (real_type)3./1. ;
 
     /*------------------------- refinement classification */
         _scal += (real_type)(_trap * 0.100) ;

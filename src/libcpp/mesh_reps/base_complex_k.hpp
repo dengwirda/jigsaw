@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 Sept., 2021
+     * Last updated: 11 Dec., 2022
      *
-     * Copyright 2020--2021
+     * Copyright 2020--2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -1488,6 +1492,10 @@
     {
         __unreferenced(_kind);      // maybe, per TOPODIM
 
+        if (_mesh.
+            _llN1[_npos].mark() < +0 ) 
+            return ;                // is already removed
+
         if (_itop != -1)
         {
     /*---- deleteing (d+k)-face: scan adj. and _pop _itop */
@@ -1557,6 +1565,10 @@
         IPTR_TYPE _npos = -1 ;
 
         __unreferenced(_kind);      // maybe, per TOPODIM
+
+        if (_mesh.
+            _llE2[_epos].mark() < +0 ) 
+            return ;                // is already removed
 
         if (_itop == -1)
         {
@@ -1650,6 +1662,10 @@
         IPTR_TYPE _epos = -1 ;
 
         __unreferenced(_kind);      // maybe, per TOPODIM
+
+        if (_mesh.
+            _llT3[_tpos].mark() < +0 ) 
+            return ;                // is already removed
 
         if (_itop == -1)
         {
@@ -1757,6 +1773,10 @@
         IPTR_TYPE _epos = -1 ;
 
         __unreferenced(_kind);      // maybe, per TOPODIM
+
+        if (_mesh.
+            _llQ4[_qpos].mark() < +0 ) 
+            return ;                // is already removed
 
         if (_itop == -1)
         {
@@ -1868,6 +1888,10 @@
         IPTR_TYPE _fpos = -1 ;
 
         __unreferenced(_kind);      // maybe, per TOPODIM
+
+        if (_mesh.
+            _llT4[_tpos].mark() < +0 ) 
+            return ;                // is already removed
 
         if (_itop == -1)
         {

@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Aug., 2021
+     * Last updated: 12 Dec., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -60,6 +64,15 @@
     {
     /*------------------------------------- MISC keywords */
         _jcfg->_verbosity = (indx_t) +0 ;
+        _jcfg->_numthread = (indx_t) +0 ;
+
+        if (_jcfg->_numthread <= 0 )
+    #   ifdef  __use_openmp
+            _jcfg->_numthread = 
+                    omp_get_num_procs() ;
+    #   else
+            _jcfg->_numthread = +1 ;
+    #   endif//__use_openmp
 
     /*------------------------------------- BNDS keywords */
         _jcfg->_bnds_kern = JIGSAW_BNDS_TRIACELL ;
@@ -107,13 +120,13 @@
         _jcfg->_mesh_siz2 = (real_t) _SIZ2 ;
         _jcfg->_mesh_siz3 = (real_t) _SIZ3 ;
 
-        _jcfg->_mesh_snk2 = (real_t) +1./5.;
-        _jcfg->_mesh_snk3 = (real_t) +1./3.;
+        _jcfg->_mesh_snk2 = (real_t) + 1./5. ;
+        _jcfg->_mesh_snk3 = (real_t) + 1./3. ;
 
-        _jcfg->_mesh_eps1 = (real_t) +1./3.;
-        _jcfg->_mesh_eps2 = (real_t) +1./3.;
+        _jcfg->_mesh_eps1 = (real_t) + 1./3. ;
+        _jcfg->_mesh_eps2 = (real_t) + 1./3. ;
 
-        _jcfg->_mesh_vol3 = (real_t) +0./1.;
+        _jcfg->_mesh_vol3 = (real_t) + 0./1. ;
 
     /*------------------------------------- OPTM keywords */
         _jcfg->_optm_kern = JIGSAW_KERN_ODT_DQDX ;
@@ -122,8 +135,11 @@
 
         _jcfg->_optm_cost = JIGSAW_KERN_AREA_LEN ;
 
+        _jcfg->_optm_beta = (real_t) +0.4950 ;
+        _jcfg->_optm_zeta = (real_t) +0.8250 ;
+
         _jcfg->_optm_qtol = (real_t) +1.E-04 ;
-        _jcfg->_optm_qlim = (real_t) +14./15.;
+        _jcfg->_optm_qlim = (real_t) +14./15.; // .9333...
 
         _jcfg->_optm_tria = (indx_t) +1 ;
         _jcfg->_optm_dual = (indx_t) +0 ;

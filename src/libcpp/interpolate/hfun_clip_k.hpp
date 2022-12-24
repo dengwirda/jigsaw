@@ -22,16 +22,20 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
+     * this code in any way whatsoever.  This code is 
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Mar., 2022
+     * Last updated: 29 Jun., 2022
      *
      * Copyright 2013-2022
      * Darren Engwirda
@@ -52,7 +56,7 @@
         typename  real_type ,
         typename  vals_type
              >
-    __normal_call bool_type EIKONAL_edge_2d (
+    __inline_call bool_type EIKONAL_edge_2d (
     __const_ptr  (real_type) _p1 ,
                   vals_type  _h1 ,
                   vals_type  _g1 ,
@@ -80,7 +84,7 @@
         typename  real_type ,
         typename  vals_type
              >
-    __normal_call bool_type EIKONAL_edge_3d (
+    __inline_call bool_type EIKONAL_edge_3d (
     __const_ptr  (real_type) _p1 ,
                   vals_type  _h1 ,
                   vals_type  _g1 ,
@@ -150,8 +154,7 @@
             _aa * _aa - _rr * _cc;
 
         vals_type _hn =
-            std::numeric_limits
-                <vals_type>::infinity() ;
+        std::numeric_limits<vals_type>::infinity() ;
 
         real_type _tt[2] ;
         if (!math::
@@ -159,12 +162,12 @@
         {
     /*-------------------------- test flow along boundary */
         return EIKONAL_edge_2d (
-                _p1, _h1, _gg,
-                _p3, _h3, _gg)
+                _p1, _h1, _g1,
+                _p3, _h3, _g3)
 
              | EIKONAL_edge_2d (
-                _p2, _h2, _gg,
-                _p3, _h3, _gg) ;
+                _p2, _h2, _g2,
+                _p3, _h3, _g3) ;
         }
         else
         {
@@ -257,8 +260,7 @@
             _aa * _aa - _rr * _cc;
 
         vals_type _hn =
-            std::numeric_limits
-                <vals_type>::infinity() ;
+        std::numeric_limits<vals_type>::infinity() ;
 
         real_type _tt[2] ;
         if (!math::
@@ -266,12 +268,12 @@
         {
     /*-------------------------- test flow along boundary */
         return EIKONAL_edge_3d (
-                _p1, _h1, _gg,
-                _p3, _h3, _gg)
+                _p1, _h1, _g1,
+                _p3, _h3, _g3)
 
              | EIKONAL_edge_3d (
-                _p2, _h2, _gg,
-                _p3, _h3, _gg) ;
+                _p2, _h2, _g2,
+                _p3, _h3, _g3) ;
         }
         else
         {
@@ -327,6 +329,7 @@
     __normal_call bool_type eikonal_edge_2d (
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
+                  vals_type  _hb ,      // current anchor
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type  _g1 ,
@@ -336,21 +339,23 @@
     /*---------------------- limit h-values within EDGE-2 */
         bool_type _clip = false ;
 
-        vals_type _h0 = std::min(_h1,_h2) ;
-
-        if (_h2 > _h0)
+        if (_h2 > _hb)
     /*--------------------------------- 1st node ordering */
-            if (EIKONAL_edge_2d (
-                _p1, _h1, _g1 ,
-                _p2, _h2, _g2 ) )
-                _clip =  true ;
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. )
+                if (EIKONAL_edge_2d  (
+                    _p1, _h1, _g1 ,
+                    _p2, _h2, _g2 )  )
+                    _clip =  true ;
 
-        if (_h1 > _h0)
+        if (_h1 > _hb)
     /*--------------------------------- 2nd node ordering */
-            if (EIKONAL_edge_2d (
-                _p2, _h2, _g2 ,
-                _p1, _h1, _g1 ) )
-                _clip =  true ;
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. )
+                if (EIKONAL_edge_2d  (
+                    _p2, _h2, _g2 ,
+                    _p1, _h1, _g1 )  )
+                    _clip =  true ;
 
         return ( _clip ) ;
     }
@@ -362,6 +367,7 @@
     __normal_call bool_type eikonal_edge_3d (
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
+                  vals_type  _hb ,      // current anchor
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type  _g1 ,
@@ -371,21 +377,23 @@
     /*---------------------- limit h-values within EDGE-2 */
         bool_type _clip = false ;
 
-        vals_type _h0 = std::min(_h1,_h2) ;
-
-        if (_h2 > _h0)
+        if (_h2 > _hb)
     /*--------------------------------- 1st node ordering */
-            if (EIKONAL_edge_3d (
-                _p1, _h1, _g1 ,
-                _p2, _h2, _g2 ) )
-                _clip =  true ;
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. )
+                if (EIKONAL_edge_3d  (
+                    _p1, _h1, _g1 ,
+                    _p2, _h2, _g2 )  )
+                    _clip =  true ;
 
-        if (_h1 > _h0)
+        if (_h1 > _hb)
     /*--------------------------------- 2nd node ordering */
-            if (EIKONAL_edge_3d (
-                _p2, _h2, _g2 ,
-                _p1, _h1, _g1 ) )
-                _clip =  true ;
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. )
+                if (EIKONAL_edge_3d  (
+                    _p2, _h2, _g2 ,
+                    _p1, _h1, _g1 )  )
+                    _clip =  true ;
 
         return ( _clip ) ;
     }
@@ -398,6 +406,7 @@
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
+                  vals_type  _hb ,      // current anchor
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -409,32 +418,38 @@
     /*---------------------- limit h-values within TRIA-3 */
         bool_type _clip = false ;
 
-        vals_type _h0 =
-        std::min( _h3, std::min(_h1,_h2)) ;
-
-        if (_h3 > _h0)
+        if (_h3 > _hb)
     /*--------------------------------- 1st node ordering */
-            if (EIKONAL_tria_2d (
-                _p1, _h1, _g1 ,
-                _p2, _h2, _g2 ,
-                _p3, _h3, _g3 ) )
-                _clip =  true ;
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. &&
+                _h3 >=(vals_type)+0. )
+                if (EIKONAL_tria_2d  (
+                    _p1, _h1, _g1 ,
+                    _p2, _h2, _g2 ,
+                    _p3, _h3, _g3 )  )
+                    _clip =  true ;
 
-        if (_h1 > _h0)
+        if (_h1 > _hb)
     /*--------------------------------- 2nd node ordering */
-            if (EIKONAL_tria_2d (
-                _p2, _h2, _g2 ,
-                _p3, _h3, _g3 ,
-                _p1, _h1, _g1 ) )
-                _clip =  true ;
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. &&
+                _h3 >=(vals_type)+0. )
+                if (EIKONAL_tria_2d  (
+                    _p2, _h2, _g2 ,
+                    _p3, _h3, _g3 ,
+                    _p1, _h1, _g1 )  )
+                    _clip =  true ;
 
-        if (_h2 > _h0)
+        if (_h2 > _hb)
     /*--------------------------------- 3rd node ordering */
-            if (EIKONAL_tria_2d (
-                _p3, _h3, _g3 ,
-                _p1, _h1, _g1 ,
-                _p2, _h2, _g2 ) )
-                _clip =  true ;
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. &&
+                _h3 >=(vals_type)+0. )
+                if (EIKONAL_tria_2d  (
+                    _p3, _h3, _g3 ,
+                    _p1, _h1, _g1 ,
+                    _p2, _h2, _g2 )  )
+                    _clip =  true ;
 
         return ( _clip ) ;
     }
@@ -447,6 +462,7 @@
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
+                  vals_type  _hb ,      // current anchor
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -458,32 +474,38 @@
     /*---------------------- limit h-values within TRIA-3 */
         bool_type _clip = false ;
 
-        vals_type _h0 =
-        std::min( _h3, std::min(_h1,_h2)) ;
-
-        if (_h3 > _h0)
+        if (_h3 > _hb)
     /*--------------------------------- 1st node ordering */
-            if (EIKONAL_tria_3d (
-                _p1, _h1, _g1 ,
-                _p2, _h2, _g2 ,
-                _p3, _h3, _g3 ) )
-                _clip =  true ;
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. &&
+                _h3 >=(vals_type)+0. )
+                if (EIKONAL_tria_3d  (
+                    _p1, _h1, _g1 ,
+                    _p2, _h2, _g2 ,
+                    _p3, _h3, _g3 )  )
+                    _clip =  true ;
 
-        if (_h1 > _h0)
+        if (_h1 > _hb)
     /*--------------------------------- 2nd node ordering */
-            if (EIKONAL_tria_3d (
-                _p2, _h2, _g2 ,
-                _p3, _h3, _g3 ,
-                _p1, _h1, _g1 ) )
-                _clip =  true ;
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. &&
+                _h3 >=(vals_type)+0. )
+                if (EIKONAL_tria_3d  (
+                    _p2, _h2, _g2 ,
+                    _p3, _h3, _g3 ,
+                    _p1, _h1, _g1 )  )
+                    _clip =  true ;
 
-        if (_h2 > _h0)
+        if (_h2 > _hb)
     /*--------------------------------- 3rd node ordering */
-            if (EIKONAL_tria_3d (
-                _p3, _h3, _g3 ,
-                _p1, _h1, _g1 ,
-                _p2, _h2, _g2 ) )
-                _clip =  true ;
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. &&
+                _h3 >=(vals_type)+0. )
+                if (EIKONAL_tria_3d  (
+                    _p3, _h3, _g3 ,
+                    _p1, _h1, _g1 ,
+                    _p2, _h2, _g2 )  )
+                    _clip =  true ;
 
         return ( _clip ) ;
     }
@@ -497,6 +519,7 @@
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
+                  vals_type  _hb ,      // current anchor
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -520,20 +543,14 @@
         {
             _okay =  true ;
     /*--------------------------------- 1st tria ordering */
-            if (_h1 >=(real_type)+0. &&
-                _h2 >=(real_type)+0. &&
-                _h3 >=(real_type)+0. )
             if (eikonal_tria_2d (
-                _p1, _p2, _p3 ,
+                _p1, _p2, _p3 , _hb,
                 _h1, _h2, _h3 ,
                 _g1, _g2, _g3 ) )
                 _clip =  true ;
 
-            if (_h1 >=(real_type)+0. &&
-                _h3 >=(real_type)+0. &&
-                _h4 >=(real_type)+0. )
             if (eikonal_tria_2d (
-                _p1, _p3, _p4 ,
+                _p1, _p3, _p4 , _hb,
                 _h1, _h3, _h4 ,
                 _g1, _g3, _g4 ) )
                 _clip =  true ;
@@ -548,20 +565,14 @@
         {
             _okay =  true ;
     /*--------------------------------- 2nd tria ordering */
-            if (_h1 >=(real_type)+0. &&
-                _h2 >=(real_type)+0. &&
-                _h4 >=(real_type)+0. )
             if (eikonal_tria_2d (
-                _p1, _p2, _p4 ,
+                _p1, _p2, _p4 , _hb,
                 _h1, _h2, _h4 ,
                 _g1, _g2, _g4 ) )
                 _clip =  true ;
 
-            if (_h2 >=(real_type)+0. &&
-                _h3 >=(real_type)+0. &&
-                _h4 >=(real_type)+0. )
             if (eikonal_tria_2d (
-                _p2, _p3, _p4 ,
+                _p2, _p3, _p4 , _hb,
                 _h2, _h3, _h4 ,
                 _g2, _g3, _g4 ) )
                 _clip =  true ;
@@ -570,32 +581,90 @@
         if (!_okay)
         {
     /*--------------------------------- a degenerate quad */
-            if (_h1 >=(real_type)+0. &&
-                _h2 >=(real_type)+0. )
-            if (EIKONAL_edge_2d (
-                _p1, _h1, _g1 ,
-                _p2, _h2, _g2 ) )
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. )
+            if (eikonal_edge_2d (
+                _p1, _p2, _hb , 
+                _h1, _h2, _g1 , _g2) )
                 _clip =  true ;
 
-            if (_h2 >=(real_type)+0. &&
-                _h3 >=(real_type)+0. )
-            if (EIKONAL_edge_2d (
-                _p2, _h2, _g2 ,
-                _p3, _h3, _g3 ) )
+            if (_h2 >=(vals_type)+0. &&
+                _h3 >=(vals_type)+0. )
+            if (eikonal_edge_2d (
+                _p2, _p3, _hb , 
+                _h2, _h3, _g2 , _g3) )
                 _clip =  true ;
 
-            if (_h3 >=(real_type)+0. &&
-                _h4 >=(real_type)+0. )
-            if (EIKONAL_edge_2d (
-                _p3, _h3, _g3 ,
-                _p4, _h4, _g4 ) )
+            if (_h3 >=(vals_type)+0. &&
+                _h4 >=(vals_type)+0. )
+            if (eikonal_edge_2d (
+                _p3, _p4, _hb , 
+                _h3, _h4, _g3 , _g4) )
                 _clip =  true ;
 
-            if (_h4 >=(real_type)+0. &&
-                _h1 >=(real_type)+0. )
-            if (EIKONAL_edge_2d (
-                _p4, _h4, _g4 ,
-                _p1, _h1, _g1 ) )
+            if (_h4 >=(vals_type)+0. &&
+                _h1 >=(vals_type)+0. )
+            if (eikonal_edge_2d (
+                _p4, _p1, _hb , 
+                _h4, _h1, _g4 , _g1) )
+                _clip =  true ;
+        }
+
+        return ( _clip ) ;
+    }
+
+    template <
+        typename  real_type ,
+        typename  vals_type
+             >
+    __normal_call bool_type eikonal_grid_2d (
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+    __const_ptr  (real_type) _p4 ,
+                  vals_type  _hb ,      // current anchor
+                  vals_type& _h1 ,
+                  vals_type& _h2 ,
+                  vals_type& _h3 ,
+                  vals_type& _h4 ,
+                  vals_type  _g1 ,
+                  vals_type  _g2 ,
+                  vals_type  _g3 ,
+                  vals_type  _g4
+        )
+    {
+    /*---------------------- limit h-values within GRID-4 */
+        bool_type _clip = false ;
+        
+        if (true)
+        {
+    /*--------------------------------- 1st tria ordering */
+            if (eikonal_tria_2d (
+                _p1, _p2, _p3 , _hb,
+                _h1, _h2, _h3 ,
+                _g1, _g2, _g3 ) )
+                _clip =  true ;
+
+            if (eikonal_tria_2d (
+                _p1, _p3, _p4 , _hb,
+                _h1, _h3, _h4 ,
+                _g1, _g3, _g4 ) )
+                _clip =  true ;
+        }
+
+        if (true)
+        {
+    /*--------------------------------- 2nd tria ordering */
+            if (eikonal_tria_2d (
+                _p1, _p2, _p4 , _hb,
+                _h1, _h2, _h4 ,
+                _g1, _g2, _g4 ) )
+                _clip =  true ;
+
+            if (eikonal_tria_2d (
+                _p2, _p3, _p4 , _hb,
+                _h2, _h3, _h4 ,
+                _g2, _g3, _g4 ) )
                 _clip =  true ;
         }
 
@@ -611,6 +680,7 @@
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
+                  vals_type  _hb ,      // current anchor
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -637,20 +707,14 @@
         {
             _okay =  true ;
     /*--------------------------------- 1st tria ordering */
-            if (_h1 >=(real_type)+0. &&
-                _h2 >=(real_type)+0. &&
-                _h3 >=(real_type)+0. )
             if (eikonal_tria_3d (
-                _p1, _p2, _p3 ,
+                _p1, _p2, _p3 , _hb,
                 _h1, _h2, _h3 ,
                 _g1, _g2, _g3 ) )
                 _clip =  true ;
 
-            if (_h1 >=(real_type)+0. &&
-                _h3 >=(real_type)+0. &&
-                _h4 >=(real_type)+0. )
             if (eikonal_tria_3d (
-                _p1, _p3, _p4 ,
+                _p1, _p3, _p4 , _hb,
                 _h1, _h3, _h4 ,
                 _g1, _g3, _g4 ) )
                 _clip =  true ;
@@ -668,20 +732,14 @@
         {
             _okay =  true ;
     /*--------------------------------- 2nd tria ordering */
-            if (_h1 >=(real_type)+0. &&
-                _h2 >=(real_type)+0. &&
-                _h4 >=(real_type)+0. )
             if (eikonal_tria_3d (
-                _p1, _p2, _p4 ,
+                _p1, _p2, _p4 , _hb,
                 _h1, _h2, _h4 ,
                 _g1, _g2, _g4 ) )
                 _clip =  true ;
 
-            if (_h2 >=(real_type)+0. &&
-                _h3 >=(real_type)+0. &&
-                _h4 >=(real_type)+0. )
             if (eikonal_tria_3d (
-                _p2, _p3, _p4 ,
+                _p2, _p3, _p4 , _hb,
                 _h2, _h3, _h4 ,
                 _g2, _g3, _g4 ) )
                 _clip =  true ;
@@ -690,32 +748,90 @@
         if (!_okay)
         {
     /*--------------------------------- a degenerate quad */
-            if (_h1 >=(real_type)+0. &&
-                _h2 >=(real_type)+0. )
-            if (EIKONAL_edge_3d (
-                _p1, _h1, _g1 ,
-                _p2, _h2, _g2 ) )
+            if (_h1 >=(vals_type)+0. &&
+                _h2 >=(vals_type)+0. )
+            if (eikonal_edge_3d (
+                _p1, _p2, _hb , 
+                _h1, _h2, _g1 , _g2) )
                 _clip =  true ;
 
-            if (_h2 >=(real_type)+0. &&
-                _h3 >=(real_type)+0. )
-            if (EIKONAL_edge_3d (
-                _p2, _h2, _g2 ,
-                _p3, _h3, _g3 ) )
+            if (_h2 >=(vals_type)+0. &&
+                _h3 >=(vals_type)+0. )
+            if (eikonal_edge_3d (
+                _p2, _p3, _hb , 
+                _h2, _h3, _g2 , _g3) )
                 _clip =  true ;
 
-            if (_h3 >=(real_type)+0. &&
-                _h4 >=(real_type)+0. )
-            if (EIKONAL_edge_3d (
-                _p3, _h3, _g3 ,
-                _p4, _h4, _g4 ) )
+            if (_h3 >=(vals_type)+0. &&
+                _h4 >=(vals_type)+0. )
+            if (eikonal_edge_3d (
+                _p3, _p4, _hb , 
+                _h3, _h4, _g3 , _g4) )
                 _clip =  true ;
 
-            if (_h4 >=(real_type)+0. &&
-                _h1 >=(real_type)+0. )
-            if (EIKONAL_edge_3d (
-                _p4, _h4, _g4 ,
-                _p1, _h1, _g1 ) )
+            if (_h4 >=(vals_type)+0. &&
+                _h1 >=(vals_type)+0. )
+            if (eikonal_edge_3d (
+                _p4, _p1, _hb , 
+                _h4, _h1, _g4 , _g1) )
+                _clip =  true ;
+        }
+
+        return ( _clip ) ;
+    }
+
+    template <
+        typename  real_type ,
+        typename  vals_type
+             >
+    __normal_call bool_type eikonal_grid_3d (
+    __const_ptr  (real_type) _p1 ,
+    __const_ptr  (real_type) _p2 ,
+    __const_ptr  (real_type) _p3 ,
+    __const_ptr  (real_type) _p4 ,
+                  vals_type  _hb ,      // current anchor
+                  vals_type& _h1 ,
+                  vals_type& _h2 ,
+                  vals_type& _h3 ,
+                  vals_type& _h4 ,
+                  vals_type  _g1 ,
+                  vals_type  _g2 ,
+                  vals_type  _g3 ,
+                  vals_type  _g4
+        )
+    {
+    /*---------------------- limit h-values within GRID-4 */
+        bool_type _clip = false ;
+        
+        if (true)
+        {
+    /*--------------------------------- 1st tria ordering */
+            if (eikonal_tria_3d (
+                _p1, _p2, _p3 , _hb,
+                _h1, _h2, _h3 ,
+                _g1, _g2, _g3 ) )
+                _clip =  true ;
+
+            if (eikonal_tria_3d (
+                _p1, _p3, _p4 , _hb,
+                _h1, _h3, _h4 ,
+                _g1, _g3, _g4 ) )
+                _clip =  true ;
+        }
+
+        if (true)
+        {
+    /*--------------------------------- 2nd tria ordering */
+            if (eikonal_tria_3d (
+                _p1, _p2, _p4 , _hb,
+                _h1, _h2, _h4 ,
+                _g1, _g2, _g4 ) )
+                _clip =  true ;
+
+            if (eikonal_tria_3d (
+                _p2, _p3, _p4 , _hb,
+                _h2, _h3, _h4 ,
+                _g2, _g3, _g4 ) )
                 _clip =  true ;
         }
 
@@ -731,6 +847,7 @@
     __const_ptr  (real_type) /*_p2*/ ,
     __const_ptr  (real_type) /*_p3*/ ,
     __const_ptr  (real_type) /*_p4*/ ,
+                  vals_type  /*_hb*/ ,  // current anchor
                   vals_type& /*_h1*/ ,
                   vals_type& /*_h2*/ ,
                   vals_type& /*_h3*/ ,
