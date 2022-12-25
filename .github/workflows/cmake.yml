@@ -32,21 +32,21 @@ jobs:
           }
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
     
-    - name: Print environment
+      - name: Print environment
         run: |
           echo github.event.action: ${{ github.event.action }}
           echo github.event_name: ${{ github.event_name }}
           
-    - name: Install dependencies on win
+      - name: Install dependencies on win
         if: startsWith(matrix.config.os, 'windows')
         run: |
           choco install ninja cmake
           ninja --version
           cmake --version
           
-    - name: Install dependencies on unx
+      - name: Install dependencies on unx
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         run: |
           sudo apt-get update
@@ -55,7 +55,7 @@ jobs:
           cmake --version
           g++ --version
           
-    - name: Install dependencies on osx
+      - name: Install dependencies on osx
         if: startsWith(matrix.config.os, 'macos')
         run: |
           brew install ninja cmake
@@ -63,14 +63,14 @@ jobs:
           cmake --version
           clang++ --version
     
-    - name: Configure jigsaw
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      - name: Configure jigsaw
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: Build jigsaw
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} install
+      - name: Build jigsaw
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} install
       
-    - name: Configure tests for jigsaw
-      run: cmake -B ${{github.workspace}}/uni/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      - name: Configure tests for jigsaw
+        run: cmake -B ${{github.workspace}}/uni/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: Build tests for jigsaw
-      run: cmake --build ${{github.workspace}}/uni/build --config ${{env.BUILD_TYPE}} install
+      - name: Build tests for jigsaw
+        run: cmake --build ${{github.workspace}}/uni/build --config ${{env.BUILD_TYPE}} install
