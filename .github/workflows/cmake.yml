@@ -1,6 +1,7 @@
 name: CMake Build Matrix
 
 on:
+  workflow_dispatch:
   pull_request:
 
 env:
