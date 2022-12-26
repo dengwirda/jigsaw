@@ -162,7 +162,7 @@
                     std::move(_ppos->_kidx);
             /*------------------ update keys-heap mapping */
                  this->_keys [_ipos->_kidx] =
-                              _ipos- _head ;
+                  (iptr_type)(_ipos- _head) ;
             /*------------------ traverse to upper levels */
                 _ipos =_ppos ;
             }
@@ -236,7 +236,7 @@
                 std::move(_imin->_kidx);
         /*---------------------- update keys-heap mapping */
              this->_keys [_ipos->_kidx] =
-                          _ipos- _head ;
+              (iptr_type)(_ipos- _head) ;
         /*---------------------- move onto next child pos */
             _ipos =_imin ;
         }
@@ -291,7 +291,7 @@
                 std::move(_imin->_kidx);
         /*---------------------- update keys-heap mapping */
              this->_keys [_ipos->_kidx] =
-                          _ipos- _head ;
+              (iptr_type)(_ipos- _head) ;
         /*---------------------- move onto next child pos */
             _ipos =_imin ;
             }
@@ -437,8 +437,9 @@
         __copy(data_type, _data)  ;
 
     /*------------------------- map _item to _data "hole" */
-        this->_keys[_kpos] =
-            _ipos - this->_heap.head() ;
+        this->_keys[_kpos] = 
+            (iptr_type)(
+            _ipos - this->_heap.head()) ;
     }
 
     __inline_call void_type push ( // move
@@ -473,7 +474,8 @@
 
     /*------------------------- map _item to _data "hole" */
         this->_keys[_kpos] =
-            _ipos - this->_heap.head() ;
+            (iptr_type)(
+            _ipos - this->_heap.head()) ;
     }
 
     /*
@@ -518,7 +520,8 @@
 
     /*---------------------- update mapping for tail item */
         this->_keys[_ipos->_kidx] =
-            _ipos  - this->_heap.head() ;
+            (iptr_type)(
+            _ipos  - this->_heap.head());
         }
         this->_heap._pop_tail();
 
@@ -563,7 +566,8 @@
 
     /*---------------------- update mapping for tail item */
         this->_keys[_ipos->_kidx] =
-            _ipos  - this->_heap.head() ;
+            (iptr_type)(
+            _ipos  - this->_heap.head());
         }
         this->_heap._pop_tail();
 
@@ -600,6 +604,7 @@
 
     /*------------------------ copy position into mapping */
         this->_keys[_kpos] =
+            (iptr_type)
             _ipos - this->_heap.head()  ;
     }
 
@@ -627,7 +632,8 @@
 
     /*------------------------ copy position into mapping */
         this->_keys[_kpos] =
-            _ipos - this->_heap.head()  ;
+            (iptr_type)(
+            _ipos - this->_heap.head()) ;
     }
 
     /*
@@ -655,7 +661,8 @@
 
     /*------------------------ copy position into mapping */
         this->_keys[_kpos] =
-            _ipos - this->_heap.head()  ;
+            (iptr_type)(
+            _ipos - this->_heap.head()) ;
     }
 
     __inline_call void_type reduce ( // move
@@ -677,7 +684,8 @@
 
     /*------------------------ copy position into mapping */
         this->_keys[_kpos] =
-            _ipos - this->_heap.head()  ;
+            (iptr_type)(
+            _ipos - this->_heap.head()) ;
     }
 
     /*

@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 Dec., 2022
+     * Last updated: 23 Dec., 2022
      *
      * Copyright 2013-2022
      * Marc Tunnell, 
@@ -56,6 +56,7 @@
         iptr_type  _nprt,   // number of partitions to make
         iptr_list  _aset,   // list of active nodes
         iptr_type  _isub,   // inner iteration marker
+        real_type  _arot,
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -122,10 +123,56 @@
                     _item.push_tail();
                     _item.tail()->ipos() = *_apos;
 
-                    for (auto _idim = geom_dims;
-                              _idim-- != 0; )
-                        _item.tail()->pval(_idim) =
-                              _aptr ->pval(_idim);
+                    if (geom_dims == 2)
+                    {
+        /*-------------------- rotate to stop realignment */
+                    real_type _xcos = std::cos (_arot) ;
+                    real_type _xsin = std::sin (_arot) ;
+
+                    real_type _xmat[2][2]; // 2d rotation
+                    _xmat[0][0] = +_xcos ;
+                    _xmat[0][1] = -_xsin ;
+                    _xmat[1][0] = +_xsin ;
+                    _xmat[1][1] = +_xcos ;
+
+                    _item.tail()->pval(0) = 
+                    _xmat[0][0] * _aptr->pval(0) + 
+                    _xmat[0][1] * _aptr->pval(1) ;
+                    _item.tail()->pval(1) = 
+                    _xmat[1][0] * _aptr->pval(0) + 
+                    _xmat[1][1] * _aptr->pval(1) ;
+                    }
+                    else
+                    if (geom_dims == 3)
+                    {
+        /*-------------------- rotate to stop realignment */
+                    real_type _xcos = std::cos (_arot) ;
+                    real_type _xsin = std::sin (_arot) ;
+
+                    real_type _xmat[3][3]; // 3d rotation
+                    _xmat[0][0] = +1. ;
+                    _xmat[0][1] = +1. - _xcos - _xsin;
+                    _xmat[0][2] = +1. - _xcos + _xsin;
+                    _xmat[1][0] = +1. - _xcos + _xsin;
+                    _xmat[1][1] = +1. ;
+                    _xmat[1][2] = +1. - _xcos - _xsin;
+                    _xmat[2][0] = +1. - _xcos - _xsin;
+                    _xmat[2][1] = +1. - _xcos + _xsin;
+                    _xmat[2][2] = +1. ;
+
+                    _item.tail()->pval(0) = 
+                    _xmat[0][0] * _aptr->pval(0) + 
+                    _xmat[0][1] * _aptr->pval(1) +
+                    _xmat[0][2] * _aptr->pval(2) ;
+                    _item.tail()->pval(1) = 
+                    _xmat[1][0] * _aptr->pval(0) + 
+                    _xmat[1][1] * _aptr->pval(1) +
+                    _xmat[1][2] * _aptr->pval(2) ;
+                    _item.tail()->pval(2) = 
+                    _xmat[2][0] * _aptr->pval(0) + 
+                    _xmat[2][1] * _aptr->pval(1) +
+                    _xmat[2][2] * _aptr->pval(2) ;
+                    }
                 }
             }
 

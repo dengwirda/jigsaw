@@ -180,8 +180,8 @@
         }
 
     /*-------------------- compute h(x) via fast-marching */
-        vals_type static constexpr
-            _FTOL = std::pow(
+        vals_type static _FTOL = 
+            (vals_type)std::pow(
         std::numeric_limits<vals_type>::epsilon(), .75) ;       
 
         iptr_type IBEG = +0;

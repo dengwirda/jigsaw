@@ -348,11 +348,14 @@
            shared(_mesh, _opts, _QMIN)
         {
         real_type _qmin = (real_type) +1. ;
-    #   pragma omp for nowait schedule(static)
-        for (auto _cell  = _mesh.tri3().head() ;
-                  _cell != _mesh.tri3().tend() ;
-                ++_cell  )
+    #   pragma omp for nowait  schedule(static)
+        for (auto _cpos  = +0u ;
+                  _cpos  < _mesh.tri3().count() ;
+                ++_cpos  )
         {
+             auto _cell  = 
+                _mesh. tri3().head() + _cpos ;
+
             if (_cell->mark() >= +0 )
             {
         /*--------------------- test initial cell quality */
@@ -373,11 +376,14 @@
             }
         }
 
-    #   pragma omp for nowait schedule(static)
-        for (auto _cell  = _mesh.quad().head() ;
-                  _cell != _mesh.quad().tend() ;
-                ++_cell  )
+    #   pragma omp for nowait  schedule(static)
+        for (auto _cpos  = +0u ;
+                  _cpos  < _mesh.quad().count() ;
+                ++_cpos  )
         {
+             auto _cell  = 
+                _mesh. quad().head() + _cpos ;
+
             if (_cell->mark() >= +0 )
             {
         /*--------------------- test initial cell quality */
@@ -497,10 +503,10 @@
 
             _nset.set_count(  +0);
 
-            iptr_type _nmov = +0 ;
-            iptr_type _nflp = +0 ;
-            iptr_type _nzip = +0 ;
-            iptr_type _ndiv = +0 ;
+            size_t    _nmov = +0 ;
+            size_t    _nflp = +0 ;
+            size_t    _nzip = +0 ;
+            size_t    _ndiv = +0 ;
 
     /*------------------------------ scale quality limits */
             iptr_type _nsub = _iter +0 ;
@@ -572,7 +578,7 @@
                     _dump.push(
                 "**CALL FLIP-MESH...\n" ) ;
 
-                iptr_type  _nloc;
+                size_t     _nloc;
                 flip_mesh( _geom, _mesh , _hfun ,
                     _conn, _nset, _mark ,
                 +3 * _iter - 2  , _nloc , _tcpu);
@@ -641,7 +647,7 @@
                     _dump.push(
                 "**CALL FLIP-MESH...\n" ) ;
 
-                iptr_type  _nloc;
+                size_t     _nloc;
                 flip_mesh( _geom, _mesh , _hfun ,
                     _conn, _nset, _mark ,
                 +3 * _iter - 1  , _nloc , _tcpu);
@@ -700,7 +706,7 @@
                     _dump.push(
                 "**CALL FLIP-MESH...\n" ) ;
 
-                iptr_type  _nloc;
+                size_t     _nloc;
                 flip_mesh( _geom, _mesh , _hfun ,
                     _nset, _mark,
                 +3 * _iter - 0  , _nloc , _tcpu);

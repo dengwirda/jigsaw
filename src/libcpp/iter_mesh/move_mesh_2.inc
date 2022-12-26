@@ -643,7 +643,7 @@
                 PART_SCAL ;
         _pful = std::min(
                 _opts. nprt(), _pful + 1) ;
-    
+
     #   ifdef  __use_timers
         _ttoc = _time.now() ;
         _tcpu._init_node += _tcpu.time_span(_ttic, _ttoc) ;
@@ -690,10 +690,12 @@
         _ttic = _time.now() ;
     #   endif//__use_timers
 
+        auto _pi = std::atan(+1.) * +4. ;
+
         if (_isub == +0)
         part_mesh(_mesh, _part._full, _pful,
                   _aset, 
-                  _isub, _tcpu) ;
+                  _isub, _pi*0,_tcpu) ;
 
         _pbnd = _part._full._seqs.count() /
                 BNDS_SCAL ;
@@ -703,7 +705,7 @@
         if (_isub == +0)
         part_mesh(_mesh, _part._bnds, _pbnd,
                   _part. _full._seqs,
-                  _isub, _tcpu) ;
+                  _isub, _pi/4,_tcpu) ;
 
     #   ifdef  __use_timers
         _ttoc = _time.now() ;
@@ -1166,10 +1168,12 @@
         _ttic = _time.now() ;
     #   endif//__use_timers
 
+        auto _pi = std::atan(+1.) * +4. ;
+
         if (_isub == +0)
         part_mesh(_mesh, _part._full, _pful,
                   _aset, 
-                  _isub, _tcpu) ;
+                  _isub, _pi*0,_tcpu) ;
 
         _pbnd = _part._full._seqs.count() /
                 BNDS_SCAL ;
@@ -1179,7 +1183,7 @@
         if (_isub == +0)
         part_mesh(_mesh, _part._bnds, _pbnd,
                   _part. _full._seqs,
-                  _isub, _tcpu) ;
+                  _isub, _pi/4,_tcpu) ;
 
     #   ifdef  __use_timers
         _ttoc = _time.now() ;

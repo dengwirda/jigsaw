@@ -102,8 +102,8 @@ This process will build the unit-tests as a series of executables in <a href="..
 ### `Contributors`
 
 1. [@dengwirda](https://github.com/dengwirda) is `JIGSAW`'s developer and maintainer --- this work was originally the focus of my PhD at the University of Sydney.
-2. [@xylar](https://github.com/xylar) contributed the original `cmake` build system.
-3. [@tunnellm](https://github.com/tunnellm) extended the original sequential optimisation algorithms to support thread-parallelism.
+2. [@xylar](https://github.com/xylar) contributed the `cmake` build system and `conda` environment.
+3. [@tunnellm](https://github.com/tunnellm) extended the sequential optimisation algorithms to support thread-parallelism.
 
 ### `License`
 

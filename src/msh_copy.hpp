@@ -75,7 +75,7 @@
         tree_type _tree ;
 
         containers::array<tree_item>  _item ;
-        containers::array<iptr_type>  _itmp ;
+        containers::array<  size_t >  _itmp ;
 
         iptr_type _ipos  = +0 ;
         for (auto _iter  = _mesh.
@@ -119,7 +119,7 @@
         tree_type _tree ;
 
         containers::array<tree_item>  _item ;
-        containers::array<iptr_type>  _itmp ;
+        containers::array<  size_t >  _itmp ;
 
         iptr_type _ipos  = +0 ;
         for (auto _iter  = _mesh.
@@ -216,8 +216,10 @@
                 _nmap[_item->_data._node[_inod]]) ;
                 }
 
+                float _cval = (float)_cost;
+
                 _sort.push_tail(
-                    sort_pair(_item, _cost));
+                    sort_pair(_item, _cval));
             }
         }
 

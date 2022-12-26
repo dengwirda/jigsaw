@@ -262,7 +262,7 @@
         iptr_list &_nset ,  // list of nodes active
         mark_list &_mark ,  // sets of node/cell flags
         iptr_type  _imrk ,  // outer iteration marker
-        iptr_type &_nflp ,  // number of successful flips
+        size_t    &_nflp ,  // number of successful flips
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -353,7 +353,7 @@
         iptr_list &_nset ,  // list of nodes active
         mark_list &_mark ,  // sets of node/cell flags
         iptr_type  _imrk ,  // outer iteration marker
-        iptr_type &_nflp ,  // number of successful flips
+        size_t    &_nflp ,  // number of successful flips
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -440,7 +440,7 @@
         hfun_type &_hfun ,  // spacing object
         conn_list &_flip ,  // list of cells to flip
         mark_list &_mark ,  // sets of node/cell flags
-        iptr_type &_nflp ,  // number of successful flips
+        size_t    &_nflp ,  // number of successful flips
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -496,12 +496,12 @@
                 quad(_cell->_cell).mark() >= +0)
             {
                 bool_type  _okay = false ;
-                flip_quad( _geom, _mesh,
-                    _mark. _node,
-                    _cell->_cell,
-                    _okay, _conn, _CONN,
-                    _qold, _qnew,
-               (flip_kind)laguerre_flip) ;
+            //  flip_quad( _geom, _mesh,
+            //      _mark. _node,
+            //      _cell->_cell,
+            //      _okay, _conn, _CONN,
+            //      _qold, _qnew,
+            // (flip_kind)laguerre_flip) ;
 
                 if (_okay) _nflp += +1 ;
 

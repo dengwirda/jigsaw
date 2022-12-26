@@ -70,8 +70,8 @@
         iter_opts &_opts ,  // user options
         real_type  _QLIM ,  // cell quality threshold
         real_type  _DLIM ,  // dual quality threshold
-        iptr_type &_nzip ,  // number of successful zip's
-        iptr_type &_ndiv ,  // number of successful div's
+        size_t    &_nzip ,  // number of successful zip's
+        size_t    &_ndiv ,  // number of successful div's
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -333,8 +333,8 @@
         iter_opts &_opts ,  // user options
         real_type  _QLIM ,  // cell quality threshold
         real_type  _DLIM ,  // dual quality threshold
-        iptr_type &_nzip ,  // number of successful zip's
-        iptr_type &_ndiv ,  // number of successful div's
+        size_t    &_nzip ,  // number of successful zip's
+        size_t    &_ndiv ,  // number of successful div's
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -586,8 +586,8 @@
         iter_opts &_opts ,  // user options
         real_type  _QLIM ,  // cell quality threshold
         real_type  _DLIM ,  // dual quality threshold
-        iptr_type &_nzip ,  // number of successful zip's
-        iptr_type &_ndiv ,  // number of successful div's
+        size_t    &_nzip ,  // number of successful zip's
+        size_t    &_ndiv ,  // number of successful div's
         iter_stat &_tcpu    // CPU timers/info
         )
     {

@@ -572,7 +572,8 @@
 
         //  (1+-a)-approx. with probability p
         //  require: 1/a^2 + log(1/p) samples
-            size_t _nsel = 500 * std::log2(_nnum + 1) + 1 ;
+            size_t _nsel = 
+           (size_t) +500 * std::log2(_nnum + 1) + 1 ;
 
             size_t _filt = _nnum / _nsel + 1;
             size_t _njmp = _filt ;
@@ -622,7 +623,8 @@
 
         //  (1+-a)-approx. with probability p
         //  require: 1/a^2 + log(1/p) samples
-            size_t _nsel = 500 * std::log2(_nnum + 1) + 1 ;
+            size_t _nsel = 
+           (size_t) +500 * std::log2(_nnum + 1) + 1 ;
 
             size_t _filt = _nnum / _nsel + 1;
             size_t _njmp = _filt ;
@@ -669,8 +671,8 @@
             _spos = _sort[_sort.count() / 2];
             _SPOS/= _cnum ;
 
-            _spos = (real_type)+1./3. * _spos +
-                    (real_type)+2./3. * _SPOS ;
+            _spos = (real_type)(+1./3.*_spos) +
+                    (real_type)(+2./3.*_SPOS) ;
             }
             }
 
