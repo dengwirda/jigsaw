@@ -2,6 +2,8 @@ function (cfg_compile_options OPT CFG)
   add_compile_options ("$<$<CONFIG:${CFG}>:${OPT}>")
 endfunction ()
 
+include (CheckCXXCompilerFlag)
+
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
@@ -19,6 +21,7 @@ endif ()
 
 if (DEFINED MSVC_LIKE)
   add_compile_options (/W3)
+  add_compile_options (/openmp:llvm)
   cfg_compile_options (/GS- RELEASE)
   cfg_compile_options (/Ot  RELEASE)
 endif ()
@@ -44,6 +47,11 @@ else ()
 endif ()
 
 find_package (OpenMP)
+
+if (OpenMP_CXX_FOUND AND (OpenMP_CXX_VERSION LESS 3))
+  set (OpenMP_CXX_FOUND FALSE)
+  message (STATUS "Insufficient OpenMP support")
+endif ()
 
 if (OpenMP_CXX_FOUND)
   message (STATUS "OpenMP library found")
