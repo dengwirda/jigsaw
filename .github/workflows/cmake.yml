@@ -67,6 +67,7 @@ jobs:
     
       - name: Configure jigsaw
         run: |
+          mkdir ${{github.workspace}}/build
           cd ${{github.workspace}}/build
           cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
@@ -80,6 +81,7 @@ jobs:
       
       - name: Configure tests for jigsaw
         run: |
+          mkdir ${{github.workspace}}/uni/build
           cd ${{github.workspace}}/uni/build
           cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
