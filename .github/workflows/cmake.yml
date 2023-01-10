@@ -49,7 +49,7 @@ jobs:
           cmake --version
           
       - name: Install dependencies on unx
-        if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
+        if: startsWith(matrix.config.name, 'ubuntu')
         run: |
           sudo apt-get update
           sudo apt-get install ninja-build cmake
@@ -60,7 +60,7 @@ jobs:
       - name: Install dependencies on osx
         if: startsWith(matrix.config.os, 'macos')
         run: |
-          brew install ninja cmake
+          brew install ninja cmake llvm libomp
           ninja --version
           cmake --version
           clang++ --version
@@ -70,9 +70,15 @@ jobs:
 
       - name: Build jigsaw
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target install
+        
+      - name: Clean jigsaw
+        run: rm -r ${{github.workspace}}/build
       
       - name: Configure tests for jigsaw
         run: cmake -B ${{github.workspace}}/uni/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       - name: Build tests for jigsaw
         run: cmake --build ${{github.workspace}}/uni/build --config ${{env.BUILD_TYPE}} --target install
+        
+      - name: Clean tests for jigsaw
+        run: rm -r ${{github.workspace}}/uni/build
