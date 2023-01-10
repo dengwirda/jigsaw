@@ -69,10 +69,10 @@ jobs:
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       - name: Build jigsaw
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} install
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target install
       
       - name: Configure tests for jigsaw
         run: cmake -B ${{github.workspace}}/uni/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       - name: Build tests for jigsaw
-        run: cmake --build ${{github.workspace}}/uni/build --config ${{env.BUILD_TYPE}} install
+        run: cmake --build ${{github.workspace}}/uni/build --config ${{env.BUILD_TYPE}} --target install
