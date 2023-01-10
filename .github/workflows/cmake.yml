@@ -66,19 +66,27 @@ jobs:
           clang++ --version
     
       - name: Configure jigsaw
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        run: |
+          cd ${{github.workspace}}/build
+          cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       - name: Build jigsaw
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target install
+        run: |
+          cd ${{github.workspace}}/build
+          cmake --build . --config ${{env.BUILD_TYPE}} --target install
         
       - name: Clean jigsaw
         run: rm -r ${{github.workspace}}/build
       
       - name: Configure tests for jigsaw
-        run: cmake -B ${{github.workspace}}/uni/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        run: |
+          cd ${{github.workspace}}/uni/build
+          cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       - name: Build tests for jigsaw
-        run: cmake --build ${{github.workspace}}/uni/build --config ${{env.BUILD_TYPE}} --target install
+        run: |
+          cd ${{github.workspace}}/uni/build
+          cmake --build . --config ${{env.BUILD_TYPE}} --target install
         
       - name: Clean tests for jigsaw
         run: rm -r ${{github.workspace}}/uni/build
