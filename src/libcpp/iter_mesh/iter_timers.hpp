@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -64,11 +64,13 @@
 
         double      _iter_full = (double   )  +0. ;
 
+        double      _init_iter = (double   )  +0. ;
+
         double      _move_node = (double   )  +0. ;
         double      _init_node = (double   )  +0. ;
         double      _core_node = (double   )  +0. ;
         double      _seqs_node = (double   )  +0. ;
-        double      _para_node = (double   )  +0. ;        
+        double      _para_node = (double   )  +0. ;
         double      _ldir_node = (double   )  +0. ;
         double      _lopt_node = (double   )  +0. ;
 

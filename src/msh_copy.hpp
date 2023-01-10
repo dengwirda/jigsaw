@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -66,7 +66,7 @@
         {
     /*---------------------------------- sort 2-dim. mesh */
         typedef geom_tree::aabb_item_node_k <
-            real_type, 
+            real_type,
             iptr_type, 2>   tree_item ;
 
         typedef geom_tree::aabb_tree<
@@ -89,14 +89,14 @@
             {
                 _item.push_tail();
                 _item.tail()->ipos () = _ipos ;
-                _item.tail()->pval(0) = 
+                _item.tail()->pval(0) =
                              _iter->pval(0) ;
-                _item.tail()->pval(1) = 
+                _item.tail()->pval(1) =
                              _iter->pval(1) ;
             }
         }
 
-        _tree.load(_item.head(), _item.tend() , 
+        _tree.load(_item.head(), _item.tend() ,
             SIZE ,  // pop.=#nodes per leaf
         _tree.median_split ,
             1.0) ;  // set LONG=1, only div. by pop.
@@ -110,7 +110,7 @@
         {
     /*---------------------------------- sort 3-dim. mesh */
         typedef geom_tree::aabb_item_node_k <
-            real_type, 
+            real_type,
             iptr_type, 3>   tree_item ;
 
         typedef geom_tree::aabb_tree<
@@ -133,20 +133,20 @@
             {
                 _item.push_tail();
                 _item.tail()->ipos () = _ipos ;
-                _item.tail()->pval(0) = 
+                _item.tail()->pval(0) =
                              _iter->pval(0) ;
-                _item.tail()->pval(1) = 
+                _item.tail()->pval(1) =
                              _iter->pval(1) ;
-                _item.tail()->pval(2) = 
+                _item.tail()->pval(2) =
                              _iter->pval(2) ;
             }
         }
 
-        _tree.load(_item.head(), _item.tend() , 
+        _tree.load(_item.head(), _item.tend() ,
             SIZE ,  // pop.=#nodes per leaf
         _tree.median_split ,
-            1.0) ;  // set LONG=1, only div. by pop. 
-            
+            1.0) ;  // set LONG=1, only div. by pop.
+
         _tree.dcmp(_itmp, _perm) ;
         }
     }
@@ -209,10 +209,10 @@
             {
                 auto _cost =            // min. node indx
                     _nmap[_item->_data._node [0]] ;
-                for (auto 
+                for (auto
                     _inod = _nsiz; _inod-- != 1; )
                 {
-                    _cost = std::min(_cost, 
+                    _cost = std::min(_cost,
                 _nmap[_item->_data._node[_inod]]) ;
                 }
 
@@ -227,7 +227,7 @@
                            _sort.tend() ,
             sort_pred () ) ;
 
-        for (auto _iter  = _sort.head() ; 
+        for (auto _iter  = _sort.head() ;
                   _iter != _sort.tend() ;
                 ++_iter  )
         {

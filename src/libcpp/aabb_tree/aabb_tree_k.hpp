@@ -22,8 +22,8 @@
  * how they can obtain it for free, then you are not
  * required to make any arrangement with me.)
  *
- * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
- * this code in any way whatsoever.  This code is 
+ * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+ * this code in any way whatsoever.  This code is
  * provided "as-is" to be used at your own risk.
  *
  * THE CONTRIBUTORS include:
@@ -35,7 +35,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 18 Dec., 2022
+ * Last updated: 30 Dec., 2022
  *
  * Copyright 2013-2022
  * Darren Engwirda
@@ -172,7 +172,7 @@
     private :
 /*---------------------- helper - delete a block of nodes */
     __inline_call void_type free_node (
-        node_data*&_data
+      __write_ptr(node_data)&_data
         )
     {
         this->
@@ -184,7 +184,7 @@
 
 /*---------------------- helper - create a block of nodes */
     __inline_call void_type make_node (
-        node_data*&_data
+      __write_ptr(node_data)&_data
         )
     {
        _data =
@@ -195,7 +195,7 @@
 
 /*------------------------------- helper - delete an item */
     __inline_call void_type free_item (
-        item_data *_idat
+      __write_ptr(item_data) _idat
         )
     {
         this->
@@ -208,7 +208,7 @@
 /*------------------------------- helper - create an item */
     __inline_call void_type make_item (
         item_type const&_item,
-        item_data     *&_idat
+      __write_ptr(item_data)&_idat
         )
     {
        _idat =
@@ -220,8 +220,8 @@
 /*--------------------- helper - push an item onto a list */
     __static_call
     __inline_call void_type push_item (
-        item_data*&_head,
-        item_data *_item
+      __write_ptr(item_data)&_head,
+      __write_ptr(item_data) _item
         )
     {
         _item->_next = _head ;
@@ -231,9 +231,9 @@
 /*--------------------- helper - _pop an item from a list */
     __static_call
     __inline_call void_type _pop_item (
-        item_data*&_head,
-        item_data *_item,
-        item_data *_prev
+      __write_ptr(item_data)&_head,
+      __write_ptr(item_data) _item,
+      __write_ptr(item_data) _prev
         )
     {
         if (_prev != nullptr )
@@ -272,8 +272,8 @@
     // pool'd alloc. takes care of dealloc...
 
     __inline_call void_type clear (
-        ) 
-    {   
+        )
+    {
         this->_root = nullptr ;
         this->_size = +0;
         this->_imax = +0;
@@ -384,9 +384,9 @@
         {
     /*------------------------------ find long bbox. axis */
             real_type _alen;
-            _alen = _node->_pmax[_idim] - 
+            _alen = _node->_pmax[_idim] -
                     _node->_pmin[_idim] ;
-            
+
             _rect[_idim]._alen = _alen ;
             _rect[_idim]._axis = _idim ;
         }
@@ -403,7 +403,8 @@
             _bdim = _rect[_last]._axis ;
             _blen = this->_long *
                     _rect[_last]._alen ;
-            return ;
+
+            return ;              // exit, no "long" node
         }
 
     /*------------------------------ scan aabb dimensions */
@@ -457,7 +458,7 @@
         iter_type _tend ,  // last of items array to load
         iptr_type _NPOP = + 32 ,  // leaf population lim.
         iptr_type _RULE = window_split ,  // split scheme
-        real_type _LONG = +.75 ,  // "too-long" item lim. 
+        real_type _LONG = +.75 ,  // "too-long" item lim.
         real_type _VTOL = +.50    // leaf vol. split lim.
         )
     {
@@ -507,7 +508,7 @@
         for( ; !this->_work.empty() ; )
         {
             node_type *_pnod = nullptr;
-            node_data *_ndat = nullptr;
+          __write_ptr(node_data) _ndat = nullptr;
             node_type *_rnod = nullptr;
             node_type *_lnod = nullptr;
 
@@ -518,11 +519,12 @@
             iptr_type  _lnum = +0 ;
             iptr_type  _rnum = +0 ;
 
-            item_data *_next = nullptr;
-            item_data *_pptr = nullptr;
-            item_data *_cptr = nullptr;
-            item_data *_lptr = nullptr;
-            item_data *_rptr = nullptr;
+          __write_ptr(item_data) _next = nullptr;
+          __write_ptr(item_data) _pptr = nullptr;
+          __write_ptr(item_data) _cptr = nullptr;
+          __write_ptr(item_data) _lptr = nullptr;
+          __write_ptr(item_data) _rptr = nullptr;
+          __write_ptr(item_data) _iptr = nullptr;
 
         /*-------------------------- _pop node from stack */
             this->_work._pop_tail (_pnod);
@@ -541,11 +543,10 @@
             {
         /*---------- split pos. - middle of items in node */
             double _SPOS = +0. ;
-            for(item_data *_iptr  = _hptr ;
-                           _iptr != nullptr ;
-                           _iptr  = _next )
+            for(_iptr  = _hptr ; _iptr != nullptr ;
+                _iptr  = _next )
             {
-                _next = _iptr->_next ;
+                _next  = _iptr-> _next ;
         /*------------------------------- partition items */
                 if (_iptr->_data
                     .plen (_bdim) > _blen)
@@ -572,19 +573,18 @@
 
         //  (1+-a)-approx. with probability p
         //  require: 1/a^2 + log(1/p) samples
-            size_t _nsel = 
-           (size_t) +500 * std::log2(_nnum + 1) + 1 ;
+            size_t _nsel =
+           (size_t)(+500 * std::log2(_nnum + 1) + 1) ;
 
             size_t _filt = _nnum / _nsel + 1;
             size_t _njmp = _filt ;
             size_t _inum = +0;
-            _sort.clear();            
-            for(item_data *_iptr  = _hptr ;
-                           _iptr != nullptr ;
-                           _iptr  = _next ,
-                           _inum += +1 )
+            _sort.clear();
+            for(_iptr  = _hptr ; _iptr != nullptr ;
+                _iptr  = _next ,
+                _inum += +1  )
             {
-                _next = _iptr->_next ;
+                _next  = _iptr-> _next ;
         /*------------------------------- partition items */
                 if (_iptr->_data
                     .plen (_bdim) > _blen)
@@ -610,7 +610,7 @@
             if(!_sort.empty())
             {
             algorithms::qsort(
-                _sort.head(), _sort.tend(), 
+                _sort.head(), _sort.tend(),
                     std::less<real_type>()) ;
 
             _spos = _sort[_sort.count() / 2];
@@ -623,20 +623,19 @@
 
         //  (1+-a)-approx. with probability p
         //  require: 1/a^2 + log(1/p) samples
-            size_t _nsel = 
-           (size_t) +500 * std::log2(_nnum + 1) + 1 ;
+            size_t _nsel =
+           (size_t)(+500 * std::log2(_nnum + 1) + 1) ;
 
             size_t _filt = _nnum / _nsel + 1;
             size_t _njmp = _filt ;
             size_t _inum = +0;
             double _SPOS = +0. ;
-            _sort.clear();           
-            for(item_data *_iptr  = _hptr ;
-                           _iptr != nullptr ;
-                           _iptr  = _next ,
-                           _inum += +1 )
+            _sort.clear();
+            for(_iptr  = _hptr ; _iptr != nullptr ;
+                _iptr  = _next ,
+                _inum += +1  )
             {
-                _next = _iptr->_next ;
+                _next  = _iptr-> _next ;
         /*------------------------------- partition items */
                 if (_iptr->_data
                     .plen (_bdim) > _blen)
@@ -665,7 +664,7 @@
             if(!_sort.empty())     // middle-median blend
             {
             algorithms::qsort(
-                _sort.head(), _sort.tend(), 
+                _sort.head(), _sort.tend(),
                     std::less<real_type>()) ;
 
             _spos = _sort[_sort.count() / 2];
@@ -701,23 +700,24 @@
             init_aabb_node (_rnod , _pnod);
 
         /*---------- partition list - split on left|right */
-            for(item_data *_iptr  = _cptr ;
-                           _iptr != nullptr ;
-                           _iptr  = _next )
+            for(_iptr  = _cptr ; _iptr != nullptr ;
+                _iptr  = _next )
             {
-                _next = _iptr->_next ;
+                _next  = _iptr-> _next ;
         /*------------------------------- partition items */
                 if (_iptr->_data
                     .pmid (_bdim) > _spos)
                 {
                     push_aabb_node( _rnod, _iptr) ;
                     push_item(_rptr,_iptr);
+
                    _rnum += +1 ;
                 }
                 else
                 {
                     push_aabb_node( _lnod, _iptr) ;
                     push_item(_lptr,_iptr);
+
                    _lnum += +1 ;
                 }
             }
@@ -923,7 +923,7 @@
     /*---------------------------- push items to CCS list */
             if (_node->items () != nullptr)
             {
-                for (auto 
+                for (auto
                     _item  = _node->items() ;
                           _item != nullptr;
                     _item  = _item->_next )
@@ -1013,19 +1013,23 @@
     {
         if (this->_root == nullptr) return false ;
 
+        containers::array<
+                node_type* ,
+                allocator>                 _wset ;
+
     /*----------------- maintain stack of unvisited nodes */
-        this->_work.clear() ;
+        _wset.set_alloc (+64)  ;
         if (_pred(this->_root->_pmin,
                   this->_root->_pmax)
                  )
-        this->_work.push_tail(this->_root);
+        _wset.push_tail (this->_root)  ;
 
     /*----------------- traverse while _pred remains true */
         bool_type _find =  false ;
-        for ( ; !this->_work.empty() ; )
+        for ( ; !_wset.empty() ; )
         {
             node_type *_node = nullptr ;
-            this->_work._pop_tail(_node) ;
+            _wset._pop_tail(_node) ;
 
             if (_node->_hptr!= nullptr )
             {
@@ -1041,14 +1045,14 @@
                 _node->lower(0)->_pmin ,
                 _node->lower(0)->_pmax )
                      )
-                this->_work.push_tail (
+                _wset.push_tail (
                       _node->lower(0)) ;
 
             if (_pred(
                 _node->lower(1)->_pmin ,
                 _node->lower(1)->_pmax )
                      )
-                this->_work.push_tail (
+                _wset.push_tail (
                       _node->lower(1)) ;
             }
         }

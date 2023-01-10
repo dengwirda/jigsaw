@@ -30,12 +30,16 @@
  * how they can obtain it for free, then you are not
  * required to make any arrangement with me.)
  *
- * Disclaimer:  Neither I nor: Columbia University, The
- * Massachusetts Institute of Technology, The
- * University of Sydney, nor The National Aeronautics
- * and Space Administration warrant this code in any
- * way whatsoever.  This code is provided "as-is" to be
- * used at your own risk.
+ * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+ * this code in any way whatsoever.  This code is
+ * provided "as-is" to be used at your own risk.
+ *
+ * THE CONTRIBUTORS include:
+ * (a) The University of Sydney
+ * (b) The Massachusetts Institute of Technology
+ * (c) Columbia University
+ * (d) The National Aeronautics & Space Administration
+ * (e) Los Alamos National Laboratory
  *
 ------------------------------------------------------------
  *
@@ -134,7 +138,7 @@
 /*------------- helper - set "null" item marker as maxint */
     __static_call
     __inline_call iptr_type const null (
-        ) 
+        )
     {   return std::numeric_limits<iptr_type>::max() ;
     }
 
@@ -411,11 +415,11 @@
         data_type const&_data
         )
     {/*---------------- make room for new item in mapping */
-        iptr_type _size = 
+        iptr_type _size =
        (iptr_type) this->_keys .count() ;
         if (_size <= _kpos)
-            this->_keys.set_count( 
-                _kpos + 1 , 
+            this->_keys.set_count(
+                _kpos + 1 ,
         containers::loose_alloc, null());
 
         if (this->_keys[_kpos] != null())
@@ -437,7 +441,7 @@
         __copy(data_type, _data)  ;
 
     /*------------------------- map _item to _data "hole" */
-        this->_keys[_kpos] = 
+        this->_keys[_kpos] =
             (iptr_type)(
             _ipos - this->_heap.head()) ;
     }
@@ -447,11 +451,11 @@
         data_type && _data
         )
     {/*---------------- make room for new item in mapping */
-        iptr_type _size = 
+        iptr_type _size =
        (iptr_type) this->_keys .count() ;
         if (_size <= _kpos)
-            this->_keys.set_count( 
-                _kpos + 1 , 
+            this->_keys.set_count(
+                _kpos + 1 ,
         containers::loose_alloc, null());
 
         if (this->_keys[_kpos] != null())

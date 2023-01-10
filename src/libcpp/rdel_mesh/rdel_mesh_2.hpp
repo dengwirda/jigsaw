@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -788,12 +788,13 @@
     #       ifdef _DEBUG
             iptr_type _jlog_freq = +250 ;
     #       else
-            iptr_type _jlog_tens = 
+            iptr_type _jlog_tens =
                 (iptr_type) std::log10(_pass) ;
 
-            iptr_type _jlog_freq = 
-                (+5 * std::max(10000, 
-           (iptr_type)std::pow(10, _jlog_tens))) / 2 ;
+            iptr_type _jlog_freq = // logarithmic updates
+                (+1 * std::max(10000,
+                (+5 * std::max(1000,
+           (iptr_type)std::pow(10, _jlog_tens))) / 2)) ;
     #       endif
 
             if(++_pass>_args.iter()) break;
@@ -1369,7 +1370,7 @@
 
         _dump.push("\n")  ;
         _dump.push("**FPMATH statistics...\n") ;
-        
+
         _dump.push(" *orient2Df = ") ;
         _dump.push(std::to_string(
          geompred::_nn_calls [

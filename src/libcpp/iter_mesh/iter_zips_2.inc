@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -290,7 +290,7 @@
                 &_LPTR->pval(+0), true) ;
             }
 
-            for (auto _idim = _last; 
+            for (auto _idim = _last;
                       _idim-- != +0; )
             {
             _ball[_idim] += _MASS * _BALL[_idim] ;
@@ -553,11 +553,11 @@
 
     /*--------------------------------- get adjacent cost */
         real_type  _amin = loop_cost(
-            _mesh, 
+            _mesh,
             _iset, _qsrc, cell_kind()) ;
 
         real_type  _bmin = loop_cost(
-            _mesh, 
+            _mesh,
             _jadj, _qsrc, cell_kind()) ;
 
         real_type  _qmin =
@@ -634,10 +634,10 @@
                 ) ;
 
             move_node( _geom, _mesh,
-                _hfun, _hval, 
+                _hfun, _hval,
                 _opts, _nptr, _prev,
                 _kern, _move, _cset,
-                _qtmp, _qdst, 
+                _qtmp, _qdst,
                 _minC, _QLIM, _tcpu)  ;
 
             if (_move <= +0 ) break;
@@ -783,7 +783,7 @@
        _mesh .node(_jnod).ndeg(TRIA3_tag) ;
         auto _kdeg =
        _mesh .node(_knod).ndeg(TRIA3_tag) ;
-        
+
         if (_nmrk[_inod] < 0) _ideg = 6 ;
         if (_nmrk[_jnod] < 0) _jdeg = 6 ;
         if (_nmrk[_knod] < 0) _kdeg = 6 ;
@@ -796,12 +796,12 @@
             (iptr_type)(_DEG_TRIA3-_kdeg) ;
 
         auto _ndeg = _ideg + _jdeg + _kdeg -  3*3 ;
-        
+
         auto _nerr =
             (iptr_type)(_DEG_TRIA3-_ndeg) ;
 
         auto _dnew = std::abs(_nerr) ;
-        auto _dnow = std::abs(_ierr) + 
+        auto _dnow = std::abs(_ierr) +
                      std::abs(_jerr) +
                      std::abs(_kerr) ;
 
@@ -820,7 +820,7 @@
         pred_type::
         proj_node(_geom, _pbal, _pbal);
 
-        real_type _isiz, _jsiz, _ksiz ; 
+        real_type _isiz, _jsiz, _ksiz ;
         real_type _bsiz;
         _isiz = _hfun.eval(
             &_iptr->pval(0), _iptr->hidx()) ;
@@ -833,13 +833,13 @@
 
         _bsiz = _hfun.eval(_pbal , _hint) ;
 
-        real_type _lsqr = 
+        real_type _lsqr =
             _pbal[_last] * (real_type)+3. ;
         real_type _hbar =
-            _isiz * (real_type)(1./6.) +
-            _jsiz * (real_type)(1./6.) +
-            _ksiz * (real_type)(1./6.) +
-            _bsiz * (real_type)(3./6.) ;
+            _isiz * (real_type)(2./9.) +
+            _jsiz * (real_type)(2./9.) +
+            _ksiz * (real_type)(2./9.) +
+            _bsiz * (real_type)(3./9.) ;
 
     /*--------------------------------- exit if too large */
         if (_lsqr >= _hbar * _lmax *
@@ -867,15 +867,15 @@
 
     /*--------------------------------- get adjacent cost */
         real_type  _amin = loop_cost(
-            _mesh, 
+            _mesh,
             _iset, _qsrc, cell_kind()) ;
 
         real_type  _bmin = loop_cost(
-            _mesh, 
+            _mesh,
             _jadj, _qsrc, cell_kind()) ;
 
         real_type  _cmin = loop_cost(
-            _mesh, 
+            _mesh,
             _kadj, _qsrc, cell_kind()) ;
 
         real_type  _qmin =
@@ -959,10 +959,10 @@
                 ) ;
 
             move_node( _geom, _mesh,
-                _hfun, _hval, 
+                _hfun, _hval,
                 _opts, _nptr, _prev,
                 _kern, _move, _cset,
-                _qtmp, _qdst, 
+                _qtmp, _qdst,
                 _minC, _QLIM, _tcpu)  ;
 
             if (_move <= +0 ) break;

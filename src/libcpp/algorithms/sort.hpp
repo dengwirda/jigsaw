@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -392,7 +392,7 @@
         typename  pred_type
              >
     __normal_call void_type qsort (  // unrolled quick sort
-        iter_type _head,  
+        iter_type _head,
         iter_type _tend,  // last of sequence to sort
         pred_type _less   // comparison predicate
         )
@@ -448,7 +448,7 @@
 
         /* find pivot item for current partition */
             _mm = pivot(_hh, _tt, _less);
-        
+
         /* reduce partition around pivot element */
             iter_type _ll = _hh + 1;
             iter_type _rr = _tt - 1;
@@ -459,13 +459,13 @@
 
                 if (_ll <  _rr)
                 { /* swap elements */
-                if (_ll == _mm) 
+                if (_ll == _mm)
                     _mm =  _rr;
                 else
-                if (_rr == _mm) 
+                if (_rr == _mm)
                     _mm =  _ll;
 
-                std::swap(*_ll, 
+                std::swap(*_ll,
                           *_rr) ;
                 }
                 if (_ll <= _rr)
@@ -503,7 +503,7 @@
         typename  pred_type
              >
     __normal_call void_type qsift (  // quick select
-        iter_type _head,  
+        iter_type _head,
         iter_type _kk,    // pos. in sequence to find
         iter_type _tend,  // last of sequence to parition
         pred_type _less   // comparison predicate
@@ -515,7 +515,7 @@
 
         do {
         /* deal with "spec.-case" tiny partition */
-            if (_tt - _hh + 1 <= 1) 
+            if (_tt - _hh + 1 <= 1)
                 break ;
 
             if (_tt - _hh + 1 == 2)
@@ -546,13 +546,13 @@
 
                 if (_ll <  _rr)
                 { /* swap elements */
-                if (_ll == _mm) 
+                if (_ll == _mm)
                     _mm =  _rr;
                 else
-                if (_rr == _mm) 
+                if (_rr == _mm)
                     _mm =  _ll;
 
-                std::swap(*_ll, 
+                std::swap(*_ll,
                           *_rr) ;
                 }
                 if (_ll <= _rr)

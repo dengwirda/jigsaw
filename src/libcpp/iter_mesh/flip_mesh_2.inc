@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -285,7 +285,7 @@
 
         _nflp = (iptr_type) +0 ;
 
-        init_mark(_mesh, 
+        init_mark(_mesh,
             _mark, std::max(+0 , _imrk - 1) ) ;
 
     #   ifdef  __use_timers
@@ -333,7 +333,7 @@
 
     #   ifdef  __use_timers
         _ttoc = _time.now() ;
-        _tcpu._init_flip 
+        _tcpu._init_flip
             += _tcpu.time_span (_ttic, _ttoc) ;
     #   endif//__use_timers
 
@@ -376,7 +376,7 @@
 
         _nflp = (iptr_type) +0 ;
 
-        init_mark(_mesh, 
+        init_mark(_mesh,
             _mark, std::max(+0 , _imrk - 1) ) ;
 
     #   ifdef  __use_timers
@@ -422,7 +422,7 @@
 
     #   ifdef  __use_timers
         _ttoc = _time.now() ;
-        _tcpu._init_flip 
+        _tcpu._init_flip
             += _tcpu.time_span (_ttic, _ttoc) ;
     #   endif//__use_timers
 

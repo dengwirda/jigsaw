@@ -27,7 +27,7 @@ if (DEFINED MSVC_LIKE)
 endif ()
 
 if (DEFINED GCXX_LIKE)
-  add_compile_options (-pedantic -Wall)
+  add_compile_options (-pedantic -Wall -Wfloat-conversion)
 endif ()
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

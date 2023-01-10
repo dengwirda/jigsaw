@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -38,7 +38,7 @@
      * Last updated: 18 Dec., 2022
      *
      * Copyright 2013-2022
-     * Darren Engwirda, 
+     * Darren Engwirda,
      * Marc Tunnell
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -58,6 +58,8 @@
     __static_call
     __normal_call void_type pull_conn (
         mesh_type &_mesh ,  // mesh object
+        iptr_list &_aset ,  // list of nodes active
+        iptr_list &_amrk ,  // >= 0 if nodes active
         conn_sets &_conn    // cached node spacing array
         )
     {
@@ -71,19 +73,26 @@
             _mesh.node().count() + 1,
                 containers::tight_alloc , +0 ) ;
 
+         auto _scal =
+            ((double)_aset.count()) /
+                     _mesh.node().count() ;
+
         _conn._adj1.set_alloc(
-            _mesh.edge().count() * 2) ;
+            (size_t)(_scal * (
+            _mesh.edge().count() * 2) ) ) ;
         _conn._adj2.set_alloc(
+            (size_t)(_scal * (
             _mesh.tri3().count() * 3 +
-            _mesh.quad().count() * 4) ;
+            _mesh.quad().count() * 4) ) ) ;
 
         iptr_type _npos  = +0 ;
         for (auto _node  = _mesh.node().head() ;
                   _node != _mesh.node().tend() ;
                 ++_node, ++_npos)
         {
-        if (_node->mark() >= + 0)
-        {
+            if (_node->mark() >= 0 &&
+                _amrk[_npos ] >= 0)
+            {
     /*-------------------- append adj. lists per node */
             _mesh.connect_1(
             _npos, POINT_tag, _conn._adj1) ;
@@ -96,16 +105,16 @@
 
             _conn._idx2[_npos+1] =
                 _conn._adj2.count() ;
-        }
-        else
-        {
+            }
+            else
+            {
     /*-------------------- empty lists for null nodes */
             _conn._idx1[_npos+1] =
                 _conn._idx1[ _npos] ;
 
             _conn._idx2[_npos+1] =
                 _conn._idx2[ _npos] ;
-        }
+            }
         }
     }
 
@@ -166,6 +175,7 @@
         containers::array<cost_pair> cost_list ;
 
         real_list _qbar, _qmin, _cost ;
+        iptr_list _amrk ;
         cost_list _sset ;
 
         __unreferenced ( _DLIM ) ;
@@ -179,8 +189,10 @@
         _qmin.set_count(
             _mesh.node().count(),
                 containers::tight_alloc, +1.0) ;
-        
-        pull_conn(_mesh, _CONN) ;
+
+        _amrk.set_count(
+            _mesh.node().count(),
+                containers::tight_alloc, -1) ;
 
     #   ifdef  __use_openmp
         omp_set_num_threads(_opts.nprt()) ;
@@ -193,17 +205,17 @@
     #   pragma omp parallel for schedule(static) \
            default(none) \
            shared(_mesh, _cost)
-        for (auto _tpos = +0u ; 
+        for (auto _tpos = +0u ;
                   _tpos < _mesh.tri3().count() ;
                 ++_tpos )
         {
-             auto _tria = 
+             auto _tria =
                   _mesh.tri3().head() + _tpos;
 
             if (_tria->mark() >= +0)
             {
         /*-------------------- calc. min. scores at cells */
-                _cost[_tpos] = 
+                _cost[_tpos] =
                     pred_type::tri3_cost (
                &_mesh .node(
                 _tria->node(0)).pval(0),
@@ -244,17 +256,17 @@
     #   pragma omp parallel for schedule(static) \
            default(none) \
            shared(_mesh, _cost)
-        for (auto _qpos = +0u ; 
+        for (auto _qpos = +0u ;
                   _qpos < _mesh.quad().count() ;
                 ++_qpos )
         {
-             auto _quad = 
+             auto _quad =
                   _mesh.quad().head() + _qpos;
 
             if (_quad->mark() >= +0)
             {
         /*-------------------- calc. min. scores at cells */
-                _cost[_qpos] = 
+                _cost[_qpos] =
                     pred_type::quad_cost (
                &_mesh .node(
                 _quad->node(0)).pval(0),
@@ -310,13 +322,13 @@
                     _nmrk[_ipos]) >= _FLAG || // recent
                     _qmin[_ipos]  <= _QLIM )  // skewed
                 {
-                    auto  _nadj = 
+                    auto  _nadj =
                         _node->ndeg(TRIA3_tag) +
                         _node->ndeg(QUAD4_tag) ;
-                    
+
                     _nadj = std::max(1, _nadj) ;
 
-                    float _cval = 
+                    float _cval =
                         (float)_qbar[_ipos]/_nadj -
                         (float)_qmin[_ipos] ;
 
@@ -335,8 +347,14 @@
                 ++_iter  )
         {
     /*------------------------ push sorted wrt. min.-cost */
-            _aset.push_tail(_iter->_node) ;
+             auto _spos  = _iter->_node ;
+            _amrk[_spos] = _isub ;
+            _aset.push_tail(_spos) ;
         }
+
+    /*------------------------ cache adj. for active node */
+        pull_conn(
+            _mesh, _aset, _amrk, _CONN) ;
 
     #   undef   PUSHCOST
     }

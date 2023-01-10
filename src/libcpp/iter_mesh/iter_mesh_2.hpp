@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -38,7 +38,7 @@
      * Last updated: 12 Dec., 2022
      *
      * Copyright 2013-2022
-     * Darren Engwirda, 
+     * Darren Engwirda,
      * Marc Tunnell
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -223,7 +223,7 @@
 
     #include "flip_mesh_2.inc"
 
-    
+
     /*
     --------------------------------------------------------
      * _ZIP-MESH: merge/split operations on cells.
@@ -231,7 +231,7 @@
      */
 
     #include "_zip_mesh_2.inc"
-    
+
 
     /*------------------------------ helper: init. marker */
 
@@ -353,7 +353,7 @@
                   _cpos  < _mesh.tri3().count() ;
                 ++_cpos  )
         {
-             auto _cell  = 
+             auto _cell  =
                 _mesh. tri3().head() + _cpos ;
 
             if (_cell->mark() >= +0 )
@@ -381,7 +381,7 @@
                   _cpos  < _mesh.quad().count() ;
                 ++_cpos  )
         {
-             auto _cell  = 
+             auto _cell  =
                 _mesh. quad().head() + _cpos ;
 
             if (_cell->mark() >= +0 )
@@ -410,7 +410,7 @@
         auto _nprt = omp_get_num_threads();
 
     #   pragma omp for ordered schedule(static,1)
-        for (auto _rank = 0 ; _rank <_nprt; 
+        for (auto _rank = 0 ; _rank <_nprt;
                 ++_rank )
         {
     #       pragma omp ordered
@@ -474,7 +474,7 @@
         mark_list _mark ;
 
         init_mark(_mesh, _mark) ;
-        init_bnds(_mesh, _mark) ;        
+        init_bnds(_mesh, _mark) ;
 
         flip_sign(_mesh);
 
@@ -498,7 +498,7 @@
             _iter <= _opts.iter(); ++_iter)
         {
     /*------------------------------ set-up current iter. */
-            init_mark(_mesh , 
+            init_mark(_mesh ,
                 _mark,std::max(_iter - 1, +0)) ;
 
             _nset.set_count(  +0);
@@ -509,7 +509,7 @@
             size_t    _ndiv = +0 ;
 
     /*------------------------------ scale quality limits */
-            iptr_type _nsub = _iter +0 ;
+            iptr_type _nsub = _iter +1 ;
 
             _nsub =
             std::min(ITER_MAX_, _nsub) ;
@@ -519,8 +519,8 @@
             real_type _DLIM =
            (real_type)+1.-_opts.qtol() ;
 
-            real_type _QLIM = std::min(
-                _opts.qlim(),_QMIN * 
+            real_type _QLIM = std::min (
+                _opts.qlim(),_QMIN *
            (real_type)(0.90 + 0.05 * (_iter - 1))) ;
 
     /*------------------------------ 1. CELL GEOM. PASSES */
@@ -555,7 +555,7 @@
                 move_node( _geom, _mesh , _conn ,
                     _hfun, _kern, _hval , _last ,
                     _nset, _aset, _mark ,
-                    _part, _iter, _isub , 
+                    _part, _iter, _isub ,
                     _opts, _QLIM, _DLIM , _tcpu);
             }
 
@@ -624,7 +624,7 @@
                 move_dual( _geom, _mesh , _conn ,
                     _hfun, _hval, _last ,
                     _nset, _aset, _mark ,
-                    _part, _iter, _isub , 
+                    _part, _iter, _isub ,
                     _opts, _QLIM, _DLIM , _tcpu);
             }
 
@@ -762,7 +762,7 @@
             _dump.push("\n");
             _dump.push(" *core-node: ");
             _dump.push(
-            std::to_string(_tcpu._core_node)) ;            
+            std::to_string(_tcpu._core_node)) ;
             _dump.push("\n");
             _dump.push(" *seqs-node: ");
             _dump.push(
@@ -817,11 +817,11 @@
             _dump.push("  TOPO-FLIP: ");
             _dump.push(
             std::to_string(_tcpu._topo_flip)) ;
-            _dump.push("\n");            
+            _dump.push("\n");
             _dump.push(" *init-flip: ");
             _dump.push(
             std::to_string(_tcpu._init_flip)) ;
-            _dump.push("\n");            
+            _dump.push("\n");
             _dump.push(" *core-flip: ");
             _dump.push(
             std::to_string(_tcpu._core_flip)) ;

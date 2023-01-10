@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Jan., 2022
+     * Last updated: 30 Dec., 2022
      *
      * Copyright 2013-2022
      * Darren Engwirda
@@ -128,6 +128,9 @@
         EVALHFUN( _jnod , _jptr )
         EVALHFUN( _knod , _kptr )
 
+        real_type _hbal = _hfun.eval(
+            &_ball[0], _node->hidx()) ;
+
         real_type _irho =
             _hval[_imid] / _hval[_inod] ;
         real_type _jrho =
@@ -135,10 +138,14 @@
         real_type _krho =
             _hval[_imid] / _hval[_knod] ;
 
+        real_type _0rho =
+            _hval[_imid] / _hbal        ;
+
         real_type _hrho =
-            _irho * (real_type)1./3. +
-            _jrho * (real_type)1./3. +
-            _krho * (real_type)1./3. ;
+            _irho * (real_type)2./9. +
+            _jrho * (real_type)2./9. +
+            _krho * (real_type)2./9. +
+            _0rho * (real_type)3./9. ;
 
         _hrho =
             _tmag * std::pow(_hrho, +3) ;
@@ -242,6 +249,9 @@
         EVALHFUN( _knod , _kptr )
         EVALHFUN( _lnod , _lptr )
 
+        real_type _hbal = _hfun.eval(
+            &_ball[0], _node->hidx()) ;
+
         real_type _irho =
             _hval[_imid] / _hval[_inod] ;
         real_type _jrho =
@@ -251,11 +261,15 @@
         real_type _lrho =
             _hval[_imid] / _hval[_lnod] ;
 
+        real_type _0rho =
+            _hval[_imid] / _hbal        ;
+
         real_type _hrho =
-            _irho * (real_type)1./4. +
-            _jrho * (real_type)1./4. +
-            _krho * (real_type)1./4. +
-            _lrho * (real_type)1./4. ;
+            _irho * (real_type)2./12 +
+            _jrho * (real_type)2./12 +
+            _krho * (real_type)2./12 +
+            _lrho * (real_type)2./12 +
+            _0rho * (real_type)4./12 ;
 
         _hrho =
             _qmag * std::pow(_hrho, +3) ;
@@ -460,7 +474,7 @@
         real_type _lsqr = std::max(
             _0bal[_last], (real_type) +0.);
 
-        EVALHFUN( _inod , _iptr )
+        EVALHFUN( _inod , _iptr )        // eval. at node
         EVALHFUN( _jnod , _jptr )
         EVALHFUN( _knod , _kptr )
 
@@ -477,6 +491,17 @@
         real_type _2rho =
             _hval[_inod] * (real_type)1./2. +
             _hval[_knod] * (real_type)1./2. ;
+
+        real_type _0val = _hfun.eval(    // eval. on dual
+            &_0bal[0], _node->hidx()) ;
+        real_type _1val = _hfun.eval(
+            &_1bal[0], _node->hidx()) ;
+        real_type _2val = _hfun.eval(
+            &_2bal[0], _node->hidx()) ;
+
+        _0rho = +.5 * (_0rho + _0val) ;
+        _1rho = +.5 * (_1rho + _1val) ;
+        _2rho = +.5 * (_2rho + _2val) ;
 
         _0rho = std::pow(
             _hval[_inod] / _0rho, +3) ;
@@ -635,7 +660,7 @@
         real_type _lsqr = std::max(
             _0bal[_last], (real_type) +0.);
 
-        EVALHFUN( _inod , _iptr )
+        EVALHFUN( _inod , _iptr )        // eval. at node
         EVALHFUN( _jnod , _jptr )
         EVALHFUN( _knod , _kptr )
         EVALHFUN( _lnod , _lptr )
@@ -654,6 +679,17 @@
         real_type _2rho =
             _hval[_inod] * (real_type)1./2. +
             _hval[_lnod] * (real_type)1./2. ;
+
+        real_type _0val = _hfun.eval(    // eval. on dual
+            &_0bal[0], _node->hidx()) ;
+        real_type _1val = _hfun.eval(
+            &_1bal[0], _node->hidx()) ;
+        real_type _2val = _hfun.eval(
+            &_2bal[0], _node->hidx()) ;
+
+        _0rho = +.5 * (_0rho + _0val) ;
+        _1rho = +.5 * (_1rho + _1val) ;
+        _2rho = +.5 * (_2rho + _2val) ;
 
         _0rho = std::pow(
             _hval[_inod] / _0rho, +3) ;

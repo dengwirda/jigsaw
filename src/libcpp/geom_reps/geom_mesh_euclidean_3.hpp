@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -2468,7 +2468,7 @@
         float           _RRAD  =
                 (float) _ball. _rrad;
 
-        _RRAD *= (+1. + _RTOL) ;
+        _RRAD *= (1.f + _RTOL) ;
 
     /*------------------ call actual intersection testing */
         tree_pred _pred(_PMID, _RRAD) ;
@@ -2524,7 +2524,7 @@
         float           _RRAD  =
                 (float) _disc. _rrad;
 
-        _RRAD *= (+1. + _RTOL) ;
+        _RRAD *= (1.f + _RTOL) ;
 
     /*------------------ call actual intersection testing */
         tree_pred _pred(_PMID, _RRAD) ;

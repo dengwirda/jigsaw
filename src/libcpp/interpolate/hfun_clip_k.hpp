@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -584,28 +584,28 @@
             if (_h1 >=(vals_type)+0. &&
                 _h2 >=(vals_type)+0. )
             if (eikonal_edge_2d (
-                _p1, _p2, _hb , 
+                _p1, _p2, _hb ,
                 _h1, _h2, _g1 , _g2) )
                 _clip =  true ;
 
             if (_h2 >=(vals_type)+0. &&
                 _h3 >=(vals_type)+0. )
             if (eikonal_edge_2d (
-                _p2, _p3, _hb , 
+                _p2, _p3, _hb ,
                 _h2, _h3, _g2 , _g3) )
                 _clip =  true ;
 
             if (_h3 >=(vals_type)+0. &&
                 _h4 >=(vals_type)+0. )
             if (eikonal_edge_2d (
-                _p3, _p4, _hb , 
+                _p3, _p4, _hb ,
                 _h3, _h4, _g3 , _g4) )
                 _clip =  true ;
 
             if (_h4 >=(vals_type)+0. &&
                 _h1 >=(vals_type)+0. )
             if (eikonal_edge_2d (
-                _p4, _p1, _hb , 
+                _p4, _p1, _hb ,
                 _h4, _h1, _g4 , _g1) )
                 _clip =  true ;
         }
@@ -635,7 +635,7 @@
     {
     /*---------------------- limit h-values within GRID-4 */
         bool_type _clip = false ;
-        
+
         if (true)
         {
     /*--------------------------------- 1st tria ordering */
@@ -751,28 +751,28 @@
             if (_h1 >=(vals_type)+0. &&
                 _h2 >=(vals_type)+0. )
             if (eikonal_edge_3d (
-                _p1, _p2, _hb , 
+                _p1, _p2, _hb ,
                 _h1, _h2, _g1 , _g2) )
                 _clip =  true ;
 
             if (_h2 >=(vals_type)+0. &&
                 _h3 >=(vals_type)+0. )
             if (eikonal_edge_3d (
-                _p2, _p3, _hb , 
+                _p2, _p3, _hb ,
                 _h2, _h3, _g2 , _g3) )
                 _clip =  true ;
 
             if (_h3 >=(vals_type)+0. &&
                 _h4 >=(vals_type)+0. )
             if (eikonal_edge_3d (
-                _p3, _p4, _hb , 
+                _p3, _p4, _hb ,
                 _h3, _h4, _g3 , _g4) )
                 _clip =  true ;
 
             if (_h4 >=(vals_type)+0. &&
                 _h1 >=(vals_type)+0. )
             if (eikonal_edge_3d (
-                _p4, _p1, _hb , 
+                _p4, _p1, _hb ,
                 _h4, _h1, _g4 , _g1) )
                 _clip =  true ;
         }
@@ -802,7 +802,7 @@
     {
     /*---------------------- limit h-values within GRID-4 */
         bool_type _clip = false ;
-        
+
         if (true)
         {
     /*--------------------------------- 1st tria ordering */

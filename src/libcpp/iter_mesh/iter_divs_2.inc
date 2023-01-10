@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -198,10 +198,10 @@
         {
     //  try to reduce large vertex valence via refinement
 
-        real_type _qerr = (real_type) -1./16. ; 
+        real_type _qerr = (real_type) -1./16. ;
         _qerr*= std::max (_ierr, _jerr ) ;
         _qerr/= std::pow (_iout, +1./2.) ;  // stop oscl.
-        _qinc = std::min (_qinc, 
+        _qinc = std::min (_qinc,
                           _qinc + _qerr) ;
 
         }
@@ -214,7 +214,7 @@
         real_type _qerr = (real_type) -1./16. ;
         _qerr*= std::max (_ierr, _jerr ) ;
         _qerr/= std::pow (_iout, +1./2.) ;  // stop oscl.
-        _qinc = std::min (_qinc, 
+        _qinc = std::min (_qinc,
                           _qinc + _qerr) ;
 
         }
@@ -387,9 +387,9 @@
 
             move_node( _geom, _mesh,
                 _hfun, _hval,
-                _opts, _nptr, _prev, 
+                _opts, _nptr, _prev,
                 _kern, _move, _cnew,
-                _qtmp, _qdst, 
+                _qtmp, _qdst,
                 _minC, _QLIM, _tcpu)  ;
 
             if (_move <= +0 ) break;

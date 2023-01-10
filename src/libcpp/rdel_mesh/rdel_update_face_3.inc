@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -685,7 +685,7 @@
             push_edge(_mesh, _geom ,
                       _hfun,*_iter ,
                       _edat, _escr ,
-                      _mesh. _etwo , 
+                      _mesh. _etwo ,
                       _nedg,
                       _pass, _opts) ;
         }
@@ -704,7 +704,7 @@
             push_face(_mesh, _geom ,
                       _hfun,*_iter ,
                       _fdat, _fscr ,
-                      _mesh. _ftwo , 
+                      _mesh. _ftwo ,
                       _nfac, _ndup ,
                       _pass, _opts) ;
         }

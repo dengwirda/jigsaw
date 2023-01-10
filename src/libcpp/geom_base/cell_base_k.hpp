@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -588,14 +588,14 @@
         // -ve due to ccw sign of vectors
         real_type _dd11 =
         geometry::dot_2d(
-            _vv31, _vv12) / _ll31 / _ll12 ;        
+            _vv31, _vv12) / _ll31 / _ll12 ;
         real_type _dd22 =
         geometry::dot_2d(
             _vv12, _vv23) / _ll12 / _ll23 ;
         real_type _dd33 =
         geometry::dot_2d(
             _vv23, _vv31) / _ll23 / _ll31 ;
-        
+
         _dd11 += (real_type)+ 1./2. ;
         _dd22 += (real_type)+ 1./2. ;
         _dd33 += (real_type)+ 1./2. ;
@@ -646,7 +646,7 @@
         real_type _dd33 =
         geometry::dot_3d(
             _vv23, _vv31) / _ll23 / _ll31 ;
-        
+
         _dd11 += (real_type)+ 1./2. ;
         _dd22 += (real_type)+ 1./2. ;
         _dd33 += (real_type)+ 1./2. ;
@@ -711,7 +711,7 @@
         real_type _r3 = _m3[2] ;
 
         real_type _rb =             // chara.-length
-       (_r1+_r2+_r3) / (real_type)+3. ;
+        std::pow( _r1 * _r2 * _r3, 1./3.) ;
 
         real_type _qb = _lb / _rb ;
 
@@ -773,7 +773,7 @@
         real_type _r3 = _m3[3] ;
 
         real_type _rb =             // chara.-length
-       (_r1+_r2+_r3) / (real_type)+3. ;
+        std::pow( _r1 * _r2 * _r3, 1./3.) ;
 
         real_type _qb = _lb / _rb ;
 

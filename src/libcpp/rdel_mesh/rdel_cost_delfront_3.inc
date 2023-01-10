@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 Aug., 2022
+     * Last updated: 29 Dec., 2022
      *
      * Copyright 2013-2022
      * Darren Engwirda
@@ -73,7 +73,7 @@
     {
         _kind = mesh::null_item ;
 
-        _edat._mark =  (iptr_type) +0;
+        _edat._mark = (iptr_type)+0;
 
         if (_args.dims() < +1) return;
 
@@ -96,25 +96,20 @@
 
     /*------------------------- eval. surface-disc.-error */
         float _srat = (float)
-        geometry::lensqr_3d(_ebal, _pmax);
+        geometry::lensqr_3d(_ebal, _pmax) ;
 
     /*------------------------- calc. refinement priority */
-        _edat._mark += _mesh._tria.
-             node(_enod[0])->fdim() - 1 ;
-        _edat._mark += _mesh._tria.
-             node(_enod[1])->fdim() - 1 ;
-
-        _edat._cost = 
-       (float) _pmax[3] * (_srat + 1.f );
+        _edat._cost = (float) (
+       (float)_pmax[3] * (_srat + 1.f ) ) ;
 
     /*------------------------- eval. size func. at _tbal */
-        real_type _esiz = (real_type)+0. ;
-        _esiz += (real_type)1./3.*_hfun.eval(
+        real_type _esiz = (real_type)+0.;
+        _esiz += (real_type)1./4.*_hfun.eval(
            &_mesh._tria.
              node(_enod[0])->pval(0) ,
             _mesh._tria.
              node(_enod[0])->idxh()) ;
-        _esiz += (real_type)1./3.*_hfun.eval(
+        _esiz += (real_type)1./4.*_hfun.eval(
            &_mesh._tria.
              node(_enod[1])->pval(0) ,
             _mesh._tria.
@@ -123,10 +118,10 @@
          auto _hint =
         _mesh._tria.node(_enod[ 1])->idxh() ;
 
-        _esiz += (real_type)1./3. *
+        _esiz += (real_type)2./4. *
                  _hfun.eval(  _pmax, _hint) ;
 
-        _srat /= _esiz * _esiz ;
+        _srat /= (float)(_esiz * _esiz) ;
 
         real_type _eave =_pmax [ +3] ;
         _eave /= _esiz * _esiz ;
@@ -181,7 +176,7 @@
     {
         _kind = mesh::null_item ;
 
-        _fdat._mark =  (iptr_type) +0;
+        _fdat._mark = (iptr_type)+0;
 
         if (_args.dims() < +2) return;
 
@@ -267,33 +262,32 @@
         }
     #   endif
 
+        if ((hash_ball(_pmax) % 3 == +0) &&
+            _nbnd == +0 )    // add quasi-random re-order
+            _fdat._mark += +1 ;
+
     /*------------------------- eval. surface-disc.-error */
         float _srat = (float)
-        geometry::lensqr_3d(_tbal, _pmax);
+        geometry::lensqr_3d(_tbal, _pmax) ;
 
     /*------------------------- eval. radius--edge ratios */
-        float _prat = (float)
-        _pmax[3] / _llen[_emin] ;
+        float _prat = (float) (
+       (float)_pmax[3] / _llen[_emin] ) ;
 
     /*------------------------- calc. refinement priority */
-        _fdat._cost = (float) 
-        _pmax[3] * _prat * (1.f +  _srat);
+        _fdat._cost = (float) (
+       (float)_pmax[3] * _prat
+                    * (+1.0f + _srat) ) ;
 
     /*------------------------- refinement classification */
 
     //  add a scaling with "age" to help prioritise older
     //  cells on the front.
 
-        _fdat._cost/= 
+        _fdat._cost/=
             _mesh._tria._nset.count() + 1 ;
-        _fdat._cost/= 
+        _fdat._cost/=
             _mesh._tria._nset.count() + 1 ;
-
-    //  add a quasi-random scaling to help "break-up" any
-    //  aligned "seam" features. 
-
-        _fdat._cost/= 
-            (hash_ball (_pmax) % +3 ) + 1 ;
 
     //  flag cells "trapped" between boundaries -- having
     //  all nodes on lower dimensional facets and with at
@@ -322,17 +316,17 @@
 
     /*------------------------- eval. size func. at _fbal */
         real_type _tsiz = (real_type)+0.;
-        _tsiz += (real_type)1./4.*_hfun.eval(
+        _tsiz += (real_type)2./9.*_hfun.eval(
            &_mesh._tria.
              node(_fnod[0])->pval(0) ,
             _mesh._tria.
              node(_fnod[0])->idxh()) ;
-        _tsiz += (real_type)1./4.*_hfun.eval(
+        _tsiz += (real_type)2./9.*_hfun.eval(
            &_mesh._tria.
              node(_fnod[1])->pval(0) ,
             _mesh._tria.
              node(_fnod[1])->idxh()) ;
-        _tsiz += (real_type)1./4.*_hfun.eval(
+        _tsiz += (real_type)2./9.*_hfun.eval(
            &_mesh._tria.
              node(_fnod[2])->pval(0) ,
             _mesh._tria.
@@ -341,10 +335,10 @@
          auto _hint =
         _mesh._tria.node(_fnod[ 2])->idxh() ;
 
-        _tsiz += (real_type)1./4. *
+        _tsiz += (real_type)3./9. *
                  _hfun.eval(  _pmax, _hint) ;
 
-        _srat /= _tsiz * _tsiz ;
+        _srat /= (float)(_tsiz * _tsiz) ;
 
         real_type _eave =_pmax [ +3] ;
         _eave /= _tsiz * _tsiz;
@@ -386,7 +380,7 @@
     {
         _kind = mesh::null_item ;
 
-        _tdat._mark =  (iptr_type) +0 ;        
+        _tdat._mark = (iptr_type)+0;
 
         if (_args.dims() < +3) return ;
 
@@ -518,34 +512,32 @@
         }
     #   endif
 
+        if ((hash_ball(_tbal) % 3 == +0) &&
+            _nbnd == +0 )    // add quasi-random re-order
+            _tdat._mark += +1 ;
+
     /*------------------------- eval. radius--edge ratios */
-        float _erat = 
-            (float) _tbal[3] / _llen[_emin] ;
+        float _erat = (float) (
+       (float)_tbal [3] / _llen [_emin] ) ;
 
-        float _frat = 
-            (float) _tbal[3] / _frad[_fmin] ;
+        float _frat = (float) (
+       (float)_tbal [3] / _frad [_fmin] ) ;
 
-        float _trat =  _erat * _frat;
+        float _trat = _erat *_frat;
 
     /*------------------------- calc. refinement priority */
-        _tdat._cost =
-            (float)(_tbal[3] * _trat) ;
+        _tdat._cost = (float) (
+       (float)_tbal [3] * _trat ) ;
 
     /*------------------------- refinement classification */
 
     //  add a scaling with "age" to help prioritise older
     //  cells on the front.
 
-        _tdat._cost/= 
+        _tdat._cost/=
             _mesh._tria._nset.count() + 1 ;
-        _tdat._cost/= 
+        _tdat._cost/=
             _mesh._tria._nset.count() + 1 ;
-
-    //  add a quasi-random scaling to help "break-up" any
-    //  aligned "seam" features. 
-
-        _tdat._cost/= 
-            (hash_ball (_tbal) % +3 ) + 1 ;
 
     //  flag cells "trapped" between boundaries -- having
     //  all nodes on lower dimensional facets and with at
@@ -576,22 +568,22 @@
 
     /*------------------------- eval. size func. at _tbal */
         real_type _tsiz = (real_type)+0.;
-        _tsiz += (real_type)1./5.*_hfun.eval(
+        _tsiz += (real_type)3./16*_hfun.eval(
            &_mesh._tria.
              node(_tnod[0])->pval(0) ,
             _mesh._tria.
              node(_tnod[0])->idxh()) ;
-        _tsiz += (real_type)1./5.*_hfun.eval(
+        _tsiz += (real_type)3./16*_hfun.eval(
            &_mesh._tria.
              node(_tnod[1])->pval(0) ,
             _mesh._tria.
              node(_tnod[1])->idxh()) ;
-        _tsiz += (real_type)1./5.*_hfun.eval(
+        _tsiz += (real_type)3./16*_hfun.eval(
            &_mesh._tria.
              node(_tnod[2])->pval(0) ,
             _mesh._tria.
              node(_tnod[2])->idxh()) ;
-        _tsiz += (real_type)1./5.*_hfun.eval(
+        _tsiz += (real_type)3./16*_hfun.eval(
            &_mesh._tria.
              node(_tnod[3])->pval(0) ,
             _mesh._tria.
@@ -600,7 +592,7 @@
          auto _hint =
         _mesh._tria.node(_tnod[ 3])->idxh() ;
 
-        _tsiz += (real_type)1./5. *
+        _tsiz += (real_type)4./16 *
                  _hfun.eval(  _tbal, _hint) ;
 
         real_type _eave = _tbal [+3] ;

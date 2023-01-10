@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -810,7 +810,7 @@
                 if (_ffun._ellipsoid_grid_3d.
                         _hmat.count() > +0)
                 {
-            /*-------------------------- write VALUE data */                
+            /*-------------------------- write VALUE data */
                 ncutil::put_var(
                     _jcfg._hfun_file, "value_mat",
                 &_ffun._ellipsoid_grid_3d._hmat [0]) ;

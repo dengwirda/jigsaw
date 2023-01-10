@@ -41,8 +41,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -673,11 +673,11 @@
                 return  _retv ;
             }
 
-            _jlog._verbosity = 
+            _jlog._verbosity =
                 _jcfg._verbosity ;
 
             _jlog.push ( TRIPOD::asciibanner ) ;
-            
+
             if ((_retv = test_jcfg (
                  _jcfg, _jlog)) != __no_error)
             {

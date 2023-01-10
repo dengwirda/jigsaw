@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -38,7 +38,7 @@
      * Last updated: 11 Dec., 2022
      *
      * Copyright 2013-2022
-     * Darren Engwirda, 
+     * Darren Engwirda,
      * Marc Tunnell
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -68,7 +68,7 @@
         real_list &_hval ,  // cached node spacing array
         iter_opts &_opts ,  // user options
         node_iter  _node ,  // iterator to node to iter.
-        real_type *_last ,  // lagged line direction        
+        real_type *_last ,  // lagged line direction
         kern_kind  _kern ,  // optim. kernel selector
         iptr_type &_move ,  // > 0 if move successful
         conn_list &_conn ,  // list of adj. cells
@@ -236,7 +236,7 @@
     /*---------------- push update along search direction */
             real_type _scal = _SCAL[_iter];
 
-            real_type _zeta = _opts._zeta * 
+            real_type _zeta = _opts._zeta *
                 std::min ((real_type)1.,_scal) ;
 
             real_type _beta = _opts._beta ;
@@ -245,10 +245,10 @@
             pred_type::geom_dims; _idim-- != +0; )
             {
     /*---------------- momentum-type bias for search dir. */
-                _step[_idim] = 
+                _step[_idim] =
             _last[_idim]*((real_type)0.+_beta) +
             _line[_idim]*((real_type)1.-_beta) ;
-                
+
                 _proj[_idim] =
                 _save[_idim] + _scal * (
             _step[_idim]*((real_type)0.+_zeta) +
@@ -266,9 +266,9 @@
             }
 
             real_type _XTOL = _xtol *   _scal;  // armijo
-            real_type _XEPS = _xeps * 
+            real_type _XEPS = _xeps *
                 std::min ((real_type)1.,_scal) ;
-            
+
             real_type _lmov =
             pred_type::length_sq(_save, _proj) ;
 
@@ -393,7 +393,7 @@
         real_type _weps =           // delta_w ~= 0.0
             (real_type)+.01*_opts.qtol() ;
 
-        real_type _save = 
+        real_type _save =
             _node->pval(
                 pred_type::real_dims - 1);
 
@@ -403,7 +403,7 @@
             (real_type) +0.50,
             (real_type) +0.25,
             (real_type) +.125  } ;
-            
+
     /*---------------- do backtracking line search iter's */
 
     //  ifdef  __use_timers
@@ -415,17 +415,17 @@
         {
             real_type _scal = _SCAL[_iter];
 
-            real_type _zeta = _opts._zeta * 
-                (real_type)3./4. * 
+            real_type _zeta = _opts._zeta *
+                (real_type)3./4. *
             std::min((real_type)1.,_scal) ;
 
             real_type _beta = _opts._beta ;
 
     /*---------------- momentum-type bias for search dir. */
-            _step = 
+            _step =
             _last * ((real_type)0.+_beta) +
             _line * ((real_type)1.-_beta) ;
-                
+
             _node->pval(real_dims-1) =
                 _save + _scal * (
             _step * ((real_type)0.+_zeta) +
@@ -562,7 +562,7 @@
                 move_node( _geom, _mesh,
                     _hfun, _hval,
                     _opts, _node,
-                   &_last[ _apos][ +0 ], 
+                   &_last[ _apos][ +0 ],
                     _kern, _move, _conn,
                     _qold, _qnew,
                     _QMIN, _QLIM, _tcpu) ;
@@ -636,11 +636,12 @@
 
         if (_isub == +0)
         sort_node(_mesh, _CONN, _aset,
-            _mark._node, 
+            _mark._node,
             _iout,_isub, _QLIM, _DLIM, _opts) ;
 
-        _pful = std::sqrt(_aset.count ()) / 
-                PART_SCAL ;
+        _pful =(iptr_type)(
+                std::sqrt(_aset.count ()) /
+                PART_SCAL ) ;
         _pful = std::min(
                 _opts. nprt(), _pful + 1) ;
 
@@ -671,7 +672,7 @@
                 _CONN , _kern, _last,
                 _nset , _mark,
                 _iout , _opts,
-                _conn , _qold, _qnew, _QLIM, 
+                _conn , _qold, _qnew, _QLIM,
                 _tcpu ) ;
         }
         }
@@ -684,7 +685,7 @@
         }
         else
         {
-    /*-------------------- multiple-part: thread-parallel */    
+    /*-------------------- multiple-part: thread-parallel */
 
     #   ifdef  __use_timers
         _ttic = _time.now() ;
@@ -694,11 +695,12 @@
 
         if (_isub == +0)
         part_mesh(_mesh, _part._full, _pful,
-                  _aset, 
+                  _aset,
                   _isub, _pi*0,_tcpu) ;
 
-        _pbnd = _part._full._seqs.count() /
-                BNDS_SCAL ;
+        _pbnd =(iptr_type)(
+                _part._full._seqs.count() /
+                BNDS_SCAL ) ;
         _pbnd = std::min(
                 _opts. nprt(), _pbnd + 1) ;
 
@@ -711,7 +713,7 @@
         _ttoc = _time.now() ;
         _tcpu._part_node += _tcpu.time_span(_ttic, _ttoc) ;
     #   endif//__use_timers
-    
+
     /*-------------------- SYMMETRIC GAUSS-SEIDEL on CELL */
 
         if (_opts .tria())  // 1=>GS, 2=>SGS
@@ -721,9 +723,9 @@
         _ttic = _time.now() ;
     #   endif//__use_timers
 
-        for (auto _apos  = 
+        for (auto _apos  =
                   _part._bnds._seqs.head();
-                  _apos != 
+                  _apos !=
                   _part._bnds._seqs.tend();
                   _apos += +1)
         {
@@ -732,7 +734,7 @@
                 _CONN , _kern, _last,
                 _nset , _mark,
                 _iout , _opts,
-                _conn , _qold, _qnew, _QLIM, 
+                _conn , _qold, _qnew, _QLIM,
                 _tcpu ) ;
         }
 
@@ -764,21 +766,21 @@
         real_list _QOLD, _QNEW;
         iptr_list _NSET;
         iptr_type _pass  = 0u ;
-        iptr_type _anum; 
+        iptr_type _anum;
     #   pragma omp for nowait  schedule(static,1)
-        for (auto _rank  = 0u ; 
+        for (auto _rank  = 0u ;
                   _rank  <
             _part._bnds._lptr.count()-1; ++_rank)
         {
-        for (auto _apos  = PBEG(_part. _bnds, 
+        for (auto _apos  = PBEG(_part. _bnds,
                                 _pass, _rank) ;
-                  _apos != PEND(_part. _bnds, 
+                  _apos != PEND(_part. _bnds,
                                 _pass, _rank) ;
                   _apos += ITER(_pass) )
         {
             _anum = _part._bnds._list [_apos] ;
 
-            if (_part._bnds._part[_anum] < 0) 
+            if (_part._bnds._part[_anum] < 0)
                 continue ; // skip if interface
 
             move_task()(_geom, _mesh, _anum,
@@ -786,7 +788,7 @@
                 _CONN , _kern, _last,
                 _NSET , _mark,
                 _iout , _opts,
-                _CSET , _QOLD, _QNEW, _QLIM, 
+                _CSET , _QOLD, _QNEW, _QLIM,
                 _tcpu ) ;
         }
         }
@@ -823,20 +825,20 @@
         iptr_list _NSET;
         iptr_type _anum;
     #   pragma omp for nowait  schedule(static,1)
-        for (auto _rank  = 0u ; 
+        for (auto _rank  = 0u ;
                   _rank  <
             _part._full._lptr.count()-1; ++_rank)
         {
         for (auto _pass  = 0; _pass < 2; ++_pass)
-        for (auto _apos  = PBEG(_part. _full, 
+        for (auto _apos  = PBEG(_part. _full,
                                 _pass, _rank) ;
-                  _apos != PEND(_part. _full, 
+                  _apos != PEND(_part. _full,
                                 _pass, _rank) ;
                   _apos += ITER(_pass) )
         {
             _anum = _part._full._list [_apos] ;
 
-            if (_part._full._part[_anum] < 0) 
+            if (_part._full._part[_anum] < 0)
                 continue ; // skip if interface
 
             move_task()(_geom, _mesh, _anum,
@@ -844,7 +846,7 @@
                 _CONN , _kern, _last,
                 _NSET , _mark,
                 _iout , _opts,
-                _CSET , _QOLD, _QNEW, _QLIM, 
+                _CSET , _QOLD, _QNEW, _QLIM,
                 _tcpu ) ;
         }
         }
@@ -880,21 +882,21 @@
         real_list _QOLD, _QNEW;
         iptr_list _NSET;
         iptr_type _pass  = 1u ;
-        iptr_type _anum; 
+        iptr_type _anum;
     #   pragma omp for nowait  schedule(static,1)
-        for (auto _rank  = 0u ; 
+        for (auto _rank  = 0u ;
                   _rank  <
             _part._bnds._lptr.count()-1; ++_rank)
         {
-        for (auto _apos  = PBEG(_part. _bnds, 
+        for (auto _apos  = PBEG(_part. _bnds,
                                 _pass, _rank) ;
-                  _apos != PEND(_part. _bnds, 
+                  _apos != PEND(_part. _bnds,
                                 _pass, _rank) ;
                   _apos += ITER(_pass) )
         {
             _anum = _part._bnds._list [_apos] ;
 
-            if (_part._bnds._part[_anum] < 0) 
+            if (_part._bnds._part[_anum] < 0)
                 continue ; // skip if interface
 
             move_task()(_geom, _mesh, _anum,
@@ -902,7 +904,7 @@
                 _CONN , _kern, _last,
                 _NSET , _mark,
                 _iout , _opts,
-                _CSET , _QOLD, _QNEW, _QLIM, 
+                _CSET , _QOLD, _QNEW, _QLIM,
                 _tcpu ) ;
         }
         }
@@ -931,9 +933,9 @@
         _ttic = _time.now() ;
     #   endif//__use_timers
 
-        for (auto _apos  = 
+        for (auto _apos  =
                   _part._bnds._seqs.tail();
-                  _apos != 
+                  _apos !=
                   _part._bnds._seqs.hend();
                   _apos += -1)
         {
@@ -942,7 +944,7 @@
                 _CONN , _kern, _last,
                 _nset , _mark,
                 _iout , _opts,
-                _conn , _qold, _qnew, _QLIM, 
+                _conn , _qold, _qnew, _QLIM,
                 _tcpu ) ;
         }
 
@@ -953,7 +955,7 @@
     #   endif//__use_timers
 
         }    //if opts.tria
-    
+
         }    //if _nptr > 1
 
     #   undef   MARK
@@ -981,7 +983,7 @@
         iptr_list &_nset ,  // list of nodes active
         iptr_list &_aset ,  // space for new active list
         mark_list &_mark ,  // sets of node/cell flags
-        part_data &_part ,  // mesh parallel partition        
+        part_data &_part ,  // mesh parallel partition
         iptr_type  _iout ,  // outer iteration marker
         iptr_type  _isub ,  // inner iteration marker
         iter_opts &_opts ,  // user options
@@ -1114,11 +1116,12 @@
 
         if (_isub == +0)
         sort_node(_mesh, _CONN, _aset,
-            _mark._node, 
+            _mark._node,
             _iout,_isub, _QLIM, _DLIM, _opts) ;
 
-        _pful = std::sqrt(_aset.count ()) / 
-                PART_SCAL ;
+        _pful =(iptr_type)(
+                std::sqrt(_aset.count ()) /
+                PART_SCAL ) ;
         _pful = std::min(
                 _opts. nprt(), _pful + 1) ;
 
@@ -1149,7 +1152,7 @@
                 _CONN , _last,
                 _nset , _mark,
                 _iout , _opts,
-                _conn , _dold, _dnew, _DLIM, 
+                _conn , _dold, _dnew, _DLIM,
                 _tcpu ) ;
         }
         }
@@ -1162,7 +1165,7 @@
         }
         else
         {
-    /*-------------------- multiple-part: thread-parallel */    
+    /*-------------------- multiple-part: thread-parallel */
 
     #   ifdef  __use_timers
         _ttic = _time.now() ;
@@ -1172,11 +1175,12 @@
 
         if (_isub == +0)
         part_mesh(_mesh, _part._full, _pful,
-                  _aset, 
+                  _aset,
                   _isub, _pi*0,_tcpu) ;
 
-        _pbnd = _part._full._seqs.count() /
-                BNDS_SCAL ;
+        _pbnd =(iptr_type)(
+                _part._full._seqs.count() /
+                BNDS_SCAL ) ;
         _pbnd = std::min(
                 _opts. nprt(), _pbnd + 1) ;
 
@@ -1199,9 +1203,9 @@
         _ttic = _time.now() ;
     #   endif//__use_timers
 
-        for (auto _apos  = 
+        for (auto _apos  =
                   _part._bnds._seqs.head();
-                  _apos != 
+                  _apos !=
                   _part._bnds._seqs.tend();
                   _apos += +1)
         {
@@ -1210,7 +1214,7 @@
                 _CONN , _last,
                 _nset , _mark,
                 _iout , _opts,
-                _conn , _dold, _dnew, _DLIM, 
+                _conn , _dold, _dnew, _DLIM,
                 _tcpu ) ;
         }
 
@@ -1242,21 +1246,21 @@
         real_list _DOLD, _DNEW;
         iptr_list _NSET;
         iptr_type _pass  = 0u ;
-        iptr_type _anum; 
+        iptr_type _anum;
     #   pragma omp for nowait  schedule(static,1)
-        for (auto _rank  = 0u ; 
+        for (auto _rank  = 0u ;
                   _rank  <
             _part._bnds._lptr.count()-1; ++_rank)
         {
-        for (auto _apos  = PBEG(_part. _bnds, 
+        for (auto _apos  = PBEG(_part. _bnds,
                                 _pass, _rank) ;
-                  _apos != PEND(_part. _bnds, 
+                  _apos != PEND(_part. _bnds,
                                 _pass, _rank) ;
                   _apos += ITER(_pass) )
         {
             _anum = _part._bnds._list [_apos] ;
 
-            if (_part._bnds._part[_anum] < 0) 
+            if (_part._bnds._part[_anum] < 0)
                 continue ; // skip if interface
 
             move_task()(_geom, _mesh, _anum,
@@ -1264,7 +1268,7 @@
                 _CONN , _last,
                 _NSET , _mark,
                 _iout , _opts,
-                _CSET , _DOLD, _DNEW, _DLIM, 
+                _CSET , _DOLD, _DNEW, _DLIM,
                 _tcpu ) ;
         }
         }
@@ -1301,20 +1305,20 @@
         iptr_list _NSET;
         iptr_type _anum;
     #   pragma omp for nowait  schedule(static,1)
-        for (auto _rank  = 0u ; 
+        for (auto _rank  = 0u ;
                   _rank  <
             _part._full._lptr.count()-1; ++_rank)
         {
         for (auto _pass  = 0; _pass < 2; ++_pass)
-        for (auto _apos  = PBEG(_part. _full, 
+        for (auto _apos  = PBEG(_part. _full,
                                 _pass, _rank) ;
-                  _apos != PEND(_part. _full, 
+                  _apos != PEND(_part. _full,
                                 _pass, _rank) ;
                   _apos += ITER(_pass) )
         {
             _anum = _part._full._list [_apos] ;
 
-            if (_part._full._part[_anum] < 0) 
+            if (_part._full._part[_anum] < 0)
                 continue ; // skip if interface
 
             move_task()(_geom, _mesh, _anum,
@@ -1322,7 +1326,7 @@
                 _CONN , _last,
                 _NSET , _mark,
                 _iout , _opts,
-                _CSET , _DOLD, _DNEW, _DLIM, 
+                _CSET , _DOLD, _DNEW, _DLIM,
                 _tcpu ) ;
         }
         }
@@ -1358,21 +1362,21 @@
         real_list _DOLD, _DNEW;
         iptr_list _NSET;
         iptr_type _pass  = 1u ;
-        iptr_type _anum; 
+        iptr_type _anum;
     #   pragma omp for nowait  schedule(static,1)
-        for (auto _rank  = 0u ; 
+        for (auto _rank  = 0u ;
                   _rank  <
             _part._bnds._lptr.count()-1; ++_rank)
         {
-        for (auto _apos  = PBEG(_part. _bnds, 
+        for (auto _apos  = PBEG(_part. _bnds,
                                 _pass, _rank) ;
-                  _apos != PEND(_part. _bnds, 
+                  _apos != PEND(_part. _bnds,
                                 _pass, _rank) ;
                   _apos += ITER(_pass) )
         {
             _anum = _part._bnds._list [_apos] ;
 
-            if (_part._bnds._part[_anum] < 0) 
+            if (_part._bnds._part[_anum] < 0)
                 continue ; // skip if interface
 
             move_task()(_geom, _mesh, _anum,
@@ -1380,7 +1384,7 @@
                 _CONN , _last,
                 _NSET , _mark,
                 _iout , _opts,
-                _CSET , _DOLD, _DNEW, _DLIM, 
+                _CSET , _DOLD, _DNEW, _DLIM,
                 _tcpu ) ;
         }
         }
@@ -1409,9 +1413,9 @@
         _ttic = _time.now() ;
     #   endif//__use_timers
 
-        for (auto _apos  = 
+        for (auto _apos  =
                   _part._bnds._seqs.tail();
-                  _apos != 
+                  _apos !=
                   _part._bnds._seqs.hend();
                   _apos += -1)
         {
@@ -1420,7 +1424,7 @@
                 _CONN , _last,
                 _nset , _mark,
                 _iout , _opts,
-                _conn , _dold, _dnew, _DLIM, 
+                _conn , _dold, _dnew, _DLIM,
                 _tcpu ) ;
         }
 

@@ -70,8 +70,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -353,7 +353,7 @@
         iptr_type               _verbosity = 0 ;
 
     #   ifdef  __use_openmp
-        iptr_type               _numthread = 
+        iptr_type               _numthread =
                        omp_get_num_procs() ;
     #   else
         iptr_type               _numthread = 1 ;

@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -298,7 +298,7 @@
         }
 
     /*-------------------- compute h(x) via fast-marching */
-        vals_type static _FTOL = 
+        vals_type static _FTOL =
             (vals_type)std::pow(
         std::numeric_limits<vals_type>::epsilon(), .75) ;
 
@@ -338,13 +338,13 @@
                 _mesh. tri4( _cell).node(3);
 
     /*-------------------- skip cells due to sorted order */
-                if (_inod != _base && 
+                if (_inod != _base &&
                    !ISALIVE(_inod)) continue ;
-                if (_jnod != _base && 
+                if (_jnod != _base &&
                    !ISALIVE(_jnod)) continue ;
-                if (_knod != _base && 
+                if (_knod != _base &&
                    !ISALIVE(_knod)) continue ;
-                if (_lnod != _base && 
+                if (_lnod != _base &&
                    !ISALIVE(_lnod)) continue ;
 
                 vals_type _hmax;
@@ -401,7 +401,7 @@
             //  maintains its sorted order
 
                 if (_sort.
-                     keys(_inod) != _sort.null()) 
+                     keys(_inod) != _sort.null())
                 if ( UPDATED(_inew, _iold) )
                 {
                     _hval[_inod]  = _inew;
@@ -409,7 +409,7 @@
                 }
 
                 if (_sort.
-                     keys(_jnod) != _sort.null()) 
+                     keys(_jnod) != _sort.null())
                 if ( UPDATED(_jnew, _jold) )
                 {
                     _hval[_jnod]  = _jnew;
@@ -417,7 +417,7 @@
                 }
 
                 if (_sort.
-                     keys(_knod) != _sort.null()) 
+                     keys(_knod) != _sort.null())
                 if ( UPDATED(_knew, _kold) )
                 {
                     _hval[_knod]  = _knew;
@@ -425,7 +425,7 @@
                 }
 
                 if (_sort.
-                     keys(_lnod) != _sort.null()) 
+                     keys(_lnod) != _sort.null())
                 if ( UPDATED(_lnew, _lold) )
                 {
                     _hval[_lnod]  = _lnew;
@@ -459,7 +459,7 @@
             //  maintains its sorted order
 
                 if (_sort.
-                     keys(_inod) != _sort.null()) 
+                     keys(_inod) != _sort.null())
                 if ( UPDATED(_inew, _iold) )
                 {
                     _hval[_inod]  = _inew;
@@ -467,7 +467,7 @@
                 }
 
                 if (_sort.
-                     keys(_jnod) != _sort.null()) 
+                     keys(_jnod) != _sort.null())
                 if ( UPDATED(_jnew, _jold) )
                 {
                     _hval[_jnod]  = _jnew;
@@ -475,7 +475,7 @@
                 }
 
                 if (_sort.
-                     keys(_knod) != _sort.null()) 
+                     keys(_knod) != _sort.null())
                 if ( UPDATED(_knew, _kold) )
                 {
                     _hval[_knod]  = _knew;
@@ -483,7 +483,7 @@
                 }
 
                 if (_sort.
-                     keys(_lnod) != _sort.null()) 
+                     keys(_lnod) != _sort.null())
                 if ( UPDATED(_lnew, _lold) )
                 {
                     _hval[_lnod]  = _lnew;
@@ -535,7 +535,7 @@
             ) : _ppos(_psrc) ,
                 _mesh(_msrc) ,
                 _find(false) ,
-                _tpos( 
+                _tpos(
             hfun_type::null_hint())  {}
 
     /*------------------------ call pred. on tree matches */
@@ -596,7 +596,7 @@
            <real_type>::infinity()) ,
                 _mesh(_msrc) ,
                 _find(false) ,
-                _tpos( 
+                _tpos(
             hfun_type::null_hint())  {}
 
     /*------------------------ call pred. on tree matches */

@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -325,7 +325,7 @@
         }
         } ;
 
-        size_t static constexpr _imax = 
+        size_t static constexpr _imax =
         std::numeric_limits<iptr_type>::max() ;
 
         containers::priorityidx <
@@ -337,7 +337,7 @@
 
     /*-------------------- check matrix size against type */
         if (this->_hmat.count() >= _imax)
-            throw std::out_of_range( 
+            throw std::out_of_range(
         "hfun.clip: data size limit exceeded");
 
     /*-------------------- init. values for periodic bc's */
@@ -428,7 +428,7 @@
         }
 
     /*-------------------- compute h(x) via fast-marching */
-        vals_type static _FTOL = 
+        vals_type static _FTOL =
             (vals_type)std::pow(
         std::numeric_limits<vals_type>::epsilon(), .75) ;
 
@@ -491,13 +491,13 @@
                     _lpii, _lpjj, _lnod);
 
     /*-------------------- skip cells due to sorted order */
-                if (_inod != _base && 
+                if (_inod != _base &&
                    !ISALIVE(_inod)) continue ;
-                if (_jnod != _base && 
+                if (_jnod != _base &&
                    !ISALIVE(_jnod)) continue ;
-                if (_knod != _base && 
+                if (_knod != _base &&
                    !ISALIVE(_knod)) continue ;
-                if (_lnod != _base && 
+                if (_lnod != _base &&
                    !ISALIVE(_lnod)) continue ;
 
                 vals_type _hmax;
@@ -589,7 +589,7 @@
             //  maintains its sorted order
 
                 if (_sort.
-                     keys(_inod) != _sort.null()) 
+                     keys(_inod) != _sort.null())
                 if ( UPDATED(_inew, _iold) )
                 {
                     _hmat[_inod]  = _inew;
@@ -597,7 +597,7 @@
                 }
 
                 if (_sort.
-                     keys(_jnod) != _sort.null()) 
+                     keys(_jnod) != _sort.null())
                 if ( UPDATED(_jnew, _jold) )
                 {
                     _hmat[_jnod]  = _jnew;
@@ -605,7 +605,7 @@
                 }
 
                 if (_sort.
-                     keys(_knod) != _sort.null()) 
+                     keys(_knod) != _sort.null())
                 if ( UPDATED(_knew, _kold) )
                 {
                     _hmat[_knod]  = _knew;
@@ -613,7 +613,7 @@
                 }
 
                 if (_sort.
-                     keys(_lnod) != _sort.null()) 
+                     keys(_lnod) != _sort.null())
                 if ( UPDATED(_lnew, _lold) )
                 {
                     _hmat[_lnod]  = _lnew;
@@ -633,7 +633,7 @@
                     this->_hmat [_inod] ;
 
                 if (_sort.
-                     keys(_pair) != _sort.null()) 
+                     keys(_pair) != _sort.null())
                 if (_hmat[_inod] != _iold)
                     _sort.reduce(_pair , _pair) ;
                 }
@@ -648,7 +648,7 @@
                     this->_hmat [_jnod] ;
 
                 if (_sort.
-                     keys(_pair) != _sort.null()) 
+                     keys(_pair) != _sort.null())
                 if (_hmat[_jnod] != _jold)
                     _sort.reduce(_pair , _pair) ;
                 }
@@ -663,7 +663,7 @@
                     this->_hmat [_knod] ;
 
                 if (_sort.
-                     keys(_pair) != _sort.null()) 
+                     keys(_pair) != _sort.null())
                 if (_hmat[_knod] != _kold)
                     _sort.reduce(_pair , _pair) ;
                 }
@@ -678,7 +678,7 @@
                     this->_hmat [_lnod] ;
 
                 if (_sort.
-                     keys(_pair) != _sort.null()) 
+                     keys(_pair) != _sort.null())
                 if (_hmat[_lnod] != _lold)
                     _sort.reduce(_pair , _pair) ;
                 }
@@ -705,7 +705,7 @@
             //  maintains its sorted order
 
                 if (_sort.
-                     keys(_inod) != _sort.null()) 
+                     keys(_inod) != _sort.null())
                 if ( UPDATED(_inew, _iold) )
                 {
                     _hmat[_inod]  = _inew;
@@ -713,7 +713,7 @@
                 }
 
                 if (_sort.
-                     keys(_jnod) != _sort.null()) 
+                     keys(_jnod) != _sort.null())
                 if ( UPDATED(_jnew, _jold) )
                 {
                     _hmat[_jnod]  = _jnew;
@@ -721,7 +721,7 @@
                 }
 
                 if (_sort.
-                     keys(_knod) != _sort.null()) 
+                     keys(_knod) != _sort.null())
                 if ( UPDATED(_knew, _kold) )
                 {
                     _hmat[_knod]  = _knew;
@@ -729,7 +729,7 @@
                 }
 
                 if (_sort.
-                     keys(_lnod) != _sort.null()) 
+                     keys(_lnod) != _sort.null())
                 if ( UPDATED(_lnew, _lold) )
                 {
                     _hmat[_lnod]  = _lnew;
@@ -749,7 +749,7 @@
                     this->_hmat [_inod] ;
 
                 if (_sort.
-                     keys(_pair) != _sort.null()) 
+                     keys(_pair) != _sort.null())
                 if (_hmat[_inod] != _iold)
                     _sort.reduce(_pair , _pair) ;
                 }
@@ -764,7 +764,7 @@
                     this->_hmat [_jnod] ;
 
                 if (_sort.
-                     keys(_pair) != _sort.null()) 
+                     keys(_pair) != _sort.null())
                 if (_hmat[_jnod] != _jold)
                     _sort.reduce(_pair , _pair) ;
                 }
@@ -779,7 +779,7 @@
                     this->_hmat [_knod] ;
 
                 if (_sort.
-                     keys(_pair) != _sort.null()) 
+                     keys(_pair) != _sort.null())
                 if (_hmat[_knod] != _kold)
                     _sort.reduce(_pair , _pair) ;
                 }
@@ -794,7 +794,7 @@
                     this->_hmat [_lnod] ;
 
                 if (_sort.
-                     keys(_pair) != _sort.null()) 
+                     keys(_pair) != _sort.null())
                 if (_hmat[_lnod] != _lold)
                     _sort.reduce(_pair , _pair) ;
                 }

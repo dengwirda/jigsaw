@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -412,11 +412,11 @@
 
     /*
     --------------------------------------------------------
-     * OPTM_BETA - {default=0.4950} "momentum"-type biases
-     * for gradient descent updates, such that 
+     * OPTM_BETA - {default=0.4950} "momentum"-type weight
+     * for gradient descent updates, such that
      * DX' = BETA * DX(K-1) + (1-BETA) * DX(K).
      * Momentum typically improves the convergence of mesh
-     * optimisation. 
+     * optimisation.
     --------------------------------------------------------
      */
 
@@ -424,11 +424,11 @@
 
     /*
     --------------------------------------------------------
-     * OPTM_ZETA - {default=0.7500} "momentum"-type biases
-     * for search direction updates, such that 
+     * OPTM_ZETA - {default=0.8250} "momentum"-type weight
+     * for search direction updates, such that
      * DX* = ZETA * DX' (K) + (1-ZETA) * DX(K).
      * Momentum typically improves the convergence of mesh
-     * optimisation. 
+     * optimisation.
     --------------------------------------------------------
      */
 

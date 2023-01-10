@@ -99,9 +99,9 @@
 
         _jjig._mesh_kern =          // non-default opts
             JIGSAW_KERN_DELAUNAY;
-        _jjig._optm_kern = 
+        _jjig._optm_kern =
             JIGSAW_KERN_CVT_DQDX;
-        _jjig._optm_cost = 
+        _jjig._optm_cost =
             JIGSAW_KERN_SKEW_COS;
 
         _retv = jigsaw (

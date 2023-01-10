@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 Aug., 2022
+     * Last updated: 28 Dec., 2022
      *
      * Copyright 2013-2022
      * Darren Engwirda
@@ -77,7 +77,7 @@
             _rtol = (real_type)+1.00E-003 ;
 
         real_type static const
-            _dtol = (real_type)+8.00E-001 ;
+            _dtol = (real_type)+8.33E-001 ;
 
         real_type static const
             _lgap = (real_type)+8./9. ;
@@ -107,7 +107,7 @@
         _mesh._tria.node(_enod[0])->pval(1) ,
             } ;
 
-        _hint = _HINT = 
+        _hint = _HINT =
         _mesh._tria.node (_enod[0])->idxh() ;
 
         _dvec[ 0] =
@@ -160,11 +160,10 @@
             if (_dist >= _dvec[2] * _lgap &&
                 _dist <= _dvec[2] * _ugap )
             {                       // circumball cushion
-                _ppos[0]=_sbal[0] ;
-                _ppos[1]=_sbal[1] ;
+                _dist  =
+                    .5 *(_dist + _dvec[2] ) ;
 
                 _kind  =  rdel_opts::offH_kind;
-                 return  _kind ;
             }
 
             if (_dist >= _dvec[2] * _ugap )
@@ -254,7 +253,7 @@
             (real_type)std::sqrt(3.)/2. ;
 
         real_type static const
-            _dtol = (real_type)+8.00E-001 ;
+            _dtol = (real_type)+8.33E-001 ;
 
         real_type static const
             _lgap = (real_type)+8./9. ;
@@ -273,7 +272,7 @@
        &_mesh._tria.node(_fnod[1])->pval(0) ,
         _mesh._tria.node(_fnod[1])->idxh()) ;
 
-        _hint = _HINT = 
+        _hint = _HINT =
         _mesh._tria.node(_fnod[0])->idxh () ;
 
         real_type  _bias[2] = {
@@ -317,10 +316,10 @@
             _hsiz[3] = _hfun.eval(_PMID, _HINT) ;
 
             real_type _hmid =
-            _hsiz[0] * (real_type)1./6. +
-            _hsiz[1] * (real_type)1./6. +
-            _hsiz[2] * (real_type)1./6. +
-            _hsiz[3] * (real_type)3./6. ;
+            _hsiz[0] * (real_type)2./9. +
+            _hsiz[1] * (real_type)2./9. +
+            _hsiz[2] * (real_type)2./9. +
+            _hsiz[3] * (real_type)3./9. ;
 
             _kind    = rdel_opts::offH_kind ;
 
@@ -350,8 +349,8 @@
 
             if (_dist >= _dvec[3])  // off-centre limiter
             {
-                _dist  = 
-                    2. * _dist * _dvec[3] 
+                _dist  =
+                    2. * _dist * _dvec[3]
                       / (_dist + _dvec[3] ) ;
 
                 _kind  =  rdel_opts::offC_kind;
@@ -360,11 +359,10 @@
             if (_dist >= _dvec[2] * _lgap &&
                 _dist <= _dvec[2] * _ugap )
             {                       // circumball cushion
-                _ppos[0]=_tbal[0] ;
-                _ppos[1]=_tbal[1] ;
+                _dist  =
+                    .5 *(_dist + _dvec[2] ) ;
 
                 _kind  =  rdel_opts::offH_kind;
-                 return  _kind ;
             }
 
             if (_dist >= _dvec[2] * _ugap )

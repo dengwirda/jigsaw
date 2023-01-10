@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -88,7 +88,7 @@
                 iptr_type _jsrc ,
                 iptr_type _ksrc ,
                 float     _csrc
-                ) : _inod(_isrc), _jnod(_jsrc), 
+                ) : _inod(_isrc), _jnod(_jsrc),
                     _knod(_ksrc),
                     _cost(_csrc)   {}
             } ;
@@ -143,7 +143,7 @@
 
         sort_list _sort ;
         conn_list _iadj , _jadj, _kadj ;
-        conn_list _conn , _cset; 
+        conn_list _conn , _cset;
         conn_list _iset , _jset, _kset ;
         real_list _qold , _qnew, _qtmp ;
 
@@ -189,7 +189,7 @@
                     & _jptr->pval(0) ,
                     & _kptr->pval(0) ) ;
 
-                auto _ndeg = _iptr->ndeg() + 
+                auto _ndeg = _iptr->ndeg() +
                              _jptr->ndeg() +
                              _kptr->ndeg() ;
 
@@ -300,7 +300,7 @@
                     _imrk, _tadj,
                     _kern, _move, _nnew,
                     _iset, _jset, _kset,
-                    _iadj, _jadj, _kadj, 
+                    _iadj, _jadj, _kadj,
                     _cset, _qold, _qnew,
                     _qtmp, _QLIM, _tcpu) ;
 
@@ -443,7 +443,7 @@
                     & _iptr->pval(0) ,
                     & _jptr->pval(0) ) ;
 
-                auto _ndeg = _iptr->ndeg() + 
+                auto _ndeg = _iptr->ndeg() +
                              _jptr->ndeg() ;
 
                 _lsqr *=  (float) _ndeg;
@@ -604,14 +604,14 @@
 
     /*--------------------- zip//div topo. cell hierarchy */
         _zip_fcel( _geom, _mesh, _hfun,
-            _kern, _hval, 
-            _nset, _mark, _imrk, 
+            _kern, _hval,
+            _nset, _mark, _imrk,
             _opts, _QLIM, _DLIM,
             _nzip, _ndiv, _tcpu) ;
 
         _zip_ecel( _geom, _mesh, _hfun,
-            _kern, _hval, 
-            _nset, _mark, _imrk, 
+            _kern, _hval,
+            _nset, _mark, _imrk,
             _opts, _QLIM, _DLIM,
             _nzip, _ndiv, _tcpu) ;
 

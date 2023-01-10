@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -135,7 +135,7 @@
     __inline_call ndeg_type      & ndeg (
         iptr_type  _cell
         )
-    {   return 
+    {   return
         this->_ndeg[_tag_to_ndeg (_cell)] ;
     }
 
@@ -164,7 +164,7 @@
         ) const
     {
         size_t _ntot = 0;
-        for (auto _ipos = 8; _ipos-- != 0 ; ) 
+        for (auto _ipos = 8; _ipos-- != 0 ; )
             _ntot += this->_ndeg [_ipos ] ;
 
         return _ntot ;
@@ -173,7 +173,7 @@
     __inline_call ndeg_type const& ndeg (
         iptr_type  _cell
         ) const
-    {   return 
+    {   return
         this->_ndeg[_tag_to_ndeg (_cell)] ;
     }
 
@@ -247,7 +247,7 @@
     __inline_call ndeg_type      & ndeg (
         iptr_type  _cell
         )
-    {   return 
+    {   return
         this->_ndeg[_tag_to_ndeg (_cell)] ;
     }
 
@@ -276,7 +276,7 @@
         ) const
     {
         size_t _ntot = 0;
-        for (auto _ipos = 8; _ipos-- != 0 ; ) 
+        for (auto _ipos = 8; _ipos-- != 0 ; )
             _ntot += this->_ndeg [_ipos ] ;
 
         return _ntot ;
@@ -285,7 +285,7 @@
     __inline_call ndeg_type const& ndeg (
         iptr_type  _cell
         ) const
-    {   return 
+    {   return
         this->_ndeg[_tag_to_ndeg (_cell)] ;
     }
 
@@ -359,7 +359,7 @@
     __inline_call ndeg_type      & ndeg (
         iptr_type  _cell
         )
-    {   return 
+    {   return
         this->_ndeg[_tag_to_ndeg (_cell)] ;
     }
 
@@ -388,7 +388,7 @@
         ) const
     {
         size_t _ntot = 0;
-        for (auto _ipos = 8; _ipos-- != 0 ; ) 
+        for (auto _ipos = 8; _ipos-- != 0 ; )
             _ntot += this->_ndeg [_ipos ] ;
 
         return _ntot ;
@@ -397,7 +397,7 @@
     __inline_call ndeg_type const& ndeg (
         iptr_type  _cell
         ) const
-    {   return 
+    {   return
         this->_ndeg[_tag_to_ndeg (_cell)] ;
     }
 

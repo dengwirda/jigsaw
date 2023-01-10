@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -460,7 +460,7 @@
             _tria.tria(_tpos)->circ(1);
         _tbal[2] = (real_type)+0. ;
 
-        auto _hash = 
+        auto _hash =
              _mesh._tria._nset.count();
 
         _tbal[2]+=

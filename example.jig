@@ -324,6 +324,26 @@
 #   OPTM_COST = SKEW-COS
 
 
+#   ---> OPTM_BETA - {default=0.4950} "momentum"-type weight
+#       for gradient descent updates, such that
+#       DX' = BETA * DX(K-1) + (1-BETA) * DX(K).
+#       Momentum typically improves the convergence of mesh
+#       optimisation.
+#
+
+#   OPTM_BETA = 0.3750
+
+
+#   ---> OPTM_ZETA - {default=0.8250} "momentum"-type weight
+#       for search direction updates, such that
+#       DX* = ZETA * DX' (K) + (1-ZETA) * DX(K).
+#       Momentum typically improves the convergence of mesh
+#       optimisation.
+#
+  
+#   OPTM_ZETA = 0.7500
+
+
 #   ---> OPTM_ITER - {default=16} max. number of mesh optim-
 #       isation iterations. Set ITER=N to see progress after 
 #       N iterations.

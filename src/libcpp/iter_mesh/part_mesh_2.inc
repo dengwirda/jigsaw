@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -38,7 +38,7 @@
      * Last updated: 23 Dec., 2022
      *
      * Copyright 2013-2022
-     * Marc Tunnell, 
+     * Marc Tunnell,
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -86,7 +86,7 @@
 
         __unreferenced(_isub) ;
 
-        if (_nprt > +1) 
+        if (_nprt > +1)
         {
         /*------ define AABB-tree for recursive partition */
     #       ifdef  __use_timers
@@ -104,19 +104,19 @@
 
             tree_type   _tree;
 
-            auto _npop =  // no. nodes per part for nprts
-                (8 * _aset.count()) / _nprt / 3 ;
+            iptr_type _npop =  // no. nodes per partition
+           (iptr_type)((8 * _aset.count()) / _nprt / 3) ;
 
         /*-------------------- populate tree: xyz + index */
-            containers::array<tree_item>  _item ;           
+            containers::array<tree_item>  _item ;
             for (auto _apos  = _aset.tail() ;
                       _apos != _aset.hend() ;
                     --_apos  ) // backward maintains sort?
             {
-                 auto _aptr = 
+                 auto _aptr =
                 _mesh.node().head() + *_apos;
 
-                if (_aptr->mark() >= 0 && 
+                if (_aptr->mark() >= 0 &&
                    (_aptr->ndeg(TRIA3_tag) > 0 ||
                     _aptr->ndeg(QUAD4_tag) > 0 ))
                 {
@@ -135,11 +135,11 @@
                     _xmat[1][0] = +_xsin ;
                     _xmat[1][1] = +_xcos ;
 
-                    _item.tail()->pval(0) = 
-                    _xmat[0][0] * _aptr->pval(0) + 
+                    _item.tail()->pval(0) =
+                    _xmat[0][0] * _aptr->pval(0) +
                     _xmat[0][1] * _aptr->pval(1) ;
-                    _item.tail()->pval(1) = 
-                    _xmat[1][0] * _aptr->pval(0) + 
+                    _item.tail()->pval(1) =
+                    _xmat[1][0] * _aptr->pval(0) +
                     _xmat[1][1] * _aptr->pval(1) ;
                     }
                     else
@@ -160,16 +160,16 @@
                     _xmat[2][1] = +1. - _xcos + _xsin;
                     _xmat[2][2] = +1. ;
 
-                    _item.tail()->pval(0) = 
-                    _xmat[0][0] * _aptr->pval(0) + 
+                    _item.tail()->pval(0) =
+                    _xmat[0][0] * _aptr->pval(0) +
                     _xmat[0][1] * _aptr->pval(1) +
                     _xmat[0][2] * _aptr->pval(2) ;
-                    _item.tail()->pval(1) = 
-                    _xmat[1][0] * _aptr->pval(0) + 
+                    _item.tail()->pval(1) =
+                    _xmat[1][0] * _aptr->pval(0) +
                     _xmat[1][1] * _aptr->pval(1) +
                     _xmat[1][2] * _aptr->pval(2) ;
-                    _item.tail()->pval(2) = 
-                    _xmat[2][0] * _aptr->pval(0) + 
+                    _item.tail()->pval(2) =
+                    _xmat[2][0] * _aptr->pval(0) +
                     _xmat[2][1] * _aptr->pval(1) +
                     _xmat[2][2] * _aptr->pval(2) ;
                     }
@@ -186,7 +186,7 @@
 
         /*-------------------- form sparse lists for part */
 
-        //  LIST[LPTR[K]:LPTR[K+1]-1]: list of nodes that 
+        //  LIST[LPTR[K]:LPTR[K+1]-1]: list of nodes that
         //  comprise the K-th partition
 
             _part._lptr.clear() ;
@@ -195,12 +195,12 @@
             _part._seqs.clear() ;
 
             _tree.dcmp(_part._lptr,_part._list) ;
-            
+
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
-            _tcpu._tree_part += 
+            _tcpu._tree_part +=
                   _tcpu.time_span(_ttic, _ttoc) ;
-            _tcpu._full_part += 
+            _tcpu._full_part +=
                   _tcpu.time_span(_ttic, _ttoc) ;
     #       endif//__use_timers
 
@@ -210,19 +210,20 @@
     #       endif//__use_timers
 
             _part._part.set_count(
-                _mesh.node().count(), 
+                _mesh.node().count(),
                     containers::loose_alloc, -1) ;
 
         //  PART[J] = K: the partition for J-th mesh node
 
-            for (auto 
+            for (auto
                 _lnum = _part._lptr.count() - 1  ;
                 _lnum-- != 0 ;  )
             {
                 for (auto _iptr = _part._lptr[_lnum+0];
                           _iptr < _part._lptr[_lnum+1];
                         ++_iptr )
-                _part._part[_part._list[_iptr]] = _lnum ;
+                _part._part[
+                _part._list[_iptr]] = (iptr_type) _lnum ;
             }
 
         //  PART[J] =-1: the J-th node is on an interface
@@ -240,16 +241,16 @@
                     _knod = _tria->node( 2);
 
                     iptr_type _have = 0;
-                    iptr_type _pmin = 
+                    iptr_type _pmin =
                 std::numeric_limits<iptr_type>::max() ;
-                    iptr_type _pmax = 
+                    iptr_type _pmax =
                 std::numeric_limits<iptr_type>::min() ;
 
                     PART_LIMS(_part._part[_inod]);
                     PART_LIMS(_part._part[_jnod]);
                     PART_LIMS(_part._part[_knod]);
 
-                    if (_have==0 || _pmin == _pmax) 
+                    if (_have==0 || _pmin == _pmax)
                         continue ;
 
                     _part._part[_inod] = PUSH_BNDS (
@@ -276,9 +277,9 @@
                     _lnod = _quad->node( 3);
 
                     iptr_type _have = 0;
-                    iptr_type _pmin = 
+                    iptr_type _pmin =
                 std::numeric_limits<iptr_type>::max() ;
-                    iptr_type _pmax = 
+                    iptr_type _pmax =
                 std::numeric_limits<iptr_type>::min() ;
 
                     PART_LIMS(_part._part[_inod]);
@@ -286,7 +287,7 @@
                     PART_LIMS(_part._part[_knod]);
                     PART_LIMS(_part._part[_lnod]);
 
-                    if (_have==0 || _pmin == _pmax) 
+                    if (_have==0 || _pmin == _pmax)
                         continue ;
 
                     _part._part[_inod] = PUSH_BNDS (
@@ -302,9 +303,9 @@
 
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
-            _tcpu._part_part += 
+            _tcpu._part_part +=
                   _tcpu.time_span(_ttic, _ttoc) ;
-            _tcpu._full_part += 
+            _tcpu._full_part +=
                   _tcpu.time_span(_ttic, _ttoc) ;
     #       endif//__use_timers
 
@@ -325,13 +326,13 @@
 
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
-            _tcpu._seqs_part += 
+            _tcpu._seqs_part +=
                   _tcpu.time_span(_ttic, _ttoc) ;
-            _tcpu._full_part += 
+            _tcpu._full_part +=
                   _tcpu.time_span(_ttic, _ttoc) ;
     #       endif//__use_timers
-        } 
-        else 
+        }
+        else
         {
         /*-------------- dummy part lists for single part */
     #       ifdef  __use_timers
@@ -341,7 +342,7 @@
             _part._lptr.set_count(+2);
             _part._list.set_alloc(_aset.count()) ;
             _part._part.set_count(
-                _mesh.node().count(), 
+                _mesh.node().count(),
                     containers::loose_alloc, +0) ;
 
             _part._lptr[0] = +0;
@@ -351,9 +352,9 @@
 
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
-            _tcpu._seqs_part += 
+            _tcpu._seqs_part +=
                   _tcpu.time_span(_ttic, _ttoc) ;
-            _tcpu._full_part += 
+            _tcpu._full_part +=
                   _tcpu.time_span(_ttic, _ttoc) ;
     #       endif//__use_timers
         }
@@ -364,23 +365,23 @@
                   _iter != _mesh.node().tend();
                 ++_iter, ++_ipos)
         {
-        //  just for debug: output part idx. to node itag 
+        //  just for debug: output part idx. to node itag
             if (_iter->mark() >= 0)
             {
                 _iter->itag() = _part._part[_ipos];
             }
         }
-    
-        iptr_type _pmin = 
+
+        iptr_type _pmin =
             std::numeric_limits<iptr_type>::max();
-        iptr_type _pmax = 
+        iptr_type _pmax =
             std::numeric_limits<iptr_type>::min();
         for (auto _rank  = 0u ;
             _rank<_part._lptr.count()-1; ++_rank)
         {
         // just for debug: output min/max sizes of part's
-            iptr_type _size = 
-                _part._lptr[_rank+1] - 
+            iptr_type _size =
+                _part._lptr[_rank+1] -
                 _part._lptr[_rank+0] ;
             _pmin = std::min(_pmin, _size);
             _pmax = std::max(_pmax, _size);
@@ -391,4 +392,4 @@
     #   undef   PART_LIMS
     #   undef   PUSH_BNDS
     }
-    
+

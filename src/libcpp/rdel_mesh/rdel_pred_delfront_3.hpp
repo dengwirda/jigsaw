@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -612,7 +612,7 @@
         return ( _kind ) ;
         }
 
-        auto _hash = 
+        auto _hash =
              _mesh._tria._nset.count() ;
 
     /*--------------------------------- find edge lengths */
@@ -627,7 +627,7 @@
             _enod[ 0] = _fnod[_enod[0]] ;
             _enod[ 1] = _fnod[_enod[1]] ;
 
-            _llen[_enum] = 
+            _llen[_enum] =
            (float)geometry::lensqr_3d (
            &_mesh._tria.
              node(_enod[0])->pval(0),
@@ -851,7 +851,7 @@
             _tria.tria(_tpos)->circ(2);
         _tbal[3] = (real_type)+0. ;
 
-        auto _hash = 
+        auto _hash =
              _mesh._tria._nset.count();
 
         _tbal[3]+=

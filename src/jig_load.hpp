@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -525,7 +525,7 @@
 
             if (_jjig._numthread <= 0 )
         #   ifdef  __use_openmp
-                _jjig._numthread = 
+                _jjig._numthread =
                        omp_get_num_procs();
         #   else
                 _jjig._numthread = +1 ;

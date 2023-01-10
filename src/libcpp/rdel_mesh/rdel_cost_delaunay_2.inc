@@ -22,8 +22,8 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant 
-     * this code in any way whatsoever.  This code is 
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
      * provided "as-is" to be used at your own risk.
      *
      * THE CONTRIBUTORS include:
@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 Aug., 2022
+     * Last updated: 29 Dec., 2022
      *
      * Copyright 2013-2022
      * Darren Engwirda
@@ -73,7 +73,7 @@
     {
         _kind = mesh::null_item ;
 
-        _edat._mark =  (iptr_type) +0;
+        _edat._mark = (iptr_type)+0;
 
         if (_args.dims() < +1) return;
 
@@ -94,18 +94,22 @@
     /*--------------------------------- is not restricted */
             return  ;
 
+    /*------------------------- eval. surface-disc.-error */
+        float _srat = (float)
+        geometry::lensqr_2d(_ebal, _pmax) ;
+
     /*------------------------- calc. refinement priority */
-        _edat._cost =
-        (float)(_pmax[2] + _ebal[2]) ;
+        _edat._cost = (float) (
+       (float)_pmax[2] * (_srat + 1.f ) ) ;
 
     /*------------------------- eval. size func. at _tbal */
-        real_type _esiz = (real_type)+0. ;
-        _esiz += (real_type)1./3.*_hfun.eval(
+        real_type _esiz = (real_type)+0.;
+        _esiz += (real_type)1./4.*_hfun.eval(
            &_mesh._tria.
              node(_enod[0])->pval(0) ,
             _mesh._tria.
              node(_enod[0])->idxh()) ;
-        _esiz += (real_type)1./3.*_hfun.eval(
+        _esiz += (real_type)1./4.*_hfun.eval(
            &_mesh._tria.
              node(_enod[1])->pval(0) ,
             _mesh._tria.
@@ -114,23 +118,19 @@
          auto _hint =
         _mesh._tria.node(_enod[ 1])->idxh() ;
 
-        _esiz += (real_type)1./3. *
+        _esiz += (real_type)2./4. *
                  _hfun.eval(  _pmax, _hint) ;
+
+        _srat /= (float)(_esiz * _esiz) ;
 
         real_type _eave =_pmax [ +2] ;
         _eave /= _esiz * _esiz ;
         _eave *= (real_type)4./1. ;
 
-    /*------------------------- eval. surface-disc.-error */
-        real_type _srat =
-            geometry::lensqr_2d(
-                _ebal, _pmax)/(_esiz * _esiz) ;
-
     /*------------------------- refinement classification */
 
     //  flag cells "trapped" between boundaries -- having
-    //  all nodes on lower dimensional facets and with at
-    //  least one boundary face.
+    //  all nodes on lower dimensional facets...
 
         bool_type _trap =
        _mesh._tria.node(_enod[0])->fdim() < 1 &&
@@ -171,7 +171,7 @@
     {
         _kind = mesh::null_item ;
 
-        _tdat._mark =  (iptr_type) +0 ;
+        _tdat._mark = (iptr_type)+0 ;
 
         if (_args.dims() < +2) return ;
 
@@ -261,11 +261,11 @@
     #   endif
 
     /*------------------------- eval. radius--edge ratios */
-        real_type _erat = _tbal[    2] /
-                          _llen[_emin] ;
+        float _erat = (float) (
+       (float)_tbal [2] / _llen [_emin] ) ;
 
     /*------------------------- calc. refinement priority */
-        _tdat._cost = (float) _erat;
+        _tdat._cost = (float)    _erat;
 
     /*------------------------- refinement classification */
 
@@ -296,17 +296,17 @@
 
     /*------------------------- eval. size func. at _tbal */
         real_type _tsiz = (real_type)+0.;
-        _tsiz += (real_type)1./4.*_hfun.eval(
+        _tsiz += (real_type)2./9.*_hfun.eval(
            &_mesh._tria.
              node(_tnod[0])->pval(0) ,
             _mesh._tria.
              node(_tnod[0])->idxh()) ;
-        _tsiz += (real_type)1./4.*_hfun.eval(
+        _tsiz += (real_type)2./9.*_hfun.eval(
            &_mesh._tria.
              node(_tnod[1])->pval(0) ,
             _mesh._tria.
              node(_tnod[1])->idxh()) ;
-        _tsiz += (real_type)1./4.*_hfun.eval(
+        _tsiz += (real_type)2./9.*_hfun.eval(
            &_mesh._tria.
              node(_tnod[2])->pval(0) ,
             _mesh._tria.
@@ -315,7 +315,7 @@
          auto _hint =
         _mesh._tria.node(_tnod[ 2])->idxh() ;
 
-        _tsiz += (real_type)1./4. *
+        _tsiz += (real_type)3./9. *
                  _hfun.eval(  _tbal, _hint) ;
 
         real_type _eave = _tbal[ +2] ;
