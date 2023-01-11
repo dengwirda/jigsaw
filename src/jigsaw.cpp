@@ -266,6 +266,11 @@
 
     /*---------------------------------- JIGSAW's backend */
 
+#   ifdef __clang__
+    // bug w function-local classes?
+#   pragma clang diagnostic ignored "-Wunused-local-typedef"
+#   endif
+
     extern  "C"
     {
 #   include "../inc/lib_jigsaw.h"

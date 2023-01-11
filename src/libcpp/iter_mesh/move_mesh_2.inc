@@ -751,7 +751,7 @@
 
     #   ifdef  __use_openmp
         omp_set_num_threads(
-            _part._bnds._lptr.count()-1 ) ;
+            (int)_part._bnds._lptr.count()-1) ;
     #   endif//__use_openmp
 
     #   pragma omp parallel default(none) \
@@ -809,7 +809,7 @@
     /*--------------------------------- parallel on inner */
     #   ifdef  __use_openmp
         omp_set_num_threads(
-            _part._full._lptr.count()-1 ) ;
+            (int)_part._full._lptr.count()-1) ;
     #   endif//__use_openmp
 
     #   pragma omp parallel default(none) \
@@ -867,7 +867,7 @@
     /*--------------------------------- parallel on outer */
     #   ifdef  __use_openmp
         omp_set_num_threads(
-            _part._bnds._lptr.count()-1 ) ;
+            (int)_part._bnds._lptr.count()-1) ;
     #   endif//__use_openmp
 
     #   pragma omp parallel default(none) \
@@ -1231,7 +1231,7 @@
 
     #   ifdef  __use_openmp
         omp_set_num_threads(
-            _part._bnds._lptr.count()-1 ) ;
+            (int)_part._bnds._lptr.count()-1) ;
     #   endif//__use_openmp
 
     #   pragma omp parallel default(none) \
@@ -1289,7 +1289,7 @@
     /*--------------------------------- parallel on inner */
     #   ifdef  __use_openmp
         omp_set_num_threads(
-            _part._full._lptr.count()-1 ) ;
+            (int)_part._full._lptr.count()-1) ;
     #   endif//__use_openmp
 
     #   pragma omp parallel default(none) \
@@ -1347,7 +1347,7 @@
     /*--------------------------------- parallel on outer */
     #   ifdef  __use_openmp
         omp_set_num_threads(
-            _part._bnds._lptr.count()-1 ) ;
+            (int)_part._bnds._lptr.count()-1) ;
     #   endif//__use_openmp
 
     #   pragma omp parallel default(none) \

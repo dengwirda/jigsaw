@@ -893,7 +893,6 @@
             std::numeric_limits<iptr_type>::min () ;
 
             iptr_type _nnPT = +0 ;
-            iptr_type _nnE2 = +0 ;
             iptr_type _nnT3 = +0 ;
 
             for (auto _iter  = _geom.
@@ -923,8 +922,6 @@
                     _imax, _iter->node(0)) ;
                 _imax = std::max(
                     _imax, _iter->node(1)) ;
-
-                _nnE2 +=    +1 ;
 
                 if (_imin < +0 ||
                         _imax >= _nnPT)
@@ -1063,7 +1060,6 @@
             std::numeric_limits<iptr_type>::min () ;
 
             iptr_type _nnPT = +0 ;
-            iptr_type _nnE2 = +0 ;
 
             for (auto _iter  = _geom.
             _ellipsoid_mesh_3d._mesh.node().head() ;
@@ -1120,8 +1116,6 @@
                     _imax, _iter->node(0)) ;
                 _imax = std::max(
                     _imax, _iter->node(1)) ;
-
-                _nnE2 +=    +1 ;
 
                 if (_imin < +0 ||
                         _imax >= _nnPT)
