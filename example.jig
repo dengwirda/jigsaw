@@ -142,7 +142,7 @@
 #       value. Interpreted based on SCAL setting.
 #
 
-#   HFUN_HMAX = 0.03
+    HFUN_HMAX = 0.05
 
 
 #   ---> HFUN_HMIN - {default=0.00} min. mesh-size function 
