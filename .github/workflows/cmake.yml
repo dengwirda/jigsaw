@@ -100,6 +100,16 @@ jobs:
         run: |
           cd ${{github.workspace}}/uni
           ./test_all
+          
+      - name: Extra tests for jigsaw
+        run: |
+          cd ${{github.workspace}}
+          ./bin/jigsaw example.jig
+          ./bin/jigsaw geo/airfoil.jig
+          ./bin/jigsaw geo/bunny.jig
+          ./bin/jigsaw geo/parts.jig
+          ./bin/jigsaw geo/earth.jig
+          ./bin/jigsaw geo/lakes.jig
 
       - name: Clean tests for jigsaw
         run: rm -r ${{github.workspace}}/uni/build
