@@ -39,7 +39,7 @@
 
   - Modify refinement rules to "defer" insertion of
     points that encroach on boundaries. (Typically)
-    leads to slightly sparser tessellatons. 
+    leads to slightly sparser tessellations. 
 
   - Support ellipsoidal-type initial conditions.
 
