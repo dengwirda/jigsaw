@@ -908,12 +908,12 @@
         iptr_list &_iset   // unrolled list of item index
         )
     {
+        _lptr.push_tail(_iset.count()) ;
+
         if (this->_root == nullptr) return;
 
         this->_work.clear() ;
         this->_work.push_tail(this->_root);
-
-        _lptr.push_tail(_iset.count () ) ;
 
         for ( ; !this->_work.empty() ; )
         {
