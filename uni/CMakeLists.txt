@@ -16,6 +16,11 @@ endif ()
 
 message (">> LIBJIGSAW LOCATION: ${LIBJIGSAW}")
 
+add_executable (test_all test_all.c)
+target_link_libraries (test_all ${LIBJIGSAW})
+set_target_properties(test_all PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+install (TARGETS test_all DESTINATION "${PROJECT_SOURCE_DIR}")
+
 add_executable (test2d_a test2d_a.c)
 target_link_libraries (test2d_a ${LIBJIGSAW})
 set_target_properties(test2d_a PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)

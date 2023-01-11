@@ -1,5 +1,8 @@
 
-#   include "../inc/lib_jigsaw.h"
+#   pragma once
+
+#   ifndef __JIGSAW_PRINT__
+#   define __JIGSAW_PRINT__
 
 #   include "stdio.h"
 
@@ -139,6 +142,8 @@
                 ) ;
         }
     }
+
+#   endif   //__JIGSAW_PRINT__
 
 
 

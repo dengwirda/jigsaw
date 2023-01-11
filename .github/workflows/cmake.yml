@@ -90,5 +90,16 @@ jobs:
           cd ${{github.workspace}}/uni/build
           cmake --build . --config ${{env.BUILD_TYPE}} --target install
         
+      - name: Prep. tests for jigsaw
+        if: startsWith(matrix.config.os, 'windows')
+        run: |
+          cd ${{github.workspace}}/uni
+          cp ../lib/jigsaw.dll .
+
+      - name: Eval. tests for jigsaw
+        run: |
+          cd ${{github.workspace}}/uni
+          ./test_all
+
       - name: Clean tests for jigsaw
         run: rm -r ${{github.workspace}}/uni/build

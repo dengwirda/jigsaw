@@ -13,7 +13,7 @@
 #   include "print.h"
 #   include "stdio.h"
 
-    int main ()
+    int test2s_h (int _verb)
     {
         int _retv = 0;
 
@@ -69,14 +69,16 @@
 
     /*-------------------------------- build MARCHE hfun. */
 
-        _jjig._verbosity =   +1 ;
+        _jjig._verbosity = _verb;
 
         _retv = marche (
-            &_jjig ,                // the config. opts
-            &_hfun ) ;              // the spacing h(x)
+            & _jjig ,               // the config. opts
+            & _hfun ) ;             // the spacing h(x)
 
     /*-------------------------------- print MARCHE hfun. */
 
+        if (_verb > 0 )
+        {
         printf("\n VALUE: \n\n") ;
 
         for (size_t _ipos = +0;
@@ -87,13 +89,18 @@
                 _hfun._value._data[_ipos]
                 ) ;
         }
+        }
 
         printf (
-       "MARCHE returned code : %d \n",_retv);
+       "[2s_h] MARCHE returned code : %d \n", _retv) ;
 
 
         return _retv ;
     }
+
+#   ifndef __SKIP_MAIN__
+    int main () { return test2s_h(1) ; }
+#   endif//__SKIP_MAIN__
 
 
 
