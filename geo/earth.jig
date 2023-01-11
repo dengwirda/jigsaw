@@ -18,8 +18,8 @@
     MESH_FILE = out/earth.msh
     VERBOSITY = 1
     MESH_DIMS = 1
-    GEOM_SEED = 256
-    HFUN_HMAX = 0.005
+    GEOM_SEED = 160
+    HFUN_HMAX = 0.01
 
 
 

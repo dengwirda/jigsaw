@@ -20,7 +20,7 @@
     GEOM_FEAT = TRUE
     MESH_TOP1 = TRUE
     MESH_DIMS = 2
-    HFUN_HMAX = 0.01
+    HFUN_HMAX = 0.02
 
 
 
