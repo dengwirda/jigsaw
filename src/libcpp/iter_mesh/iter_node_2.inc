@@ -79,8 +79,8 @@
            &_NPTR->pval(0), _NPTR->hidx())  ;
 
     #   define LOOPDIMS( _ITER )    \
-            for ( auto _idim =          \
-        pred_type::geom_dims; _idim-- != 0; )
+            for ( auto _ITER =          \
+        pred_type::geom_dims; _ITER-- != 0; )
 
         __unreferenced(_node) ;
 
@@ -194,8 +194,8 @@
            &_NPTR->pval(0), _NPTR->hidx())  ;
 
     #   define LOOPDIMS( _ITER )    \
-            for ( auto _idim =          \
-        pred_type::geom_dims; _idim-- != 0; )
+            for ( auto _ITER =          \
+        pred_type::geom_dims; _ITER-- != 0; )
 
         __unreferenced(_node) ;
 
@@ -397,8 +397,8 @@
            &_NPTR->pval(0), _NPTR->hidx())  ;
 
     #   define LOOPDIMS( _ITER )    \
-            for ( auto _idim =          \
-        pred_type::geom_dims; _idim-- != 0; )
+            for ( auto _ITER =          \
+        pred_type::geom_dims; _ITER-- != 0; )
 
     /*------------------------------------- cell indexing */
         auto _tptr =
@@ -569,8 +569,8 @@
            &_NPTR->pval(0), _NPTR->hidx())  ;
 
     #   define LOOPDIMS( _ITER )    \
-            for ( auto _idim =          \
-        pred_type::geom_dims; _idim-- != 0; )
+            for ( auto _ITER =          \
+        pred_type::geom_dims; _ITER-- != 0; )
 
     /*------------------------------------- cell indexing */
         auto _qptr =

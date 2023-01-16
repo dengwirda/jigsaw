@@ -76,6 +76,7 @@
         real_list &_qnew ,  // list of new adj. costs
         real_type  _QMIN ,  // minimum adj. old costs
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -84,7 +85,7 @@
             _hval, _opts, _node, _last,
             _kern, _move, _conn,
             _qold, _qnew,
-            _QMIN, _QLIM, _tcpu) ;  // variational
+            _QMIN, _QLIM, _QMOV, _tcpu) ;  // variational
 
         if (_move >= +0 ) return ;
 
@@ -93,7 +94,7 @@
              dqdx_optimise,
             _move, _conn,
             _qold, _qnew,
-            _QMIN, _QLIM, _tcpu) ;  // local dQ/dx
+            _QMIN, _QLIM, _QMOV, _tcpu) ;  // local dQ/dx
 
         if (_move >= +0 ) return ;
     }
@@ -117,6 +118,7 @@
         real_list &_qnew ,  // list of new adj. costs
         real_type  _QMIN ,  // minimum adj. old costs
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -198,12 +200,6 @@
         real_type _xtol =           // delta_x reltol
        +std::sqrt(_opts.qtol()) / +10.0  ;
 
-        if (_kern == dqdx_optimise) // test cost-only
-        {
-            _QLIM  =
-       +std::numeric_limits<real_type>::infinity() ;
-        }
-
         auto _ppos = &_node->pval(0) ;
 
         real_type _lsqr ;
@@ -223,6 +219,12 @@
     //  ifdef  __use_timers
     //  _ttic = _time.now() ;
     //  endif//__use_timers
+
+        if (_kern == dqdx_optimise) // test cost-only
+        {
+            _QMOV  =
+       +std::numeric_limits<real_type>::infinity() ;
+        }
 
         for (auto _idim =
         pred_type::geom_dims; _idim-- != +0; )
@@ -283,7 +285,7 @@
                  cell_kind ()) ;
 
             move_okay( _qnew, _qold, _move,
-                _QLIM, _opts.qtol(),
+                _QMOV, _opts.qtol(),
                 _lmov, _XTOL* _lsqr) ;
 
             if (_move >= +0) break ;
@@ -343,6 +345,7 @@
         real_list &_dnew ,  // list of new adj. costs
         real_type  _DMIN ,  // minimum adj. old costs
         real_type  _DLIM ,  // dual quality threshold
+        real_type  _DMOV ,
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -410,6 +413,9 @@
     //  _ttic = _time.now() ;
     //  endif//__use_timers
 
+            _DMOV =
+       +std::numeric_limits<real_type>::infinity() ;
+
         for (auto _iter = +0 ;
                 _iter != _ITER; ++_iter )
         {
@@ -455,7 +461,7 @@
                  dual_kind ()) ;
 
             move_okay( _dnew, _dold, _move ,
-                _DLIM, _opts.qtol()) ;
+                _DMOV, _opts.qtol()) ;
 
             if (_move >= +0) break ;
         }
@@ -502,7 +508,9 @@
         iptr_type  _isub ,  // inner iteration marker
         iter_opts &_opts ,  // user options
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,
         real_type  _DLIM ,  // dual quality threshold
+        real_type  _DMOV ,
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -528,6 +536,7 @@
         real_list &_qold ,  // space for adj. costs
         real_list &_qnew ,  // space for adj. costs
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,
         iter_stat &_tcpu    // CPU timers/info
                 ) const
             {
@@ -565,7 +574,8 @@
                    &_last[ _apos][ +0 ],
                     _kern, _move, _conn,
                     _qold, _qnew,
-                    _QMIN, _QLIM, _tcpu) ;
+                    _QMIN, _QLIM, _QMOV,
+                    _tcpu) ;
             }
 
             if (_move > +0 )
@@ -635,9 +645,10 @@
     #   endif//__use_timers
 
         if (_isub == +0)
-        sort_node(_mesh, _CONN, _aset,
-            _mark._node,
-            _iout,_isub, _QLIM, _DLIM, _opts) ;
+        sort_node( _mesh, _CONN, _aset,
+            _mark. _node,
+            _iout, _isub, _QLIM, _QMOV, _DLIM, _DMOV,
+            _opts) ;
 
         _pful =(iptr_type)(
                 std::sqrt(_aset.count ()) /
@@ -673,7 +684,7 @@
                 _nset , _mark,
                 _iout , _opts,
                 _conn , _qold, _qnew, _QLIM,
-                _tcpu ) ;
+                _QMOV , _tcpu) ;
         }
         }
 
@@ -735,7 +746,7 @@
                 _nset , _mark,
                 _iout , _opts,
                 _conn , _qold, _qnew, _QLIM,
-                _tcpu ) ;
+                _QMOV , _tcpu) ;
         }
 
     #   ifdef  __use_timers
@@ -760,7 +771,7 @@
                   _CONN, _kern, _last, \
                   _nset, _mark, \
                   _iout, _isub, _opts, \
-                  _QLIM, _DLIM, _tcpu)
+                  _QLIM, _QMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
         real_list _QOLD, _QNEW;
@@ -789,7 +800,7 @@
                 _NSET , _mark,
                 _iout , _opts,
                 _CSET , _QOLD, _QNEW, _QLIM,
-                _tcpu ) ;
+                _QMOV , _tcpu) ;
         }
         }
 
@@ -818,7 +829,7 @@
                   _CONN, _kern, _last, \
                   _nset, _mark, \
                   _iout, _isub, _opts, \
-                  _QLIM, _DLIM, _tcpu)
+                  _QLIM, _QMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
         real_list _QOLD, _QNEW;
@@ -847,7 +858,7 @@
                 _NSET , _mark,
                 _iout , _opts,
                 _CSET , _QOLD, _QNEW, _QLIM,
-                _tcpu ) ;
+                _QMOV , _tcpu) ;
         }
         }
 
@@ -876,7 +887,7 @@
                   _CONN, _kern, _last, \
                   _nset, _mark, \
                   _iout, _isub, _opts, \
-                  _QLIM, _DLIM, _tcpu)
+                  _QLIM, _QMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
         real_list _QOLD, _QNEW;
@@ -905,7 +916,7 @@
                 _NSET , _mark,
                 _iout , _opts,
                 _CSET , _QOLD, _QNEW, _QLIM,
-                _tcpu ) ;
+                _QMOV , _tcpu) ;
         }
         }
 
@@ -945,7 +956,7 @@
                 _nset , _mark,
                 _iout , _opts,
                 _conn , _qold, _qnew, _QLIM,
-                _tcpu ) ;
+                _QMOV , _tcpu) ;
         }
 
     #   ifdef  __use_timers
@@ -988,7 +999,9 @@
         iptr_type  _isub ,  // inner iteration marker
         iter_opts &_opts ,  // user options
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,
         real_type  _DLIM ,  // dual quality threshold
+        real_type  _DMOV ,
         iter_stat &_tcpu    // CPU timers/info
         )
     {
@@ -1013,6 +1026,7 @@
         real_list &_dold ,  // space for adj. costs
         real_list &_dnew ,  // space for adj. costs
         real_type  _DLIM ,  // dual quality threshold
+        real_type  _DMOV ,
         iter_stat &_tcpu    // CPU timers/info
                 ) const
             {
@@ -1048,7 +1062,8 @@
                     _last[ _apos] ,
                     _move, _conn,
                     _dold, _dnew,
-                    _DMIN, _DLIM, _tcpu) ;
+                    _DMIN, _DLIM, _DMOV,
+                    _tcpu) ;
             }
 
             if (_move > +0 )
@@ -1115,9 +1130,10 @@
     #   endif//__use_timers
 
         if (_isub == +0)
-        sort_node(_mesh, _CONN, _aset,
-            _mark._node,
-            _iout,_isub, _QLIM, _DLIM, _opts) ;
+        sort_node( _mesh, _CONN, _aset,
+            _mark. _node,
+            _iout, _isub, _QLIM, _QMOV, _DLIM, _DMOV,
+            _opts) ;
 
         _pful =(iptr_type)(
                 std::sqrt(_aset.count ()) /
@@ -1153,7 +1169,7 @@
                 _nset , _mark,
                 _iout , _opts,
                 _conn , _dold, _dnew, _DLIM,
-                _tcpu ) ;
+                _DMOV , _tcpu) ;
         }
         }
 
@@ -1215,7 +1231,7 @@
                 _nset , _mark,
                 _iout , _opts,
                 _conn , _dold, _dnew, _DLIM,
-                _tcpu ) ;
+                _DMOV , _tcpu) ;
         }
 
     #   ifdef  __use_timers
@@ -1240,7 +1256,7 @@
                   _CONN, _last, \
                   _nset, _mark, \
                   _iout, _isub, _opts, \
-                  _QLIM, _DLIM, _tcpu)
+                  _DLIM, _DMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
         real_list _DOLD, _DNEW;
@@ -1269,7 +1285,7 @@
                 _NSET , _mark,
                 _iout , _opts,
                 _CSET , _DOLD, _DNEW, _DLIM,
-                _tcpu ) ;
+                _DMOV , _tcpu) ;
         }
         }
 
@@ -1298,7 +1314,7 @@
                   _CONN, _last, \
                   _nset, _mark, \
                   _iout, _isub, _opts, \
-                  _QLIM, _DLIM, _tcpu)
+                  _DLIM, _DMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
         real_list _DOLD, _DNEW;
@@ -1327,7 +1343,7 @@
                 _NSET , _mark,
                 _iout , _opts,
                 _CSET , _DOLD, _DNEW, _DLIM,
-                _tcpu ) ;
+                _DMOV , _tcpu) ;
         }
         }
 
@@ -1356,7 +1372,7 @@
                   _CONN, _last, \
                   _nset, _mark, \
                   _iout, _isub, _opts, \
-                  _QLIM, _DLIM, _tcpu)
+                  _DLIM, _DMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
         real_list _DOLD, _DNEW;
@@ -1385,7 +1401,7 @@
                 _NSET , _mark,
                 _iout , _opts,
                 _CSET , _DOLD, _DNEW, _DLIM,
-                _tcpu ) ;
+                _DMOV , _tcpu) ;
         }
         }
 
@@ -1425,7 +1441,7 @@
                 _nset , _mark,
                 _iout , _opts,
                 _conn , _dold, _dnew, _DLIM,
-                _tcpu ) ;
+                _DMOV , _tcpu) ;
         }
 
     #   ifdef  __use_timers

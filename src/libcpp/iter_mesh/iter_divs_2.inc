@@ -390,7 +390,8 @@
                 _opts, _nptr, _prev,
                 _kern, _move, _cnew,
                 _qtmp, _qdst,
-                _minC, _QLIM, _tcpu)  ;
+                _minC, _QLIM, _QLIM,
+                _tcpu) ;
 
             if (_move <= +0 ) break;
         }

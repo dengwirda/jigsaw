@@ -488,6 +488,8 @@
         static constexpr ITER_MAX_ = max_subit ;
 
         real_type _QMIN = init_cost (_mesh, _opts) ;
+        real_type _QMOV = +0. ;
+        real_type _DMOV = +0. ;
 
         real_list _hval ;         // cache h(x) node val.
         _hval.set_count(
@@ -516,12 +518,22 @@
             _nsub =
             std::max(ITER_MIN_, _nsub) ;
 
+            real_type _RMIN = _QMIN *
+           (real_type)(0.90 + 1./20 * (_iter - 1)) ;
+            real_type _RMAX = _QMIN *
+           (real_type)(0.90 + 1./30 * (_iter - 1)) ;
+
             real_type _DLIM =
            (real_type)+1.-_opts.qtol() ;
 
+            _DMOV = std::max(_DMOV, _DLIM) ;
+            _DMOV = std::min(_DMOV, _RMAX) ;
+
             real_type _QLIM = std::min (
-                _opts.qlim(),_QMIN *
-           (real_type)(0.90 + 0.05 * (_iter - 1))) ;
+                _opts.qlim(),_RMIN) ;
+
+            _QMOV = std::max(_QMOV, _QLIM) ;
+            _QMOV = std::min(_QMOV, _RMAX) ;
 
     /*------------------------------ 1. CELL GEOM. PASSES */
 
@@ -556,7 +568,9 @@
                     _hfun, _kern, _hval , _last ,
                     _nset, _aset, _mark ,
                     _part, _iter, _isub ,
-                    _opts, _QLIM, _DLIM , _tcpu);
+                    _opts,
+                    _QLIM, _QMOV, _DLIM , _DMOV ,
+                    _tcpu) ;
             }
 
             _nmov = _nset.count() ;
@@ -625,7 +639,9 @@
                     _hfun, _hval, _last ,
                     _nset, _aset, _mark ,
                     _part, _iter, _isub ,
-                    _opts, _QLIM, _DLIM , _tcpu);
+                    _opts,
+                    _QLIM, _QMOV, _DLIM , _DMOV ,
+                    _tcpu) ;
             }
 
             _nmov = _nset.count() ;
@@ -735,6 +751,14 @@
             }
 
     /*------------------------------ has iter. converged? */
+            _QMOV = std::max(_QLIM, 1. -
+                ((real_type) _nmov) /
+                    _mesh.node().count()) ;
+
+            _DMOV = std::max(_DLIM, 1. -
+                ((real_type) _nmov) /
+                    _mesh.node().count()) ;
+
         //  if (_nset.count() == 0) break ;
             if (_nmov == +0 &&
                 _nzip == +0 &&

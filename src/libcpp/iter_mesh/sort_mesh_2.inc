@@ -133,7 +133,9 @@
         iptr_type  _iout ,  // outer iteration marker
         iptr_type  _isub ,  // inner iteration marker
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,
         real_type  _DLIM ,  // dual quality threshold
+        real_type  _DMOV ,
         iter_opts &_opts    // user options
         )
     {
@@ -178,6 +180,8 @@
         iptr_list _amrk ;
         cost_list _sset ;
 
+        __unreferenced ( _QMOV ) ;
+        __unreferenced ( _DMOV ) ;
         __unreferenced ( _DLIM ) ;
         __unreferenced ( _opts ) ;
         __unreferenced ( _isub ) ;
