@@ -479,9 +479,9 @@
         this->_root->_hptr = nullptr;
 
     /*------------------------------ push items onto root */
+        {        
         item_data *_hptr   = nullptr;
         item_data *_idat   = nullptr;
-        {
         for(; _head != _tend; ++_head)
         {
     /*------------------------------ alloc. and push item */

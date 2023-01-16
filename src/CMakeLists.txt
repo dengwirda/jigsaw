@@ -14,20 +14,37 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"   OR
   message (STATUS "GCXX-like compiler detected")
 endif ()
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+  set (ICPC_LIKE TRUE)
+  message (STATUS "ICPC-like compiler detected")
+endif ()
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set (MSVC_LIKE TRUE)
   message (STATUS "MSVC-like compiler detected")
 endif ()
 
+if (DEFINED ICPC_LIKE)
+  add_compile_options (-pedantic -Wall -Wextra -Wshadow -Wfloat-conversion)
+  add_compile_options (-fp-model=precise) # needed for adapt-fp
+  add_compile_options (-fno-math-errno) # no errno checks
+  add_compile_options (-fno-trapping-math) # no fp exceptions
+  add_compile_options (-ffinite-math-only) # no explicit nans, etc
+endif ()
+
 if (DEFINED MSVC_LIKE)
   add_compile_options (/W3)
-  add_compile_options (/openmp:llvm)
-  cfg_compile_options (/GS- RELEASE)
-  cfg_compile_options (/Ot  RELEASE)
+  add_compile_options (/openmp:llvm) # needed for openmp > 2.0
+  add_compile_options (/fp:precise) # needed for adapt-fp
+  cfg_compile_options (/GS- RELEASE) # disable buffer checks
+  cfg_compile_options (/Ot  RELEASE) # favour "fast" code
 endif ()
 
 if (DEFINED GCXX_LIKE)
-  add_compile_options (-pedantic -Wall -Wfloat-conversion)
+  add_compile_options (-pedantic -Wall -Wextra -Wshadow -Wfloat-conversion)
+  add_compile_options (-fno-math-errno) # no errno checks
+  add_compile_options (-fno-trapping-math) # no fp exceptions
+  add_compile_options (-ffinite-math-only) # no explicit nans, etc
 endif ()
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -37,6 +54,8 @@ else ()
   message (STATUS "Installing to ${CMAKE_INSTALL_PREFIX}")
 endif ()
 
+# try to find netcdf support
+
 find_library (NETCDF_LIBRARY NAMES netcdf)
 
 if (NETCDF_LIBRARY)
@@ -45,6 +64,8 @@ if (NETCDF_LIBRARY)
 else ()
   message (STATUS "NetCDF library not found")
 endif ()
+
+# try to find openmp support
 
 find_package (OpenMP)
 
