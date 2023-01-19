@@ -1132,7 +1132,14 @@
                 return _errv ;
             }
         }
+        else
+        {
+            _jlog.  push (
+    "**input error: couldn't determine format of GEOM.\n") ;
 
+            return __invalid_argument ;
+        }
+    
         return (  _errv ) ;
     }
 

@@ -1158,6 +1158,13 @@
                 _errv = __invalid_indexing ;
             }
         }
+        else
+        {
+            _jlog.  push (
+    "**input error: couldn't determine format of INIT.\n") ;
+
+            return __invalid_argument ;
+        }
 
         return (  _errv ) ;
     }

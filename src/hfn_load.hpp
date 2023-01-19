@@ -1931,6 +1931,13 @@
                 _errv = __invalid_argument ;
             }
         }
+        else
+        {
+            _jlog.  push (
+    "**input error: couldn't determine format of HFUN.\n") ;
+
+            return __invalid_argument ;
+        }
 
         return (  _errv ) ;
     }

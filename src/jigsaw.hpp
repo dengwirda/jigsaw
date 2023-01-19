@@ -1629,7 +1629,7 @@
                 _retv = -2 ;
 
                 std::cout <<
-                "run jigsaw jigname.jig";
+                "Usage: jigsaw user-opts.jig" ;
                 std::cout <<  std::endl ;
 
                 break ;
@@ -1664,6 +1664,11 @@
 
                 break ;
             }
+        }
+        if (_retv == -1)
+        {
+            std::cout << 
+        "**parse error: *.jig file not found!" << std::endl;
         }
         if (_retv != +0) return ( _retv ) ;
 
