@@ -21,6 +21,7 @@
     //
     // -DUSE_NETCDF -lnetcdf
     // -DUSE_TIMERS
+    // -fopenmp
     //
     // -Wfloat-conversion -Wsign-conversion -Wshadow
     //
@@ -40,9 +41,9 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * JIGSAW release 0.9.15.x
+     * JIGSAW release 1.0.0.x
      *
-     * Last updated: 28 May, 2022
+     * Last updated: 11 Dec., 2022
      *
      * Copyright 2013 -- 2022
      * Darren Engwirda
@@ -69,12 +70,16 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor the National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
@@ -188,13 +193,17 @@
     --------------------------------------------------------
      */
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.15"
+#   define __JGSWVSTR "JIGSAW VERSION 1.0.0"
 
 #   if  defined(  USE_NETCDF)
 #       define  __use_netcdf
 #   endif
 #   if  defined(  USE_TIMERS)
 #       define  __use_timers
+#   endif
+
+#   if  defined( _OPENMP)
+#       define  __use_openmp
 #   endif
 
     //  define  __cmd_jigsaw          // the cmd-ln exe's
@@ -241,6 +250,12 @@
 
 #   include <cmath>
 
+    /*---------------------------------- openmp threading */
+
+#   ifdef  __use_openmp
+#   include <omp.h>
+#   endif//__use_openmp
+
     /*---------------------------------- to do cpu timing */
 
 #   define __use_timers
@@ -250,6 +265,11 @@
 #   endif//__use_timers
 
     /*---------------------------------- JIGSAW's backend */
+
+#   ifdef __clang__
+    // bug w function-local classes?
+#   pragma clang diagnostic ignored "-Wunused-local-typedef"
+#   endif
 
     extern  "C"
     {
@@ -336,6 +356,13 @@
         std::string             _bnds_file ;
 
         iptr_type               _verbosity = 0 ;
+
+    #   ifdef  __use_openmp
+        iptr_type               _numthread =
+                       omp_get_num_procs() ;
+    #   else
+        iptr_type               _numthread = 1 ;
+    #   endif//__use_openmp
 
     /*--------------------------------- geom-bnd. kernels */
         struct bnds_pred {
@@ -707,9 +734,9 @@
         {
         public  :
     /*-------------------------- a "real" log-file writer */
-            std::ofstream   _file ;
+            std::ofstream  _file ;
 
-            iptr_type  _verbosity ;
+            iptr_type _verbosity = +0;
 
         public  :
 
@@ -749,7 +776,8 @@
             data_type const&_data
             )
         {
-            std :: cout <<  _data ;
+            if (this->_verbosity > -2)
+            std::cout << _data ;
             this->_file <<  _data ;
         }
 
@@ -759,8 +787,7 @@
         {
         public  :
     /*-------------------------- a "null" log-file writer */
-
-            iptr_type  _verbosity ;
+            iptr_type _verbosity = +0;
 
         public  :
 
@@ -782,9 +809,7 @@
         {
     /*-------------------------- def. no: for lib_jigsaw! */
             if (this->_verbosity > +0)
-            {
             std::cout << _data ;
-            }
         }
 
         } ;

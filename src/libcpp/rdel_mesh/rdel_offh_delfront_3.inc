@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 Mar., 2021
+     * Last updated: 28 Dec., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -66,24 +70,22 @@
             _kind = rdel_opts::null_kind;
 
         typename hfun_type::hint_type
-            _hint = _hfun  .null_hint() ;
+            _hint = _hfun  .null_hint() ,
+            _HINT = _hfun  .null_hint() ;
 
         real_type static const
             _rtol = (real_type)+1.00E-003 ;
 
         real_type static const
-            _dtol = (real_type)+8.00E-001 ;
+            _dtol = (real_type)+8.33E-001 ;
 
         real_type static const
-            _lgap = (real_type)+9.00E-001 ;
+            _lgap = (real_type)+8./9. ;
 
         real_type static const
-            _ugap = (real_type)+1.10E+000 ;
+            _ugap = (real_type)+9./8. ;
 
         __unreferenced(_args) ;
-
-        if (_enod[1] < _enod[0])
-            std::swap (_enod[0], _enod[1]);
 
         real_type  _hsiz [ 4] ;
         _hsiz[ 0] = _hfun.eval (
@@ -93,6 +95,12 @@
        &_mesh._tria.node(_enod[1])->pval(0) ,
         _mesh._tria.node(_enod[1])->idxh()) ;
 
+        if (_hsiz[1] < _hsiz[0])
+        {
+            std::swap( _enod[0], _enod[1]);
+            std::swap( _hsiz[0], _hsiz[1]);
+        }
+
         real_type _dvec[4] ;
         real_type _base[3] = {
         _mesh._tria.node(_enod[0])->pval(0) ,
@@ -100,7 +108,7 @@
         _mesh._tria.node(_enod[0])->pval(2) ,
             } ;
 
-        _hint =
+        _hint = _HINT =
         _mesh._tria.node (_enod[0])->idxh() ;
 
         _dvec[ 0] =
@@ -147,8 +155,6 @@
            (real_type)+.5 * (_base[2]+_ppos[2]) ,
                 } ;
 
-            typename hfun_type::hint_type
-            _HINT = _hint ;
             _hsiz[3] = _hfun.eval(_PMID, _HINT) ;
 
             real_type _hval =
@@ -161,11 +167,10 @@
             if (_dist >= _dvec[3] * _lgap &&
                 _dist <= _dvec[3] * _ugap )
             {                       // circumball cushion
-                _dist += _dvec[3] ;
-                _dist /= (real_type)2.;
+                _dist  =
+                    .5 *(_dist + _dvec[3] ) ;
 
-                _kind  =
-                 rdel_opts::offH_kind ;
+                _kind  =  rdel_opts::offH_kind;
             }
 
             if (_dist >= _dvec[3] * _ugap )
@@ -174,31 +179,28 @@
                 _ppos[1]=_sbal[1] ;
                 _ppos[2]=_sbal[2] ;
 
-                _kind =
-                 rdel_opts::circ_kind ;
-
+                _kind  =  rdel_opts::circ_kind;
                  return  _kind ;
             }
             else                    // adv.-front limiter
             {
-                _kind =
-                 rdel_opts::offH_kind ;
+                _kind  =  rdel_opts::offH_kind;
             }
 
             _dist -= _pert * _dist ;
 
             iptr_type _dual = -1 ;
-            cosine_intersect _pred(_base,_dvec);
+            cosine_intersect _pred(_base,_dvec) ;
             _ball._rrad  = _dist ;
             if (!_geom.intersect (
                  _ball, _pred) )
-                return  rdel_opts::null_kind ;
+                return rdel_opts::null_kind;
             if (!_pred. _find  )
-                return  rdel_opts::null_kind ;
+                return rdel_opts::null_kind;
 
             real_type _move =
                 geometry::length_3d(
-                    _ppos,&_pred._proj.pval(0));
+                    _ppos,&_pred._proj.pval(0)) ;
 
             _ppos[ 0] = _pred._proj.pval(0);
             _ppos[ 1] = _pred._proj.pval(1);
@@ -207,15 +209,17 @@
             _mesh._tria.find_node ( // test voro. limiter
                 &_ppos[0], _dual, _enod[ 0]) ;
 
+            if (_dual != _enod [ +0] )
+            {
             real_type _dlen =
                 geometry::length_3d(
                     _ppos, &_mesh._tria.
                        node(_dual)->pval(0)) ;
 
-            if (_dual != _enod [ +0] )
             if (_dlen <= _dtol*_hval )
             {
-                return  rdel_opts::null_kind ;
+                return rdel_opts::null_kind;
+            }
             }
 
             if (_move <= _rtol*_hval ) break ;
@@ -248,7 +252,8 @@
             _kind = rdel_opts::null_kind;
 
         typename hfun_type::hint_type
-            _hint = _hfun  .null_hint() ;
+            _hint = _hfun  .null_hint() ,
+            _HINT = _hfun  .null_hint() ;
 
         real_type static const
             _rtol = (real_type)+1.00E-003 ;
@@ -257,13 +262,13 @@
             (real_type)std::sqrt(3.)/2. ;
 
         real_type static const
-            _dtol = (real_type)+8.00E-001 ;
+            _dtol = (real_type)+8.33E-001 ;
 
         real_type static const
-            _lgap = (real_type)+9.00E-001 ;
+            _lgap = (real_type)+8./9. ;
 
         real_type static const
-            _ugap = (real_type)+1.10E+000 ;
+            _ugap = (real_type)+9./8. ;
 
         __unreferenced(_args) ;
 
@@ -275,7 +280,7 @@
        &_mesh._tria.node(_enod[1])->pval(0) ,
         _mesh._tria.node(_enod[1])->idxh()) ;
 
-        _hint =
+        _hint = _HINT =
         _mesh._tria.node(_enod[0])->idxh () ;
 
         real_type  _bias[2] = {
@@ -340,15 +345,13 @@
            (real_type)+.5 * (_base[2]+_ppos[2]) ,
                 } ;
 
-            typename hfun_type::hint_type
-            _HINT = _hint ;
             _hsiz[3] = _hfun.eval(_PMID, _HINT) ;
 
             real_type _hval =
-            _hsiz[0] * (real_type)1./6. +
-            _hsiz[1] * (real_type)1./6. +
-            _hsiz[2] * (real_type)1./6. +
-            _hsiz[3] * (real_type)3./6. ;
+            _hsiz[0] * (real_type)2./9. +
+            _hsiz[1] * (real_type)2./9. +
+            _hsiz[2] * (real_type)2./9. +
+            _hsiz[3] * (real_type)3./9. ;
 
             real_type _hmin ;
             _hmin = std::min (_hval , _epsh);
@@ -376,28 +379,28 @@
                 (real_type)std::sqrt(_dsqr) ;
             }
 
-            if (_dist > _alth * _hval)
+            if (_dist >= _alth * _hval)
             {                       // adv.-front limiter
-                _dist = _alth * _hval ;
-                _kind =
-                 rdel_opts::offH_kind ;
+                _dist  = _alth * _hval ;
+                _kind  =  rdel_opts::offH_kind;
             }
 
             if (_dist >= _dvec[4])  // off-centre limiter
             {
-                _dist =  _dvec[4] ;
-                _kind =
-                 rdel_opts::offC_kind ;
+                _dist  =
+                    2. * _dist * _dvec[4]
+                      / (_dist + _dvec[4] ) ;
+
+                _kind  =  rdel_opts::offC_kind;
             }
 
             if (_dist >= _dvec[3] * _lgap &&
                 _dist <= _dvec[3] * _ugap )
             {                       // circumball cushion
-                _dist += _dvec[3] ;
-                _dist /= (real_type)2.;
+                _dist  =
+                    .5 *(_dist + _dvec[3] ) ;
 
-                _kind  =
-                 rdel_opts::offH_kind ;
+                _kind  =  rdel_opts::offH_kind;
             }
 
             if (_dist >= _dvec[3] * _ugap )
@@ -406,27 +409,24 @@
                 _ppos[1]=_sbal[1] ;
                 _ppos[2]=_sbal[2] ;
 
-                _kind =
-                 rdel_opts::circ_kind ;
-
+                _kind  =  rdel_opts::circ_kind;
                  return  _kind ;
             }
 
             _dist -= _pert * _dist ;
 
             iptr_type _dual = -1 ;
-            cosine_intersect _pred(_base,_dvec);
+            cosine_intersect _pred(_base,_dvec) ;
             _disc._rrad =  _dist ;
             if (!_geom.intersect (
-                 _disc,
-                 _sbal, _pred) )
-                return  rdel_opts::null_kind ;
+                 _disc, _sbal, _pred) )
+                return rdel_opts::null_kind;
             if (!_pred. _find  )
-                return  rdel_opts::null_kind ;
+                return rdel_opts::null_kind;
 
             real_type _move =
                 geometry::length_3d(
-                    _ppos,&_pred._proj.pval(0));
+                    _ppos,&_pred._proj.pval(0)) ;
 
             _ppos[ 0] = _pred._proj.pval(0);
             _ppos[ 1] = _pred._proj.pval(1);
@@ -435,16 +435,18 @@
             _mesh._tria.find_node ( // test voro. limiter
                 &_ppos[0], _dual, _enod[ 0]) ;
 
+            if (_dual != _enod [ +0] &&
+                _dual != _enod [ +1] )
+            {
             real_type _dlen =
                 geometry::length_3d(
                     _ppos, &_mesh._tria.
                        node(_dual)->pval(0)) ;
 
-            if (_dual != _enod [ +0] &&
-                _dual != _enod [ +1] )
             if (_dlen <= _dtol*_hmin )
             {
-                return  rdel_opts::null_kind ;
+                return rdel_opts::null_kind;
+            }
             }
 
             if (_move <= _rtol*_hmin ) break ;
@@ -477,7 +479,8 @@
             _kind = rdel_opts::null_kind;
 
         typename hfun_type::hint_type
-            _hint = _hfun  .null_hint() ;
+            _hint = _hfun  .null_hint() ,
+            _HINT = _hfun  .null_hint() ;
 
         real_type static const
             _rtol = (real_type)+1.00E-003 ;
@@ -486,13 +489,13 @@
             (real_type)std::sqrt(6.)/3. ;
 
         real_type static const
-            _dtol = (real_type)+8.00E-001 ;
+            _dtol = (real_type)+8.33E-001 ;
 
         real_type static const
-            _lgap = (real_type)+9.00E-001 ;
+            _lgap = (real_type)+8./9. ;
 
         real_type static const
-            _ugap = (real_type)+1.10E+000 ;
+            _ugap = (real_type)+9./8. ;
 
         __unreferenced(_geom) ;
         __unreferenced(_args) ;
@@ -536,16 +539,14 @@
            (real_type)+.5 * (_fbal[2]+_ppos[2]) ,
                 } ;
 
-            typename hfun_type::hint_type
-            _HINT = _hint ;
             _hsiz[4] = _hfun.eval(_PMID, _HINT) ;
 
             real_type _hmid =
-            _hsiz[0] * (real_type)1./8. +
-            _hsiz[1] * (real_type)1./8. +
-            _hsiz[2] * (real_type)1./8. +
-            _hsiz[3] * (real_type)1./8. +
-            _hsiz[4] * (real_type)4./8. ;
+            _hsiz[0] * (real_type)3./16 +
+            _hsiz[1] * (real_type)3./16 +
+            _hsiz[2] * (real_type)3./16 +
+            _hsiz[3] * (real_type)3./16 +
+            _hsiz[4] * (real_type)4./16 ;
 
             _kind    = rdel_opts::offH_kind ;
 
@@ -567,28 +568,28 @@
                 (real_type)std::sqrt(_dsqr) ;
             }
 
-            if (_dist > _alth * _hmid)
+            if (_dist >= _alth * _hmid)
             {                       // adv.-front limiter
-                _dist = _alth * _hmid ;
-                _kind =
-                 rdel_opts::offH_kind ;
+                _dist  = _alth * _hmid ;
+                _kind  =  rdel_opts::offH_kind;
             }
 
             if (_dist >= _dvec[4])  // off-centre limiter
             {
-                _dist =  _dvec[4];
-                _kind =
-                 rdel_opts::offC_kind ;
+                _dist  =
+                    2. * _dist * _dvec[4]
+                      / (_dist + _dvec[4] ) ;
+
+                _kind  =  rdel_opts::offC_kind;
             }
 
             if (_dist >= _dvec[3] * _lgap &&
                 _dist <= _dvec[3] * _ugap )
             {                       // circumball cushion
-                _dist += _dvec[3] ;
-                _dist /= (real_type)2.;
+                _dist  =
+                    .5 *(_dist + _dvec[3] ) ;
 
-                _kind  =
-                 rdel_opts::offH_kind ;
+                _kind  =  rdel_opts::offH_kind;
             }
 
             if (_dist >= _dvec[3] * _ugap )
@@ -597,9 +598,7 @@
                 _ppos[1]=_tbal[1] ;
                 _ppos[2]=_tbal[2] ;
 
-                _kind =
-                 rdel_opts::circ_kind ;
-
+                _kind  =  rdel_opts::circ_kind;
                  return  _kind ;
             }
 
@@ -624,17 +623,19 @@
             _mesh._tria.find_node ( // test voro. limiter
                 &_ppos[0], _dual, _fnod[ 0]) ;
 
+            if (_dual != _fnod [ +0] &&
+                _dual != _fnod [ +1] &&
+                _dual != _fnod [ +2] )
+            {
             real_type _dlen =
                 geometry::length_3d(
                     _ppos, &_mesh._tria.
                        node(_dual)->pval(0)) ;
 
-            if (_dual != _fnod [ +0] &&
-                _dual != _fnod [ +1] &&
-                _dual != _fnod [ +2] )
             if (_dlen <= _dtol*_hmid )
             {
-                return  rdel_opts::null_kind ;
+                return rdel_opts::null_kind;
+            }
             }
 
             if (_move < _rtol * _hmid) break ;

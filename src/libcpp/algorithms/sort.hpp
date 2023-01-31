@@ -22,16 +22,20 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 July, 2019
+     * Last updated: 24 Jul., 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -61,9 +65,9 @@
         typename  pred_type
              >
     __normal_call bool_type is_sorted (
-        iter_type _head ,
-        iter_type _tail ,
-        pred_type _less
+        iter_type _head ,  // head of sequence to test
+        iter_type _tail ,  // last of sequence to test
+        pred_type _less    // comparison predicate
         )
     {
         for ( ; _head+1 != _tail; ++_head )
@@ -159,9 +163,9 @@
         typename  pred_type
              >
     __normal_call void_type isort (
-        iter_type _head,
-        iter_type _tend,
-        pred_type _less
+        iter_type _head,  // head of sequence to sort
+        iter_type _tend,  // last of sequence to sort
+        pred_type _less   // comparison predicate
         )
     {
     /*--------------------------- sort small input ranges */
@@ -244,9 +248,9 @@
         typename  pred_type
              >
     __normal_call void_type ssort (
-        iter_type _head,
-        iter_type _tend,
-        pred_type _less
+        iter_type _head,  // head of sequence to sort
+        iter_type _tend,  // head of sequence to sort
+        pred_type _less   // comparison predicate
         )
     {
     /*--------------------------- sort small input ranges */
@@ -350,14 +354,14 @@
         pred_type const&_less
         )
     {
-        typename containers::
-            iterator_traits<iter_type>::
-        diff_type static constexpr _LONG = 256;
+        //typename containers::
+        //    iterator_traits<iter_type>::
+        //diff_type static constexpr _LONG = 256;
 
         iter_type _imid =
             _head + (_tail - _head) / 2 ;
 
-        if (_tail - _head >= _LONG)
+        if (false) //(_tail - _head >= _LONG)
         {
     /*-------------- median-of-5 choice for pivot element */
             typename containers::
@@ -389,8 +393,8 @@
              >
     __normal_call void_type qsort (  // unrolled quick sort
         iter_type _head,
-        iter_type _tend,
-        pred_type _less
+        iter_type _tend,  // last of sequence to sort
+        pred_type _less   // comparison predicate
         )
     {
         typedef containers::
@@ -436,25 +440,31 @@
             iter_type _hh, _tt, _mm;
         /* _pop next partition bounds from stack */
             ( --_nptr)->_pop(_hh, _tt);
+
             if (_tt - _hh + 1 < _LONG)
             { /* leave small partitions */
                 continue ;
             }
+
         /* find pivot item for current partition */
             _mm = pivot(_hh, _tt, _less);
-        /* push pivot onto a local copy */
-            typename
-            iter_base::data_type _pp = *_mm;
+
         /* reduce partition around pivot element */
             iter_type _ll = _hh + 1;
             iter_type _rr = _tt - 1;
             for ( ; _ll < _rr; )
             {
-                for(;_less(*_ll,  _pp);) ++_ll;
-                for(;_less( _pp, *_rr);) --_rr;
+                for(;_less(*_ll, *_mm);) ++_ll;
+                for(;_less(*_mm, *_rr);) --_rr;
 
                 if (_ll <  _rr)
                 { /* swap elements */
+                if (_ll == _mm)
+                    _mm =  _rr;
+                else
+                if (_rr == _mm)
+                    _mm =  _ll;
+
                 std::swap(*_ll,
                           *_rr) ;
                 }
@@ -463,6 +473,7 @@
                   ++_ll; --_rr  ;
                 }
             }
+
         /* push partitions onto stack, big first */
             if (_rr - _hh > _tt - _ll)
             {
@@ -479,6 +490,88 @@
 
     /*------- sort remaining sequences via insertion sort */
         isort (_head , _tend, _less) ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * Q-SIFT: quick select; sort kth element
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  iter_type ,
+        typename  pred_type
+             >
+    __normal_call void_type qsift (  // quick select
+        iter_type _head,
+        iter_type _kk,    // pos. in sequence to find
+        iter_type _tend,  // last of sequence to parition
+        pred_type _less   // comparison predicate
+        )
+    {
+        iter_type  _hh, _tt, _mm;
+        _hh = _head + 0;
+        _tt = _tend - 1;
+
+        do {
+        /* deal with "spec.-case" tiny partition */
+            if (_tt - _hh + 1 <= 1)
+                break ;
+
+            if (_tt - _hh + 1 == 2)
+            {
+                if (_less(*_tt, *_hh))
+                std::swap(*_hh, *_tt);
+                break ;
+            }
+
+            /*
+            if (_tt - _hh + 1 <= 4)
+            {
+                isort ( _hh, _tt, _less);
+                break ;
+            }
+            */
+
+        /* find pivot item for current partition */
+            _mm = pivot(_hh, _tt, _less);
+
+        /* reduce partition around pivot element */
+            iter_type _ll = _hh + 1;
+            iter_type _rr = _tt - 1;
+            for ( ; _ll < _rr; )
+            {
+                for(;_less(*_ll, *_mm);) ++_ll;
+                for(;_less(*_mm, *_rr);) --_rr;
+
+                if (_ll <  _rr)
+                { /* swap elements */
+                if (_ll == _mm)
+                    _mm =  _rr;
+                else
+                if (_rr == _mm)
+                    _mm =  _ll;
+
+                std::swap(*_ll,
+                          *_rr) ;
+                }
+                if (_ll <= _rr)
+                { /* shrink bounds */
+                  ++_ll; --_rr  ;
+                }
+            }
+
+          //if (_mm == _kk) break ;
+
+            if (_kk <  _rr) _tt = _rr;
+            else
+            if (_kk >  _ll) _hh = _ll;
+            else
+            {
+                _hh =  _rr+1; _tt = _ll-1;
+            }
+        }
+        while (true) ;
     }
 
 

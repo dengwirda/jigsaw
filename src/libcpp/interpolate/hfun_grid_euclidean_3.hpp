@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 Feb., 2021
+     * Last updated: 15 Jun., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -291,9 +295,9 @@
             _ZPOS = *this->_zpos.tail() ;
 
     /*---------------------------- find enclosing x-range */
-        iptr_type _ipos = (iptr_type)-1 ;
-        iptr_type _jpos = (iptr_type)-1 ;
-        iptr_type _kpos = (iptr_type)-1 ;
+        auto _ipos = this-> null_hint() ;
+        auto _jpos = this-> null_hint() ;
+        auto _kpos = this-> null_hint() ;
 
         if (this->_xvar == true)
         {

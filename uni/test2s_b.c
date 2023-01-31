@@ -10,7 +10,7 @@
 #   include "print.h"
 #   include "stdio.h"
 
-    int main ()
+    int test2s_b (int _verb)
     {
         int _retv = 0;
 
@@ -87,7 +87,7 @@
 
     /*-------------------------------- build JIGSAW tria. */
 
-        _jjig._verbosity =   +1 ;
+        _jjig._verbosity = _verb;
 
         _jjig._hfun_scal =
             JIGSAW_HFUN_ABSOLUTE;
@@ -99,9 +99,9 @@
 
         _jjig._mesh_kern =          // non-default opts
             JIGSAW_KERN_DELAUNAY;
-        _jjig._optm_kern = 
+        _jjig._optm_kern =
             JIGSAW_KERN_CVT_DQDX;
-        _jjig._optm_cost = 
+        _jjig._optm_cost =
             JIGSAW_KERN_SKEW_COS;
 
         _retv = jigsaw (
@@ -113,16 +113,21 @@
 
     /*-------------------------------- print JIGSAW tria. */
 
+        if (_verb > 0 )
         output_msh_data_3(&_mesh);
 
         jigsaw_free_msh_t(&_mesh);
 
         printf (
-       "JIGSAW returned code : %d \n",_retv);
+       "[2s_b] JIGSAW returned code : %d \n", _retv) ;
 
 
         return _retv ;
     }
+
+#   ifndef __SKIP_MAIN__
+    int main () { return test2s_b(1) ; }
+#   endif//__SKIP_MAIN__
 
 
 

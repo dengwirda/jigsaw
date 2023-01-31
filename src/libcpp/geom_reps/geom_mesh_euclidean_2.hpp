@@ -22,12 +22,16 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
@@ -1366,10 +1370,14 @@
     /*------------------------ call pred. on tree matches */
         __inline_call float operator () (
                 typename
+            tree_type::node_type *_lptr ,
+                typename
             tree_type::item_data *_iptr
             )
         {
             if (this->_find) return +0. ;
+
+            __unreferenced(_lptr);
 
             real_type  _qtmp[+2] = {+0.};
 
@@ -1451,6 +1459,11 @@
         ball_line_pred <
              hits_func >  hits_pred ;
 
+        float     static const _RTOL =
+            std::pow (
+            std::numeric_limits<float>
+            ::epsilon(), (float).675) ;
+
         float           _PMID[2] = {
                 (float) _ball. _pmid[0] ,
                 (float) _ball. _pmid[1] ,
@@ -1458,6 +1471,8 @@
 
         float           _RRAD  =
                 (float) _ball. _rrad;
+
+        _RRAD *= (1.f + _RTOL) ;
 
     /*------------------ call actual intersection testing */
         tree_pred _pred(_PMID, _RRAD) ;

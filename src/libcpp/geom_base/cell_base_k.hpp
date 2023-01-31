@@ -22,16 +22,20 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 Jan., 2022
+     * Last updated: 12 Jul., 2022
      *
      * Copyright 2013-2022
      * Darren Engwirda
@@ -565,6 +569,8 @@
     __const_ptr  (real_type) _p3
         )
     {   // "skewed-cosine"; penalty for obtuse
+        // Engwirda, D. (2022):
+        // An 'asymmetric-cosine' metric for primal-dual mesh optimisation.
         real_type _vv12[2] ;
         real_type _vv23[2] ;
         real_type _vv31[2] ;
@@ -579,37 +585,29 @@
         real_type _ll31 =
         geometry::length_2d (_vv31) ;
 
+        // -ve due to ccw sign of vectors
         real_type _dd11 =
         geometry::dot_2d(
-            _vv12, _vv23) / _ll12 / _ll23 ;
+            _vv31, _vv12) / _ll31 / _ll12 ;
         real_type _dd22 =
         geometry::dot_2d(
-            _vv23, _vv31) / _ll23 / _ll31 ;
+            _vv12, _vv23) / _ll12 / _ll23 ;
         real_type _dd33 =
         geometry::dot_2d(
-            _vv31, _vv12) / _ll31 / _ll12 ;
+            _vv23, _vv31) / _ll23 / _ll31 ;
 
-        _dd11 = (real_type)-2./3. * (
-            _dd11 + (real_type)+.5) ;
-        _dd22 = (real_type)-2./3. * (
-            _dd22 + (real_type)+.5) ;
-        _dd33 = (real_type)-2./3. * (
-            _dd33 + (real_type)+.5) ;
+        _dd11 += (real_type)+ 1./2. ;
+        _dd22 += (real_type)+ 1./2. ;
+        _dd33 += (real_type)+ 1./2. ;
 
         real_type _skew =
-            (real_type) +9. / 11. * (
+            (real_type) +4. / 11. * (
             std::pow(_dd11, 2) +
             std::pow(_dd22, 2) +
             std::pow(_dd33, 2) )  ;
 
-        _skew = (real_type)+1. - _skew ;
-
-        real_type _alen =
-        tria_quality_2d(_p1, _p2, _p3) ;
-
-        return
-       (real_type)(1. - 1./2.) * _skew +
-       (real_type)(0. + 1./2.) * _alen ;
+        return std::pow(
+            (real_type) +1. - _skew, +4./3.) ;
     }
 
     template <
@@ -622,6 +620,8 @@
     __const_ptr  (real_type) _p3
         )
     {   // "skewed-cosine"; penalty for obtuse
+        // Engwirda, D. (2022):
+        // An 'asymmetric-cosine' metric for primal-dual mesh optimisation.
         real_type _vv12[3] ;
         real_type _vv23[3] ;
         real_type _vv31[3] ;
@@ -636,37 +636,29 @@
         real_type _ll31 =
         geometry::length_3d (_vv31) ;
 
+        // -ve due to ccw sign of vectors
         real_type _dd11 =
         geometry::dot_3d(
-            _vv12, _vv23) / _ll12 / _ll23 ;
+            _vv31, _vv12) / _ll31 / _ll12 ;
         real_type _dd22 =
         geometry::dot_3d(
-            _vv23, _vv31) / _ll23 / _ll31 ;
+            _vv12, _vv23) / _ll12 / _ll23 ;
         real_type _dd33 =
         geometry::dot_3d(
-            _vv31, _vv12) / _ll31 / _ll12 ;
+            _vv23, _vv31) / _ll23 / _ll31 ;
 
-        _dd11 = (real_type)-2./3. * (
-            _dd11 + (real_type)+.5) ;
-        _dd22 = (real_type)-2./3. * (
-            _dd22 + (real_type)+.5) ;
-        _dd33 = (real_type)-2./3. * (
-            _dd33 + (real_type)+.5) ;
+        _dd11 += (real_type)+ 1./2. ;
+        _dd22 += (real_type)+ 1./2. ;
+        _dd33 += (real_type)+ 1./2. ;
 
         real_type _skew =
-            (real_type) +9. / 11. * (
+            (real_type) +4. / 11. * (
             std::pow(_dd11, 2) +
             std::pow(_dd22, 2) +
             std::pow(_dd33, 2) )  ;
 
-        _skew = (real_type)+1. - _skew ;
-
-        real_type _alen =
-        tria_quality_3d(_p1, _p2, _p3) ;
-
-        return
-       (real_type)(1. - 1./2.) * _skew +
-       (real_type)(0. + 1./2.) * _alen ;
+        return std::pow(
+            (real_type) +1. - _skew, +4./3.) ;
     }
 
     /*
@@ -719,7 +711,7 @@
         real_type _r3 = _m3[2] ;
 
         real_type _rb =             // chara.-length
-       (_r1+_r2+_r3) / (real_type)+3. ;
+        std::pow( _r1 * _r2 * _r3, 1./3.) ;
 
         real_type _qb = _lb / _rb ;
 
@@ -781,7 +773,7 @@
         real_type _r3 = _m3[3] ;
 
         real_type _rb =             // chara.-length
-       (_r1+_r2+_r3) / (real_type)+3. ;
+        std::pow( _r1 * _r2 * _r3, 1./3.) ;
 
         real_type _qb = _lb / _rb ;
 

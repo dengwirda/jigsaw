@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2021
+     * Last updated: 29 Dec., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -69,6 +73,8 @@
     {
         _kind = mesh::null_item ;
 
+        _edat._mark = (iptr_type)+0;
+
         if (_args.dims() < +1) return;
 
     /*--------------------------- assemble local indexing */
@@ -88,31 +94,22 @@
     /*--------------------------------- is not restricted */
             return  ;
 
+    /*------------------------- eval. surface-disc.-error */
+        float _srat = (float)
+        geometry::lensqr_3d(_ebal, _pmax) ;
+
     /*------------------------- calc. refinement priority */
-        _edat._mark =
-        _mesh._tria.node(_enod[0])->fdim() +
-        _mesh._tria.node(_enod[1])->fdim() ;
-
-        _edat._cost =
-                (float)  _pmax[3] ;
-
-    //  scaling via node numbering seems to make slightly
-    //  better (more topologically regular) meshes
-    //  this implicitly boosts the refinement priority of
-    //  "old" cells, which typically produces meshes with
-    //  fewer "seams"...
-
-        _edat._cost/=    _enod[0]+1  ;
-        _edat._cost/=    _enod[1]+1  ;
+        _edat._cost = (float) (
+       (float)_pmax[3] * (_srat + 1.f ) ) ;
 
     /*------------------------- eval. size func. at _tbal */
         real_type _esiz = (real_type)+0.;
-        _esiz += (real_type)+1.*_hfun.eval(
+        _esiz += (real_type)1./4.*_hfun.eval(
            &_mesh._tria.
              node(_enod[0])->pval(0) ,
             _mesh._tria.
              node(_enod[0])->idxh()) ;
-        _esiz += (real_type)+1.*_hfun.eval(
+        _esiz += (real_type)1./4.*_hfun.eval(
            &_mesh._tria.
              node(_enod[1])->pval(0) ,
             _mesh._tria.
@@ -121,31 +118,23 @@
          auto _hint =
         _mesh._tria.node(_enod[ 1])->idxh() ;
 
-        _esiz += (real_type)+1.0 *
+        _esiz += (real_type)2./4. *
                  _hfun.eval(  _pmax, _hint) ;
 
-        _esiz /= (real_type)+3.0 ;
+        _srat /= (float)(_esiz * _esiz) ;
 
         real_type _eave =_pmax [ +3] ;
         _eave /= _esiz * _esiz ;
-        _eave *= (real_type)+4.0 ;
-
-    /*------------------------- eval. surface-disc.-error */
-        real_type _srat =
-            geometry::lensqr_3d (
-                _ebal, _pmax)/(_esiz * _esiz) ;
+        _eave *= (real_type)4./1. ;
 
     /*------------------------- refinement classification */
 
     //  flag cells "trapped" between boundaries -- having
-    //  all nodes on lower dimensional facets and with at
-    //  least one boundary face.
+    //  all nodes on lower dimensional facets...
 
         bool_type _trap =
-            _mesh._tria.
-        node(_enod[0])->fdim() < +1 &&
-            _mesh._tria.
-        node(_enod[1])->fdim() < +1  ;
+       _mesh._tria.node(_enod[0])->fdim() < 1 &&
+       _mesh._tria.node(_enod[1])->fdim() < 1 ;
 
         real_type _scal = 1. + _trap * .100 ;
 
@@ -186,6 +175,8 @@
         )
     {
         _kind = mesh::null_item ;
+
+        _fdat._mark = (iptr_type)+0;
 
         if (_args.dims() < +2) return;
 
@@ -239,14 +230,7 @@
         }
 
     /*------------------------- calc. refinement priority */
-        iptr_type _ebnd = _emin ;
-        real_type _best =
-            std::numeric_limits
-                <real_type>::infinity () ;
-
-        bool_type _trap = false ;
-
-        _fdat._mark =  (iptr_type) +0;
+        iptr_type _nbnd = +0 ;
 
     #   ifdef __bias_bnds
         for(_enum = +3; _enum-- != +0; )
@@ -272,48 +256,44 @@
                  item_type *_eptr = nullptr ;
             if (_mesh.find_edge(_edat,_eptr))
             {
-                if (_best > _llen[_enum])
-                {
-                    _trap =  true ;
-                    _ebnd = _enum ;
-                    _best = _llen[_enum];
-                }
-
+                _nbnd       += +1 ;
                 _fdat._mark -= +1 ;
             }
         }
     #   endif
 
+        if ((hash_ball(_pmax) % 3 == +0) &&
+            _nbnd == +0 )    // add quasi-random re-order
+            _fdat._mark += +1 ;
+
+    /*------------------------- eval. surface-disc.-error */
+        float _srat = (float)
+        geometry::lensqr_3d(_tbal, _pmax) ;
+
     /*------------------------- eval. radius--edge ratios */
-        real_type _prat = _pmax[    3] /
-                          _llen[_emin] ;
+        float _prat = (float) (
+       (float)_pmax[3] / _llen[_emin] ) ;
 
     /*------------------------- calc. refinement priority */
-        _fdat._cost =
-            (float) (_pmax[3] * _prat) ;
-
-    //  scaling via node numbering seems to make slightly
-    //  better (more topologically regular) meshes
-    //  this implicitly boosts the refinement priority of
-    //  "old" cells, which typically produces meshes with
-    //  fewer "seams"...
-
-        iptr_type  _enod[ +3];
-        mesh_type::tria_type::tria_type::
-        face_node(_enod, _ebnd, 2, 1);
-        _enod[ +0] = _fnod[_enod[+0]];
-        _enod[ +1] = _fnod[_enod[+1]];
-
-        _fdat._cost/=     _enod[0] + 1 ;
-        _fdat._cost/=     _enod[1] + 1 ;
+        _fdat._cost = (float) (
+       (float)_pmax[3] * _prat
+                    * (+1.0f + _srat) ) ;
 
     /*------------------------- refinement classification */
+
+    //  add a scaling with "age" to help prioritise older
+    //  cells on the front.
+
+        _fdat._cost/=
+            _mesh._tria._nset.count() + 1 ;
+        _fdat._cost/=
+            _mesh._tria._nset.count() + 1 ;
 
     //  flag cells "trapped" between boundaries -- having
     //  all nodes on lower dimensional facets and with at
     //  least one boundary face.
 
-        _trap = _trap &&
+        bool_type _trap =_nbnd > +0 &&
             _mesh._tria.
         node(_fnod[0])->fdim() < +2 &&
             _mesh._tria.
@@ -329,19 +309,24 @@
             _kind = mesh::ring_item; return ;
         }
 
+        if (_nbnd >= +3 )
+        {
+            _kind = mesh::ring_item; return ;
+        }
+
     /*------------------------- eval. size func. at _fbal */
         real_type _tsiz = (real_type)+0.;
-        _tsiz += (real_type)+1.*_hfun.eval(
+        _tsiz += (real_type)2./9.*_hfun.eval(
            &_mesh._tria.
              node(_fnod[0])->pval(0) ,
             _mesh._tria.
              node(_fnod[0])->idxh()) ;
-        _tsiz += (real_type)+1.*_hfun.eval(
+        _tsiz += (real_type)2./9.*_hfun.eval(
            &_mesh._tria.
              node(_fnod[1])->pval(0) ,
             _mesh._tria.
              node(_fnod[1])->idxh()) ;
-        _tsiz += (real_type)+1.*_hfun.eval(
+        _tsiz += (real_type)2./9.*_hfun.eval(
            &_mesh._tria.
              node(_fnod[2])->pval(0) ,
             _mesh._tria.
@@ -350,19 +335,14 @@
          auto _hint =
         _mesh._tria.node(_fnod[ 2])->idxh() ;
 
-        _tsiz += (real_type)+1.0 *
+        _tsiz += (real_type)3./9. *
                  _hfun.eval(  _pmax, _hint) ;
 
-        _tsiz /= (real_type)+4.0 ;
+        _srat /= (float)(_tsiz * _tsiz) ;
 
         real_type _eave =_pmax [ +3] ;
         _eave /= _tsiz * _tsiz;
-        _eave *= (real_type)+3.0 ;
-
-    /*------------------------- eval. surface-disc.-error */
-        real_type _srat =
-            geometry::lensqr_3d(
-                _tbal, _pmax)/(_tsiz * _tsiz) ;
+        _eave *= (real_type)3./1. ;
 
     /*------------------------- refinement classification */
         _scal += (real_type)(_trap * 0.100) ;
@@ -400,8 +380,7 @@
     {
         _kind = mesh::null_item ;
 
-        __unreferenced(_geom);
-        __unreferenced(_part);
+        _tdat._mark = (iptr_type)+0;
 
         if (_args.dims() < +3) return ;
 
@@ -496,18 +475,12 @@
         }
 
     /*------------------------- calc. refinement priority */
-        iptr_type _fbnd = _fmin ;
-        real_type _best =
-            std::numeric_limits
-                <real_type>::infinity () ;
-
-        bool_type _trap = false ;
-
-        _tdat._mark =  (iptr_type) +0;
+        iptr_type _nbnd = +0 ;
 
     #   ifdef __bias_bnds
         for(_fnum = +4; _fnum-- != +0; )
         {
+    /*------------------------- are there bnd-adj. faces? */
             iptr_type  _fnod[ +4];
             mesh_type::tria_type::tria_type::
             face_node(_fnod, _fnum, 3, 2);
@@ -533,55 +506,44 @@
                  item_type *_fptr = nullptr ;
             if (_mesh.find_face(_fdat,_fptr))
             {
-                if (_best > _frad[_fnum])
-                {
-                    _trap =  true ;
-                    _fbnd = _fnum ;
-                    _best = _frad[_fnum];
-                }
-
+                _nbnd       += +1 ;
                 _tdat._mark -= +1 ;
             }
         }
     #   endif
 
+        if ((hash_ball(_tbal) % 3 == +0) &&
+            _nbnd == +0 )    // add quasi-random re-order
+            _tdat._mark += +1 ;
+
     /*------------------------- eval. radius--edge ratios */
-        real_type _erat = _tbal[   +3] /
-                          _llen[_emin] ;
+        float _erat = (float) (
+       (float)_tbal [3] / _llen [_emin] ) ;
 
-        real_type _frat = _tbal[   +3] /
-                          _frad[_fmin] ;
+        float _frat = (float) (
+       (float)_tbal [3] / _frad [_fmin] ) ;
 
-        real_type _trat = _erat*_frat;
+        float _trat = _erat *_frat;
 
     /*------------------------- calc. refinement priority */
-        _tdat._cost =
-            (float) (_tbal[3] * _trat) ;
-
-    //  scaling via node numbering seems to make slightly
-    //  better (more topologically regular) meshes
-    //  this implicitly boosts the refinement priority of
-    //  "old" cells, which typically produces meshes with
-    //  fewer "seams"...
-
-        iptr_type  _fnod[ +4];
-        mesh_type::tria_type::tria_type::
-        face_node(_fnod, _fbnd, 3, 2);
-        _fnod[ +0] = _tnod[_fnod[+0]];
-        _fnod[ +1] = _tnod[_fnod[+1]];
-        _fnod[ +2] = _tnod[_fnod[+2]];
-
-        _tdat._cost/=     _fnod[0] + 1 ;
-        _tdat._cost/=     _fnod[1] + 1 ;
-        _tdat._cost/=     _fnod[2] + 1 ;
+        _tdat._cost = (float) (
+       (float)_tbal [3] * _trat ) ;
 
     /*------------------------- refinement classification */
+
+    //  add a scaling with "age" to help prioritise older
+    //  cells on the front.
+
+        _tdat._cost/=
+            _mesh._tria._nset.count() + 1 ;
+        _tdat._cost/=
+            _mesh._tria._nset.count() + 1 ;
 
     //  flag cells "trapped" between boundaries -- having
     //  all nodes on lower dimensional facets and with at
     //  least one boundary face.
 
-        _trap = _trap &&
+        bool_type _trap =_nbnd > +0 &&
             _mesh._tria.
         node(_tnod[0])->fdim() < +3 &&
             _mesh._tria.
@@ -599,24 +561,29 @@
             _kind = mesh::ring_item; return ;
         }
 
+        if (_nbnd >= +4 )
+        {
+            _kind = mesh::ring_item; return ;
+        }
+
     /*------------------------- eval. size func. at _tbal */
         real_type _tsiz = (real_type)+0.;
-        _tsiz += (real_type)+1.*_hfun.eval(
+        _tsiz += (real_type)3./16*_hfun.eval(
            &_mesh._tria.
              node(_tnod[0])->pval(0) ,
             _mesh._tria.
              node(_tnod[0])->idxh()) ;
-        _tsiz += (real_type)+1.*_hfun.eval(
+        _tsiz += (real_type)3./16*_hfun.eval(
            &_mesh._tria.
              node(_tnod[1])->pval(0) ,
             _mesh._tria.
              node(_tnod[1])->idxh()) ;
-        _tsiz += (real_type)+1.*_hfun.eval(
+        _tsiz += (real_type)3./16*_hfun.eval(
            &_mesh._tria.
              node(_tnod[2])->pval(0) ,
             _mesh._tria.
              node(_tnod[2])->idxh()) ;
-        _tsiz += (real_type)+1.*_hfun.eval(
+        _tsiz += (real_type)3./16*_hfun.eval(
            &_mesh._tria.
              node(_tnod[3])->pval(0) ,
             _mesh._tria.
@@ -625,15 +592,12 @@
          auto _hint =
         _mesh._tria.node(_tnod[ 3])->idxh() ;
 
-        _tsiz += (real_type)+1.0 *
+        _tsiz += (real_type)4./16 *
                  _hfun.eval(  _tbal, _hint) ;
-
-        _tsiz /= (real_type)+5.0 ;
 
         real_type _eave = _tbal [+3] ;
         _eave /= (_tsiz*_tsiz) ;
-        _eave *= (real_type)+8.0 /
-                 (real_type)+3.0 ;
+        _eave *= (real_type)8./3. ;
 
     /*------------------------- refinement classification */
         _scal += (real_type)(_trap * 0.100) ;

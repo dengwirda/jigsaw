@@ -14,9 +14,9 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * Last updated: 28 Aug., 2021
+     * Last updated: 10 Jun., 2022
      *
-     * Copyright 2013 -- 2021
+     * Copyright 2013 -- 2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -41,12 +41,16 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor the National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      */
@@ -1625,7 +1629,7 @@
                 _retv = -2 ;
 
                 std::cout <<
-                "run jigsaw jigname.jig";
+                "Usage: jigsaw user-opts.jig" ;
                 std::cout <<  std::endl ;
 
                 break ;
@@ -1661,19 +1665,19 @@
                 break ;
             }
         }
+        if (_retv == -1)
+        {
+            std::cout << 
+        "**parse error: *.jig file not found!" << std::endl;
+        }
         if (_retv != +0) return ( _retv ) ;
 
     /*--------------------------------- setup *.JLOG file */
          jlog_text _jlog(_jcfg) ;
-        _jlog.push(JIGSAW::
-                   asciibanner) ;
 
         if(!_jcfg._jcfg_file.empty())
         {
     /*--------------------------------- parse *.JCFG file */
-            _jlog.push (
-                "  Reading CFG. file...\n\n" ) ;
-
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
@@ -1683,6 +1687,11 @@
             {
                 return  _retv ;
             }
+
+            _jlog._verbosity =
+                _jcfg._verbosity ;
+
+            _jlog.push ( JIGSAW::asciibanner ) ;
 
             if ((_retv = test_jcfg (
                  _jcfg, _jlog)) != __no_error)

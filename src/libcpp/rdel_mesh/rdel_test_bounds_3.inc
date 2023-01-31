@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 July, 2019
+     * Last updated: 03 Aug., 2022
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -346,16 +350,11 @@
         if  (_mode > +0)
         {
     /*------------------------- init. for local hash obj. */
-        typename
-            mesh_type::edge_list _eset (
-        typename mesh_type::edge_hash(),
-        typename mesh_type::edge_pred(),
-           +.8, _mesh._eset.get_alloc()) ;
+        _mesh._etwo.clear();
+        _mesh._etwo.
+            set_slots(_enew.count() * +2) ;
 
-    /*------------------------- push alloc. for hash obj. */
-        _eset.set_slots (
-            _enew.count() * +2 ,
-                containers::tight_alloc) ;
+         auto& _eset = _mesh. _etwo;
 
     /*---------------------------------------- test edges */
         for ( auto _epos  = _enew.head();
@@ -381,7 +380,7 @@
                 _fbal, _sbal ,
                 _feat, _topo , _part ) )
             __assert( false &&
-                "_old_bnds: edge-ball" );
+                "_OLD-BNDS: edge-ball" );
 
             real_type _blen =
             geometry::lensqr_3d(_ppos,
@@ -433,16 +432,11 @@
         if  (_mode > +1)
         {
     /*------------------------- init. for local hash obj. */
-        typename
-            mesh_type::face_list _fset (
-        typename mesh_type::face_hash(),
-        typename mesh_type::face_pred(),
-           +.8, _mesh._fset.get_alloc()) ;
+        _mesh._ftwo.clear();
+        _mesh._ftwo.
+            set_slots(_fnew.count() * +2) ;
 
-    /*------------------------- push alloc. for hash obj. */
-        _fset.set_slots (
-            _fnew.count() * +2 ,
-                containers::tight_alloc) ;
+         auto& _fset = _mesh. _ftwo;
 
     /*---------------------------------------- test faces */
         for ( auto _fpos  = _fnew.head();
@@ -547,17 +541,13 @@
         if (_epro.count() > +0)
         {
     /*------------------------- init. for local hash obj. */
-        typename
-            mesh_type::edge_list _eset (
-        typename mesh_type::edge_hash(),
-        typename mesh_type::edge_pred(),
-           +.8, _mesh._eset.get_alloc()) ;
+        _mesh._etwo.clear();
+        _mesh._etwo.
+            set_slots(_enew.count() * +2) ;
+
+         auto& _eset = _mesh. _etwo;
 
     /*------------------------- push alloc. for hash obj. */
-        _eset.set_slots (
-            _enew.count() * +2 ,
-                containers::tight_alloc) ;
-
         for ( auto _epos  = _enew.head();
                    _epos != _enew.tend();
                  ++_epos  )
@@ -586,17 +576,13 @@
         if (_fpro.count() > +0)
         {
     /*------------------------- init. for local hash obj. */
-        typename
-            mesh_type::face_list _fset (
-        typename mesh_type::face_hash(),
-        typename mesh_type::face_pred(),
-           +.8, _mesh._fset.get_alloc()) ;
+        _mesh._ftwo.clear();
+        _mesh._ftwo.
+            set_slots(_fnew.count() * +2) ;
+
+         auto& _fset = _mesh. _ftwo;
 
     /*------------------------- push alloc. for hash obj. */
-        _fset.set_slots (
-            _fnew.count() * +2 ,
-                containers::tight_alloc) ;
-
         for ( auto _fpos  = _fnew.head();
                    _fpos != _fnew.tend();
                  ++_fpos  )

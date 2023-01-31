@@ -22,12 +22,16 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
@@ -444,204 +448,6 @@
         _next.push_tail(typename
             conn_list::data_type(
         _mesh.push_tri3(_tdat), TRIA3_tag)) ;
-    }
-
-    /*
-    --------------------------------------------------------
-     * FLIP-TRI3: "flip" mesh topology.
-    --------------------------------------------------------
-     */
-
-    __static_call
-    __inline_call void_type flip_tri3 (
-        geom_type &_geom ,
-        mesh_type &_mesh ,
-        iptr_list &_nmrk ,
-        iptr_type  _cell ,
-        bool_type &_flip ,
-        conn_list &_conn ,
-        conn_list &_next ,
-        real_list &_qold ,
-        real_list &_qnew ,
-        flip_kind  _kind
-        )
-    {
-        auto _coin = (std::rand() % 3) + 1  ;
-        for (auto _enum = _coin; _enum-- > 0; )
-        {
-            _flip = false ;
-    /*----------------------------- flip cells about edge */
-            iptr_type _enod[3] ;
-            mesh_type::tri3_type::
-            face_node(_enod, _enum, +2, +1) ;
-            _enod[ 0] = _mesh.tri3(
-                _cell).node( _enod[ 0]) ;
-            _enod[ 1] = _mesh.tri3(
-                _cell).node( _enod[ 1]) ;
-
-            _conn.set_count(0) ;
-            _next.set_count(0) ;
-            _mesh.connect_2(
-               &_enod[0], EDGE2_tag, _conn) ;
-
-            if (_conn.count() != +2) continue ;
-
-            if (_conn[0]._kind==TRIA3_tag &&
-                _conn[1]._kind==TRIA3_tag )
-            {
-                flip_t2t2( _geom, _mesh, _nmrk, _enod,
-                    _conn, _next, _flip,
-                    _qold, _qnew, _kind)  ;
-
-                if (_flip) return ;
-            }
-            else
-            {
-            //  flip_t1q1( _geom, _mesh, _nmrk, _enod,
-            //      _conn, _next, _flip,
-            //      _qold, _qnew, _kind)  ;
-
-                if (_flip) return ;
-            }
-        }
-
-        for (auto _enum = 3; _enum-- > _coin; )
-        {
-            _flip = false ;
-    /*----------------------------- flip cells about edge */
-            iptr_type _enod[3] ;
-            mesh_type::tri3_type::
-            face_node(_enod, _enum, +2, +1) ;
-            _enod[ 0] = _mesh.tri3(
-                _cell).node( _enod[ 0]) ;
-            _enod[ 1] = _mesh.tri3(
-                _cell).node( _enod[ 1]) ;
-
-            _conn.set_count(0) ;
-            _next.set_count(0) ;
-            _mesh.connect_2(
-               &_enod[0], EDGE2_tag, _conn) ;
-
-            if (_conn.count() != +2) continue ;
-
-            if (_conn[0]._kind==TRIA3_tag &&
-                _conn[1]._kind==TRIA3_tag )
-            {
-                flip_t2t2( _geom, _mesh, _nmrk, _enod,
-                    _conn, _next, _flip,
-                    _qold, _qnew, _kind)  ;
-
-                if (_flip) return ;
-            }
-            else
-            {
-            //  flip_t1q1( _geom, _mesh, _nmrk, _enod,
-            //      _conn, _next, _flip,
-            //      _qold, _qnew, _kind)  ;
-
-                if (_flip) return ;
-            }
-        }
-
-    }
-
-    /*
-    --------------------------------------------------------
-     * FLIP-QUAD: "flip" mesh topology.
-    --------------------------------------------------------
-     */
-
-    __static_call
-    __inline_call void_type flip_quad (
-        geom_type &/*_geom*/ ,
-        mesh_type &_mesh ,
-        iptr_list &_nmrk ,
-        iptr_type  _cell ,
-        bool_type &_flip ,
-        conn_list &_conn ,
-        conn_list &_next ,
-        real_list &/*_qold*/ ,
-        real_list &/*_qnew*/ ,
-        flip_kind  /*_kind*/
-        )
-    {
-        auto _coin = (std::rand() % 4) + 1  ;
-        for (auto _enum = _coin; _enum-- > 0; )
-        {
-            _flip = false ;
-    /*----------------------------- flip cells about edge */
-            iptr_type _enod[4] ;
-            mesh_type::quad_type::
-            face_node(_enod, _enum, +2, +1) ;
-            _enod[ 0] = _mesh.quad(
-                _cell).node( _enod[ 0]) ;
-            _enod[ 1] = _mesh.quad(
-                _cell).node( _enod[ 1]) ;
-
-            _conn.set_count(0) ;
-            _next.set_count(0) ;
-            _mesh.connect_2(
-               &_enod[0], EDGE2_tag, _conn) ;
-
-            if (_conn.count() != +2) continue ;
-
-            if (_conn[0]._kind==QUAD4_tag &&
-                _conn[1]._kind==QUAD4_tag )
-            {
-            //  flip_q2q2( _geom, _mesh, _enod, _nmrk,
-            //      _conn, _next, _flip,
-            //      _qold, _qnew, _kind)  ;
-
-                if (_flip) return ;
-            }
-            else
-            {
-            //  flip_t1q1( _geom, _mesh, _enod, _nmrk,
-            //      _conn, _next, _flip,
-            //      _qold, _qnew, _kind)  ;
-
-                if (_flip) return ;
-            }
-        }
-
-        for (auto _enum = 4; _enum-- > _coin; )
-        {
-            _flip = false ;
-    /*----------------------------- flip cells about edge */
-            iptr_type _enod[4] ;
-            mesh_type::quad_type::
-            face_node(_enod, _enum, +2, +1) ;
-            _enod[ 0] = _mesh.quad(
-                _cell).node( _enod[ 0]) ;
-            _enod[ 1] = _mesh.quad(
-                _cell).node( _enod[ 1]) ;
-
-            _conn.set_count(0) ;
-            _next.set_count(0) ;
-            _mesh.connect_2(
-               &_enod[0], EDGE2_tag, _conn) ;
-
-            if (_conn.count() != +2) continue ;
-
-            if (_conn[0]._kind==QUAD4_tag &&
-                _conn[1]._kind==QUAD4_tag )
-            {
-            //  flip_q2q2( _geom, _mesh, _enod, _nmrk,
-            //      _conn, _next, _flip,
-            //      _qold, _qnew, _kind)  ;
-
-                if (_flip) return ;
-            }
-            else
-            {
-            //  flip_t1q1( _geom, _mesh, _enod, _nmrk,
-            //      _conn, _next, _flip,
-            //      _qold, _qnew, _kind)  ;
-
-                if (_flip) return ;
-            }
-        }
-
     }
 
 

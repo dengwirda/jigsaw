@@ -18,7 +18,7 @@
     MESH_FILE = out/bunny.msh
     VERBOSITY = 1
     MESH_DIMS = 2
-    HFUN_HMAX = 0.0125
+    HFUN_HMAX = 0.05
 
 
 

@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Jul., 2021
+     * Last updated: 12 Dec., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -81,6 +85,7 @@
         last_kind }    ;
 
         iptr_type   _verb ;     // logfile output verbosity
+        iptr_type   _nprt ;     // no. threads
 
         iptr_type   _seed ;     // no. init. "seed" nodes
 
@@ -147,6 +152,8 @@
 
             this->_verb =
             iptr_type(_jjig._verbosity) ;
+            this->_nprt =
+            iptr_type(_jjig._numthread) ;
 
             this->_seed =
             iptr_type(_jjig._geom_seed) ;
@@ -213,6 +220,10 @@
         __inline_call iptr_type      & verb (
             )
         {   return  this->_verb ;
+        }
+        __inline_call iptr_type      & nprt (
+            )
+        {   return  this->_nprt ;
         }
 
         __inline_call iptr_type      & rule (
@@ -330,6 +341,10 @@
         __inline_call iptr_type const& verb (
             ) const
         {   return  this->_verb ;
+        }
+        __inline_call iptr_type const& nprt (
+            ) const
+        {   return  this->_nprt ;
         }
 
         __inline_call iptr_type const& rule (

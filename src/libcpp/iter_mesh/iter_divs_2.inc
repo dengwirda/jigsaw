@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 Sept., 2021
+     * Last updated: 11 Jun., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -52,29 +56,29 @@
 
     __static_call
     __normal_call void_type _div_edge (
-        geom_type &_geom ,
-        mesh_type &_mesh ,
-        hfun_type &_hfun ,
-        real_list &_hval ,
-        iter_opts &_opts ,
-        iptr_type  _iout ,
-        iptr_type  _enum ,
-        kern_kind  _kern ,
-        bool_type &_okay ,
-        iptr_type &_inew ,
-        conn_list &_cset ,
-        conn_list &_cnew ,
-        conn_list &_iset ,
-        conn_list &_jset ,
-        real_list &_qsrc ,
-        real_list &_qdst ,
-        real_list &_qtmp ,
-        real_type  _QLIM ,
-        iter_stat &_tcpu ,
-        real_type  _lmin
-            = (real_type) +1.00E+00 ,
-        real_type  _qinc
-            = (real_type) +1.00E-02
+        geom_type &_geom ,  // geometry object
+        mesh_type &_mesh ,  // mesh object
+        hfun_type &_hfun ,  // spacing object
+        real_list &_hval ,  // cached node spacing array
+        iter_opts &_opts ,  // user options
+        iptr_type  _iout ,  // outer iteration marker
+        iptr_type  _enum ,  // edge number to div.
+        kern_kind  _kern ,  // optim. kernel selector
+        bool_type &_okay ,  // TRUE if div. successful
+        iptr_type &_inew ,  // new node index added
+        conn_list &_cset ,  // space for adj. cells
+        conn_list &_cnew ,  // space for adj. cells
+        conn_list &_iset ,  // space for adj. cells
+        conn_list &_jset ,  // space for adj. cells
+        real_list &_qsrc ,  // space for adj. costs
+        real_list &_qdst ,  // space for adj. costs
+        real_list &_qtmp ,  // space for adj. costs
+        real_type  _QLIM ,  // cell quality threshold
+        iter_stat &_tcpu ,  // cpu timers/info
+        real_type  _lmin    // div. spacing threshold
+            = (real_type) +1.000E+00 ,
+        real_type  _qinc    // div. quality threshold
+            = (real_type) +3.333E-03
         )
     {
         iptr_type static constexpr
@@ -176,39 +180,42 @@
         real_type static constexpr
             _lBIG  = (real_type)+1.375 ;
 
-        iptr_type static constexpr
-            _dMAX  = (iptr_type)+3 ;
+        real_type _lmax =            // no oscl. wrt. zip
+            _lBIG *std::pow( _iout ,  +1./4.) ;
 
-        real_type _lmax =
-            _lBIG *std::pow( _iout ,  +1./8.) ;
-
-        if (_lsqr >= _hbar * _lmax * // no oscl. wrt. zip
+        if (_lsqr >= _hbar * _lmax *
                      _hbar * _lmax )
         {
     //  if more regular geom. is constructed via the edge
     //  div, make it easier to do so!
 
-        _qinc = (real_type)(+0.50 *
+        _qinc = (real_type)(1./2. *
             (_hbar / std::sqrt(_lsqr) - 1.0)) ;
 
         }
         else
-        if (_ierr >= _dMAX || _jerr >= _dMAX)
+        if ( _ierr >= 2 || _jerr >= 2 )
         {
     //  try to reduce large vertex valence via refinement
 
-        _qinc = (real_type) -0.25 ;
-        _qinc/=  std::pow ( _iout ,   +1./8.) ;
+        real_type _qerr = (real_type) -1./16. ;
+        _qerr*= std::max (_ierr, _jerr ) ;
+        _qerr/= std::pow (_iout, +1./2.) ;  // stop oscl.
+        _qinc = std::min (_qinc,
+                          _qinc + _qerr) ;
 
         }
         else
-        if (_ierr > 0 && _jerr > 0 &&
-                    (_ierr + _jerr) >= _dMAX)
+        if ( _ierr > 0 && _jerr > 0 &&
+                 (_ierr + _jerr) >= 3 )
         {
     //  try to reduce large vertex valence via refinement
 
-        _qinc = (real_type) -.125 ;
-        _qinc/=  std::pow ( _iout ,   +1./8.) ;
+        real_type _qerr = (real_type) -1./16. ;
+        _qerr*= std::max (_ierr, _jerr ) ;
+        _qerr/= std::pow (_iout, +1./2.) ;  // stop oscl.
+        _qinc = std::min (_qinc,
+                          _qinc + _qerr) ;
 
         }
         else
@@ -361,7 +368,10 @@
 
     /*--------------------------------- optim. node coord */
         iptr_type static
-            constexpr _INUM = (iptr_type) +2;
+            constexpr _INUM = (iptr_type) +4;
+
+        real_type _prev[_last + 1] =
+            {(real_type)+0.};
 
         iptr_type _move = -1;
         for (auto _iloc = +0; _iloc != _INUM;
@@ -377,10 +387,11 @@
 
             move_node( _geom, _mesh,
                 _hfun, _hval,
-                _opts, _nptr, _kern,
-                _move, _cnew,
+                _opts, _nptr, _prev,
+                _kern, _move, _cnew,
                 _qtmp, _qdst,
-                _minC, _QLIM, _tcpu)  ;
+                _minC, _QLIM, _QLIM,
+                _tcpu) ;
 
             if (_move <= +0 ) break;
         }

@@ -22,12 +22,16 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
@@ -117,6 +121,8 @@
     typedef typename
             mesh_type::tria_data        tria_data ;
 
+    typedef mesh::rdel_timers           rdel_stat ;
+
     typedef containers::array       <
                 iptr_type           >   iptr_list ;
 
@@ -127,10 +133,6 @@
     typedef mesh::mesh_params       <
                 real_type,
                 iptr_type           >   rdel_opts ;
-
-    typedef mesh::rdel_timers       <
-                real_type ,
-                iptr_type           >   rdel_stat ;
 
     /*
     --------------------------------------------------------
@@ -489,7 +491,7 @@
 
     /*---------------------- calc. ball in floating-point */
         real_type _tbal[4] ;
-        geometry::circ_ball_3d (
+        geometry::perp_ball_3d (
             _tbal ,
        &_mesh._tria.
             node(_tnod[0])->pval(0) ,
@@ -1054,19 +1056,19 @@
 
         }
 
-        if (_args.verb() >= +3 )
+        if (_args.verb() >= +2 )
         {
-    /*------------------------- push rDEL memory metrics */
+    /*------------------------- more rDEL scheme metrics */
         _dump.push("\n")  ;
         _dump.push("**MEMORY statistics...\n") ;
 
-        _dump.push("  DELAUNAY-OBJECT:\n") ;
+        _dump.push("  xDEL-type:\n") ;
         _dump.push(" *node-byte = ") ;
         _dump.push(std::to_string(
             sizeof(typename mesh_type::
                 tria_type:: node_type)) ) ;
         _dump.push("\n")  ;
-        _dump.push(" *node-list = ") ;
+        _dump.push(" *nset-size = ") ;
         _dump.push(std::to_string(
             _mesh._tria._nset.alloc())) ;
         _dump.push("\n")  ;
@@ -1075,19 +1077,23 @@
             sizeof(typename mesh_type::
                 tria_type:: tria_type)) ) ;
         _dump.push("\n")  ;
-        _dump.push(" *tria-list = ") ;
+        _dump.push(" *tset-size = ") ;
         _dump.push(std::to_string(
             _mesh._tria._tset.alloc())) ;
         _dump.push("\n")  ;
+        _dump.push(" *pool-byte = ") ;
+        _dump.push(std::to_string(
+            _mesh._tria._fpol.bytes())) ;
+        _dump.push("\n")  ;
 
         _dump.push("\n")  ;
-        _dump.push("  RESTRICTED-TRIA:\n") ;
+        _dump.push("  rDEL-type:\n") ;
         _dump.push(" *edge-byte = ") ;
         _dump.push(std::to_string(
             sizeof(
         typename mesh_type::edge_item)) ) ;
         _dump.push("\n")  ;
-        _dump.push(" *edge-hash = ") ;
+        _dump.push(" *eset-size = ") ;
         _dump.push(std::to_string(
             _mesh._eset._lptr.alloc())) ;
         _dump.push("\n")  ;
@@ -1100,7 +1106,7 @@
             sizeof(
         typename mesh_type::face_item)) ) ;
         _dump.push("\n")  ;
-        _dump.push(" *face-hash = ") ;
+        _dump.push(" *fset-size = ") ;
         _dump.push(std::to_string(
             _mesh._fset._lptr.alloc())) ;
         _dump.push("\n")  ;
@@ -1113,7 +1119,7 @@
             sizeof(
         typename mesh_type::tria_item)) ) ;
         _dump.push("\n")  ;
-        _dump.push(" *tria-hash = ") ;
+        _dump.push(" *tset-size = ") ;
         _dump.push(std::to_string(
             _mesh._tset._lptr.alloc())) ;
         _dump.push("\n")  ;

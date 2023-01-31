@@ -22,12 +22,16 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
@@ -806,7 +810,7 @@
                 if (_ffun._ellipsoid_grid_3d.
                         _hmat.count() > +0)
                 {
-            /*-------------------------- write VALUE data */                
+            /*-------------------------- write VALUE data */
                 ncutil::put_var(
                     _jcfg._hfun_file, "value_mat",
                 &_ffun._ellipsoid_grid_3d._hmat [0]) ;
@@ -1025,7 +1029,7 @@
     /*------------------------- disambiguate via file-ext */
             std::string _path, _name, _fext;
             file_part(
-                _jcfg._mesh_file, _path, _name, _fext) ;
+                _jcfg._hfun_file, _path, _name, _fext) ;
 
             if(_fext.find("msh") != std::string::npos)
             {

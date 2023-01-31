@@ -30,12 +30,16 @@
  * how they can obtain it for free, then you are not
  * required to make any arrangement with me.)
  *
- * Disclaimer:  Neither I nor: Columbia University, The
- * Massachusetts Institute of Technology, The
- * University of Sydney, nor The National Aeronautics
- * and Space Administration warrant this code in any
- * way whatsoever.  This code is provided "as-is" to be
- * used at your own risk.
+ * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+ * this code in any way whatsoever.  This code is
+ * provided "as-is" to be used at your own risk.
+ *
+ * THE CONTRIBUTORS include:
+ * (a) The University of Sydney
+ * (b) The Massachusetts Institute of Technology
+ * (c) Columbia University
+ * (d) The National Aeronautics & Space Administration
+ * (e) Los Alamos National Laboratory
  *
 ------------------------------------------------------------
  *
@@ -64,7 +68,7 @@
     typename T ,
     typename K
              >
-    class heap_pair
+    class _map_pair
     {
 /*----------- local data-pair for an indexed "n"-ary heap */
     public  :
@@ -76,7 +80,7 @@
     kptr_type       _kptr ; // keys iptr
     } ;
 
-#   define  D heap_pair<T, typename A::size_type>
+#   define  D _map_pair<T, typename A::size_type>
 
     template <
     typename T ,
@@ -123,7 +127,7 @@
             size_type ,
             allocator         >         free_list ;
 
-    size_type static constexpr _nfan = +4 ; // fan out
+    size_type static constexpr _nfan = +8 ; // fan out
 
     public  :
 

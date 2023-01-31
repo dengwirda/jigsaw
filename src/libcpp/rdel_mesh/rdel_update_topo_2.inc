@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 July, 2019
+     * Last updated: 03 Aug., 2022
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -106,16 +110,11 @@
 
             {
         /*------------------------- init. for local hash obj. */
-            typename
-                mesh_type::edge_list _eset (
-            typename mesh_type::edge_hash(),
-            typename mesh_type::edge_pred(),
-               +.8, _mesh._eset.get_alloc()) ;
+            _mesh._etwo.clear();
+            _mesh._etwo.
+                set_slots(_enew.count() * 2) ;
 
-        /*------------------------- push alloc. for hash obj. */
-            _eset.set_slots (
-                _enew.count() * 2 ,
-                    containers::tight_alloc) ;
+             auto& _eset = _mesh. _etwo;
 
         /*------------------------- add "old" absent in "new" */
             node_data _ndat ;
@@ -135,7 +134,6 @@
                      item_type *_mptr = nullptr ;
                 if(!_eset.find(*_iter, _mptr))
                 {
-
                 if (_emrk[_iter->_node[0]] == -1)
                 {
                     _emrk[_iter->_node[0]] =  +1;
@@ -155,23 +153,17 @@
 
                     _etpq.push(_ndat) ;
                 }
-
                 }
             }
             }
 
             {
         /*------------------------- init. for local hash obj. */
-            typename
-                mesh_type::edge_list _eset (
-            typename mesh_type::edge_hash(),
-            typename mesh_type::edge_pred(),
-               +.8, _mesh._eset.get_alloc()) ;
+            _mesh._etwo.clear();
+            _mesh._etwo.
+                set_slots(_eold.count() * 2) ;
 
-        /*------------------------- push alloc. for hash obj. */
-            _eset.set_slots (
-                _eold.count() * 2 ,
-                    containers::tight_alloc) ;
+             auto& _eset = _mesh. _etwo;
 
         /*------------------------- add "new" absent in "old" */
             node_data _ndat ;
@@ -191,7 +183,6 @@
                      item_type *_mptr = nullptr ;
                 if(!_eset.find(*_iter, _mptr))
                 {
-
                 if (_emrk[_iter->_node[0]] == -1)
                 {
                     _emrk[_iter->_node[0]] =  +1;
@@ -211,7 +202,6 @@
 
                     _etpq.push(_ndat) ;
                 }
-
                 }
             }
             }

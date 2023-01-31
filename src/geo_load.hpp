@@ -22,12 +22,16 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
@@ -889,7 +893,6 @@
             std::numeric_limits<iptr_type>::min () ;
 
             iptr_type _nnPT = +0 ;
-            iptr_type _nnE2 = +0 ;
             iptr_type _nnT3 = +0 ;
 
             for (auto _iter  = _geom.
@@ -919,8 +922,6 @@
                     _imax, _iter->node(0)) ;
                 _imax = std::max(
                     _imax, _iter->node(1)) ;
-
-                _nnE2 +=    +1 ;
 
                 if (_imin < +0 ||
                         _imax >= _nnPT)
@@ -1059,7 +1060,6 @@
             std::numeric_limits<iptr_type>::min () ;
 
             iptr_type _nnPT = +0 ;
-            iptr_type _nnE2 = +0 ;
 
             for (auto _iter  = _geom.
             _ellipsoid_mesh_3d._mesh.node().head() ;
@@ -1117,8 +1117,6 @@
                 _imax = std::max(
                     _imax, _iter->node(1)) ;
 
-                _nnE2 +=    +1 ;
-
                 if (_imin < +0 ||
                         _imax >= _nnPT)
                 {
@@ -1134,7 +1132,14 @@
                 return _errv ;
             }
         }
+        else
+        {
+            _jlog.  push (
+    "**input error: couldn't determine format of GEOM.\n") ;
 
+            return __invalid_argument ;
+        }
+    
         return (  _errv ) ;
     }
 

@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 Mar., 2021
+     * Last updated: 15 Jun., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -252,13 +256,11 @@
         {
     /*-------------------- "LESS-THAN" operator for queue */
         public  :
-            typename
-            vals_list::_write_it _hptr;
+        typename vals_list::_write_it _hptr ;
 
         public  :
         __inline_call less_than  (
-            typename
-            vals_list::_write_it _hsrc
+        typename vals_list::_write_it _hsrc
             ) : _hptr(_hsrc) {}
 
         __inline_call
@@ -271,32 +273,17 @@
         }
         } ;
 
-        typedef typename
-            allocator:: size_type   uint_type ;
-
-        uint_type static constexpr
-            _null =
-        std::numeric_limits<uint_type>::max() ;
-
-        containers::prioritymap <
+        containers::priorityidx <
+            iptr_type ,
             iptr_type ,
             less_than ,
             allocator >
         _sort((less_than(this->_hval.head())));
 
-        containers:: array      <
-            typename
-            allocator:: size_type,
-            allocator >     _keys;
-
         typename
             mesh_type::connector _conn;
 
     /*-------------------- push nodes onto priority queue */
-        _keys.set_count (
-            _mesh.node().count() ,
-        containers::tight_alloc, _null) ;
-
         iptr_type _inum  = +0;
         for (auto _iter  =
              this->_mesh.node().head();
@@ -306,18 +293,25 @@
         {
             if (_iter->mark() >= +0 )
             {
-                _keys[_inum] =
-                    _sort.push(_inum) ;
+                _sort.push(_inum, _inum) ;
             }
         }
 
     /*-------------------- compute h(x) via fast-marching */
+        vals_type static _FTOL =
+            (vals_type)std::pow(
+        std::numeric_limits<vals_type>::epsilon(), .75) ;
+
+    #   define ISALIVE(__idx)           \
+           (_sort.keys(__idx) != _sort.null())
+
+    #   define UPDATED(__new, __old)    \
+        std::abs(__new - __old) > _FTOL*std::abs(__new)
+
         for ( ; !_sort.empty() ; )
         {
-            iptr_type _base ;
-            _sort._pop_root(_base) ;
-
-            _keys[_base] = _null ;
+            iptr_type _base, _bidx ;
+            _sort._pop_root( _bidx , _base);
 
             _conn.set_count( +0) ;
              this->_mesh.
@@ -343,17 +337,16 @@
                  auto _lnod = this->
                 _mesh. tri4( _cell).node(3);
 
-    /*-------------------- skip any cells with null nodes */
-                if (_keys[_inod] == _null &&
-                    _inod != _base) continue ;
-                if (_keys[_jnod] == _null &&
-                    _jnod != _base) continue ;
-                if (_keys[_knod] == _null &&
-                    _knod != _base) continue ;
-                if (_keys[_lnod] == _null &&
-                    _lnod != _base) continue ;
-
     /*-------------------- skip cells due to sorted order */
+                if (_inod != _base &&
+                   !ISALIVE(_inod)) continue ;
+                if (_jnod != _base &&
+                   !ISALIVE(_jnod)) continue ;
+                if (_knod != _base &&
+                   !ISALIVE(_knod)) continue ;
+                if (_lnod != _base &&
+                   !ISALIVE(_lnod)) continue ;
+
                 vals_type _hmax;
                 _hmax = this->_hval[_inod] ;
                 _hmax = std::max(
@@ -375,6 +368,15 @@
                 vals_type _lold =
                      this->_hval[_lnod] ;
 
+                vals_type _inew =
+                     this->_hval[_inod] ;
+                vals_type _jnew =
+                     this->_hval[_jnod] ;
+                vals_type _knew =
+                     this->_hval[_knod] ;
+                vals_type _lnew =
+                     this->_hval[_lnod] ;
+
                 if (this->_dhdx.count() >1)
                 {
     /*-------------------- update adj. set, g = g(x) case */
@@ -387,35 +389,48 @@
                 _mesh. node( _knod).pval(0),
                    &this->
                 _mesh. node( _lnod).pval(0),
-                    this->_hval[_inod],
-                    this->_hval[_jnod],
-                    this->_hval[_knod],
-                    this->_hval[_lnod],
+                   _hnow,
+                _inew, _jnew, _knew, _lnew ,
                     this->_dhdx[_inod],
                     this->_dhdx[_jnod],
                     this->_dhdx[_knod],
                     this->_dhdx[_lnod]) )
                 {
 
-                if (_keys[_inod] != _null)
-                if (_hval[_inod] != _iold)
-                    _sort.update(
-                    _keys[_inod] ,  _inod) ;
+            //  push updates one-at-a-time to ensure heap
+            //  maintains its sorted order
 
-                if (_keys[_jnod] != _null)
-                if (_hval[_jnod] != _jold)
-                    _sort.update(
-                    _keys[_jnod] ,  _jnod) ;
+                if (_sort.
+                     keys(_inod) != _sort.null())
+                if ( UPDATED(_inew, _iold) )
+                {
+                    _hval[_inod]  = _inew;
+                    _sort.reduce(_inod , _inod) ;
+                }
 
-                if (_keys[_knod] != _null)
-                if (_hval[_knod] != _kold)
-                    _sort.update(
-                    _keys[_knod] ,  _knod) ;
+                if (_sort.
+                     keys(_jnod) != _sort.null())
+                if ( UPDATED(_jnew, _jold) )
+                {
+                    _hval[_jnod]  = _jnew;
+                    _sort.reduce(_jnod , _jnod) ;
+                }
 
-                if (_keys[_lnod] != _null)
-                if (_hval[_lnod] != _lold)
-                    _sort.update(
-                    _keys[_lnod] ,  _lnod) ;
+                if (_sort.
+                     keys(_knod) != _sort.null())
+                if ( UPDATED(_knew, _kold) )
+                {
+                    _hval[_knod]  = _knew;
+                    _sort.reduce(_knod , _knod) ;
+                }
+
+                if (_sort.
+                     keys(_lnod) != _sort.null())
+                if ( UPDATED(_lnew, _lold) )
+                {
+                    _hval[_lnod]  = _lnew;
+                    _sort.reduce(_lnod , _lnod) ;
+                }
 
                 }
                 }
@@ -432,35 +447,48 @@
                 _mesh. node( _knod).pval(0),
                    &this->
                 _mesh. node( _lnod).pval(0),
-                    this->_hval[_inod],
-                    this->_hval[_jnod],
-                    this->_hval[_knod],
-                    this->_hval[_lnod],
+                   _hnow,
+                _inew, _jnew, _knew, _lnew ,
                     this->_dhdx[  +0 ],
                     this->_dhdx[  +0 ],
                     this->_dhdx[  +0 ],
                     this->_dhdx[  +0 ]) )
                 {
 
-                if (_keys[_inod] != _null)
-                if (_hval[_inod] != _iold)
-                    _sort.update(
-                    _keys[_inod] ,  _inod) ;
+            //  push updates one-at-a-time to ensure heap
+            //  maintains its sorted order
 
-                if (_keys[_jnod] != _null)
-                if (_hval[_jnod] != _jold)
-                    _sort.update(
-                    _keys[_jnod] ,  _jnod) ;
+                if (_sort.
+                     keys(_inod) != _sort.null())
+                if ( UPDATED(_inew, _iold) )
+                {
+                    _hval[_inod]  = _inew;
+                    _sort.reduce(_inod , _inod) ;
+                }
 
-                if (_keys[_knod] != _null)
-                if (_hval[_knod] != _kold)
-                    _sort.update(
-                    _keys[_knod] ,  _knod) ;
+                if (_sort.
+                     keys(_jnod) != _sort.null())
+                if ( UPDATED(_jnew, _jold) )
+                {
+                    _hval[_jnod]  = _jnew;
+                    _sort.reduce(_jnod , _jnod) ;
+                }
 
-                if (_keys[_lnod] != _null)
-                if (_hval[_lnod] != _lold)
-                    _sort.update(
-                    _keys[_lnod] ,  _lnod) ;
+                if (_sort.
+                     keys(_knod) != _sort.null())
+                if ( UPDATED(_knew, _kold) )
+                {
+                    _hval[_knod]  = _knew;
+                    _sort.reduce(_knod , _knod) ;
+                }
+
+                if (_sort.
+                     keys(_lnod) != _sort.null())
+                if ( UPDATED(_lnew, _lold) )
+                {
+                    _hval[_lnod]  = _lnew;
+                    _sort.reduce(_lnod , _lnod) ;
+                }
 
                 }
                 }
@@ -477,6 +505,8 @@
             }
         }
 
+    #   undef ISALIVE
+    #   undef UPDATED
     }
 
     /*
@@ -505,7 +535,8 @@
             ) : _ppos(_psrc) ,
                 _mesh(_msrc) ,
                 _find(false) ,
-                _tpos(   -1)   {}
+                _tpos(
+            hfun_type::null_hint())  {}
 
     /*------------------------ call pred. on tree matches */
         __inline_call
@@ -565,15 +596,20 @@
            <real_type>::infinity()) ,
                 _mesh(_msrc) ,
                 _find(false) ,
-                _tpos(   -1)   {}
+                _tpos(
+            hfun_type::null_hint())  {}
 
     /*------------------------ call pred. on tree matches */
         __inline_call float operator () (
+                typename
+            tree_type::node_type  *_lptr,
                 typename
             tree_type::item_data  *_iptr
             )
         {
             if (this->_find) return +0. ;
+
+            __unreferenced(_lptr);
 
             for ( ; _iptr != nullptr;
                     _iptr = _iptr->_next)

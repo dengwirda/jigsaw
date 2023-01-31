@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 Aug., 2021
+     * Last updated: 02 Aug., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -440,14 +444,14 @@
 
     pool_base                   _npol ;
     pool_base                   _bpol ;
-    pool_base                   _epol ;
-    pool_base                   _fpol ;
+    pool_base                   _epol, _e2nd ;
+    pool_base                   _fpol, _f2nd ;
     pool_base                   _tpol ;
 
     node_list                   _nset ;
     ball_list                   _bset ;
-    edge_list                   _eset ;
-    face_list                   _fset ;
+    edge_list                   _eset, _etwo ;
+    face_list                   _fset, _ftwo ;
     tria_list                   _tset ;
 
     public  :
@@ -460,7 +464,11 @@
         sizeof(typename ball_list::item_type)) ,
             _epol(
         sizeof(typename edge_list::item_type)) ,
+            _e2nd(
+        sizeof(typename edge_list::item_type)) ,
             _fpol(
+        sizeof(typename face_list::item_type)) ,
+            _f2nd(
         sizeof(typename face_list::item_type)) ,
             _tpol(
         sizeof(typename tria_list::item_type)) ,
@@ -474,9 +482,15 @@
         _eset(edge_hash(),
               edge_pred(),
         +.8, (pool_wrap(&_epol))) ,
+        _etwo(edge_hash(),
+              edge_pred(),
+        +.8, (pool_wrap(&_e2nd))) ,
         _fset(face_hash(),
               face_pred(),
         +.8, (pool_wrap(&_fpol))) ,
+        _ftwo(face_hash(),
+              face_pred(),
+        +.8, (pool_wrap(&_f2nd))) ,
         _tset(tria_hash(),
               tria_pred(),
         +.8, (pool_wrap(&_tpol)))

@@ -22,12 +22,16 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
@@ -68,7 +72,7 @@
         __unreferenced(_jlog) ;
 
     /*--------------------------------- find GEOM offsets */
-        real_type _xmid[3] = { +0. } ;
+        double _xmid[3] = { +0. } ;
 
         if (_geom._ndim == +2 &&
             _geom._kind ==
@@ -134,7 +138,7 @@
         __unreferenced(_jlog) ;
 
     /*--------------------------------- find GEOM offsets */
-        real_type _xmid[3] = { +0. } ;
+        double _xmid[3] = { +0. } ;
 
         if (_hfun._ndim == +2 &&
             _hfun._kind ==

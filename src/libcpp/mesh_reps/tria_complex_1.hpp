@@ -22,16 +22,20 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 April, 2020
+     * Last updated: 28 Apr., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -128,8 +132,8 @@
 
     public  :
 
-    pool_base                          _hsrc ;
-    pool_base                          _csrc ;
+    pool_base                          _e2pl ;
+    pool_base                          _a0pl ;
 
     conn_list                          _aaN1 ;
 
@@ -205,17 +209,18 @@
 
     __normal_call tria_complex_1 (
         allocator const& _asrc = allocator()
-        ) : _hsrc(sizeof (
+        ) : _e2pl(sizeof (
         typename edge_maps::item_type)),
-            _csrc(sizeof (
+
+            _a0pl(sizeof (
         typename conn_list::item_type)),
     /*---------------------------------- init. adj. lists */
-        _aaN1(pool_wrap(&_csrc)),
+        _aaN1(pool_wrap(&_a0pl)),
     /*---------------------------------- init. hash lists */
         _mmE2(
          edge_hash(& this->_llE2) ,
          edge_pred(& this->_llE2) ,
-        +.8, (pool_wrap(&_hsrc))) ,
+        +.8, (pool_wrap(&_e2pl))) ,
     /*---------------------------------- init. face lists */
         _llN1(_asrc),_llE2(_asrc) ,
     /*---------------------------------- init. free lists */
@@ -253,9 +258,6 @@
         this->_ffE2.clear (_kind) ;
 
         this->_tmp1.clear (_kind) ;
-
-        this->_hsrc.clear ();
-        this->_csrc.clear ();
     }
 
     /*

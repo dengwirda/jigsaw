@@ -13,7 +13,7 @@
 #   include "print.h"
 #   include "stdio.h"
 
-    int main ()
+    int test3d_f (int _verb)
     {
         int _retv = 0;
 
@@ -89,28 +89,33 @@
 
     /*-------------------------------- build TRIPOD r-DT. */
 
-        _jjig._verbosity =   +1 ;
+        _jjig._verbosity = _verb;
 
         _jjig._mesh_dims =   +3 ;
 
         _retv = tripod (
-            &_jjig ,                // the config. opts
-            &_init ,                // init. data
-            &_geom ,                // geom. data
-            &_tria ) ;
+            & _jjig ,               // the config. opts
+            & _init ,               // init. data
+            & _geom ,               // geom. data
+            & _tria ) ;
 
     /*-------------------------------- print TRIPOD r-DT. */
 
+        if (_verb > 0 )
         output_msh_data_3(&_tria);
 
         jigsaw_free_msh_t(&_tria);
 
         printf (
-       "TRIPOD returned code : %d \n",_retv);
+       "[3d_f] TRIPOD returned code : %d \n", _retv) ;
 
 
         return _retv ;
     }
+
+#   ifndef __SKIP_MAIN__
+    int main () { return test3d_f(1) ; }
+#   endif//__SKIP_MAIN__
 
 
 

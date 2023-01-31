@@ -22,12 +22,16 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
@@ -207,14 +211,18 @@
     __const_ptr(real_type) _ball
         )
     {
-        uint32_t  _rsiz =
-            sizeof(real_type) * +2 ;
-        uint32_t  _usiz =
+        uint32_t constexpr _rsiz =
+            sizeof(float    ) * +2 ;
+        uint32_t constexpr _usiz =
             sizeof(uint32_t ) * +1 ;
+
+        float volatile _fbal[2]; // volatile, gcc-11 bug...
+        _fbal[0] =(float) _ball [0];
+        _fbal[1] =(float) _ball [1];
 
         uint32_t  _hash ;
         _hash = hash::hashword (
-       (uint32_t*)_ball, _rsiz
+       (uint32_t*)_fbal, _rsiz
                        / _usiz, +13)  ;
 
         return (  _hash ) ;
@@ -450,8 +458,11 @@
             _tria.tria(_tpos)->circ(0);
         _tbal[1] = _mesh.
             _tria.tria(_tpos)->circ(1);
-
         _tbal[2] = (real_type)+0. ;
+
+        auto _hash =
+             _mesh._tria._nset.count();
+
         _tbal[2]+=
         geometry::lensqr_2d (_tbal,
             &_mesh._tria.node(
@@ -482,7 +493,7 @@
              tria(_tpos)->node(_enod[ 1]);
 
             _llen[_enum] =
-                geometry::lensqr_2d (
+           (float)geometry::lensqr_2d (
            &_mesh._tria.
              node(_enod[0])->pval(0),
            &_mesh._tria.
@@ -490,14 +501,26 @@
         }
 
     /*--------------------------------- find min/max edge */
-        iptr_type _emin = +0;
-        iptr_type _emax = +0;
+        iptr_type _emin = +0, _emax = +0 ;
+        if (_hash % +2 == +0)           // rnd. tie-break
+        {
         for(_enum = +3; _enum-- != +1; )
         {
         if (_llen[_emax] < _llen[_enum])
             _emax = _enum ;
         if (_llen[_emin] > _llen[_enum])
             _emin = _enum ;
+        }
+        }
+        else
+        {
+        for(_enum = +0; _enum++ != +2; )
+        {
+        if (_llen[_emax] < _llen[_enum])
+            _emax = _enum ;
+        if (_llen[_emin] > _llen[_enum])
+            _emin = _enum ;
+        }
         }
 
     /*-------------------------- ask for "frontal" status */
@@ -507,7 +530,7 @@
             {
         /*---------------------- reject as "void" element */
             uint32_t _push =
-            (hash_ball(_tbal) % _STEP) + 1;
+                (_hash % _STEP) + 1 ;
 
             _tdat._mark += _push;
 
@@ -600,7 +623,7 @@
             {
         /*---------------------- reject as "void" element */
             uint32_t _push =
-            (hash_ball(_tbal) % _STEP) + 1;
+                (_hash % _STEP) + 1 ;
 
             _tdat._mark += _push ;
 

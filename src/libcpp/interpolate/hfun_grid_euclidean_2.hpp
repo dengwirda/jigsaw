@@ -22,18 +22,22 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 09. Feb, 2021
+     * Last updated: 15 Jun., 2022
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2022
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -140,13 +144,11 @@
         {
     /*-------------------- "LESS-THAN" operator for queue */
         public  :
-            typename
-            vals_list::_write_it _hptr;
+        typename vals_list::_write_it _hptr ;
 
         public  :
         __inline_call less_than  (
-            typename
-            vals_list::_write_it _hsrc
+        typename vals_list::_write_it _hsrc
             ) : _hptr(_hsrc) {}
 
         __inline_call
@@ -159,29 +161,14 @@
         }
         } ;
 
-        typedef typename
-            allocator:: size_type   uint_type ;
-
-        uint_type static constexpr
-            _null =
-        std::numeric_limits<uint_type>::max() ;
-
-        containers::prioritymap <
+        containers::priorityidx <
+            iptr_type ,
             iptr_type ,
             less_than ,
             allocator >
         _sort((less_than(this->_hmat.head())));
 
-        containers:: array      <
-            typename
-            allocator:: size_type,
-            allocator >     _keys;
-
     /*-------------------- push nodes onto priority queue */
-        _keys.set_count (
-            _hmat.count(),
-        containers::tight_alloc, _null) ;
-
         iptr_type _inum  = +0;
         for (auto _iter  =
                    this->_hmat.head() ;
@@ -189,10 +176,14 @@
                    this->_hmat.tend() ;
                 ++_iter , ++_inum)
         {
-            _keys[_inum] = _sort.push (_inum) ;
+            _sort.push(_inum, _inum ) ;
         }
 
     /*-------------------- compute h(x) via fast-marching */
+        vals_type static _FTOL =
+            (vals_type)std::pow(
+        std::numeric_limits<vals_type>::epsilon(), .75) ;
+
         iptr_type IBEG = +0;
         iptr_type IEND =
        (iptr_type)this->_ypos.count() - 1 ;
@@ -201,12 +192,16 @@
         iptr_type JEND =
        (iptr_type)this->_xpos.count() - 1 ;
 
+    #   define ISALIVE(__idx)           \
+           (_sort.keys(__idx) != _sort.null())
+
+    #   define UPDATED(__new, __old)    \
+        std::abs(__new - __old) > _FTOL*std::abs(__new)
+
         for ( ; !_sort.empty() ; )
         {
-            iptr_type _base ;
-            _sort._pop_root(_base) ;
-
-            _keys[_base] = _null ;
+            iptr_type _base, _bidx;
+            _sort._pop_root( _bidx, _base) ;
 
             iptr_type  _ipos, _jpos ;
             subs_from_indx(
@@ -253,17 +248,16 @@
                 indx_from_subs(
                     _lpii, _lpjj, _lnod);
 
-    /*-------------------- skip any cells with null nodes */
-                if (_keys[_inod] == _null &&
-                    _inod != _base) continue ;
-                if (_keys[_jnod] == _null &&
-                    _jnod != _base) continue ;
-                if (_keys[_knod] == _null &&
-                    _knod != _base) continue ;
-                if (_keys[_lnod] == _null &&
-                    _lnod != _base) continue ;
-
     /*-------------------- skip cells due to sorted order */
+                if (_inod != _base &&
+                   !ISALIVE(_inod)) continue ;
+                if (_jnod != _base &&
+                   !ISALIVE(_jnod)) continue ;
+                if (_knod != _base &&
+                   !ISALIVE(_knod)) continue ;
+                if (_lnod != _base &&
+                   !ISALIVE(_lnod)) continue ;
+
                 vals_type _hmax;
                 _hmax = this->_hmat[_inod] ;
                 _hmax = std::max(
@@ -302,41 +296,63 @@
                 vals_type _lold =
                      this->_hmat[_lnod] ;
 
+                vals_type _inew =
+                     this->_hmat[_inod] ;
+                vals_type _jnew =
+                     this->_hmat[_jnod] ;
+                vals_type _knew =
+                     this->_hmat[_knod] ;
+                vals_type _lnew =
+                     this->_hmat[_lnod] ;
+
                 if (this->_dhdx.count() >1)
                 {
     /*-------------------- update adj. set, g = g(x) case */
-                if (eikonal_quad_2d (
+                if (eikonal_grid_2d (
                    _IXYZ , _JXYZ ,
-                   _KXYZ , _LXYZ ,
-                    this->_hmat[_inod],
-                    this->_hmat[_jnod],
-                    this->_hmat[_knod],
-                    this->_hmat[_lnod],
+                   _KXYZ , _LXYZ , _hnow ,
+                   _inew , _jnew ,
+                   _knew , _lnew ,
                     this->_dhdx[_inod],
                     this->_dhdx[_jnod],
                     this->_dhdx[_knod],
                     this->_dhdx[_lnod])  )
                 {
 
-                if (_keys[_inod] != _null)
-                if (_hmat[_inod] != _iold)
-                    _sort.update(
-                    _keys[_inod] ,  _inod) ;
+            //  push updates one-at-a-time to ensure heap
+            //  maintains its sorted order
 
-                if (_keys[_jnod] != _null)
-                if (_hmat[_jnod] != _jold)
-                    _sort.update(
-                    _keys[_jnod] ,  _jnod) ;
+                if (_sort.
+                     keys(_inod) != _sort.null())
+                if ( UPDATED(_inew, _iold) )
+                {
+                    _hmat[_inod]  = _inew;
+                    _sort.reduce(_inod , _inod) ;
+                }
 
-                if (_keys[_knod] != _null)
-                if (_hmat[_knod] != _kold)
-                    _sort.update(
-                    _keys[_knod] ,  _knod) ;
+                if (_sort.
+                     keys(_jnod) != _sort.null())
+                if ( UPDATED(_jnew, _jold) )
+                {
+                    _hmat[_jnod]  = _jnew;
+                    _sort.reduce(_jnod , _jnod) ;
+                }
 
-                if (_keys[_lnod] != _null)
-                if (_hmat[_lnod] != _lold)
-                    _sort.update(
-                    _keys[_lnod] ,  _lnod) ;
+                if (_sort.
+                     keys(_knod) != _sort.null())
+                if ( UPDATED(_knew, _kold) )
+                {
+                    _hmat[_knod]  = _knew;
+                    _sort.reduce(_knod , _knod) ;
+                }
+
+                if (_sort.
+                     keys(_lnod) != _sort.null())
+                if ( UPDATED(_lnew, _lold) )
+                {
+                    _hmat[_lnod]  = _lnew;
+                    _sort.reduce(_lnod , _lnod) ;
+                }
 
                 }
                 }
@@ -344,38 +360,51 @@
                 if (this->_dhdx.count()==1)
                 {
     /*-------------------- update adj. set, const. g case */
-                if (eikonal_quad_2d (
+                if (eikonal_grid_2d (
                    _IXYZ , _JXYZ ,
-                   _KXYZ , _LXYZ ,
-                    this->_hmat[_inod],
-                    this->_hmat[_jnod],
-                    this->_hmat[_knod],
-                    this->_hmat[_lnod],
+                   _KXYZ , _LXYZ , _hnow ,
+                   _inew , _jnew ,
+                   _knew , _lnew ,
                     this->_dhdx[  +0 ],
                     this->_dhdx[  +0 ],
                     this->_dhdx[  +0 ],
                     this->_dhdx[  +0 ])  )
                 {
 
-                if (_keys[_inod] != _null)
-                if (_hmat[_inod] != _iold)
-                    _sort.update(
-                    _keys[_inod] ,  _inod) ;
+            //  push updates one-at-a-time to ensure heap
+            //  maintains its sorted order
 
-                if (_keys[_jnod] != _null)
-                if (_hmat[_jnod] != _jold)
-                    _sort.update(
-                    _keys[_jnod] ,  _jnod) ;
+                if (_sort.
+                     keys(_inod) != _sort.null())
+                if ( UPDATED(_inew, _iold) )
+                {
+                    _hmat[_inod]  = _inew;
+                    _sort.reduce(_inod , _inod) ;
+                }
 
-                if (_keys[_knod] != _null)
-                if (_hmat[_knod] != _kold)
-                    _sort.update(
-                    _keys[_knod] ,  _knod) ;
+                if (_sort.
+                     keys(_jnod) != _sort.null())
+                if ( UPDATED(_jnew, _jold) )
+                {
+                    _hmat[_jnod]  = _jnew;
+                    _sort.reduce(_jnod , _jnod) ;
+                }
 
-                if (_keys[_lnod] != _null)
-                if (_hmat[_lnod] != _lold)
-                    _sort.update(
-                    _keys[_lnod] ,  _lnod) ;
+                if (_sort.
+                     keys(_knod) != _sort.null())
+                if ( UPDATED(_knew, _kold) )
+                {
+                    _hmat[_knod]  = _knew;
+                    _sort.reduce(_knod , _knod) ;
+                }
+
+                if (_sort.
+                     keys(_lnod) != _sort.null())
+                if ( UPDATED(_lnew, _lold) )
+                {
+                    _hmat[_lnod]  = _lnew;
+                    _sort.reduce(_lnod , _lnod) ;
+                }
 
                 }
                 }
@@ -384,6 +413,8 @@
             }
         }
 
+    #   undef ISALIVE
+    #   undef UPDATED
     }
 
     /*
@@ -511,8 +542,8 @@
             _YPOS = *this->_ypos.tail() ;
 
     /*---------------------------- find enclosing x-range */
-        iptr_type _ipos = (iptr_type)-1 ;
-        iptr_type _jpos = (iptr_type)-1 ;
+        auto _ipos = this-> null_hint() ;
+        auto _jpos = this-> null_hint() ;
 
         if (this->_xvar == true)
         {

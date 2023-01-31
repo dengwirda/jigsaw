@@ -22,16 +22,20 @@
      * how they can obtain it for free, then you are not
      * required to make any arrangement with me.)
      *
-     * Disclaimer:  Neither I nor: Columbia University, The
-     * Massachusetts Institute of Technology, The
-     * University of Sydney, nor The National Aeronautics
-     * and Space Administration warrant this code in any
-     * way whatsoever.  This code is provided "as-is" to be
-     * used at your own risk.
+     * Disclaimer:  Neither I nor THE CONTRIBUTORS warrant
+     * this code in any way whatsoever.  This code is
+     * provided "as-is" to be used at your own risk.
+     *
+     * THE CONTRIBUTORS include:
+     * (a) The University of Sydney
+     * (b) The Massachusetts Institute of Technology
+     * (c) Columbia University
+     * (d) The National Aeronautics & Space Administration
+     * (e) Los Alamos National Laboratory
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 April, 2020
+     * Last updated: 28 Apr., 2020
      *
      * Copyright 2013-2020
      * Darren Engwirda
@@ -160,8 +164,13 @@
 
     public  :
 
-    pool_base                          _hsrc ;
-    pool_base                          _csrc ;
+    pool_base                          _e2pl ;
+    pool_base                          _t3pl ;
+    pool_base                          _t4pl ;
+
+    pool_base                          _a0pl ;
+    pool_base                          _a1pl ;
+    pool_base                          _a2pl ;
 
     conn_list                          _aaN1 ;
     conn_list                          _aaE2 ;
@@ -291,27 +300,36 @@
 
     __normal_call tria_complex_3 (
         allocator const& _asrc = allocator()
-        ) : _hsrc(sizeof (
+        ) : _e2pl(sizeof (
         typename edge_maps::item_type)),
-            _csrc(sizeof (
+            _t3pl(sizeof (
+        typename tri3_maps::item_type)),
+            _t4pl(sizeof (
+        typename tri4_maps::item_type)),
+
+            _a0pl(sizeof (
+        typename conn_list::item_type)),
+            _a1pl(sizeof (
+        typename conn_list::item_type)),
+            _a2pl(sizeof (
         typename conn_list::item_type)),
     /*---------------------------------- init. adj. lists */
-        _aaN1(pool_wrap(&_csrc)),
-        _aaE2(pool_wrap(&_csrc)),
-        _aaT3(pool_wrap(&_csrc)),
+        _aaN1(pool_wrap(&_a0pl)),
+        _aaE2(pool_wrap(&_a1pl)),
+        _aaT3(pool_wrap(&_a2pl)),
     /*---------------------------------- init. hash lists */
         _mmE2(
          edge_hash(& this->_llE2) ,
          edge_pred(& this->_llE2) ,
-        +.8, (pool_wrap(&_hsrc))) ,
+        +.8, (pool_wrap(&_e2pl))) ,
         _mmT3(
          tri3_hash(& this->_llT3) ,
          tri3_pred(& this->_llT3) ,
-        +.8, (pool_wrap(&_hsrc))) ,
+        +.8, (pool_wrap(&_t3pl))) ,
         _mmT4(
          tri4_hash(& this->_llT4) ,
          tri4_pred(& this->_llT4) ,
-        +.8, (pool_wrap(&_hsrc))) ,
+        +.8, (pool_wrap(&_t4pl))) ,
     /*---------------------------------- init. face lists */
         _llN1(_asrc),_llE2(_asrc) ,
         _llT3(_asrc),_llT4(_asrc) ,
@@ -361,9 +379,6 @@
         this->_tmp1.clear (_kind) ;
         this->_tmp2.clear (_kind) ;
         this->_tmp3.clear (_kind) ;
-
-        this->_hsrc.clear ();
-        this->_csrc.clear ();
     }
 
     /*
