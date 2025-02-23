@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 Feb., 2021
+     * Last updated: 21 Jan., 2024
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -118,14 +118,17 @@
 
     template <
         typename  mesh_type ,
+        typename  hfun_type ,
         typename  user_opts
              >
     __normal_call void_type seed_mesh (
         mesh_type &_mesh,
+        hfun_type &_hfun,
         user_opts &_opts
         )
     {
         __unreferenced(_mesh) ;
+        __unreferenced(_hfun) ;
         __unreferenced(_opts) ;
     }
 
@@ -137,14 +140,17 @@
 
     template <
         typename  mesh_type ,
+        typename  hfun_type ,
         typename  user_opts
              >
     __normal_call void_type seed_feat (
         mesh_type &_mesh,
+        hfun_type &_hfun,
         user_opts &_opts
         )
     {
         __unreferenced(_mesh) ;
+        __unreferenced(_hfun) ;
         __unreferenced(_opts) ;
     }
 

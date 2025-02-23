@@ -710,8 +710,11 @@
         real_type _r2 = _m2[2] ;
         real_type _r3 = _m3[2] ;
 
-        real_type _rb =             // chara.-length
-        std::pow( _r1 * _r2 * _r3, 1./3.) ;
+      //real_type _rb =             // chara.-length
+      //std::pow( _r1 * _r2 * _r3, 1./3.) ;
+
+        real_type _rb =
+       (_r1+_r2+_r3) / (real_type)+3. ;
 
         real_type _qb = _lb / _rb ;
 
@@ -723,8 +726,8 @@
        (_q1+_q2+_q3) / (real_type)+3. ;
 
         real_type _qq =
-      ((real_type)+1. - 1./3.) * _qb  +
-      ((real_type)+0. + 1./3.) * _qe  ;
+      ((real_type)+1. - 1./2.) * _qb  +
+      ((real_type)+0. + 1./2.) * _qe  ;
 
         return (real_type)+1.0 - _qq  ;
     }
@@ -772,8 +775,11 @@
         real_type _r2 = _m2[3] ;
         real_type _r3 = _m3[3] ;
 
-        real_type _rb =             // chara.-length
-        std::pow( _r1 * _r2 * _r3, 1./3.) ;
+      //real_type _rb =             // chara.-length
+      //std::pow( _r1 * _r2 * _r3, 1./3.) ;
+
+        real_type _rb =
+       (_r1+_r2+_r3) / (real_type)+3. ;
 
         real_type _qb = _lb / _rb ;
 
@@ -785,8 +791,8 @@
        (_q1+_q2+_q3) / (real_type)+3. ;
 
         real_type _qq =
-      ((real_type)+1. - 1./3.) * _qb  +
-      ((real_type)+0. + 1./3.) * _qe  ;
+      ((real_type)+1. - 1./2.) * _qb  +
+      ((real_type)+0. + 1./2.) * _qe  ;
 
         return (real_type)+1.0 - _qq  ;
     }

@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 Aug., 2021
+     * Last updated: 21 Apr., 2024
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -414,7 +414,7 @@
         )
     {
     /*------------ "sharp" geometry//topology about node? */
-        real_type _DtoR =
+        real_type constexpr _DtoR =
        (real_type)+3.141592653589793 / 180. ;
 
         real_type _ZERO = -1. +
@@ -446,10 +446,19 @@
                   _jpos != _aset.tend() ;
                 ++_jpos  )
         {
-    /*------------ find signed angle between edge vectors */
              auto _iedg  = _ipos->_cell ;
              auto _jedg  = _jpos->_cell ;
 
+    /*------------ tag as soft feature if dissimilar tags */
+             auto _itag  = 
+            this->_tria.edge(_iedg).itag () ;
+             auto _jtag  = 
+            this->_tria.edge(_jedg).itag () ;
+
+            if (_itag != _jtag)
+            _feat = std::max(_feat, soft_feat) ;
+
+    /*------------ find signed angle between edge vectors */
             iptr_type _inod[2] = {
             this->_tria.edge(_iedg).node(0) ,
             this->_tria.edge(_iedg).node(1) ,
@@ -502,10 +511,7 @@
             }
             else
             {
-            if (_tbad >= +  1 )
-            {
-                _topo -= _tbad-- ;
-            }
+            if (_tbad >= 1) _topo -= _tbad-- ;
             }
         }
         }
@@ -876,15 +882,18 @@
 
     template <
         typename  mesh_type ,
+        typename  hfun_type ,
         typename  user_opts
              >
     __normal_call void_type seed_feat (
         mesh_type &_mesh ,
+        hfun_type &_hfun ,
         user_opts &_opts
         )
     {
+        __unreferenced(_hfun) ;
         __unreferenced(_opts) ;
-
+        
     /*------------------------- push set of feature nodes */
         for (auto _iter  =
              this->_tria.node().head() ;
@@ -973,13 +982,29 @@
 
     template <
         typename  mesh_type ,
+        typename  hfun_type ,
         typename  user_opts
              >
     __normal_call void_type seed_mesh (
         mesh_type &_mesh ,
+        hfun_type &_hfun ,
         user_opts &_opts
         )
     {
+    /*------------------------- eval. h(x) func. on nodes */  
+        containers::array<real_type> _spac(
+             this->_tria.node().count(), 0) ;
+        iptr_type _npos  = 0 ;
+        for (auto _node  =
+             this->_tria.node().head() ;
+                  _node !=
+             this->_tria.node().tend() ;
+                ++_node, ++_npos)
+        {
+            _spac[_npos] = 
+                _hfun.eval(&_node->pval(+0));
+        }
+    
     /*------------------------- well-distributed sampling */
         while (_mesh._tria._nset.count()
                 < (std::size_t)_opts.seed() + 3)
@@ -993,11 +1018,12 @@
 
             for (_fdim = 1; _fdim != 3; ++_fdim)
             {
+            iptr_type _inum  = 0 ;
             for (auto _ipos  =
                  this->_tria.node().head() ;
                       _ipos !=
                  this->_tria.node().tend() ;
-                    ++_ipos  )
+                    ++_ipos, ++_inum)
             {
     /*------------------------- get current furthest node */
                 if (_ipos->mark() >= 0 &&
@@ -1007,16 +1033,22 @@
                     +std::numeric_limits
                         <real_type>::infinity();
 
+                iptr_type _jnum  = 0 ;
                 for (auto _jpos  =
                     _mesh._tria._nset.head() ;
                           _jpos !=
                     _mesh._tria._nset.tend() ;
-                        ++_jpos  )
+                        ++_jpos, ++_jnum)
                 {
                     real_type _dist =
                         geometry::lensqr_2d(
                         &_ipos->pval(+0),
                         &_jpos->pval(+0)) ;
+
+                    real_type _isiz = _spac[_inum];
+                    real_type _jsiz = _spac[_jnum];
+                        
+                    _dist/= _isiz + _jsiz ;
 
                     _dmin = std::min(_dmin, _dist);
                 }
