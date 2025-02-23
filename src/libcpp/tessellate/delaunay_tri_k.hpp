@@ -789,6 +789,72 @@
         return ( false ) ;
     }
 
+
+
+
+    __inline_call bool_type update (
+      __const_ptr(real_type) _ppos,
+        iptr_type  _node
+        )
+    {
+        bool_type _pass   = update (
+                _ppos, _node,
+                (iptr_list*)nullptr,
+                (iptr_list*)nullptr,
+                (iptr_list*)nullptr)  ;
+
+        return (  _pass )  ;
+    }
+
+    template <
+    typename      list_type
+             >
+    __normal_call bool_type update (
+      __const_ptr(real_type) _ppos,
+        iptr_type  _node,
+        list_type *_tnew  = nullptr   ,
+        list_type *_told  = nullptr   ,
+        list_type *_circ  = nullptr
+        )
+    {
+        if (node(_node)->
+            next() != this->null_flag())
+        {
+        this->_work.clear ();
+
+    /*--------------------------- find containing element */
+        auto _elem = node(_node)->next() ; 
+        
+    /*--------------------------- push new node onto list */
+        for (auto _idim = tria_pred::real_dims + 0 ;
+                  _idim-- != +0 ; )
+        {
+        node(_node)->pval(_idim) = _ppos[_idim];
+        }
+        
+    /*-------------------- retriangulate enclosing cavity */
+        typename tria_pred::
+        template circ_pred<
+            self_type> _pred( _ppos) ;
+
+        if (_circ == nullptr)
+        scan_tria_list(_elem, +1   ,
+                       _pred, _work) ;
+        else
+       _work.push_tail(_circ->head() ,
+                       _circ->tend()
+                       ) ;
+
+        star_tria_void(_work, _node,
+                   +1, _tnew, _told) ;
+
+    /*-------------------- delaunay topology is recovered */
+        return (  true ) ;
+        }
+
+        return ( false ) ;
+    }
+
     /*
     --------------------------------------------------------
      * ROLL-BACK: "roll-back" an update.

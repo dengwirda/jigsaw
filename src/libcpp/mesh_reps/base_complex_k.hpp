@@ -115,6 +115,18 @@
             char_type _ksrc = +0
             ) : _cell(_csrc), _kind(_ksrc) {}
         } ;
+        
+    class conn_same
+        {
+        public  :
+        __inline_call bool_type operator() (
+            conn_pair const& _xx,
+            conn_pair const& _yy
+            ) const
+        {   return _xx._cell == _yy._cell  &&
+                   _xx._kind == _yy._kind  ;
+        }
+        } ;
 
     /*
     --------------------------------------------------------
@@ -570,7 +582,7 @@
         "mesh-complex: non-top node!" ) ;
 
     /*------------------------ init. external d-face data */
-       _ipos = (IPTR_TYPE)_get_node(_mesh) ;
+        _ipos = (IPTR_TYPE)_get_node(_mesh) ;
 
         _mesh._llN1[_ipos]  = _ndat ;
         _mesh._llN1[_ipos].null() ;
@@ -591,7 +603,7 @@
         if (_itop == -1)
         {
     /*------------------------ init. external d-face data */
-       _ipos = (IPTR_TYPE)_get_node(_mesh) ;
+        _ipos = (IPTR_TYPE)_get_node(_mesh) ;
 
         _mesh._llN1[_ipos]  = _ndat ;
         _mesh._llN1[_ipos].null() ;
@@ -2766,88 +2778,7 @@
         tria_cell const &
         )
     {
-        _mesh._tmp1.set_count(  +0 ) ;
-        _mesh._tmp2.set_count(  +0 ) ;
-
-         auto _ioff = _conn.count () ;
-
-        switch ( _kind )
-        {
-    /*-------------------------- init. "source" adj. list */
-        case POINT_tag:
-            {
-            _mesh._tmp1.push_tail(
-                conn_pair (_ipos, _kind)) ;
-            break ;
-            }
-
-        case EDGE2_tag:
-            {
-            _mesh._tmp2.push_tail(
-                conn_pair (_ipos, _kind)) ;
-            break ;
-            }
-        }
-
-    /*-------------------------- find set of adj. 1-cells */
-        for (auto _iter  = _mesh._tmp1.head();
-                  _iter != _mesh._tmp1.tend();
-                ++_iter  )
-        {
-            if (_iter->_kind == POINT_tag)
-            for (auto _iadj  =
-                _mesh._aaN1.head(_iter->_cell);
-                      _iadj !=
-                _mesh._aaN1.tend(_iter->_cell);
-                    ++_iadj  )
-            {
-            //  1-adj. list is disjoint, guaranteed
-            //  if(_iadj->_kind == EDGE2_tag &&
-            //     _mesh. _llE2[
-            //     _iadj->_cell].mark() == 0)
-            //  {
-                   _mesh.
-                   _tmp2.push_tail (*_iadj);
-            //     _mesh. _llE2[
-            //     _iadj->_cell].mark() += 1;
-            //  }
-            }
-        }
-
-    /*-------------------------- find set of adj. 2-cells */
-        for (auto _iter  = _mesh._tmp2.head();
-                  _iter != _mesh._tmp2.tend();
-                ++_iter  )
-        {
-            if (_iter->_kind == EDGE2_tag)
-            for (auto _iadj  =
-                _mesh._aaE2.head(_iter->_cell);
-                      _iadj !=
-                _mesh._aaE2.tend(_iter->_cell);
-                    ++_iadj  )
-            {
-                if(_iadj->_kind == TRIA3_tag &&
-                   _mesh. _llT3[
-                   _iadj->_cell].mark() == 0)
-                {
-                   _conn.push_tail (*_iadj);
-                   _mesh._llT3[
-                   _iadj->_cell].mark() += 1;
-                }
-            }
-        }
-
-    /*-------------------------- flip d-face marker lists */
-        for (auto _iter  = _conn.head()+_ioff ;
-                  _iter != _conn.tend() ;
-                ++_iter  )
-        {
-            if(_iter->_kind == TRIA3_tag)
-            {
-               _mesh. _llT3[
-                    _iter->_cell].mark() = 0 ;
-            }
-        }
+        connect_2(_mesh, _ipos, _kind, _conn, mesh_cell());
     }
 
     template <
@@ -2862,32 +2793,30 @@
         mesh_cell const &
         )
     {
-        _mesh._tmp1.set_count(  +0 ) ;
-        _mesh._tmp2.set_count(  +0 ) ;
-
-         auto _ioff = _conn.count () ;
+        connector _tmp1, _tmp2;
+        auto _ioff = _conn.count () ;
 
         switch ( _kind )
         {
     /*-------------------------- init. "source" adj. list */
         case POINT_tag:
             {
-            _mesh._tmp1.push_tail(
+            _tmp1.push_tail (
                 conn_pair (_ipos, _kind)) ;
             break ;
             }
 
         case EDGE2_tag:
             {
-            _mesh._tmp2.push_tail(
+            _tmp2.push_tail (
                 conn_pair (_ipos, _kind)) ;
             break ;
             }
         }
 
     /*-------------------------- find set of adj. 1-cells */
-        for (auto _iter  = _mesh._tmp1.head();
-                  _iter != _mesh._tmp1.tend();
+        for (auto _iter  = _tmp1.head();
+                  _iter != _tmp1.tend();
                 ++_iter  )
         {
             if (_iter->_kind == POINT_tag)
@@ -2898,21 +2827,13 @@
                     ++_iadj  )
             {
             //  1-adj. list is disjoint, guaranteed
-            //  if(_iadj->_kind == EDGE2_tag &&
-            //     _mesh. _llE2[
-            //     _iadj->_cell].mark() == 0)
-            //  {
-                   _mesh.
                    _tmp2.push_tail (*_iadj);
-            //     _mesh. _llE2[
-            //     _iadj->_cell].mark() += 1;
-            //  }
             }
         }
 
     /*-------------------------- find set of adj. 2-cells */
-        for (auto _iter  = _mesh._tmp2.head();
-                  _iter != _mesh._tmp2.tend();
+        for (auto _iter  = _tmp2.head();
+                  _iter != _tmp2.tend();
                 ++_iter  )
         {
             if (_iter->_kind == EDGE2_tag)
@@ -2922,41 +2843,13 @@
                 _mesh._aaE2.tend(_iter->_cell);
                     ++_iadj  )
             {
-                if(_iadj->_kind == TRIA3_tag &&
-                   _mesh. _llT3[
-                   _iadj->_cell].mark() == 0)
+                if(algorithms::is_unique (
+                   _conn.head()+ _ioff, 
+                   _conn.tend(),*_iadj, 
+                    conn_same()) )
                 {
                    _conn.push_tail (*_iadj);
-                   _mesh._llT3[
-                   _iadj->_cell].mark() += 1;
                 }
-                else
-                if(_iadj->_kind == QUAD4_tag &&
-                   _mesh. _llQ4[
-                   _iadj->_cell].mark() == 0)
-                {
-                   _conn.push_tail (*_iadj);
-                   _mesh. _llQ4[
-                   _iadj->_cell].mark() += 1;
-                }
-            }
-        }
-
-    /*-------------------------- flip d-face marker lists */
-        for (auto _iter  = _conn.head()+_ioff ;
-                  _iter != _conn.tend() ;
-                ++_iter  )
-        {
-            if(_iter->_kind == TRIA3_tag)
-            {
-               _mesh. _llT3[
-                    _iter->_cell].mark() = 0 ;
-            }
-            else
-            if(_iter->_kind == QUAD4_tag)
-            {
-               _mesh. _llQ4[
-                    _iter->_cell].mark() = 0 ;
             }
         }
     }
