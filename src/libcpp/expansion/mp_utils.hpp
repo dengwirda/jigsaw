@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 Mar., 2020
+     * Last updated: 11 May., 2024
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -288,8 +288,8 @@
         }
         else
         {
-        expansion_sub(_det2p, _det1p, _sum_1);
-        expansion_sub(_det4p, _det3p, _sum_2);
+        expansion_sub(_det1p, _det2p, _sum_1);
+        expansion_sub(_det3p, _det4p, _sum_2);
         }
 
         expansion_add(_sum_1, _sum_2, _final);
@@ -438,6 +438,163 @@
         }
 
         expansion_add(_sum_3, _sum_2, _final);
+    }
+
+    /*
+    --------------------------------------------------------
+     *
+     * Compute an exact 6 x 6 determinant.
+     *
+     *   | a1  a2  a3  a4  a5  v1 |
+     *   | b1  b2  b3  b4  b5  v2 |
+     *   | c1  c2  c3  c4  c5  v3 |
+     *   | d1  d2  d3  d4  d5  v4 |
+     *   | e1  e2  e3  e4  e5  v5 |
+     *   | f1  f2  f3  f4  f5  v6 |
+     *
+     * as the product of 5 x 5 minors about a pivot column
+     * P, shown here for P = 6. The entry V1 is associated
+     * with the minor
+     *
+     *   | b1  b2  b3  b4  b5 |
+     *   | c1  c2  c3  c4  c5 |
+     *   | d1  d2  d3  d4  d5 | = D1
+     *   | e1  e2  e3  e4  e5 |
+     *   | f1  f2  f3  f4  f5 |
+     *
+     * and so on for (V2,D2), (V3,D3) etc.
+     *
+    --------------------------------------------------------
+     */
+
+    template <
+        size_t NA, size_t NB, size_t NC,
+        size_t ND, size_t NE, size_t NF,
+        size_t NG, size_t NH, size_t NI,
+        size_t NJ, size_t NK, size_t NL,
+        size_t NM
+             >
+    __inline_call void compute_det_6x6 (
+        expansion <NA> const& _det1p ,
+        expansion <NB> const& _val1p ,
+        expansion <NC> const& _det2p ,
+        expansion <ND> const& _val2p ,
+        expansion <NE> const& _det3p ,
+        expansion <NF> const& _val3p ,
+        expansion <NG> const& _det4p ,
+        expansion <NH> const& _val4p ,
+        expansion <NI> const& _det5p ,
+        expansion <NJ> const& _val5p ,
+        expansion <NK> const& _det6p ,
+        expansion <NL> const& _val6p ,
+        expansion <NM> & _final ,
+        INDX_TYPE        _pivot
+        )
+    {
+    /*---------------------------------- products Vi * Di */
+        INDX_TYPE
+        constexpr N1 = mul_alloc (NA, NB) ;
+        expansion<N1> _mul1p;
+        expansion_mul(_det1p, _val1p, _mul1p);
+
+        INDX_TYPE
+        constexpr N2 = mul_alloc (NC, ND) ;
+        expansion<N2> _mul2p;
+        expansion_mul(_det2p, _val2p, _mul2p);
+
+        INDX_TYPE
+        constexpr N3 = mul_alloc (NE, NF) ;
+        expansion<N3> _mul3p;
+        expansion_mul(_det3p, _val3p, _mul3p);
+
+        INDX_TYPE
+        constexpr N4 = mul_alloc (NG, NH) ;
+        expansion<N4> _mul4p;
+        expansion_mul(_det4p, _val4p, _mul4p);
+
+        INDX_TYPE
+        constexpr N5 = mul_alloc (NI, NJ) ;
+        expansion<N5> _mul5p;
+        expansion_mul(_det5p, _val5p, _mul5p);
+
+        INDX_TYPE
+        constexpr N6 = mul_alloc (NK, NL) ;
+        expansion<N6> _mul6p;
+        expansion_mul(_det6p, _val6p, _mul6p);
+
+    /*---------------------------------- sum (-1)^P * VDi */
+        INDX_TYPE
+        constexpr M1 = sub_alloc (N1, N2) ;
+        expansion<M1> _sum_1;
+
+        INDX_TYPE
+        constexpr M2 = sub_alloc (N3, N4) ;
+        expansion<M2> _sum_2;
+
+        INDX_TYPE
+        constexpr M3 = sub_alloc (N5, N6) ;
+        expansion<M3> _sum_3;
+
+        if (_pivot % 2 == +0)
+        {
+        expansion_sub(_mul2p, _mul1p, _sum_1);
+        expansion_sub(_mul4p, _mul3p, _sum_2);
+        expansion_sub(_mul6p, _mul5p, _sum_3);
+        }
+        else
+        {
+        expansion_sub(_mul1p, _mul2p, _sum_1);
+        expansion_sub(_mul3p, _mul4p, _sum_2);
+        expansion_sub(_mul5p, _mul6p, _sum_3);
+        }
+
+        expansion_add(_sum_1, _sum_2, _sum_3, _final);
+    }
+
+    /*--------------------- "unitary" case, with Vi = +1. */
+
+    template <
+        size_t NA, size_t NB, size_t NC,
+        size_t ND, size_t NE, size_t NF,
+        size_t NG
+             >
+    __inline_call void unitary_det_6x6 (
+        expansion <NA> const& _det1p ,
+        expansion <NB> const& _det2p ,
+        expansion <NC> const& _det3p ,
+        expansion <ND> const& _det4p ,
+        expansion <NE> const& _det5p ,
+        expansion <NF> const& _det6p ,
+        expansion <NG> & _final ,
+        INDX_TYPE        _pivot
+        )
+    {
+        INDX_TYPE
+        constexpr N1 = sub_alloc (NA, NB) ;
+        expansion<N1> _sum_1;
+
+        INDX_TYPE
+        constexpr N2 = sub_alloc (NC, ND) ;
+        expansion<N2> _sum_2;
+
+        INDX_TYPE
+        constexpr M3 = sub_alloc (NE, NF) ;
+        expansion<M3> _sum_3;
+
+        if (_pivot % 2 == +0)
+        {
+        expansion_sub(_det2p, _det1p, _sum_1);
+        expansion_sub(_det4p, _det3p, _sum_2);
+        expansion_sub(_det6p, _det5p, _sum_3);
+        }
+        else
+        {
+        expansion_sub(_det1p, _det2p, _sum_1);
+        expansion_sub(_det3p, _det4p, _sum_2);
+        expansion_sub(_det5p, _det6p, _sum_3);
+        }
+
+        expansion_add(_sum_1, _sum_2, _sum_3, _final);
     }
 
 #   undef REAL_TYPE

@@ -1011,8 +1011,7 @@
         expansion<mul_alloc(AQ,  BQ)> _qp ;
         expansion_mul(_qa, _qb, _qp);
 
-        expansion_add(
-            _xp, _yp, _zp, _qp, _dp);
+        expansion_add(_xp, _yp, _zp,  _qp, _dp) ;
     }
 
 #   undef REAL_TYPE
