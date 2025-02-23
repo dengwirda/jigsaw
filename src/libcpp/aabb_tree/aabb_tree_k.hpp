@@ -35,9 +35,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 30 Dec., 2022
+ * Last updated: 20 Apr., 2023
  *
- * Copyright 2013-2022
+ * Copyright 2013-2023
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -479,6 +479,8 @@
         this->_root->_hptr = nullptr;
 
     /*------------------------------ push items onto root */
+        init_aabb_node (this->_root);
+        
         {        
         item_data *_hptr   = nullptr;
         item_data *_idat   = nullptr;
@@ -492,11 +494,11 @@
 
             this->_imax = std::max(
             this->_imax,_head->ipos ()) ;
+            
+            push_aabb_node(this->_root, _hptr ) ;
         }
         this->_root->_hptr  = _hptr ;
         }
-
-        init_aabb_node (this->_root);
 
     /*-------------------------- a list of un-split nodes */
         this->_work.clear() ;
@@ -983,18 +985,14 @@
         {
             real_type _dloc =
             _bmin[_idim] - _ppos[_idim];
-
-            _dist =
-                std::max (_dist, _dloc);
+            _dist +=  _dloc ;
         }
         else
         if (_ppos[_idim] > _bmax[_idim])
         {
             real_type _dloc =
             _ppos[_idim] - _bmax[_idim];
-
-            _dist =
-                std::max (_dist, _dloc);
+            _dist +=  _dloc ;
         }
         }
 
@@ -1124,9 +1122,7 @@
         /*------------------------ descend if maybe close */
 
             if (_ndat.
-                _node-> _hptr   != nullptr ||
-                _ndat.
-                _node->lower(0) == nullptr)
+                _node-> _hptr   != nullptr)
             {
         /*------------------------ leaf: update item-dist */
                 _find =  true ;
