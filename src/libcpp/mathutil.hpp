@@ -69,7 +69,7 @@
     __write_ptr  (real_type) _xx
         )
     {
-        real_type _rt =
+        real_type constexpr _rt =
             std::numeric_limits
                 <real_type>::epsilon() ;
 
