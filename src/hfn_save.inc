@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 May, 2022
+     * Last updated: 05 Dec, 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -80,7 +80,7 @@
         {
     /*--------------------- (apparently) faster to unroll */
             PRINTCHARS(snprintf(&_fbuf[_next] ,
-            PRINTCHUNK,
+                PRINTCHUNK-_next,
             "%.9g\n%.9g\n%.9g\n%.9g\n" ,
             *(_iter + 0) + _xoff,
             *(_iter + 1) + _xoff,
@@ -93,9 +93,9 @@
                   _iter  < _last;
                   _iter += +1 )
         {
-    /*--------------------- (apparently) faster to unroll */
+    /*--------------------- trailing non-mod(4) remainder */
             PRINTCHARS(snprintf(&_fbuf[_next] ,
-            PRINTCHUNK, "%.9g\n",
+                PRINTCHUNK-_next, "%.9g\n",
             *(_iter + 0) + _xoff) , VALUECHUNK)
         }
 
@@ -119,7 +119,8 @@
             if (_iter->mark() >= 0 )        \
             {                       \
             PRINTCHARS(snprintf(&_fbuf[_next]  ,    \
-            PRINTCHUNK, "%.17g;%.17g;+0\n",         \
+                PRINTCHUNK- _next ,         \
+                "%.17g;%.17g;+0\n",         \
                 _iter->pval(0) + _xoff[0] , \
                 _iter->pval(1) + _xoff[1]), \
             VERT2CHUNK)             \
@@ -142,7 +143,8 @@
             if (_iter->mark() >= 0 )        \
             {                       \
             PRINTCHARS(snprintf(&_fbuf[_next]  ,    \
-            PRINTCHUNK,"%.17g;%.17g;%.17g;+0\n",    \
+                PRINTCHUNK- _next ,         \
+                "%.17g;%.17g;%.17g;+0\n",   \
                 _iter->pval(0) + _xoff[0] , \
                 _iter->pval(1) + _xoff[1] , \
                 _iter->pval(2) + _xoff[2]), \
@@ -174,7 +176,8 @@
                 toS2( _ppos, _apos );       \
                                     \
             PRINTCHARS(snprintf(&_fbuf[_next] ,     \
-            PRINTCHUNK ,"%.17g;%.17g;+0\n" ,        \
+                PRINTCHUNK- _next ,         \
+                "%.17g;%.17g;+0\n",         \
             _apos[ 0], _apos[ 1]) , VERT2CHUNK)     \
             }                       \
         }                           \
@@ -195,7 +198,8 @@
                 _iter->self() >= 1 )        \
             {                       \
             PRINTCHARS(snprintf(&_fbuf[_next] ,     \
-            PRINTCHUNK, "%u;%u;%u;+0\n" ,   \
+                PRINTCHUNK- _next ,         \
+                "%u;%u;%u;+0\n",    \
                 _iter->node(0) ,    \
                 _iter->node(1) ,    \
                 _iter->node(2) ), TRIA3CHUNK)       \
@@ -218,7 +222,8 @@
                 _iter->self() >= 1 )        \
             {                       \
             PRINTCHARS(snprintf(&_fbuf[_next] ,     \
-            PRINTCHUNK, "%u;%u;%u;%u;+0\n" ,        \
+                PRINTCHUNK- _next ,         \
+                "%u;%u;%u;%u;+0\n",         \
                 _iter->node(0) ,    \
                 _iter->node(1) ,    \
                 _iter->node(2) ,    \
@@ -362,7 +367,7 @@
                 if (_nnum > +0)
                 {
             /*-------------------------- write POINT data */
-                save_vert2(
+                save_vert3(
                     _ffun._euclidean_mesh_3d._mesh);
                 }
 

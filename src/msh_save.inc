@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 May, 2022
+     * Last updated: 05 Dec, 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -69,8 +69,8 @@
                 _nmap[_npos ] >= 0 )        \
             {                   \
             PRINTCHARS(snprintf(&_fbuf[_next] ,     \
-                PRINTCHUNK,     \
-                "%.17g;%.17g;%d\n" ,        \
+                PRINTCHUNK- _next ,         \
+                "%.17g;%.17g;%d\n",         \
                 _iter->pval(0) + _xoff[0] , \
                 _iter->pval(1) + _xoff[1] , \
                 _iter->itag()) , VERT2CHUNK )       \
@@ -94,7 +94,7 @@
                 _nmap[_npos ] >= 0 )        \
             {                   \
             PRINTCHARS(snprintf(&_fbuf[_next] ,     \
-                PRINTCHUNK,     \
+                PRINTCHUNK- _next ,         \
                 "%.17g;%.17g;%.17g;%d\n",   \
                 _iter->pval(0) + _xoff[0] , \
                 _iter->pval(1) + _xoff[1] , \
@@ -120,7 +120,8 @@
                 _nmap[_npos ] >= 0)         \
             {                   \
             PRINTCHARS(snprintf(&_fbuf[_next] ,     \
-                PRINTCHUNK, "%.17g\n" ,     \
+                PRINTCHUNK- _next ,         \
+                "%.17g\n" ,     \
             _iter->pval(_koff) ), VALUECHUNK)       \
             }                   \
         }                       \
@@ -141,7 +142,8 @@
                 _iter->self() >= 1 )        \
             {                   \
             PRINTCHARS(snprintf(&_fbuf[_next] ,     \
-                PRINTCHUNK, "%u;%u;%d\n",           \
+                PRINTCHUNK- _next ,         \
+                "%u;%u;%d\n",           \
             _nmap[_iter->node(0)] ,         \
             _nmap[_iter->node(1)] ,         \
                   _iter->itag()), EDGE2CHUNK)       \
@@ -164,7 +166,8 @@
                 _iter->self() >= 1 )        \
             {                   \
             PRINTCHARS(snprintf(&_fbuf[_next] ,     \
-                PRINTCHUNK, "%u;%u;%u;%d\n",        \
+                PRINTCHUNK- _next ,         \
+                "%u;%u;%u;%d\n",        \
             _nmap[_iter->node(0)] ,         \
             _nmap[_iter->node(1)] ,         \
             _nmap[_iter->node(2)] ,         \
@@ -188,7 +191,7 @@
                 _iter->self() >= 1 )        \
             {                   \
             PRINTCHARS(snprintf(&_fbuf[_next] ,     \
-                PRINTCHUNK,     \
+                PRINTCHUNK- _next ,         \
                 "%u;%u;%u;%u;%d\n",         \
             _nmap[_iter->node(0)] ,         \
             _nmap[_iter->node(1)] ,         \
@@ -214,7 +217,7 @@
                 _iter->self() >= 1 )        \
             {                   \
             PRINTCHARS(snprintf(&_fbuf[_next] ,     \
-                PRINTCHUNK,     \
+                PRINTCHUNK- _next ,         \
                 "%u;%u;%u;%u;%d\n",         \
             _nmap[_iter->node(0)] ,         \
             _nmap[_iter->node(1)] ,         \

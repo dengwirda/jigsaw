@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 21 Apr., 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -288,6 +288,20 @@
         {
             this->_jjig->
            _mesh_opts.siz3() = _siz3;
+        }
+        __normal_call void_type push_mesh_orph (
+            bool          _orph
+            )
+        {
+            this->_jjig->
+           _mesh_opts.orph() = _orph;
+        }
+        __normal_call void_type push_mesh_lock (
+            bool          _lock
+            )
+        {
+            this->_jjig->
+           _mesh_opts.lock() = _lock;
         }
         __normal_call void_type push_mesh_top1 (
             bool          _top1
@@ -612,6 +626,12 @@
                 siz2() = _jjig._mesh_siz2 ;
             _jcfg._mesh_opts.
                 siz3() = _jjig._mesh_siz3 ;
+
+            _jcfg._mesh_opts.
+                orph() = _jjig._mesh_orph ;
+
+            _jcfg._mesh_opts.
+                lock() = _jjig._mesh_lock ;
 
             _jcfg._mesh_opts.
                 top1() = _jjig._mesh_top1 ;
@@ -1032,6 +1052,12 @@
         if(_jcfg._mesh_pred ==
          jcfg_data::mesh_pred::bisector)
         _jlog.push("  MESH-KERN = BISECTOR \n") ;
+
+        _jlog.push("  MESH-ORPH = " +
+            __pushBVAL(_jcfg._mesh_opts.orph()));
+
+        _jlog.push("  MESH-LOCK = " +
+            __pushBVAL(_jcfg._mesh_opts.lock()));
 
         _jlog.push("  MESH-TOP1 = " +
             __pushBVAL(_jcfg._mesh_opts.top1()));

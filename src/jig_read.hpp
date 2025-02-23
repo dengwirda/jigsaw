@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 21 Apr., 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -137,6 +137,12 @@
     __normal_call void_type push_mesh_siz3 (
         double       /*_siz3*/
         ) { }
+    __normal_call void_type push_mesh_orph (
+        bool         /*_orph*/
+        ) { }    
+    __normal_call void_type push_mesh_lock (
+        bool         /*_lock*/
+        ) { }    
     __normal_call void_type push_mesh_top1 (
         bool         /*_top1*/
         ) { }
@@ -600,6 +606,16 @@
                 {
             __putREAL(push_mesh_vol3, _stok) ;
                 }
+            else
+            if (_stok[0] == "MESH_ORPH")
+                {
+            __putBOOL(push_mesh_orph, _stok) ;
+                }
+            else
+            if (_stok[0] == "MESH_LOCK")
+                {
+            __putBOOL(push_mesh_lock, _stok) ;
+                }            
             else
             if (_stok[0] == "MESH_TOP1")
                 {

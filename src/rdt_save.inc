@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 May, 2022
+     * Last updated: 05 Dec, 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -69,7 +69,7 @@
                 _nmap[_npos ] >= 0)         \
             {                       \
             PRINTCHARS(snprintf(&_fbuf[_next],      \
-                PRINTCHUNK,         \
+                PRINTCHUNK- _next ,         \
                 "%.17g;%.17g;%d\n", \
                 _iter->pval(0) + _xoff[0] , \
                 _iter->pval(1) + _xoff[1] , \
@@ -94,7 +94,7 @@
                 _nmap[_npos ] >= 0)         \
             {                       \
             PRINTCHARS(snprintf(&_fbuf[_next],      \
-                PRINTCHUNK,         \
+                PRINTCHUNK- _next ,         \
                 "%.17g;%.17g;%.17g;%d\n",   \
                 _iter->pval(0) + _xoff[0] , \
                 _iter->pval(1) + _xoff[1] , \
@@ -120,7 +120,8 @@
                 _nmap[_npos ] >= 0)         \
             {                       \
             PRINTCHARS(snprintf(&_fbuf[_next],      \
-                PRINTCHUNK, "%.17g\n" ,     \
+                PRINTCHUNK- _next ,         \
+                "%.17g\n" ,         \
             _iter->pval(_koff) ), VALUECHUNK)       \
             }                               \
         }                                   \
@@ -144,7 +145,8 @@
                 _item  = _item->_next )     \
             {                       \
             PRINTCHARS(snprintf(&_fbuf[_next],      \
-                PRINTCHUNK, "%u;%u;%d\n",   \
+                PRINTCHUNK- _next ,         \
+                "%u;%u;%d\n",   \
             _nmap[_item->_data._node[0]],   \
             _nmap[_item->_data._node[1]],   \
             _item->_data._part ), EDGE2CHUNK)       \
@@ -170,7 +172,8 @@
                 _item  = _item->_next )     \
             {                       \
             PRINTCHARS(snprintf(&_fbuf[_next],      \
-                PRINTCHUNK, "%u;%u;%u;%d\n",        \
+                PRINTCHUNK- _next ,         \
+                "%u;%u;%u;%d\n",        \
             _nmap[_item->_data._node[0]],   \
             _nmap[_item->_data._node[1]],   \
             _nmap[_item->_data._node[2]],   \
@@ -197,7 +200,7 @@
                 _item  = _item->_next )     \
             {                       \
             PRINTCHARS(snprintf(&_fbuf[_next],      \
-                PRINTCHUNK,         \
+                PRINTCHUNK- _next ,         \
                 "%u;%u;%u;%u;%d\n", \
             _nmap[_item->_data._node[0]],   \
             _nmap[_item->_data._node[1]],   \
@@ -484,11 +487,11 @@
                 {"vert2_row", "vert2_col"} ) ;      \
         ncutil::def_var(        \
             _jcfg._mesh_file, "vert2_tag", NC_INT,  \
-                "2-vertex id-tags" ,                \
+                "2-vertex ID integers" ,            \
                 {"vert2_row", "singleton"} ) ;      \
         ncutil::def_var(        \
             _jcfg._mesh_file, "power_val", NC_DOUBLE,   \
-                "vertex power values" ,             \
+                "vertex power weights" ,            \
                 {"vert2_row", "singleton"} ) ;      \
                                 \
         _pos.clear(); _pos.set_alloc(_last * 2);    \
