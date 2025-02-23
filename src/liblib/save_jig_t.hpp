@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 21 Apr., 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -158,6 +158,12 @@
                     _jcfg->_mesh_siz2 << "\n" ;
                 _file << "MESH_SIZ3 = " <<
                     _jcfg->_mesh_siz3 << "\n" ;
+
+                _file << "MESH_ORPH = " <<
+                    _jcfg->_mesh_orph << "\n" ;
+
+                _file << "MESH_LOCK = " <<
+                    _jcfg->_mesh_lock << "\n" ;
 
                 _file << "MESH_TOP1 = " <<
                     _jcfg->_mesh_top1 << "\n" ;
