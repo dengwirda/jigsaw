@@ -83,6 +83,15 @@
     /*--------------------------- simply return the value */
 
     __inline_call real_type eval (
+        real_type *_ppos
+        )
+    {
+        __unreferenced(_ppos) ;
+
+        return  this-> _hval  ;
+    }
+
+    __inline_call real_type eval (
         real_type *_ppos,
         hint_type &_hint
         )

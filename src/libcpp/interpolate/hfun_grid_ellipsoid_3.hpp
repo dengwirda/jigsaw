@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 Jun., 2022
+     * Last updated: 20 Oct., 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -114,12 +114,13 @@
 
     vals_type                      _htop ;  // mean at poles
     vals_type                      _hbot ;
+    
+    real_type                      _ivdx, _ivdy ;
 
     containers::array <
         vals_type, allocator>      _dhdx ;
 
-    bool_type                      _xvar ;
-    bool_type                      _yvar ;
+    bool_type                      _xvar, _yvar ;
 
     bool_type                      _wrap ;
 
@@ -148,8 +149,8 @@
         iptr_type _ynum =
        (iptr_type)this->_ypos.count() ;
 
-        _ipos = _indx % _ynum ;
-        _jpos =(_indx - _ipos )/_ynum ;
+        _jpos = _indx / _ynum ;
+        _ipos = _indx - _jpos * _ynum ;
     }
 
     __inline_call void_type toR3 (
@@ -258,6 +259,9 @@
                 _yvar =  true ; break ;
             }
         }
+        
+        this->_ivdx = +1. / _xbar ;
+        this->_ivdy = +1. / _ybar ;
 
     /*-------------------------- test for "x" periodicity */
         real_type _xdel =
@@ -352,11 +356,9 @@
         if (this->_wrap)
         {
         iptr_type _inum  = +0;
-        for (auto _iter  =
-                   this->_ypos.head() ;
-                  _iter !=
-                   this->_ypos.tend() ;
-                ++_iter , ++_inum)
+        for (auto _iter  = this->_ypos.head() ;
+                  _iter != this->_ypos.tend() ;
+                ++_iter, ++_inum)
         {
             iptr_type  _left, _pair ;
             indx_from_subs(
@@ -376,11 +378,9 @@
     /*-------------------- push nodes onto priority queue */
         {
         iptr_type _inum  = +0;
-        for (auto _iter  =
-                   this->_hmat.head() ;
-                  _iter !=
-                   this->_hmat.tend() ;
-                ++_iter , ++_inum)
+        for (auto _iter  = this->_hmat.head() ;
+                  _iter != this->_hmat.tend() ;
+                ++_iter, ++_inum)
         {
             _sort.push(_inum, _inum ) ;
         }
@@ -394,11 +394,9 @@
 
         {
         iptr_type _inum  = +0;
-        for (auto _iter  =
-                   this->_xpos.head() ;
-                  _iter !=
-                   this->_xpos.tend() ;
-                ++_iter , ++_inum)
+        for (auto _iter  = this->_xpos.head() ;
+                  _iter != this->_xpos.tend() ;
+                ++_iter, ++_inum)
         {
             this->_sinx[_inum] =
                 std::sin(this->_xpos[_inum]);
@@ -414,11 +412,9 @@
 
         {
         iptr_type _inum  = +0;
-        for (auto _iter  =
-                   this->_ypos.head() ;
-                  _iter !=
-                   this->_ypos.tend() ;
-                ++_iter , ++_inum)
+        for (auto _iter  = this->_ypos.head() ;
+                  _iter != this->_ypos.tend() ;
+                ++_iter, ++_inum)
         {
             this->_siny[_inum] =
                 std::sin(this->_ypos[_inum]);
@@ -437,6 +433,19 @@
 
     #   define UPDATED(__new, __old)    \
         std::abs(__new - __old) > _FTOL*std::abs(__new)
+
+    #   define REQUEUE(__new, __old, __idx)     \
+            if(UPDATED(__new, __old)) {         \
+            if(ISALIVE(__idx))          \
+            {                           \
+                _hmat[__idx]  = __new;  \
+                _sort.reduce(__idx , __idx) ;   \
+            }                           \
+            else                        \
+            {                           \
+                _hmat[__idx]  = __new;  \
+                _sort.push  (__idx , __idx) ;   \
+            } }
 
         for ( ; !_sort.empty() ; )
         {
@@ -491,16 +500,19 @@
                     _lpii, _lpjj, _lnod);
 
     /*-------------------- skip cells due to sorted order */
+                iptr_type _near = +0;
                 if (_inod != _base &&
-                   !ISALIVE(_inod)) continue ;
+                    ISALIVE(_inod)) _near++;
                 if (_jnod != _base &&
-                   !ISALIVE(_jnod)) continue ;
+                    ISALIVE(_jnod)) _near++;
                 if (_knod != _base &&
-                   !ISALIVE(_knod)) continue ;
+                    ISALIVE(_knod)) _near++;
                 if (_lnod != _base &&
-                   !ISALIVE(_lnod)) continue ;
+                    ISALIVE(_lnod)) _near++;
+                
+                if (_near == 0)     continue ;
 
-                vals_type _hmax;
+                vals_type _hmax = .0;
                 _hmax = this->_hmat[_inod] ;
                 _hmax = std::max(
                 _hmax , this->_hmat[_jnod]);
@@ -571,7 +583,7 @@
                 vals_type _lnew =
                      this->_hmat[_lnod] ;
 
-                if (this->_dhdx.count() >1)
+                if (this->_dhdx.count() > +1)
                 {
     /*-------------------- update adj. set, g = g(x) case */
                 if (eikonal_grid_3d (
@@ -588,37 +600,10 @@
             //  push updates one-at-a-time to ensure heap
             //  maintains its sorted order
 
-                if (_sort.
-                     keys(_inod) != _sort.null())
-                if ( UPDATED(_inew, _iold) )
-                {
-                    _hmat[_inod]  = _inew;
-                    _sort.reduce(_inod , _inod) ;
-                }
-
-                if (_sort.
-                     keys(_jnod) != _sort.null())
-                if ( UPDATED(_jnew, _jold) )
-                {
-                    _hmat[_jnod]  = _jnew;
-                    _sort.reduce(_jnod , _jnod) ;
-                }
-
-                if (_sort.
-                     keys(_knod) != _sort.null())
-                if ( UPDATED(_knew, _kold) )
-                {
-                    _hmat[_knod]  = _knew;
-                    _sort.reduce(_knod , _knod) ;
-                }
-
-                if (_sort.
-                     keys(_lnod) != _sort.null())
-                if ( UPDATED(_lnew, _lold) )
-                {
-                    _hmat[_lnod]  = _lnew;
-                    _sort.reduce(_lnod , _lnod) ;
-                }
+                REQUEUE (_inew, _iold, _inod)
+                REQUEUE (_jnew, _jold, _jnod)
+                REQUEUE (_knew, _kold, _knod)
+                REQUEUE (_lnew, _lold, _lnod)                
 
                 if (this->_wrap)
                 {
@@ -627,67 +612,39 @@
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _ipii, JEND  ,  _pair) ;
-
-                this->_hmat [_pair] =
-                    this->_hmat [_inod] ;
-
-                if (_sort.
-                     keys(_pair) != _sort.null())
-                if (_hmat[_inod] != _iold)
-                    _sort.reduce(_pair , _pair) ;
+                    _ipii, JEND, _pair) ;
+                REQUEUE (_inew, _iold, _pair)
                 }
 
                 if (_jpjj==JEND)
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _jpii, JBEG  ,  _pair) ;
-
-                this->_hmat [_pair] =
-                    this->_hmat [_jnod] ;
-
-                if (_sort.
-                     keys(_pair) != _sort.null())
-                if (_hmat[_jnod] != _jold)
-                    _sort.reduce(_pair , _pair) ;
+                    _jpii, JBEG, _pair) ;
+                REQUEUE (_jnew, _jold, _pair)
                 }
 
                 if (_kpjj==JEND)
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _kpii, JBEG  ,  _pair) ;
-
-                this->_hmat [_pair] =
-                    this->_hmat [_knod] ;
-
-                if (_sort.
-                     keys(_pair) != _sort.null())
-                if (_hmat[_knod] != _kold)
-                    _sort.reduce(_pair , _pair) ;
+                    _kpii, JBEG, _pair) ;
+                REQUEUE (_knew, _kold, _pair)
                 }
 
                 if (_lpjj==JBEG)
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _lpii, JEND  ,  _pair) ;
-
-                this->_hmat [_pair] =
-                    this->_hmat [_lnod] ;
-
-                if (_sort.
-                     keys(_pair) != _sort.null())
-                if (_hmat[_lnod] != _lold)
-                    _sort.reduce(_pair , _pair) ;
+                    _lpii, JEND, _pair) ;
+                REQUEUE (_lnew, _lold, _pair)
                 }
                 }
 
                 }
                 }
                 else
-                if (this->_dhdx.count()==1)
+                if (this->_dhdx.count() == 1)
                 {
     /*-------------------- update adj. set, const. g case */
                 if (eikonal_grid_3d (
@@ -704,37 +661,10 @@
             //  push updates one-at-a-time to ensure heap
             //  maintains its sorted order
 
-                if (_sort.
-                     keys(_inod) != _sort.null())
-                if ( UPDATED(_inew, _iold) )
-                {
-                    _hmat[_inod]  = _inew;
-                    _sort.reduce(_inod , _inod) ;
-                }
-
-                if (_sort.
-                     keys(_jnod) != _sort.null())
-                if ( UPDATED(_jnew, _jold) )
-                {
-                    _hmat[_jnod]  = _jnew;
-                    _sort.reduce(_jnod , _jnod) ;
-                }
-
-                if (_sort.
-                     keys(_knod) != _sort.null())
-                if ( UPDATED(_knew, _kold) )
-                {
-                    _hmat[_knod]  = _knew;
-                    _sort.reduce(_knod , _knod) ;
-                }
-
-                if (_sort.
-                     keys(_lnod) != _sort.null())
-                if ( UPDATED(_lnew, _lold) )
-                {
-                    _hmat[_lnod]  = _lnew;
-                    _sort.reduce(_lnod , _lnod) ;
-                }
+                REQUEUE (_inew, _iold, _inod)
+                REQUEUE (_jnew, _jold, _jnod)
+                REQUEUE (_knew, _kold, _knod)
+                REQUEUE (_lnew, _lold, _lnod)                
 
                 if (this->_wrap)
                 {
@@ -743,60 +673,32 @@
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _ipii, JEND  ,  _pair) ;
-
-                this->_hmat [_pair] =
-                    this->_hmat [_inod] ;
-
-                if (_sort.
-                     keys(_pair) != _sort.null())
-                if (_hmat[_inod] != _iold)
-                    _sort.reduce(_pair , _pair) ;
+                    _ipii, JEND, _pair) ;
+                REQUEUE (_inew, _iold, _pair)
                 }
 
                 if (_jpjj==JEND)
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _jpii, JBEG  ,  _pair) ;
-
-                this->_hmat [_pair] =
-                    this->_hmat [_jnod] ;
-
-                if (_sort.
-                     keys(_pair) != _sort.null())
-                if (_hmat[_jnod] != _jold)
-                    _sort.reduce(_pair , _pair) ;
+                    _jpii, JBEG, _pair) ;
+                REQUEUE (_jnew, _jold, _pair)
                 }
 
                 if (_kpjj==JEND)
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _kpii, JBEG  ,  _pair) ;
-
-                this->_hmat [_pair] =
-                    this->_hmat [_knod] ;
-
-                if (_sort.
-                     keys(_pair) != _sort.null())
-                if (_hmat[_knod] != _kold)
-                    _sort.reduce(_pair , _pair) ;
+                    _kpii, JBEG, _pair) ;
+                REQUEUE (_knew, _kold, _pair)
                 }
 
                 if (_lpjj==JBEG)
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _lpii, JEND  ,  _pair) ;
-
-                this->_hmat [_pair] =
-                    this->_hmat [_lnod] ;
-
-                if (_sort.
-                     keys(_pair) != _sort.null())
-                if (_hmat[_lnod] != _lold)
-                    _sort.reduce(_pair , _pair) ;
+                    _lpii, JEND, _pair) ;
+                REQUEUE (_lnew, _lold, _pair)
                 }
                 }
 
@@ -809,6 +711,7 @@
 
     #   undef ISALIVE
     #   undef UPDATED
+    #   undef REQUEUE
     }
 
     /*
@@ -816,6 +719,14 @@
      * EVAL: eval. size-fun. value.
     --------------------------------------------------------
      */
+
+    __inline_call real_type eval (
+        real_type *_ppos
+        )
+    {
+        auto _hint = this->null_hint();
+        return eval(_ppos, _hint);
+    }
 
     __normal_call real_type eval (
         real_type *_ppos ,
@@ -932,15 +843,8 @@
         }
         else
         {
-            real_type _xmin, _xmax, _xdel;
-            _xmin = *this->_xpos.head();
-            _xmax = *this->_xpos.tail();
-
-            _xdel = (_xmax - _xmin) /
-                (this->_xpos.count () - 1) ;
-
-            _jpos = (iptr_type)
-                ((_alon-_xmin)/_xdel) ;
+            _jpos = (iptr_type) (
+           (_alon -*this->_xpos.head()) * this->_ivdx) ;
         }
 
     /*---------------------------- find enclosing y-range */
@@ -957,15 +861,8 @@
         }
         else
         {
-            real_type _ymin, _ymax, _ydel;
-            _ymin = *this->_ypos.head();
-            _ymax = *this->_ypos.tail();
-
-            _ydel = (_ymax - _ymin) /
-                (this->_ypos.count () - 1) ;
-
-            _ipos = (iptr_type)
-                ((_alat-_ymin)/_ydel) ;
+            _ipos = (iptr_type) (
+           (_alat -*this->_ypos.head()) * this->_ivdy) ;
         }
 
         if (_ipos ==
@@ -987,17 +884,14 @@
         real_type _yp22 =
             this->_ypos[_ipos + 1] ;
 
-        real_type _xval = _alon ;
-        real_type _yval = _alat ;
-
         real_type _aa22 =
-           (_yval-_yp11) * (_xval-_xp11) ;
+           (_alat-_yp11) * (_alon-_xp11) ;
         real_type _aa21 =
-           (_yval-_yp11) * (_xp22-_xval) ;
+           (_alat-_yp11) * (_xp22-_alon) ;
         real_type _aa12 =
-           (_yp22-_yval) * (_xval-_xp11) ;
+           (_yp22-_alat) * (_alon-_xp11) ;
         real_type _aa11 =
-           (_yp22-_yval) * (_xp22-_xval) ;
+           (_yp22-_alat) * (_xp22-_alon) ;
 
         iptr_type _kk11 ;
         indx_from_subs(
