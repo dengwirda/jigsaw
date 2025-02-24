@@ -48,6 +48,7 @@
     // from rdel_mesh_3.hpp
 
 
+    // consider geometrical as well as topol. encroachment
     #   define __GEOMBNDS
 
     /*
@@ -171,9 +172,9 @@
         real_type static const _pert =
             std::pow(
         std::numeric_limits<real_type>
-        ::epsilon(),(real_type)+.80) ;
+        ::epsilon(),(real_type)+.5);
 
-        _pmax[ 3] = (real_type)+.00  ;
+        _pmax[ 3] = (real_type)+.0 ;
 
         if  (_mode > +1)
         {
@@ -341,7 +342,7 @@
         real_type static const _pert =
             std::pow(
         std::numeric_limits<real_type>
-        ::epsilon(),(real_type)+.80) ;
+        ::epsilon(),(real_type)+.5);
 
         bool_type _bnds = false;
 

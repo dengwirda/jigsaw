@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Jul., 2022
+     * Last updated: 29 Apr., 2023
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2023
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -65,14 +65,26 @@
 
         double      _node_init = (double   )  +0. ;
         double      _node_rule = (double   )  +0. ;
+        
         double      _edge_init = (double   )  +0. ;
         double      _edge_rule = (double   )  +0. ;
+        double      _edge_node = (double   )  +0. ;
+        
         double      _face_init = (double   )  +0. ;
         double      _face_rule = (double   )  +0. ;
+        double      _face_node = (double   )  +0. ;
+        
         double      _tria_init = (double   )  +0. ;
         double      _tria_rule = (double   )  +0. ;
+        double      _tria_node = (double   )  +0. ;
+        
+        double      _dt_update = (double   )  +0. ;
+        double      _rdel_find = (double   )  +0. ;
+        double      _rdel_push = (double   )  +0. ;
+        double      _rdel_bnds = (double   )  +0. ;
 
         double      _list_trim = (double   )  +0. ;
+        double      _list_push = (double   )  +0. ;
 
         double      _topo_init = (double   )  +0. ;
 

@@ -120,10 +120,25 @@
         typename rdel_opts::node_kind
              _kout = _kind;
 
+        #   ifdef  __use_timers
+        typename std ::chrono::
+        high_resolution_clock::time_point  _ttic ;
+        typename std ::chrono::
+        high_resolution_clock::time_point  _ttoc ;
+        typename std ::chrono::
+        high_resolution_clock _time ;
+
+        __unreferenced(_time) ; // why does MSVC need this??
+        #   endif//__use_timers
+
     /*---------------- try lower-dim. faces until success */
         for (_tdim = _topo; _tdim > 0 ; )
         {
             _eold.set_count(  +0) ;
+
+        #   ifdef  __use_timers
+            _ttic = _time.now() ;
+        #   endif//__use_timers
 
             real_type  _PPOS[3] ;
             _PPOS[0] = _ppos[0] ;
@@ -151,9 +166,14 @@
                 _tcav.set_count(+0) ;
                 _bscr.set_count(+0) ;
                 _bcav.set_count(+0) ;
-
+                
                 break ;
             }
+            
+        #   ifdef  __use_timers
+            _ttoc = _time.now() ;
+            _tcpu._dt_update+=_tcpu.nano_span(_ttic,_ttoc);
+        #   endif//__use_timers
 
         /*------------------------- config. new node data */
             _mesh._tria.
@@ -179,11 +199,24 @@
             }
 
         /*------------------------- keep "old" rDT cavity */
+        #   ifdef  __use_timers
+            _ttic = _time.now() ;
+        #   endif//__use_timers
+        
             find_rdel(
                 _geom, _mesh, _told, _eold
                 ) ;
+                
+        #   ifdef  __use_timers
+            _ttoc = _time.now() ;
+            _tcpu._rdel_find+=_tcpu.nano_span(_ttic,_ttoc);
+        #   endif//__use_timers
 
         /*------------------------- form "new" rDT cavity */
+        #   ifdef  __use_timers
+            _ttic = _time.now() ;
+        #   endif//__use_timers
+        
             push_rdel( _geom, _hfun,
                 _mesh,  true, _nnew, _tnew ,
                 _escr, _ecav,
@@ -194,8 +227,18 @@
 
             _mesh._tria.node(
                 _node)->fdim() =  _tdim ;
+                
+        #   ifdef  __use_timers
+            _ttoc = _time.now() ;
+            _tcpu._rdel_push+=_tcpu.nano_span(_ttic,_ttoc);
+        #   endif//__use_timers
 
         /*------------------------- test "new" rDT cavity */
+        #   ifdef  __use_timers
+            _ttic = _time.now() ;
+        #   endif//__use_timers
+        
+            bool_type  _done = false;
             real_type  _pnow[2] ;
             _pnow[0] = _ppos[0] ;
             _pnow[1] = _ppos[1] ;
@@ -257,7 +300,14 @@
                 _bcav.set_count(+0) ;
             }
         /*------------------- new node acceptable "as-is" */
-            else break ;
+            else _done = true ;
+            
+        #   ifdef  __use_timers
+            _ttoc = _time.now() ;
+            _tcpu._rdel_bnds+=_tcpu.nano_span(_ttic,_ttoc);
+        #   endif//__use_timers
+        
+            if ( _done) break ;
         }
 
         return   _kout ;

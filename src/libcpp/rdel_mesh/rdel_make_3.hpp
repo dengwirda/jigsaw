@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Jul., 2021
+     * Last updated: 12 Nov., 2024
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -126,6 +126,13 @@
     typedef containers::array       <
                 iptr_type           >   iptr_list ;
 
+    typedef containers::array       <
+                edge_data           >   edat_list ;
+    typedef containers::array       <
+                face_data           >   fdat_list ;
+    typedef containers::array       <
+                tria_data           >   tdat_list ;
+
     typedef mesh::rdel_pred_base_3  <
                 geom_type,
                 mesh_type           >   rdel_pred ;
@@ -141,16 +148,29 @@
      */
 
     __static_call
-    __normal_call void_type test_edge (
+    __normal_call void_type push_edge (
         mesh_type &_mesh ,
         geom_type &_geom ,
         iptr_type  _tpos ,
         typename
     mesh_type::edge_list & _edge_test ,
         iptr_type &_nedg ,
+        iptr_type  _pass ,
         rdel_opts &_opts
         )
     {
+    /*-------------------------------- correct node dims? */
+        iptr_type _fdim =+0;
+        for (auto _node =+4; _node-- != +0; )
+        {
+        if (_mesh._tria.node (
+            _mesh._tria.tria (
+            _tpos)->node(_node))->fdim() <= +1)
+            _fdim += +1 ;
+        }
+    /*-------------------------------- quick break if not */
+        if (_fdim  < +2 ) return ;
+
     /*-------------------------------- check "restricted" */
         for (auto _fpos =+6; _fpos-- != +0; )
         {
@@ -164,13 +184,12 @@
             _tnod[1] = _mesh._tria.
             tria(_tpos)->node(_tnod[1]);
 
-        /*--------------- face contains higher dim. nodes */
             if (_mesh._tria.node(
-                _tnod[0])->fdim() > 1 ||
+                _tnod[0])->fdim() < 2 &&
                 _mesh._tria.node(
-                _tnod[1])->fdim() > 1 )
-                continue   ;
-
+                _tnod[1])->fdim() < 2 )
+            {
+        /*--------------- face contains correct k^d nodes */
             algorithms::isort (
                 &_tnod[0], &_tnod[2],
                     std::less<iptr_type>()) ;
@@ -179,45 +198,55 @@
             _edat._node[0] = _tnod[ 0] ;
             _edat._node[1] = _tnod[ 1] ;
 
+            bool_type _test = true;
             typename mesh_type::
                      edge_list::
                 item_type *_mptr = nullptr  ;
+        //  pragma omp critical(update_face_edg2)
             if(_edge_test.
                 find( _edat, _mptr) )
             {
         /*--------------------------- don't test repeats! */
-                continue   ;
+                _test = false;
             }
+
+            _edat._pass    = _pass;
 
             _edat._tadj    = _tpos;
             _edat._eadj    =
                 (char_type)  _fpos;
-            _edat._pass    =   +0 ;
 
+            if (_test)
+            {
         /*--------------------------- call edge predicate */
-            real_type _fbal[ 4];
+            char_type _topo[ 2], _feat;
+            real_type _ebal[ 4];
             real_type _sbal[ 4];
 
             __unreferenced(_opts);
 
-            bool_type _rBND  =
+            bool_type _rBND    =
                 rdel_pred::edge_ball (
                     _geom,_mesh,
                     _edat._tadj,
                     _edat._eadj,
-                    _fbal,_sbal,
-                    _edat._feat,
-                    _edat._topo,
+                    _ebal,_sbal,
+                    _feat,_topo,
                     _edat._part) ;
-
+            
         /*--------------------------- push edge onto mesh */
+        //  pragma omp critical(update_face_edg2)
+            {
             if (_rBND) _nedg += +1 ;
 
             if (_rBND)
-            _mesh.push_edge(_edat) ;
+            _mesh.push_edge (_edat) ;
 
-            _edge_test.push(_edat) ;
+            _edge_test.push (_edat) ;
+            }
+            }
 
+            }
         } // for (auto _fpos = +6; _fpos-- != +0; )
     }
 
@@ -228,7 +257,7 @@
      */
 
     __static_call
-    __normal_call void_type test_face (
+    __normal_call void_type push_face (
         mesh_type &_mesh ,
         geom_type &_geom ,
         iptr_type  _tpos ,
@@ -236,9 +265,22 @@
     mesh_type::face_list & _face_test ,
         iptr_type &_nfac ,
         iptr_type &_ndup ,
+        iptr_type  _pass ,
         rdel_opts &_opts
         )
     {
+    /*-------------------------------- correct node dims? */
+        iptr_type _fdim =+0;
+        for (auto _node =+4; _node-- != +0; )
+        {
+        if (_mesh._tria.node (
+            _mesh._tria.tria (
+            _tpos)->node(_node))->fdim() <= +2)
+            _fdim += +1 ;
+        }
+    /*-------------------------------- quick break if not */
+        if (_fdim  < +3 ) return ;
+
     /*-------------------------------- check "restricted" */
         for (auto _fpos =+4; _fpos-- != +0; )
         {
@@ -254,15 +296,14 @@
             _tnod[2] = _mesh._tria.
             tria(_tpos)->node(_tnod[2]);
 
-        /*--------------- face contains higher dim. nodes */
             if (_mesh._tria.node(
-                _tnod[0])->fdim() > 2 ||
+                _tnod[0])->fdim() < 3 &&
                 _mesh._tria.node(
-                _tnod[1])->fdim() > 2 ||
+                _tnod[1])->fdim() < 3 &&
                 _mesh._tria.node(
-                _tnod[2])->fdim() > 2 )
-                continue   ;
-
+                _tnod[2])->fdim() < 3 )
+            {
+        /*--------------- face contains correct k^d nodes */
             algorithms::isort (
                 &_tnod[0], &_tnod[3],
                     std::less<iptr_type>()) ;
@@ -272,9 +313,11 @@
             _fdat._node[1] = _tnod[ 1] ;
             _fdat._node[2] = _tnod[ 2] ;
 
+            bool_type _test = true;
             typename mesh_type::
                      face_list::
                 item_type *_mptr = nullptr  ;
+        //  pragma omp critical(update_face_tri3)
             if(_face_test.
                 find( _fdat, _mptr) )
             {
@@ -283,16 +326,19 @@
                 _mptr->_data._dups;
 
         /*--------------------------- don't test repeats! */
-                continue   ;
+                _test = false ;
             }
+
+            _fdat._pass    = _pass;
 
             _fdat._tadj    = _tpos;
             _fdat._fadj    =
                 (char_type)  _fpos;
-            _fdat._pass    = 0 ;
-            _fdat._dups    = 0 ; // count num. dup's
+            _fdat._dups    = +0; // count num. dup's
                                  // only in hash-set
 
+            if (_test)
+            {
         /*--------------------------- call face predicate */
             char_type _topo[ 2], _feat;
             real_type _fbal[ 4];
@@ -308,8 +354,10 @@
                     _fbal,_sbal,
                     _feat,_topo,
                     _fdat._part) ;
-
+            
         /*--------------------------- push face onto mesh */
+        //  pragma omp critical(update_face_tri3)
+            {
             if (_rBND) _nfac += +1 ;
 
             if (_rBND)
@@ -319,7 +367,10 @@
             _mesh.push_face(_fdat) ;
 
             _face_test.push(_fdat) ;
+            }
+            }
 
+            }
         } // for (auto _fpos = +4; _fpos-- != +0; )
     }
 
@@ -330,7 +381,7 @@
      */
 
     __static_call
-    __normal_call void_type test_tria (
+    __normal_call void_type push_tria (
         mesh_type &_mesh ,
         geom_type &_geom ,
         iptr_type  _tpos ,
@@ -338,11 +389,12 @@
         /* typename
     mesh_type::tria_list & _tria_test , */
         iptr_type &_ntri ,
+        iptr_type  _pass ,
         rdel_opts &_opts
         )
     {
-    /*-------------------------------- check "restricted" */
         {
+        /*---------------------------- check "restricted" */
             iptr_type  _tnod[ +4] ;
             _tnod[0] = _mesh.
             _tria.tria(_tpos)->node(0);
@@ -353,35 +405,33 @@
             _tnod[3] = _mesh.
             _tria.tria(_tpos)->node(3);
 
-        /*--------------- face contains higher dim. nodes */
             if (_mesh._tria.node(
-                _tnod[0])->fdim() > 3 ||
+                _tnod[0])->fdim() < 4 &&
                 _mesh._tria.node(
-                _tnod[1])->fdim() > 3 ||
+                _tnod[1])->fdim() < 4 &&
                 _mesh._tria.node(
-                _tnod[2])->fdim() > 3 ||
+                _tnod[2])->fdim() < 4 &&
                 _mesh._tria.node(
-                _tnod[3])->fdim() > 3 )
-                return ;
-
+                _tnod[3])->fdim() < 4 )
+            {
+        /*--------------- face contains correct k^d nodes */
             tria_data _tdat;
             _tdat._node[0] = _tnod[ 0] ;
             _tdat._node[1] = _tnod[ 1] ;
             _tdat._node[2] = _tnod[ 2] ;
             _tdat._node[3] = _tnod[ 3] ;
 
-            _tdat._tadj    = _tpos;
+            _tdat._tadj =  _tpos ;
 
-        //!!_tria_test.push (_tdat) ; won't have repeats!
+        //  _tria_test.push( _tdat) ; guarantee no repeats!
 
-        /*--------------------------- call tria predicate */
+        /*--------------------------- calc tria cost/kind */
             _tdat._part =  _sign ;
-            _tdat._pass =    +0  ;
-
-            real_type _tbal[ +4] ;
+            _tdat._pass =  _pass ;
 
             __unreferenced(_opts);
 
+            real_type _tbal[ +3] ;
             bool_type _rBND   =
                 rdel_pred::tria_ball (
                     _geom,_mesh,
@@ -389,14 +439,18 @@
                     _tbal,
                     _tdat._part) ;
 
-            _sign = _tdat._part  ;
+            _sign = _tdat. _part ;
 
         /*--------------------------- push tria onto mesh */
+        //  pragma omp critical(update_face_tri4)
+            {
             if (_rBND) _ntri += +1 ;
 
             if (_rBND)
             _mesh.push_tria(_tdat) ;
+            }
 
+            }
         }
     }
 
@@ -410,55 +464,40 @@
     __normal_call void_type push_tria (
         mesh_type &_mesh ,
         iptr_type  _tpos ,
-        iptr_type &_ntri ,
         rdel_opts &_opts
         )
     {
     /*-------------------------------- check "restricted" */
         {
-            iptr_type  _tnod[ +4] ;
-            _tnod[0] = _mesh.
-            _tria.tria(_tpos)->node(0);
-            _tnod[1] = _mesh.
-            _tria.tria(_tpos)->node(1);
-            _tnod[2] = _mesh.
-            _tria.tria(_tpos)->node(2);
-            _tnod[3] = _mesh.
-            _tria.tria(_tpos)->node(3);
-
-        /*--------------- face contains higher dim. nodes */
-            if (_mesh._tria.node(
-                _tnod[0])->fdim() > 3 ||
-                _mesh._tria.node(
-                _tnod[1])->fdim() > 3 ||
-                _mesh._tria.node(
-                _tnod[2])->fdim() > 3 ||
-                _mesh._tria.node(
-                _tnod[3])->fdim() > 3 )
-                return ;
-
             tria_data _tdat;
-            _tdat._node[0] = _tnod[ 0] ;
-            _tdat._node[1] = _tnod[ 1] ;
-            _tdat._node[2] = _tnod[ 2] ;
-            _tdat._node[3] = _tnod[ 3] ;
+            _tdat._node[0] = _mesh.
+            _tria.tria(_tpos)->node(0) ;
+            _tdat._node[1] = _mesh.
+            _tria.tria(_tpos)->node(1) ;
+            _tdat._node[2] = _mesh.
+            _tria.tria(_tpos)->node(2) ;
+            _tdat._node[3] = _mesh.
+            _tria.tria(_tpos)->node(3) ;
 
-            _tdat._tadj    = _tpos ;
-
+            if (_mesh._tria.node(
+            _tdat._node[0])->fdim() < 4 &&
+                _mesh._tria.node(
+            _tdat._node[1])->fdim() < 4 &&
+                _mesh._tria.node(
+            _tdat._node[2])->fdim() < 4 &&
+                _mesh._tria.node(
+            _tdat._node[3])->fdim() < 4 )
+            {
         /*--------------------------- call tria predicate */
+            _tdat._tadj    = _tpos ;            
             _tdat._part =    +0  ;
             _tdat._pass =    +0  ;
 
             __unreferenced (_opts) ;
 
-            bool_type _rBND   = true ;
-
         /*--------------------------- push tria onto mesh */
-            if (_rBND) _ntri += +1 ;
-
-            if (_rBND)
             _mesh.push_tria(_tdat) ;
-
+            }
         }
     }
 
@@ -850,6 +889,12 @@
         __unreferenced(_time) ; // why does MSVC need this??
     #   endif//__use_timers
 
+        iptr_type _ncpu = +1 ;  //!! sequential for now...
+
+    #   ifdef  __use_openmp
+        omp_set_num_threads(_ncpu);
+    #   endif//__use_openmp
+
     /*------------------------------ initialise mesh obj. */
     #   ifdef  __use_timers
         _ttic = _time.now() ;
@@ -864,19 +909,24 @@
             _tcpu.time_span(_ttic,_ttoc) ;
     #   endif//__use_timers
 
-        iptr_type _nedg  = +0 ;
-        iptr_type _nfac  = +0 ;
-        iptr_type _ntri  = +0 ;
+        iptr_type _pass = +0 ;
+        iptr_type _sign = -1 ;
 
-        iptr_type _ndup  = +0 ;
+        iptr_type _nedg = +0 ;
+        iptr_type _nfac = +0 ;
+        iptr_type _ntri = +0 ;
+        iptr_type _ndup = +0 ;
 
     /*------------------------- DT cells to check for rDT */
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
         iptr_list _tnew ;
         _tnew.set_alloc (
             _mesh._tria._tset.count()) ;
 
         iptr_type _tpos  = +0 ;
-
         for (auto _iter  =
             _mesh._tria._tset.head() ;
                   _iter !=
@@ -893,6 +943,9 @@
             _geom.have_feat(2) )
         {
     /*------------------------- calc. voronoi-dual points */
+    //  pragma omp parallel default(shared)
+        {
+    //  pragma omp for schedule(static)
         for( auto _iter  = _tnew.head();
                   _iter != _tnew.tend();
                 ++_iter  )
@@ -900,234 +953,225 @@
             tria_circ(_mesh, *_iter) ;
         }
         }
+        }
         else
         {
     /*------------------------- prune scaffolding tria.'s */
+        _mesh._tset.set_slots(_tnew.count()* 1) ;
+
         for( auto _iter  = _tnew.head();
                   _iter != _tnew.tend();
                 ++_iter  )
         {
-            push_tria( _mesh,
-               *_iter, _ntri, _args) ;
+            push_tria(_mesh, *_iter, _args
+                ) ;
         }
         }
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;
+        _tcpu._mesh_seed +=
+            _tcpu.time_span(_ttic,_ttoc) ;
+    #   endif//__use_timers
 
     /*------------------------- test for restricted edges */
-        if (_args.dims() >= 1 &&
-            _geom.have_feat(1) )
-        {
-
-        typename
-            mesh_type::edge_list _eset (
-        typename mesh_type::edge_hash(),
-        typename mesh_type::edge_pred(),
-           +.8, _mesh._eset.get_alloc(),
-           _tnew.count()*6) ;
-
     #   ifdef  __use_timers
         _ttic = _time.now() ;
     #   endif//__use_timers
 
-        for( auto _iter  = _tnew.head();
-                  _iter != _tnew.tend();
-                ++_iter  )
+        if (_args.dims() >= 1 && _geom.have_feat( 1) )
         {
-            test_edge( _mesh, _geom,
-               *_iter, _eset, _nedg, _args
-                ) ;
-        }
+            _mesh._eset.set_slots(_tnew.count() * 6) ;
 
+            _mesh._etwo.clear();
+            _mesh._etwo.set_slots(_tnew.count() * 6) ;
+
+        //  pragma omp parallel default(shared)
+            {
+        //  pragma omp for schedule(static)
+            for( auto _iter  = _tnew.head();
+                      _iter != _tnew.tend();
+                    ++_iter  )
+            {
+                push_edge( _mesh, _geom,*_iter, 
+                           _mesh. _etwo,
+                           _nedg, _pass, _args) ;
+            }
+            }
+        }
     #   ifdef  __use_timers
         _ttoc = _time.now() ;
         _tcpu._edge_init +=
             _tcpu.time_span(_ttic,_ttoc) ;
     #   endif//__use_timers
 
-        }
-
     /*------------------------- test for restricted faces */
-        if (_args.dims() >= 2 &&
-            _geom.have_feat(2) )
-        {
-
-        typename
-            mesh_type::face_list _fset (
-        typename mesh_type::face_hash(),
-        typename mesh_type::face_pred(),
-           +.8, _mesh._fset.get_alloc(),
-           _tnew.count()*4) ;
-
     #   ifdef  __use_timers
         _ttic = _time.now() ;
     #   endif//__use_timers
 
-        for( auto _iter  = _tnew.head();
-                  _iter != _tnew.tend();
-                ++_iter  )
+        if (_args.dims() >= 2 && _geom.have_feat( 2) )
         {
-            test_face( _mesh, _geom,*_iter,
-                _fset, _nfac, _ndup, _args
-                ) ;
-        }
+            _mesh._fset.set_slots(_tnew.count() * 4) ;
 
+            _mesh._ftwo.clear();
+            _mesh._ftwo.set_slots(_tnew.count() * 4) ;
+
+        //  pragma omp parallel default(shared)
+            {
+        //  pragma omp for schedule(static)
+            for( auto _iter  = _tnew.head();
+                      _iter != _tnew.tend();
+                    ++_iter  )
+            {
+                push_face( _mesh, _geom,*_iter, 
+                           _mesh. _ftwo,
+                    _nfac, _ndup, _pass, _args) ;
+            }
+            }
+        }
     #   ifdef  __use_timers
         _ttoc = _time.now() ;
         _tcpu._face_init +=
             _tcpu.time_span(_ttic,_ttoc) ;
     #   endif//__use_timers
 
-        }
-
     /*------------------------- test for restricted cells */
-        if (_args.dims() >= 3 &&
-            _geom.have_feat(2) )
-        {
-        bool_type _safe = true ;
-        iptr_type _sign =  -1  ;
-
-      //if (_nfac >= +1) _safe = false ;
-        if (_ndup >= +1) _safe = false ;
-
-      //typename
-      //    mesh_type::tria_list _tset (
-      //typename mesh_type::tria_hash(),
-      //typename mesh_type::tria_pred(),
-      //   +.8, _mesh._tset.get_alloc(),
-      //   _tnew.count()*1) ;
-
     #   ifdef  __use_timers
         _ttic = _time.now() ;
     #   endif//__use_timers
 
-        for( auto _iter  = _tnew.head();
-                  _iter != _tnew.tend();
-                ++_iter )
+        if (_args.dims() >= 3 && _geom.have_feat( 2) )
         {
-           _sign = _safe ? _sign : -1 ;
+        //  _mesh._tset.set_slots(_tnew.count() * 1) ;
 
-            test_tria( _mesh, _geom,
-               *_iter, _sign, _ntri, _args
-                ) ;
+        //  _mesh._ttwo.clear();
+        //  _mesh._ttwo.set_slots(_tnew.count() * 1) ;
+
+            bool_type _safe = true ;
+        //  if (_dim0 >  +0) _safe = false ;
+        //  if (_nfac >= +1) _safe = false ;
+            if (_ndup >= +1) _safe = false ;
+
+        //  pragma omp parallel default(shared)
+            {
+        //  pragma omp for schedule(static)
+            for( auto _iter  = _tnew.head();
+                      _iter != _tnew.tend();
+                    ++_iter )
+            {
+               _sign =   (!_safe) ? -1 : _sign;
+
+                push_tria( _mesh, _geom,*_iter, 
+                    _sign, _ntri, _pass, _args) ;
+            }
+            }
         }
-
     #   ifdef  __use_timers
         _ttoc = _time.now() ;
         _tcpu._tria_init +=
             _tcpu.time_span(_ttic,_ttoc) ;
     #   endif//__use_timers
 
-        }
-
         if (_args.verb() >= +2 )
         {
-    /*------------------------- push rDEL scheme metrics */
+    /*------------------------- push rDT scheme's metrics */
         _dump.push("\n")  ;
         _dump.push("**TIMING statistics...\n") ;
 
         _dump.push(" *mesh-seed = ") ;
-        _dump.push(
-        std::to_string (_tcpu._mesh_seed));
+        _dump.push(std::to_string (_tcpu._mesh_seed));
         _dump.push("\n")  ;
         _dump.push(" *edge-init = ") ;
-        _dump.push(
-        std::to_string (_tcpu._edge_init));
+        _dump.push(std::to_string (_tcpu._edge_init));
         _dump.push("\n")  ;
         _dump.push(" *face-init = ") ;
-        _dump.push(
-        std::to_string (_tcpu._face_init));
+        _dump.push(std::to_string (_tcpu._face_init));
         _dump.push("\n")  ;
         _dump.push(" *tria-init = ") ;
-        _dump.push(
-        std::to_string (_tcpu._tria_init));
+        _dump.push(std::to_string (_tcpu._tria_init));
         _dump.push("\n")  ;
 
         _dump.push("\n")  ;
         _dump.push("**rDT(x) statistics...\n") ;
 
         _dump.push(" *rDEL-edge = ");
-        _dump.push(std::to_string (_nedg));
+        _dump.push(std::to_string (_mesh._eset.count())) ;
         _dump.push("\n")  ;
         _dump.push(" *rDEL-face = ");
-        _dump.push(std::to_string (_nfac));
+        _dump.push(std::to_string (_mesh._fset.count())) ;
         _dump.push("\n")  ;
         _dump.push(" *rDEL-tria = ");
-        _dump.push(std::to_string (_ntri));
+        _dump.push(std::to_string (_mesh._tset.count())) ;
         _dump.push("\n")  ;
 
+        _dump.push("\n")  ;
         }
 
         if (_args.verb() >= +2 )
         {
-    /*------------------------- more rDEL scheme metrics */
+    /*------------------------- more rDT scheme's metrics */
         _dump.push("\n")  ;
         _dump.push("**MEMORY statistics...\n") ;
 
         _dump.push("  xDEL-type:\n") ;
         _dump.push(" *node-byte = ") ;
-        _dump.push(std::to_string(
-            sizeof(typename mesh_type::
-                tria_type:: node_type)) ) ;
+        _dump.push(std::to_string(sizeof(
+            typename mesh_type::tria_type::node_type)));
         _dump.push("\n")  ;
         _dump.push(" *nset-size = ") ;
-        _dump.push(std::to_string(
-            _mesh._tria._nset.alloc())) ;
+        _dump.push(
+            std::to_string(_mesh._tria._nset.alloc())) ;
         _dump.push("\n")  ;
         _dump.push(" *tria-byte = ") ;
-        _dump.push(std::to_string(
-            sizeof(typename mesh_type::
-                tria_type:: tria_type)) ) ;
+        _dump.push(std::to_string(sizeof(
+            typename mesh_type::tria_type::tria_type)));
         _dump.push("\n")  ;
         _dump.push(" *tset-size = ") ;
-        _dump.push(std::to_string(
-            _mesh._tria._tset.alloc())) ;
+        _dump.push(
+            std::to_string(_mesh._tria._tset.alloc())) ;
         _dump.push("\n")  ;
         _dump.push(" *pool-byte = ") ;
-        _dump.push(std::to_string(
-            _mesh._tria._fpol.bytes())) ;
+        _dump.push(
+            std::to_string(_mesh._tria._fpol.bytes())) ;
         _dump.push("\n")  ;
 
         _dump.push("\n")  ;
         _dump.push("  rDEL-type:\n") ;
         _dump.push(" *edge-byte = ") ;
         _dump.push(std::to_string(
-            sizeof(
-        typename mesh_type::edge_item)) ) ;
+            sizeof(typename mesh_type::edge_item))) ;
         _dump.push("\n")  ;
         _dump.push(" *eset-size = ") ;
-        _dump.push(std::to_string(
-            _mesh._eset._lptr.alloc())) ;
+        _dump.push(
+            std::to_string(_mesh._eset._lptr.alloc())) ;
         _dump.push("\n")  ;
         _dump.push(" *pool-byte = ") ;
-        _dump.push(
-        std::to_string(_mesh._epol.bytes())) ;
+        _dump.push(std::to_string(_mesh._epol.bytes()));
         _dump.push("\n")  ;
         _dump.push(" *face-byte = ") ;
         _dump.push(std::to_string(
-            sizeof(
-        typename mesh_type::face_item)) ) ;
+            sizeof(typename mesh_type::face_item))) ;
         _dump.push("\n")  ;
         _dump.push(" *fset-size = ") ;
-        _dump.push(std::to_string(
-            _mesh._fset._lptr.alloc())) ;
+        _dump.push(
+            std::to_string(_mesh._fset._lptr.alloc())) ;
         _dump.push("\n")  ;
         _dump.push(" *pool-byte = ") ;
-        _dump.push(
-        std::to_string(_mesh._fpol.bytes())) ;
+        _dump.push(std::to_string(_mesh._fpol.bytes()));
         _dump.push("\n")  ;
         _dump.push(" *tria-byte = ") ;
         _dump.push(std::to_string(
-            sizeof(
-        typename mesh_type::tria_item)) ) ;
+            sizeof(typename mesh_type::tria_item))) ;
         _dump.push("\n")  ;
         _dump.push(" *tset-size = ") ;
-        _dump.push(std::to_string(
-            _mesh._tset._lptr.alloc())) ;
+        _dump.push(
+            std::to_string(_mesh._tset._lptr.alloc())) ;
         _dump.push("\n")  ;
         _dump.push(" *pool-byte = ") ;
-        _dump.push(
-        std::to_string(_mesh._tpol.bytes())) ;
+        _dump.push(std::to_string(_mesh._tpol.bytes()));
         _dump.push("\n")  ;
 
+        _dump.push("\n")  ;
         }
     }
 

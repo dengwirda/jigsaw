@@ -127,16 +127,14 @@
                    _qdat. _pass )
                 {
             /*----------------- new steiner vertex coords */
-                _kind =
-                 mesh_pred::edge_node (
+                _kind = mesh_pred::edge_node(
                     _geom, _hfun ,
                     _mesh, _qdat ,
                     _eptr->_data._tadj ,
                     _eptr->_data._eadj ,
                     _ppos, _args ) ;
 
-                _hint =
-                _eptr->_data._tadj ;
+                _hint =   _eptr->_data._tadj;
 
                 if (_kind == rdel_opts::
                              fail_kind)
@@ -294,16 +292,14 @@
                    _qdat. _pass )
                 {
             /*----------------- new steiner vertex coords */
-                _kind =
-                 mesh_pred::face_node (
+                _kind = mesh_pred::face_node(
                     _geom, _hfun ,
                     _mesh, _qdat ,
                     _fptr->_data._tadj ,
                     _fptr->_data._fadj ,
                     _ppos, _args ) ;
 
-                _hint =
-                _fptr->_data._tadj ;
+                _hint =   _fptr->_data._tadj;
 
                 if (_kind == rdel_opts::
                              fail_kind)
@@ -461,15 +457,13 @@
                    _qdat. _pass )
                 {
             /*----------------- new steiner vertex coords */
-                _kind =
-                 mesh_pred::tria_node (
+                _kind = mesh_pred::tria_node(
                     _geom, _hfun ,
                     _mesh, _qdat ,
                     _tptr->_data._tadj ,
                     _ppos, _args ) ;
 
-                _hint =
-                _tptr->_data._tadj ;
+                _hint =   _tptr->_data._tadj;
 
                 if (_kind == rdel_opts::
                              fail_kind)
