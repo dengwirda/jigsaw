@@ -13,7 +13,15 @@
 #   JIGSAW: an unstructured mesh generation library 
 #------------------------------------------------------------
 
+  * Version 1.1.0:
+    -------------
+
+  - Eikonal solver support for mixed elem. types in
+    E^2, S^2 and E^3. 
+
+
   * Version 1.0.0:
+    -------------
 
   - Initial support for thread-parallelism in optim.
     phase. 
