@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2024
+     * Last updated: 26 Feb., 2025
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -1562,10 +1562,7 @@
                         &_ipos->pval(+0),
                         &_jpos->pval(+0)) ;
                         
-                    real_type _isiz = _spac[_inum];
-                    real_type _jsiz = _spac[_jnum];
-                        
-                    _dist/= _isiz + _jsiz ;
+                    _dist/= _spac [_inum] ;
 
                     _dmin = std::min(_dmin, _dist);
                 }
