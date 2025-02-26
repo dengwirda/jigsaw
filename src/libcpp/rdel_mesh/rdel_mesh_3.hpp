@@ -874,8 +874,8 @@
             }
         }
 
-        for (auto _iter  = _topo.head() ,
-                  _npos  = +0 ;
+        iptr_type _npos  = +0 ;
+        for (auto _iter  = _topo.head() ;
                   _iter != _topo.tend() ;
                 ++_iter, ++_npos)
         {
