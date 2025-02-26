@@ -165,7 +165,7 @@
                 _p1, _h1, _g1,
                 _p3, _h3, _g3)
 
-             | EIKONAL_edge_2d (
+            || EIKONAL_edge_2d (
                 _p2, _h2, _g2,
                 _p3, _h3, _g3) ;
         }
@@ -271,7 +271,7 @@
                 _p1, _h1, _g1,
                 _p3, _h3, _g3)
 
-             | EIKONAL_edge_3d (
+            || EIKONAL_edge_3d (
                 _p2, _h2, _g2,
                 _p3, _h3, _g3) ;
         }
