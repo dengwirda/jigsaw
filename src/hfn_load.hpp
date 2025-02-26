@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Mar., 2022
+     * Last updated: 27 Feb., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -1141,6 +1141,7 @@
             iptr_type _imax =
             std::numeric_limits<iptr_type>::min() ;
 
+            fp32_type _zero = +0.;
             iptr_type _nmax = +0 ;
 
             for (auto _iter  = _hfun.
@@ -1150,6 +1151,8 @@
                     ++_iter  )
             {
                 _hmin = std::min(_hmin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1159,6 +1162,8 @@
                     ++_iter  )
             {
                 _smin = std::min(_smin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1214,17 +1219,21 @@
             if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be non-negative.\n") ;
+    "**input warn.: HFUN. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: HFUN. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be non-negative.\n") ;
+    "**input warn.: DHDX. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: DHDX. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (_imin < +0 || _imax>=_nmax)
@@ -1246,6 +1255,8 @@
             fp32_type _smin =
             std::numeric_limits<fp32_type>::infinity();
 
+            fp32_type _zero = +0.;
+
             for (auto _iter  = _hfun.
             _euclidean_grid_2d._hmat.head();
                       _iter != _hfun.
@@ -1253,6 +1264,8 @@
                     ++_iter  )
             {
                 _hmin = std::min(_hmin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1262,6 +1275,8 @@
                     ++_iter  )
             {
                 _smin = std::min(_smin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             bool_type _mono = true;
@@ -1325,17 +1340,21 @@
             if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be non-negative.\n") ;
+    "**input warn.: HFUN. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: HFUN. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be non-negative.\n") ;
+    "**input warn.: DHDX. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: DHDX. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (!_mono)
@@ -1362,6 +1381,7 @@
             iptr_type _imax =
             std::numeric_limits<iptr_type>::min() ;
 
+            fp32_type _zero = +0.;
             iptr_type _nmax = +0 ;
 
             for (auto _iter  = _hfun.
@@ -1371,6 +1391,8 @@
                     ++_iter  )
             {
                 _hmin = std::min(_hmin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1380,6 +1402,8 @@
                     ++_iter  )
             {
                 _smin = std::min(_smin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1439,17 +1463,21 @@
             if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be non-negative.\n") ;
+    "**input warn.: HFUN. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: HFUN. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be non-negative.\n") ;
+    "**input warn.: DHDX. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: DHDX. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (_imin < +0 || _imax>=_nmax)
@@ -1471,6 +1499,8 @@
             fp32_type _smin =
             std::numeric_limits<fp32_type>::infinity();
 
+            fp32_type _zero = +0.;
+
             for (auto _iter  = _hfun.
             _euclidean_grid_3d._hmat.head();
                       _iter != _hfun.
@@ -1478,6 +1508,8 @@
                     ++_iter  )
             {
                 _hmin = std::min(_hmin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1487,6 +1519,8 @@
                     ++_iter  )
             {
                 _smin = std::min(_smin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             bool_type _mono = true;
@@ -1566,17 +1600,21 @@
             if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be non-negative.\n") ;
+    "**input warn.: HFUN. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: HFUN. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be non-negative.\n") ;
+    "**input warn.: DHDX. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: DHDX. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (!_mono)
@@ -1637,6 +1675,7 @@
             iptr_type _imax =
             std::numeric_limits<iptr_type>::min() ;
 
+            fp32_type _zero = +0.;
             iptr_type _nmax = +0 ;
 
             for (auto _iter  = _hfun.
@@ -1646,6 +1685,8 @@
                     ++_iter  )
             {
                 _hmin = std::min(_hmin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1655,6 +1696,8 @@
                     ++_iter  )
             {
                 _smin = std::min(_smin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1738,17 +1781,21 @@
             if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be non-negative.\n") ;
+    "**input warn.: HFUN. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: HFUN. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be non-negative.\n") ;
+    "**input warn.: DHDX. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: DHDX. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (_imin < +0 || _imax>=_nmax)
@@ -1803,6 +1850,8 @@
             real_type _ymin =  _YMAX;
             real_type _ymax =  _YMIN;
 
+            fp32_type _zero = +0.;
+
             for (auto _iter  = _hfun.
             _ellipsoid_grid_3d._hmat.head();
                       _iter != _hfun.
@@ -1810,6 +1859,8 @@
                     ++_iter  )
             {
                 _hmin = std::min(_hmin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             for (auto _iter  = _hfun.
@@ -1819,6 +1870,8 @@
                     ++_iter  )
             {
                 _smin = std::min(_smin, *_iter) ;
+                if (_nneg)
+               *_iter = std::max(_zero, *_iter) ;
             }
 
             bool_type _mono = true;
@@ -1910,17 +1963,21 @@
             if (_hmin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: HFUN. values must be non-negative.\n") ;
+    "**input warn.: HFUN. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: HFUN. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (_smin < (fp32_type)+0. && _nneg)
             {
                 _jlog.push (
-    "**input error: DHDX. values must be non-negative.\n") ;
+    "**input warn.: DHDX. values must be non-negative.\n") ;
+                _jlog.push (
+    "**input warn.: DHDX. values clipped to zero.\n") ;
 
-                _errv = __invalid_argument ;
+            //  _errv = __invalid_argument ;
             }
 
             if (!_mono)
