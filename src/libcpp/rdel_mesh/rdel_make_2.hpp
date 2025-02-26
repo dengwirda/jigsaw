@@ -727,9 +727,11 @@
     #   endif//__use_timers
 
         iptr_type _ncpu = +1 ;  //!! sequential for now...
-
+        
     #   ifdef  __use_openmp
         omp_set_num_threads(_ncpu);
+    #   else
+        __unreferenced (_ncpu) ;
     #   endif//__use_openmp
 
     /*------------------------------ initialise mesh obj. */
