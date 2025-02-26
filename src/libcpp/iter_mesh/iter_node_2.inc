@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Dec., 2022
+     * Last updated: 25 Feb., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -114,7 +114,8 @@
             &_jptr->pval(+0),
             &_kptr->pval(+0)) ;
 
-        _tmag = std::abs(_tmag) ;
+        _tmag = std::max(
+            (real_type)+0.0, _tmag) ;
 
     /*------------------------------------- odt weighting */
         pred_type::proj_node(
@@ -234,7 +235,8 @@
             &_kptr->pval(+0),
             &_lptr->pval(+0)) ;
 
-        _qmag = std::abs(_qmag) ;
+        _qmag = std::max(
+            (real_type)+0.0, _qmag) ;
 
     /*------------------------------------- odt weighting */
         pred_type::proj_node(
@@ -319,10 +321,9 @@
             _last = pred_type::geom_dims + 0;
 
         real_type _move[_last + 0] = {
-            (real_type) +0.0} ;
+                (real_type) +0.0};
 
-        _ladj =
-            (real_type) +0.0  ;
+        _ladj = (real_type) +0.0 ;
 
         real_type _wsum =
        +std::numeric_limits<real_type>::epsilon();
@@ -446,17 +447,17 @@
             &_iptr->pval(+0),
             &_kptr->pval(+0), true) ;
 
-        real_type _1mag =
-        std::abs(pred_type::tri3_mass (
+        real_type _1mag = std::max(
+        pred_type::tri3_mass(
             &_iptr->pval(+0),
             &_1bal [+0] ,
-            &_0bal [+0] ) ) ;
+            &_0bal [+0]), (real_type)+0.0);
 
-        real_type _2mag =
-        std::abs(pred_type::tri3_mass (
+        real_type _2mag = std::max(
+        pred_type::tri3_mass(
             &_iptr->pval(+0),
             &_0bal [+0] ,
-            &_2bal [+0] ) ) ;
+            &_2bal [+0]), (real_type)+0.0);
 
     /*------------------------------------- cvt weighting */
         pred_type::proj_node(
@@ -478,7 +479,6 @@
         EVALHFUN( _jnod , _jptr )
         EVALHFUN( _knod , _kptr )
 
-        real_type _irho =  (real_type)1. ;
         real_type _0rho =
             _hval[_inod] * (real_type)1./3. +
             _hval[_jnod] * (real_type)1./3. +
@@ -518,19 +518,17 @@
                 _1mag * (
             _0rho * _0bal[_idim] +
             _1rho * _1bal[_idim] +
-            _irho * _iptr->pval(_idim)
-                ) +
+            _iptr->  pval(_idim) ) +
 
         // 2nd sub-tria in voro. cell
                 _2mag * (
             _0rho * _0bal[_idim] +
             _2rho * _2bal[_idim] +
-            _irho * _iptr->pval(_idim)
-                ) ;
+            _iptr->  pval(_idim) ) ;
         }
 
-        _wsum += _1mag * (_0rho+_1rho+_irho);
-        _wsum += _2mag * (_0rho+_2rho+_irho);
+        _wsum += _1mag * (_0rho + _1rho + 1.) ;
+        _wsum += _2mag * (_0rho + _2rho + 1.) ;
 
         _ladj += _lsqr ;
 
@@ -632,17 +630,17 @@
             &_iptr->pval(+0),
             &_lptr->pval(+0), true) ;
 
-        real_type _1mag =
-        std::abs(pred_type::tri3_mass (
+        real_type _1mag = std::max(
+        pred_type::tri3_mass(
             &_iptr->pval(+0),
             &_1bal [+0] ,
-            &_0bal [+0] ) ) ;
+            &_0bal [+0]), (real_type)+0.0);
 
-        real_type _2mag =
-        std::abs(pred_type::tri3_mass (
+        real_type _2mag = std::max(
+        pred_type::tri3_mass(
             &_iptr->pval(+0),
             &_0bal [+0] ,
-            &_2bal [+0] ) ) ;
+            &_2bal [+0]), (real_type)+0.0);
 
     /*------------------------------------- cvt weighting */
         pred_type::proj_node(
@@ -665,7 +663,6 @@
         EVALHFUN( _knod , _kptr )
         EVALHFUN( _lnod , _lptr )
 
-        real_type _irho =  (real_type)1. ;
         real_type _0rho =
             _hval[_inod] * (real_type)1./4. +
             _hval[_jnod] * (real_type)1./4. +
@@ -706,19 +703,19 @@
                 _1mag * (
             _0rho * _0bal[_idim] +
             _1rho * _1bal[_idim] +
-            _irho * _iptr->pval(_idim)
+            _iptr->  pval(_idim)
                 ) +
 
         // 2nd sub-tria in voro. cell
                 _2mag * (
             _0rho * _0bal[_idim] +
             _2rho * _2bal[_idim] +
-            _irho * _iptr->pval(_idim)
+            _iptr->  pval(_idim)
                 ) ;
         }
 
-        _wsum += _1mag * (_0rho+_1rho+_irho);
-        _wsum += _2mag * (_0rho+_2rho+_irho);
+        _wsum += _1mag * (_0rho + _1rho + 1.) ;
+        _wsum += _2mag * (_0rho + _2rho + 1.) ;
 
         _ladj += _lsqr ;
 
@@ -755,10 +752,9 @@
             _last = pred_type::geom_dims + 0;
 
         real_type _move[_last + 0] = {
-            (real_type) +0.0} ;
+                (real_type) +0.0};
 
-        _ladj =
-            (real_type) +0.0  ;
+        _ladj = (real_type) +0.0 ;
 
         real_type _wsum =
        +std::numeric_limits<real_type>::epsilon();
@@ -822,7 +818,7 @@
         )
     {
         iptr_type static constexpr
-            _last = pred_type::geom_dims + 0;
+            _last = pred_type::geom_dims + 0 ;
 
     /*------------------------------------- cell indexing */
         auto _tptr =
@@ -842,40 +838,26 @@
     /*------------------------------------- cell centroid */
         real_type _pmid[_last + 0] = {
             (real_type) +0.0} ;
-
+    
         for (auto _idim =
         pred_type::geom_dims; _idim-- != +0; )
         {
-            _pmid[_idim] +=
-                _iptr->pval(_idim) ;
-            _pmid[_idim] +=
-                _jptr->pval(_idim) ;
-            _pmid[_idim] +=
-                _kptr->pval(_idim) ;
-        }
-        for (auto _idim =
-        pred_type::geom_dims; _idim-- != +0; )
-        {
-            _pmid[_idim]
-                /= (real_type) +3. ;
-        }
-
-        for (auto _idim =
-        pred_type::geom_dims; _idim-- != +0; )
-        {
+            _pmid[_idim] = (real_type) 1./3. * (
+                _iptr->pval(_idim) +
+                _jptr->pval(_idim) +
+                _kptr->pval(_idim) ) ;
+                
             _bmin[_idim] = std::min(
-                _bmin[_idim],
-                _pmid[_idim])  ;
+            _bmin[_idim], _pmid[_idim]) ;
 
             _bmax[_idim] = std::max(
-                _bmax[_idim],
-                _pmid[_idim])  ;
+            _bmax[_idim], _pmid[_idim]) ;
         }
-
+        
     /*------------------------------------- cell "length" */
         real_type _lsqr =
             pred_type::length_sq (
-                _pmid, &_node->pval(0))  ;
+                _pmid, &_node->pval(0)) ;
 
         _ladj +=  _lsqr ;
     }
@@ -897,7 +879,7 @@
     {
         real_type static const _HINC =
             std::pow(std::numeric_limits
-                <real_type>::epsilon(), .50) ;
+                <real_type>::epsilon(), +0.75) ;
 
     /*------------------------------------- cell indexing */
         auto _ppos = &_node->pval(0);
@@ -954,9 +936,9 @@
         _ppos[_idim]  = _SAVE  [_idim] ;
 
     /*------------------ finalise gradient and accumulate */
-        if (_dsup * _dsdn > (real_type)0.)
+      //if (_dsup * _dsdn >= (real_type)+0.)
             _DQDX [ _idim ] +=
-        (real_type)+.5 * (_dsup + _dsdn) ;
+        (real_type) +0.50 * (_dsup + _dsdn) ;
 
         }
     }
@@ -981,7 +963,7 @@
         )
     {
         iptr_type static constexpr
-            _last = pred_type::geom_dims + 0;
+            _last = pred_type::geom_dims + 0 ;
 
     /*------------------------------------- cell indexing */
         auto _qptr =
@@ -1008,38 +990,23 @@
         for (auto _idim =
         pred_type::geom_dims; _idim-- != +0; )
         {
-            _pmid[_idim] +=
-                _iptr->pval(_idim) ;
-            _pmid[_idim] +=
-                _jptr->pval(_idim) ;
-            _pmid[_idim] +=
-                _kptr->pval(_idim) ;
-            _pmid[_idim] +=
-                _lptr->pval(_idim) ;
-        }
-        for (auto _idim =
-        pred_type::geom_dims; _idim-- != +0; )
-        {
-            _pmid[_idim]
-                /= (real_type) +4. ;
-        }
-
-        for (auto _idim =
-        pred_type::geom_dims; _idim-- != +0; )
-        {
+            _pmid[_idim] = (real_type) 1./4. * (
+                _iptr->pval(_idim) +
+                _jptr->pval(_idim) +
+                _kptr->pval(_idim) +
+                _lptr->pval(_idim) ) ;
+                
             _bmin[_idim] = std::min(
-                _bmin[_idim],
-                _pmid[_idim])  ;
+            _bmin[_idim], _pmid[_idim]) ;
 
             _bmax[_idim] = std::max(
-                _bmax[_idim],
-                _pmid[_idim])  ;
+            _bmax[_idim], _pmid[_idim]) ;
         }
 
     /*------------------------------------- cell "length" */
         real_type _lsqr =
             pred_type::length_sq (
-                _pmid, &_node->pval(0))  ;
+                _pmid, &_node->pval(0)) ;
 
         _ladj +=  _lsqr ;
     }
@@ -1061,7 +1028,7 @@
     {
         real_type static const _HINC =
             std::pow(std::numeric_limits
-                <real_type>::epsilon(), .50) ;
+                <real_type>::epsilon(), +0.75) ;
 
     /*------------------------------------- cell indexing */
         auto _ppos = &_node->pval(0);
@@ -1122,9 +1089,9 @@
         _ppos[_idim]  = _SAVE  [_idim] ;
 
     /*------------------ finalise gradient and accumulate */
-        if (_dsup * _dsdn > (real_type)0.)
+      //if (_dsup * _dsdn >= (real_type)+0.)
             _DQDX [ _idim ] +=
-        (real_type)+.5 * (_dsup + _dsdn) ;
+        (real_type) +0.50 * (_dsup + _dsdn) ;
 
         }
     }
@@ -1147,7 +1114,7 @@
         mesh_type &_mesh ,
         conn_list &_conn ,
         node_iter  _node ,
-        real_list &_cost ,
+        fp32_list &_cost ,
         real_type *_line ,
         real_type &_ladj
         )
@@ -1162,8 +1129,8 @@
         _ladj = (real_type) 0. ;
 
     /*------------------ calc. local characteristic scale */
-        real_type _qmin =
-       +std::numeric_limits<real_type>::infinity();
+        float     _qmin =
+       +std::numeric_limits<float    >::infinity();
 
         real_type _bmin[_last] = {
        +std::numeric_limits<real_type>::infinity()
@@ -1202,8 +1169,8 @@
         _ladj = std::sqrt (_ladj / _cnum) ;
 
     /*------------------ adj. gradients wrt. pos: dQ / dx */
-        real_type _qlim = _qmin +
-            (real_type) +1.0E-002  ;
+        float    _qlim = _qmin +
+            (float    ) +1.0E-002  ;
 
         real_type _DQDX[_last] = {
             (real_type) +0.0E+000} ;
@@ -1215,8 +1182,7 @@
         for (auto _idim  =
         pred_type::geom_dims; _idim-- != +0; )
         {
-            _SAVE[_idim] =
-                _node->pval(_idim) ;
+            _SAVE[_idim] = _node->pval(_idim);
         }
 
         iptr_type _lnum  = 0, _hnum  = 1, _nnum  = 0;
@@ -1275,8 +1241,7 @@
             for (auto _idim  =
             pred_type::geom_dims; _idim-- != +0; )
             {
-                _line[_idim]
-                    = (real_type) +0. ;
+                _line[_idim] = (real_type)+0.;
             }
         }
         else

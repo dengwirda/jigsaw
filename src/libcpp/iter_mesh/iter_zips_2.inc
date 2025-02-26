@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Dec., 2022
+     * Last updated: 21 Jan., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -324,15 +324,16 @@
         conn_list &_iadj ,  // space for adj. cells
         conn_list &_jadj ,  // space for adj. cells
         conn_list &_cset ,  // space for adj. cells
-        real_list &_qsrc ,  // space for adj. costs
-        real_list &_qdst ,  // space for adj. costs
-        real_list &_qtmp ,  // space for adj. costs
+        fp32_list &_qsrc ,  // space for adj. costs
+        fp32_list &_qdst ,  // space for adj. costs
+        fp32_list &_qtmp ,  // space for adj. costs
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,  // cell quality tolerance
         iter_stat &_tcpu ,  // cpu timers/info
         real_type  _lmax    // zip. spacing threshold
-            = (real_type) +8.888E-01 ,
+            = (real_type) +8.88888E-01 ,
         real_type  _qinc    // zip. quality threshold
-            = (real_type) +3.333E-03
+            = (real_type) +3.33333E-03
         )
     {
         iptr_type static constexpr
@@ -471,11 +472,14 @@
     //  if more regular topo. is constructed via the edge
     //  zip, make it easier to do so!
 
+        real_type _qtol = 
+            std::min( +1./24., +1. - _QMOV) ;
+
         real_type _qerr = (real_type)
-            -1./16.*std::max (_ierr, _jerr) ;
+           -_qtol *std::max(0, _dnow-_dnew) ;
 
         real_type _lerr = (real_type)
-            +1./16.*std::max (_ierr, _jerr) ;
+           +_qtol *std::max(0, _dnow-_dnew) ;        
 
         if (_dnew < _dnow - 0)
         {                            // no oscl. wrt. div
@@ -638,7 +642,7 @@
                 _opts, _nptr, _prev,
                 _kern, _move, _cset,
                 _qtmp, _qdst,
-                _minC, _QLIM, _QLIM,
+                _minC, _QLIM, _QMOV,
                 _tcpu) ;
 
             if (_move <= +0 ) break;
@@ -653,11 +657,10 @@
             _cset, _qdst,  cell_kind()) ;
 
         move_okay( _qdst, _qsrc, _move,
-        std::sqrt( _QLIM) ,
-                   _qinc) ;
+            _QMOV, _qinc) ;
 
-        if((_okay = _move > 0 &&
-                    _QMIN >= _qmin+_qinc))
+        if((_okay  =  (_move > 0) && 
+            _QMIN >=  (_qmin + _qinc)))
         {
     /*--------------------------------- delete old cavity */
             _pop_sets( _mesh , _iset );
@@ -704,15 +707,16 @@
         conn_list &_jadj ,  // space for adj. cells
         conn_list &_kadj ,  // space for adj. cells
         conn_list &_cset ,  // space for adj. cells
-        real_list &_qsrc ,  // space for adj. costs
-        real_list &_qdst ,  // space for adj. costs
-        real_list &_qtmp ,  // space for adj. costs
+        fp32_list &_qsrc ,  // space for adj. costs
+        fp32_list &_qdst ,  // space for adj. costs
+        fp32_list &_qtmp ,  // space for adj. costs
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,  // cell quality tolerance
         iter_stat &_tcpu ,  // cpu timers/info
         real_type  _lmax    // zip. spacing threshold
-            = (real_type) +8.666E-01 ,
+            = (real_type) +8.66667E-01 ,
         real_type  _qinc    // zip. quality threshold
-            = (real_type) +3.333E-03
+            = (real_type) +3.33333E-03
         )
     {
         iptr_type static constexpr
@@ -964,7 +968,7 @@
                 _opts, _nptr, _prev,
                 _kern, _move, _cset,
                 _qtmp, _qdst,
-                _minC, _QLIM, _QLIM,
+                _minC, _QLIM, _QMOV,
                 _tcpu) ;
 
             if (_move <= +0 ) break;
@@ -979,11 +983,10 @@
             _cset, _qdst,  cell_kind()) ;
 
         move_okay( _qdst, _qsrc, _move,
-        std::sqrt( _QLIM) ,
-                   _qinc) ;
+            _QMOV, _qinc) ;
 
-        if((_okay = _move > 0 &&
-                    _QMIN >= _qmin+_qinc))
+        if((_okay  =  (_move > 0) && 
+            _QMIN >=  (_qmin + _qinc)))
         {
     /*--------------------------------- delete old cavity */
             _pop_sets( _mesh , _iset );

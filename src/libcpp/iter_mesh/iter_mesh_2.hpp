@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 04 Dec., 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda,
      * Marc Tunnell
      * d.engwirda@gmail.com
@@ -121,6 +121,9 @@
             ::array< iptr_type >        iptr_list ;
     typedef containers
             ::array< size_t    >        uint_list ;
+            
+    typedef containers
+            ::array< fp32_t    >        fp32_list ;
     typedef containers
             ::array< real_type >        real_list ;
 
@@ -449,9 +452,9 @@
         if (_opts.verb() >= 0 )
         {
             _dump.push(
-    "#------------------------------------------------------------\n"
-    "#    |MOVE.|      |FLIP.|      |MERGE|      |SPLIT| \n"
-    "#------------------------------------------------------------\n"
+"#-----------------------------------------------------------------------\n"
+"#     |MOVE.|       |FLIP.|       |MERGE|       |SPLIT| \n"
+"#-----------------------------------------------------------------------\n"
                     ) ;
         }
 
@@ -488,9 +491,9 @@
         static constexpr ITER_MAX_ = max_subit ;
 
         real_type _QMIN = init_cost (_mesh, _opts) ;
-        real_type _QMOV = +0. ;
-        real_type _DMOV = +0. ;
-
+        real_type _QMOV = 0.0;
+        real_type _DMOV = 0.0;
+        
         real_list _hval ;         // cache h(x) node val.
         _hval.set_count(
             _mesh. node().count(),
@@ -501,7 +504,7 @@
         {
     /*------------------------------ set-up current iter. */
             init_mark(_mesh ,
-                _mark,std::max(_iter - 1, +0)) ;
+                _mark, std::max(_iter - 1, 0)) ;
 
             _nset.set_count(  +0);
 
@@ -511,29 +514,25 @@
             size_t    _ndiv = +0 ;
 
     /*------------------------------ scale quality limits */
-            iptr_type _nsub = _iter +1 ;
+            iptr_type _nsub = _iter + 1 ;
 
-            _nsub =
-            std::min(ITER_MAX_, _nsub) ;
-            _nsub =
-            std::max(ITER_MIN_, _nsub) ;
+            _nsub = std::min(ITER_MAX_, _nsub) ;
+            _nsub = std::max(ITER_MIN_, _nsub) ;
 
-            real_type _RMIN = _QMIN *
-           (real_type)(0.90 + 1./20 * (_iter - 1)) ;
-            real_type _RMAX = _QMIN *
-           (real_type)(0.90 + 1./30 * (_iter - 1)) ;
+            real_type _QLOW = _QMIN *  // hill climbing
+           (real_type)(.875 + .05 * (_iter - 1)) ;
 
+            real_type _QLIM = 
+                std::min (_opts.qlim(), _QLOW) ;
             real_type _DLIM =
-           (real_type)+1.-_opts.qtol() ;
+               (real_type) +1.0 - _opts.qtol() ;
 
-            _DMOV = std::max(_DMOV, _DLIM) ;
-            _DMOV = std::min(_DMOV, _RMAX) ;
+            real_type constexpr _TINY = 1.E-02 ;
 
-            real_type _QLIM = std::min (
-                _opts.qlim(),_RMIN) ;
-
-            _QMOV = std::max(_QMOV, _QLIM) ;
-            _QMOV = std::min(_QMOV, _RMAX) ;
+            _QMOV = std::max(_QMOV, std::min(
+                1., _QLIM + _TINY * (_iter - 1)));
+            _DMOV = std::max(_DMOV, std::min(
+                1., _DLIM + _TINY * (_iter - 1)));
 
     /*------------------------------ 1. CELL GEOM. PASSES */
 
@@ -700,7 +699,7 @@
                 _zip_mesh( _geom, _mesh , _hfun ,
                     _kern, _hval, _nset ,
                     _mark, _iter, _opts ,
-                    _QLIM, _DLIM,
+                    _QLIM, _QMOV, _DLIM , _DMOV ,
                     _nzip, _ndiv, _tcpu ) ;
             }
 
@@ -742,27 +741,26 @@
             if (_opts.verb() >= 0)
             {
             std::stringstream _sstr ;
-            _sstr << std::setw(11) << _nmov
-                  << std::setw(13) << _nflp
-                  << std::setw(13) << _nzip
-                  << std::setw(13) << _ndiv
+            _sstr << std::setw(12) << _nmov
+                  << std::setw(14) << _nflp
+                  << std::setw(14) << _nzip
+                  << std::setw(14) << _ndiv
                   <<   "\n" ;
             _dump.push(_sstr.str()) ;
             }
 
+    /*------------------------------ stop non-convergence */
+            _QMOV = std::max(_QMOV, 1. -
+                ((real_type) _nmov) /
+                    _mesh.node().count()) ;
+
+            _DMOV = std::max(_DMOV, 1. -
+                ((real_type) _nmov) /
+                    _mesh.node().count()) ;
+
     /*------------------------------ has iter. converged? */
-            _QMOV = std::max(_QLIM, 1. -
-                ((real_type) _nmov) /
-                    _mesh.node().count()) ;
-
-            _DMOV = std::max(_DLIM, 1. -
-                ((real_type) _nmov) /
-                    _mesh.node().count()) ;
-
-        //  if (_nset.count() == 0) break ;
-            if (_nmov == +0 &&
-                _nzip == +0 &&
-                _ndiv == +0 &&
+            if (_nmov == +0 && 
+            //  _nzip == +0 && _ndiv == +0 &&
                 _nflp == +0 )       break ;
         }
 
@@ -773,120 +771,92 @@
             _dump.push("**TIMING statistics...\n") ;
 
             _dump.push("  MOVE-NODE: ");
-            _dump.push(
-            std::to_string(_tcpu._move_node)) ;
+            _dump.push(std::to_string(_tcpu._move_node));
             _dump.push("\n");
             _dump.push(" *init-node: ");
-            _dump.push(
-            std::to_string(_tcpu._init_node)) ;
+            _dump.push(std::to_string(_tcpu._init_node));
             _dump.push("\n");
             _dump.push(" *part-node: ");
-            _dump.push(
-            std::to_string(_tcpu._part_node)) ;
+            _dump.push(std::to_string(_tcpu._part_node));
             _dump.push("\n");
             _dump.push(" *core-node: ");
-            _dump.push(
-            std::to_string(_tcpu._core_node)) ;
+            _dump.push(std::to_string(_tcpu._core_node));
             _dump.push("\n");
             _dump.push(" *seqs-node: ");
-            _dump.push(
-            std::to_string(_tcpu._seqs_node)) ;
+            _dump.push(std::to_string(_tcpu._seqs_node));
             _dump.push("\n");
             _dump.push(" *para-node: ");
-            _dump.push(
-            std::to_string(_tcpu._para_node)) ;
+            _dump.push(std::to_string(_tcpu._para_node));
         //  _dump.push("\n");
         //  _dump.push(" *xDIR-node: ");
-        //  _dump.push(
-        //  std::to_string(_tcpu._ldir_node)) ;
+        //  _dump.push(std::to_string(_tcpu._ldir_node));
         //  _dump.push("\n");
         //  _dump.push(" *xOPT-node: ");
-        //  _dump.push(
-        //  std::to_string(_tcpu._lopt_node)) ;
+        //  _dump.push(std::to_string(_tcpu._lopt_node));
             _dump.push("\n\n");
 
             _dump.push("  MOVE-DUAL: ");
-            _dump.push(
-            std::to_string(_tcpu._move_dual)) ;
+            _dump.push(std::to_string(_tcpu._move_dual));
             _dump.push("\n");
             _dump.push(" *init-dual: ");
-            _dump.push(
-            std::to_string(_tcpu._init_dual)) ;
+            _dump.push(std::to_string(_tcpu._init_dual));
             _dump.push("\n");
             _dump.push(" *part-dual: ");
-            _dump.push(
-            std::to_string(_tcpu._part_dual)) ;
+            _dump.push(std::to_string(_tcpu._part_dual));
             _dump.push("\n");
             _dump.push(" *core-dual: ");
-            _dump.push(
-            std::to_string(_tcpu._core_dual)) ;
+            _dump.push(std::to_string(_tcpu._core_dual));
             _dump.push("\n");
             _dump.push(" *seqs-dual: ");
-            _dump.push(
-            std::to_string(_tcpu._seqs_dual)) ;
+            _dump.push(std::to_string(_tcpu._seqs_dual));
             _dump.push("\n");
             _dump.push(" *para-dual: ");
-            _dump.push(
-            std::to_string(_tcpu._para_dual)) ;
+            _dump.push(std::to_string(_tcpu._para_dual));
         //  _dump.push("\n");
         //  _dump.push(" *xDIR-dual: ");
-        //  _dump.push(
-        //  std::to_string(_tcpu._ldir_dual)) ;
+        //  _dump.push(std::to_string(_tcpu._ldir_dual));
         //  _dump.push("\n");
         //  _dump.push(" *xOPT-dual: ");
-        //  _dump.push(
-        //  std::to_string(_tcpu._lopt_dual)) ;
+        //  _dump.push(std::to_string(_tcpu._lopt_dual));
             _dump.push("\n\n");
 
             _dump.push("  TOPO-FLIP: ");
-            _dump.push(
-            std::to_string(_tcpu._topo_flip)) ;
+            _dump.push(std::to_string(_tcpu._topo_flip));
             _dump.push("\n");
             _dump.push(" *init-flip: ");
-            _dump.push(
-            std::to_string(_tcpu._init_flip)) ;
+            _dump.push(std::to_string(_tcpu._init_flip));
             _dump.push("\n");
             _dump.push(" *core-flip: ");
-            _dump.push(
-            std::to_string(_tcpu._core_flip)) ;
+            _dump.push(std::to_string(_tcpu._core_flip));
             _dump.push("\n\n");
 
             _dump.push("  TOPO-ZIPS: ");
-            _dump.push(
-            std::to_string(_tcpu._topo_zips)) ;
+            _dump.push(std::to_string(_tcpu._topo_zips));
             _dump.push("\n");
             _dump.push(" *init-zips: ");
-            _dump.push(
-            std::to_string(_tcpu._init_zips)) ;
+            _dump.push(std::to_string(_tcpu._init_zips));
             _dump.push("\n");
             _dump.push(" *core-divs: ");
-            _dump.push(
-            std::to_string(_tcpu._core_divs)) ;
+            _dump.push(std::to_string(_tcpu._core_divs));
             _dump.push("\n");
             _dump.push(" *core-zips: ");
-            _dump.push(
-            std::to_string(_tcpu._core_zips)) ;
+            _dump.push(std::to_string(_tcpu._core_zips));
             _dump.push("\n\n");
 
             _dump.push("  PARTITION: ");
-            _dump.push(
-            std::to_string(_tcpu._full_part)) ;
+            _dump.push(std::to_string(_tcpu._full_part));
             _dump.push("\n");
             _dump.push(" *tree-part: ");
-            _dump.push(
-            std::to_string(_tcpu._tree_part)) ;
+            _dump.push(std::to_string(_tcpu._tree_part));
         //  _dump.push("\n");
         //  _dump.push(" *redo-part: ");
-        //  _dump.push(
-        //  std::to_string(_tcpu._redo_part)) ;
+        //  _dump.push(std::to_string(_tcpu._redo_part));
             _dump.push("\n");
             _dump.push(" *part-part: ");
-            _dump.push(
-            std::to_string(_tcpu._part_part)) ;
+            _dump.push(std::to_string(_tcpu._part_part));
             _dump.push("\n");
             _dump.push(" *seqs-part: ");
-            _dump.push(
-            std::to_string(_tcpu._seqs_part)) ;
+            _dump.push(std::to_string(_tcpu._seqs_part));
             _dump.push("\n");
 
             _dump.push("\n");

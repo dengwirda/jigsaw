@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Jun., 2022
+     * Last updated: 21 Jan., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -70,15 +70,16 @@
         conn_list &_cnew ,  // space for adj. cells
         conn_list &_iset ,  // space for adj. cells
         conn_list &_jset ,  // space for adj. cells
-        real_list &_qsrc ,  // space for adj. costs
-        real_list &_qdst ,  // space for adj. costs
-        real_list &_qtmp ,  // space for adj. costs
+        fp32_list &_qsrc ,  // space for adj. costs
+        fp32_list &_qdst ,  // space for adj. costs
+        fp32_list &_qtmp ,  // space for adj. costs
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,  // cell quality tolerance
         iter_stat &_tcpu ,  // cpu timers/info
         real_type  _lmin    // div. spacing threshold
-            = (real_type) +1.000E+00 ,
+            = (real_type) +1.16667E+00 ,
         real_type  _qinc    // div. quality threshold
-            = (real_type) +3.333E-03
+            = (real_type) +3.33333E-03
         )
     {
         iptr_type static constexpr
@@ -187,7 +188,7 @@
                      _hbar * _lmax )
         {
     //  if more regular geom. is constructed via the edge
-    //  div, make it easier to do so!
+    //  div, make it easier to do so
 
         _qinc = (real_type)(1./2. *
             (_hbar / std::sqrt(_lsqr) - 1.0)) ;
@@ -198,7 +199,7 @@
         {
     //  try to reduce large vertex valence via refinement
 
-        real_type _qerr = (real_type) -1./16. ;
+        real_type _qerr = -std::min(1./12., 1. - _QMOV) ;
         _qerr*= std::max (_ierr, _jerr ) ;
         _qerr/= std::pow (_iout, +1./2.) ;  // stop oscl.
         _qinc = std::min (_qinc,
@@ -207,11 +208,11 @@
         }
         else
         if ( _ierr > 0 && _jerr > 0 &&
-                 (_ierr + _jerr) >= 3 )
+                 (_ierr + _jerr) >= 2 )
         {
     //  try to reduce large vertex valence via refinement
 
-        real_type _qerr = (real_type) -1./16. ;
+        real_type _qerr = -std::min(1./12., 1. - _QMOV) ;
         _qerr*= std::max (_ierr, _jerr ) ;
         _qerr/= std::pow (_iout, +1./2.) ;  // stop oscl.
         _qinc = std::min (_qinc,
@@ -238,7 +239,7 @@
         typename mesh_type::quad_type _qdat ;
 
         for (auto _idim =
-        pred_type::real_dims; _idim-- != 0; )
+        pred_type::geom_dims; _idim-- != 0; )
         {
             _ndat.pval(_idim) = _ball[_idim];
         }
@@ -390,7 +391,7 @@
                 _opts, _nptr, _prev,
                 _kern, _move, _cnew,
                 _qtmp, _qdst,
-                _minC, _QLIM, _QLIM,
+                _minC, _QLIM, _QMOV,
                 _tcpu) ;
 
             if (_move <= +0 ) break;
@@ -405,11 +406,10 @@
             _cnew, _qdst,  cell_kind()) ;
 
         move_okay( _qdst, _qsrc, _move,
-        std::sqrt( _QLIM) ,
-                   _qinc) ;
+            _QMOV, _qinc) ;
 
-        if((_okay = _move > 0 &&
-                    _QMIN >= _qmin+_qinc))
+        if((_okay  =  (_move > 0) && 
+            _QMIN >=  (_qmin + _qinc)))
         {
     /*--------------------------------- delete old cavity */
         for (auto _cell  = _cset.head() ;

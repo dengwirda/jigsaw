@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Jun., 2022
+     * Last updated: 25 Feb., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -124,7 +124,7 @@
         _ppos [_last]  = _SAVE ;
 
     /*------------------ finalise gradient and accumulate */
-        if (_dsup * _dsdn > (real_type)0.)
+    //  if (_dsup * _dsdn > (real_type)0.)
         {
             _dqdw  = +.5 * (_dsup + _dsdn) ;
 
@@ -215,7 +215,7 @@
         _ppos [_last]  = _SAVE ;
 
     /*------------------ finalise gradient and accumulate */
-        if (_dsup * _dsdn > (real_type)0.)
+    //  if (_dsup * _dsdn > (real_type)0.)
         {
             _dqdw  = +.5 * (_dsup + _dsdn) ;
 
@@ -244,7 +244,7 @@
         mesh_type &_mesh ,
         conn_list &_conn ,
         node_iter  _node ,
-        real_list &_cost ,
+        fp32_list &_cost ,
         real_type &_step ,
         real_type &_wadj
         )
@@ -260,8 +260,8 @@
         _wadj = (real_type) 0. ;
 
     /*------------------ calc. local characteristic scale */
-        real_type _qmin =
-       +std::numeric_limits<real_type>::infinity();
+        float     _qmin =
+       +std::numeric_limits<float    >::infinity();
 
         real_type _bmin[_last] = {
        +std::numeric_limits<real_type>::infinity()
@@ -300,8 +300,7 @@
         _wadj = _wadj / _cnum ;
 
     /*------------------ adj. gradients wrt. pos: dQ / dx */
-        real_type _qlim = _qmin +
-            (real_type)+1.0E-002 ;
+        float     _qlim = _qmin + (float)+1.0E-002 ;
 
         real_type _dmax =
        -std::numeric_limits<real_type>::infinity() ;
