@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2024
+     * Last updated: 26 Feb., 2025
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -112,12 +112,12 @@
         _jcfg->_mesh_off2 = (real_t) +0.90 ;
         _jcfg->_mesh_off3 = (real_t) +1.10 ;
 
-        real_t constexpr _SIZ1 = 1./1. * 4./3. ;
+        real_t const _SIZ1 = 1./1. * 4./3. ;
 
-        real_t constexpr _SIZ2 = 5./8. * 4./3. +
+        real_t const _SIZ2 = 5./8. * 4./3. +
             3./8. * 2. / (1. + std::sqrt(1./3.)) ;
 
-        real_t constexpr _SIZ3 = 5./8. * 4./3. +
+        real_t const _SIZ3 = 5./8. * 4./3. +
             3./8. * 2. / (1. + std::sqrt(3./8.)) ;
 
         _jcfg->_mesh_siz1 = (real_t) _SIZ1 ;
