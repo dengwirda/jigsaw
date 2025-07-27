@@ -30,8 +30,6 @@ This package provides the underlying `c++` source for `JIGSAW`; defining a basic
 
 ### `Getting Started`
 
-`JIGSAW` is a `header-only` package - the single main `jigsaw.cpp` file simply `#include`'s the rest of the library directly. `JIGSAW` does not currently dependent on any external packages or libraries.
-
 `JIGSAW` consists of several pieces: `(a)` a set of command-line utilities that read and write mesh data from/to file, and `(b)` a shared library, accessible via a `c`-format `API`.
 
 ### `Using cmake`
