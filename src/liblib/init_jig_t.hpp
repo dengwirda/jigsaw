@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 26 Feb., 2025
+     * Last updated: 26 Jul., 2025
      *
      * Copyright 2013-2025
      * Darren Engwirda
@@ -144,6 +144,9 @@
 
         _jcfg->_optm_qtol = (real_t) +1.E-04 ;
         _jcfg->_optm_qlim = (real_t) +11./12.; // .91667...
+
+        _jcfg->_optm_wmin = (real_t) -7. / 8.; // .87500
+        _jcfg->_optm_wmax = (real_t) +1. /80.; // .01250
 
         _jcfg->_optm_tria = (indx_t) +1 ;
         _jcfg->_optm_dual = (indx_t) +0 ;

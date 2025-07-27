@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2024
+     * Last updated: 26 Jul., 2025
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -349,6 +349,20 @@
         {
             this->
            _jjig->_optm_qlim = _qlim;
+        }
+        __normal_call void_type push_optm_wmin (
+            double        _wmin
+            )
+        {
+            this->
+           _jjig->_optm_wmin = _wmin;
+        }
+        __normal_call void_type push_optm_wmax (
+            double        _wmax
+            )
+        {
+            this->
+           _jjig->_optm_wmax = _wmax;
         }
         __normal_call void_type push_optm_tria (
             bool          _flag

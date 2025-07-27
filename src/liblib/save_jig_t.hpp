@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2024
+     * Last updated: 26 Jul., 2025
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -232,6 +232,11 @@
                     _jcfg->_optm_qtol << "\n" ;
                 _file << "OPTM_QLIM = " <<
                     _jcfg->_optm_qlim << "\n" ;
+
+                _file << "OPTM_WMIN = " <<
+                    _jcfg->_optm_wmin << "\n" ;
+                _file << "OPTM_WMAX = " <<
+                    _jcfg->_optm_wmax << "\n" ;
 
                 _file << "OPTM_TRIA = " <<
                     _jcfg->_optm_tria << "\n" ;
