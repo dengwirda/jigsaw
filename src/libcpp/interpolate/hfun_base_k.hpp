@@ -84,14 +84,14 @@
         )  {}
 
     __inline_call real_type eval (
-        real_type *_ppos
+        real_type * /*_ppos*/
         )
     {   return ( (real_type) 0. );
     }
 
     __inline_call real_type eval (
-        real_type *_ppos ,
-        hint_type &_hint
+        real_type * /*_ppos*/ ,
+        hint_type & /*_hint*/
         )
     {   return ( (real_type) 0. );
     }
