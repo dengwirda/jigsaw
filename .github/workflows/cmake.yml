@@ -60,7 +60,6 @@ jobs:
         if: startsWith(matrix.config.os, 'macos')
         run: |
           brew install ninja cmake llvm libomp
-          alias dir=ls
           ninja --version
           cmake --version
           clang++ --version
@@ -99,7 +98,6 @@ jobs:
       - name: Tests for cmd-jigsaw
         run: |
           cd ${{github.workspace}}
-          dir
           ./bin/jigsaw example.jig
           ./bin/jigsaw geo/airfoil.jig
           ./bin/jigsaw geo/bunny.jig
@@ -110,7 +108,6 @@ jobs:
       - name: Tests for lib-jigsaw
         run: |
           cd ${{github.workspace}}/uni
-          dir
           ./test_all
       
       - name: Clean tests for jigsaw
