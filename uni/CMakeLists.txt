@@ -126,6 +126,11 @@ target_link_libraries (test2d_h ${LIBJIGSAW})
 set_target_properties(test2d_h PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 install (TARGETS test2d_h DESTINATION "${PROJECT_SOURCE_DIR}")
 
+add_executable (test3d_h test3d_h.c)
+target_link_libraries (test3d_h ${LIBJIGSAW})
+set_target_properties(test3d_h PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+install (TARGETS test3d_h DESTINATION "${PROJECT_SOURCE_DIR}")
+
 add_executable (test2s_h test2s_h.c)
 target_link_libraries (test2s_h ${LIBJIGSAW})
 set_target_properties(test2s_h PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -135,6 +140,11 @@ add_executable (test2d_i test2d_i.c)
 target_link_libraries (test2d_i ${LIBJIGSAW})
 set_target_properties(test2d_i PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 install (TARGETS test2d_i DESTINATION "${PROJECT_SOURCE_DIR}")
+
+add_executable (test3d_i test3d_i.c)
+target_link_libraries (test3d_i ${LIBJIGSAW})
+set_target_properties(test3d_i PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+install (TARGETS test3d_i DESTINATION "${PROJECT_SOURCE_DIR}")
 
 add_executable (test2s_i test2s_i.c)
 target_link_libraries (test2s_i ${LIBJIGSAW})
