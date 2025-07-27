@@ -49,15 +49,9 @@ See `example.jig` for documentation, as well as the headers in <a href="../maste
 ### `cmd-line Examples`
 
 After compiling the code, try running the following command-line example:
-````
-On WIN platforms:
 
-\bin\jigsaw.exe example.jig
+    /bin/jigsaw`[.exe]` example.jig
 
-On LNX platforms:
-
-/bin/jigsaw     example.jig
-````
 In this example, a high-quality tetrahedral mesh is generated for the `stanford-bunny` geometry. The input geometry is specified as a triangulated surface, and is read from `../jigsaw/geo/bunny.msh`. The volume and surface mesh outputs are written to `../jigsaw/out/bunny.msh`. See the `example.jig` text-file for a description of `JIGSAW`'s configuration options. 
 
 A repository of additional surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>. A description of the `*.jig` and `*.msh` input file formats can be found in the <a href="https://github.com/dengwirda/jigsaw/wiki">wiki</a>.
