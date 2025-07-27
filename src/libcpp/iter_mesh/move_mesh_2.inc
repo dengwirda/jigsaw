@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 Jun., 2023
+     * Last updated: 27 Jul., 2025
      *
-     * Copyright 2013-2023
+     * Copyright 2013-2025
      * Darren Engwirda,
      * Marc Tunnell
      * d.engwirda@gmail.com
@@ -207,7 +207,7 @@
         _xeps = std::pow(_xeps, 2) ;
         _xtol = std::pow(_xtol, 2) ;
 
-        real_type _SCAL = 5. / 4.;  // overrelaxation
+        real_type _SCAL = 4. / 3.;  // overrelaxation
             
     /*---------------- do backtracking line search iter's */
 
@@ -396,7 +396,7 @@
             _node->pval(
                 pred_type::real_dims - 1);
 
-        real_type _SCAL = 5. / 4.;  // overrelaxation
+        real_type _SCAL = 4. / 3.;  // overrelaxation
             
     /*---------------- do backtracking line search iter's */
 
@@ -410,6 +410,7 @@
         for (auto _iter = +0 ;
                 _iter != _ITER; ++_iter )
         {
+            real_type _wmov;
             real_type _scal = _SCAL;
             real_type _zeta = _opts._zeta *
                 (real_type)3./4. *
@@ -427,16 +428,16 @@
             _step * ((real_type)0.+_zeta) +
             _line * ((real_type)1.-_zeta));
 
-            _node->pval(real_dims-1) =  // limit weights
-                std::max(-_wadj / 2. ,
+        //  set upper/lower limits on weights
+            _node->pval(real_dims-1) = std::max(
+                _wadj * _opts.wmin(),
             _node->pval(real_dims-1));
 
-            _node->pval(real_dims-1) =
-                std::min(+_wadj / 4. ,
+            _node->pval(real_dims-1) = std::min(
+                _wadj * _opts.wmax(),
             _node->pval(real_dims-1));
 
-            real_type _wmov =
-                std::abs (_save -
+            _wmov = std::abs (_save -
             _node->pval(real_dims-1));
 
             real_type _wtol = _weps * _wadj *

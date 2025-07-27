@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Jul., 2022
+     * Last updated: 24 Jul., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -726,8 +726,8 @@
        (_q1+_q2+_q3) / (real_type)+3. ;
 
         real_type _qq =
-      ((real_type)+1. - 1./2.) * _qb  +
-      ((real_type)+0. + 1./2.) * _qe  ;
+      ((real_type)+1. - 1./3.) * _qb  +
+      ((real_type)+0. + 1./3.) * _qe  ;
 
         return (real_type)+1.0 - _qq  ;
     }
@@ -791,8 +791,8 @@
        (_q1+_q2+_q3) / (real_type)+3. ;
 
         real_type _qq =
-      ((real_type)+1. - 1./2.) * _qb  +
-      ((real_type)+0. + 1./2.) * _qe  ;
+      ((real_type)+1. - 1./3.) * _qb  +
+      ((real_type)+0. + 1./3.) * _qe  ;
 
         return (real_type)+1.0 - _qq  ;
     }
