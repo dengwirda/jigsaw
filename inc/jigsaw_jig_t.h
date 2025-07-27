@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Oct., 2024
+     * Last updated: 27 Jul., 2025
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -478,6 +478,24 @@
      */
 
         real_t                  _optm_qlim ;
+
+    /*
+    --------------------------------------------------------
+     * OPTM_WMIN - {default=-7./8.} lower limit on dual 
+     * mesh weights relative to cell radius.
+    --------------------------------------------------------
+     */
+
+        real_t                  _optm_wmin ;
+
+    /*
+    --------------------------------------------------------
+     * OPTM_WMAX - {default=+1./80} upper limit on dual 
+     * mesh weights relative to cell radius.
+    --------------------------------------------------------
+     */
+
+        real_t                  _optm_wmax ;
 
     /*
     --------------------------------------------------------

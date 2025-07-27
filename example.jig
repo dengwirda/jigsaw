@@ -387,6 +387,20 @@
 #   OPTM_QLIM = 0.90
 
 
+#   ---> OPTM_WMIN - {default=-7./8.} lower limit on dual 
+#       mesh weights relative to cell radius.
+#
+
+#   OPTM_WMIN =-0.500
+
+
+#   ---> OPTM_WMAX - {default=+1./80} upper limit on dual 
+#       mesh weights relative to cell radius.
+#
+
+#   OPTM_WMAX = 0.125
+
+
 #   ---> OPTM_ZIP_ - {default= true} allow for "merge" oper-
 #       ations on sub-faces.
 #
