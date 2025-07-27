@@ -30,10 +30,6 @@ This package provides the underlying `c++` source for `JIGSAW`; defining a basic
 
 ### `Getting Started`
 
-`JIGSAW` consists of several pieces: `(a)` a set of command-line utilities that read and write mesh data from/to file, and `(b)` a shared library, accessible via a `c`-format `API`.
-
-### `Using cmake`
-
 `JIGSAW` can be built using the <a href="https://cmake.org/">`cmake`</a> utility:
 
     * Clone or download this repository.
@@ -50,7 +46,7 @@ A set of executables and shared libraries is built: `jigsaw` itself - the main c
 
 See `example.jig` for documentation, as well as the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
-### `CMD-line Examples`
+### `cmd-line Examples`
 
 After compiling the code, try running the following command-line example:
 ````
