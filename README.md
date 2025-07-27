@@ -7,15 +7,17 @@
   <img src = "../master/img/bunny-TRIA4-3.png" width="20%" hspace="0.25%">
 </p>
 
-`JIGSAW` is an unstructured mesh generator and tessellation library; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes refinement-based algorithms for the construction of new meshes, optimisation-driven techniques for the improvement of existing grids, as well as routines to assemble (restricted) Delaunay tessellations, Voronoi complexes and Power diagrams. 
+`JIGSAW` is an unstructured mesh generator and tessellation library; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. 
 
-This package provides the underlying `c++` source for `JIGSAW`; defining a basic command-line interface and a `c`-format `API`. Higher-level scripting interfaces, supporting a range of additional facilities for file I/O, mesh visualisation and post-processing operations are also available, including for <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> <a href="https://github.com/dengwirda/jigsaw-matlab">here</a> and for <a href="https://www.python.org/">`PYTHON`</a> <a href="https://github.com/dengwirda/jigsaw-python">here</a>.
+`JIGSAW` includes refinement-based algorithms for constructing new meshes, optimisation-driven techniques for improving existing grids, as well as routines to assemble (restricted) Delaunay tessellations, Voronoi complexes and Power diagrams. 
 
-`JIGSAW` is compiled and tested on various `64-bit` `Linux`, `Windows` and `MacOS` platforms using the `g++`, `clang++` and `msvc` compilers.
+This package provides the underlying `c++` source for `JIGSAW`; defining a basic command-line interface and a `c`-format `API`. Higher-level scripting interfaces, supporting additional facilities for file I/O, mesh visualisation and post-processing operations are also available, including for <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> <a href="https://github.com/dengwirda/jigsaw-matlab">here</a> and for <a href="https://www.python.org/">`PYTHON`</a> <a href="https://github.com/dengwirda/jigsaw-python">here</a>.
+
+`JIGSAW` has been compiled and tested on various `64-bit` `Linux`, `Windows` and `MacOS` platforms using `>=c++17` versions of the `g++`, `clang++` and `msvc` compilers.
 
 ### `Code Structure`
 
-`JIGSAW` is written as a `header-only` library in `c++`. Both a basic command-line interface and a `c`-format `API` are defined:
+`JIGSAW` a `c++` `header-only` library. Both a basic command-line interface and a `c`-format `API` are defined:
 
       JIGSAW::
       ├── src -- JIGSAW src code
@@ -28,15 +30,13 @@ This package provides the underlying `c++` source for `JIGSAW`; defining a basic
 
 ### `Getting Started`
 
-The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>. It has been built using various `c++17` conforming versions of the `g++`, `clang++` and `msvc` compilers.
-
 `JIGSAW` is a `header-only` package - the single main `jigsaw.cpp` file simply `#include`'s the rest of the library directly. `JIGSAW` does not currently dependent on any external packages or libraries.
 
 `JIGSAW` consists of several pieces: `(a)` a set of command-line utilities that read and write mesh data from/to file, and `(b)` a shared library, accessible via a `c`-format `API`.
 
 ### `Using cmake`
 
-`JIGSAW` can be built using the <a href="https://cmake.org/">`cmake`</a> utility. To build, follow the steps below:
+`JIGSAW` can be built using the <a href="https://cmake.org/">`cmake`</a> utility:
 
     * Clone or download this repository.
     * Navigate to the root `../jigsaw/` directory.
@@ -46,15 +46,15 @@ The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`<
     * cmake --build . --config BUILD_MODE --target install EXTRAS
     * Delete the temporary BUILD directory.
 
-This process will build a series of executables and shared libraries: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, `marche` - a fast-marching solver designed to optimise mesh-spacing configurations, as well as `libjigsaw` - `JIGSAW`'s shared `API`. 
+A set of executables and shared libraries is built: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, `marche` - a fast-marching solver designed to optimise mesh-spacing configurations, as well as `libjigsaw` - `JIGSAW`'s shared `API`. 
 
-`BUILD_MODE` can be used to select different compiler configurations and should generally either be `Release` or `Debug`. `EXTRAS` can be used to pass additional compile-time arguments, for example `-- -j 4` will build in parallel on supported architectures.
+`BUILD_MODE` can be used to select different compiler configurations (either `Release` or `Debug`). `EXTRAS` can be used to pass additional compile-time arguments, for example `-- -j4` will build in parallel on supported architectures.
 
-See `example.jig` for documentation on calling the command-line executables, and the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
+See `example.jig` for documentation, as well as the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
 ### `CMD-line Examples`
 
-After compiling the code, try running the following command-line example to get started:
+After compiling the code, try running the following command-line example:
 ````
 On WIN platforms:
 
@@ -64,7 +64,7 @@ On LNX platforms:
 
 /bin/jigsaw     example.jig
 ````
-In this example, a high-quality tetrahedral mesh is generated for the 'stanford-bunny' geometry and the result written to file. The input geometry is specified as a triangulated surface, and is read from `../jigsaw/geo/bunny.msh`. The volume and surface mesh outputs are written to `../jigsaw/out/bunny.msh`. See the `example.jig` text-file for a description of `JIGSAW`'s configuration options. 
+In this example, a high-quality tetrahedral mesh is generated for the `stanford-bunny` geometry. The input geometry is specified as a triangulated surface, and is read from `../jigsaw/geo/bunny.msh`. The volume and surface mesh outputs are written to `../jigsaw/out/bunny.msh`. See the `example.jig` text-file for a description of `JIGSAW`'s configuration options. 
 
 A repository of additional surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>. A description of the `*.jig` and `*.msh` input file formats can be found in the <a href="https://github.com/dengwirda/jigsaw/wiki">wiki</a>.
 
@@ -72,7 +72,7 @@ A repository of additional surface models generated using `JIGSAW` can be found 
 
 A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/uni/">`../jigsaw/uni/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/inc/">`../jigsaw/inc/`</a>. 
 
-The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> utility. To build, follow the steps below:
+The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> utility:
 
     * Navigate to the `../jigsaw/uni/` directory.
     * Make a new temporary directory BUILD.
@@ -81,7 +81,7 @@ The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> u
     * cmake --build . --config BUILD_MODE --target install EXTRAS
     * Delete the temporary BUILD directory.
 
-This process will build the unit-tests as a series of executables in <a href="../master/uni/">`../jigsaw/uni/`</a>. `BUILD_MODE` is a compiler configuration flag: either `Release` or `Debug`. `EXTRAS` can be used to pass additional compile-time arguments.
+This process will build the unit-tests as a set of executables in <a href="../master/uni/">`../jigsaw/uni/`</a>. `BUILD_MODE` is a compiler configuration flag (either `Release` or `Debug`). `EXTRAS` can be used to pass additional compile-time arguments.
 
 ### `Contributors`
 
