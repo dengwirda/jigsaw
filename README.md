@@ -28,10 +28,6 @@ This package provides the underlying `c++` source for `JIGSAW`; defining a basic
 
 ### `Getting Started`
 
-The first step is to compile and configure the code! `JIGSAW` can either be built directly from src, or installed using the <a href="https://anaconda.org/conda-forge/jigsaw">`conda`</a> package manager.
-
-### `Building from src`
-
 The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>. It has been built using various `c++17` conforming versions of the `g++`, `clang++` and `msvc` compilers.
 
 `JIGSAW` is a `header-only` package - the single main `jigsaw.cpp` file simply `#include`'s the rest of the library directly. `JIGSAW` does not currently dependent on any external packages or libraries.
@@ -55,18 +51,6 @@ This process will build a series of executables and shared libraries: `jigsaw` i
 `BUILD_MODE` can be used to select different compiler configurations and should generally either be `Release` or `Debug`. `EXTRAS` can be used to pass additional compile-time arguments, for example `-- -j 4` will build in parallel on supported architectures.
 
 See `example.jig` for documentation on calling the command-line executables, and the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
-
-### `Using conda`
-
-`JIGSAW` is also available as a `conda` environment. To install and use, follow the steps below:
-
-    * Ensure you have conda installed. If not, consider miniconda as a lightweight option.
-    * Add conda-forge as a channel: conda config --add channels conda-forge
-    * Create a jigsaw environment: conda create -n jigsaw jigsaw
-
-Each time you want to use `JIGSAW` simply activate the environment using: `conda activate jigsaw`
-
-Once activated, the various `JIGSAW` command-line utilities will be available in your run path, `JIGSAW`'s shared library (`libjigsaw`) will be available in your library path and its include files in your include path.
 
 ### `CMD-line Examples`
 
