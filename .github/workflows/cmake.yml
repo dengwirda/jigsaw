@@ -60,6 +60,7 @@ jobs:
         if: startsWith(matrix.config.os, 'macos')
         run: |
           brew install ninja cmake llvm libomp
+          alias dir=ls
           ninja --version
           cmake --version
           clang++ --version
