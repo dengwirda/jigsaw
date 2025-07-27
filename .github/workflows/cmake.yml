@@ -108,6 +108,7 @@ jobs:
       - name: Tests for lib-jigsaw
         run: |
           cd ${{github.workspace}}/uni
+          ./test2d_a
           ./test_all
       
       - name: Clean tests for jigsaw
