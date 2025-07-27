@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2024
+     * Last updated: 27 Jul., 2025
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -197,6 +197,12 @@
         ) { }
     __normal_call void_type push_optm_qlim (
         double       /*_qlim*/
+        ) { }
+    __normal_call void_type push_optm_wmin (
+        double       /*_wmin*/
+        ) { }
+    __normal_call void_type push_optm_wmax (
+        double       /*_wmax*/
         ) { }
     __normal_call void_type push_optm_tria (
         bool         /*_flag*/
@@ -667,9 +673,20 @@
                 {
             __putREAL(push_optm_qtol, _stok) ;
                 }
+            else
             if (_stok[0] == "OPTM_QLIM")
                 {
             __putREAL(push_optm_qlim, _stok) ;
+                }
+            else
+            if (_stok[0] == "OPTM_WMIN")
+                {
+            __putREAL(push_optm_wmin, _stok) ;
+                }
+            else
+            if (_stok[0] == "OPTM_WMAX")
+                {
+            __putREAL(push_optm_wmax, _stok) ;
                 }
             else
             if (_stok[0] == "OPTM_ZIP_")

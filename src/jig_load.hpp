@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2024
+     * Last updated: 27 Jul., 2025
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -85,9 +85,9 @@
         {
             this->_jjig->_verbosity = _verb ;
             this->_jjig->
-           _mesh_opts.verb() = _verb;
+                _mesh_opts.verb() = _verb;
             this->_jjig->
-           _iter_opts.verb() = _verb;
+                _iter_opts.verb() = _verb;
         }
         __normal_call void_type push_numthread (
             std::int32_t  _nprt
@@ -102,9 +102,9 @@
 
             this->_jjig->_numthread = _nprt ;
             this->_jjig->
-           _mesh_opts.nprt() = _nprt;
+                _mesh_opts.nprt() = _nprt;
             this->_jjig->
-           _iter_opts.nprt() = _nprt;
+                _iter_opts.nprt() = _nprt;
         }
 
     /*------------------------------------- GEOM keywords */
@@ -112,50 +112,49 @@
             std::string   _file
             )
         {
-            this->
-           _jjig->_geom_file = _file;
+            this->_jjig->_geom_file = _file;
         }
         __normal_call void_type push_geom_seed (
             std::int32_t  _seed
             )
         {
             this->_jjig->
-           _mesh_opts.seed() = _seed;
+                _mesh_opts.seed() = _seed;
         }
         __normal_call void_type push_geom_feat (
             bool          _feat
             )
         {
             this->_jjig->
-           _mesh_opts.feat() = _feat;
+                _mesh_opts.feat() = _feat;
         }
         __normal_call void_type push_geom_phi1 (
             double        _phi1
             )
         {
             this->_jjig->
-           _mesh_opts.phi1() = _phi1;
+                _mesh_opts.phi1() = _phi1;
         }
         __normal_call void_type push_geom_phi2 (
             double        _phi2
             )
         {
             this->_jjig->
-           _mesh_opts.phi2() = _phi2;
+                _mesh_opts.phi2() = _phi2;
         }
         __normal_call void_type push_geom_eta1 (
             double        _eta1
             )
         {
             this->_jjig->
-           _mesh_opts.eta1() = _eta1;
+                _mesh_opts.eta1() = _eta1;
         }
         __normal_call void_type push_geom_eta2 (
             double        _eta2
             )
         {
             this->_jjig->
-           _mesh_opts.eta2() = _eta2;
+                _mesh_opts.eta2() = _eta2;
         }
 
     /*------------------------------------- INIT keywords */
@@ -164,7 +163,7 @@
             )
         {
             this->_jjig->
-           _mesh_opts.near() = _near;
+                _mesh_opts.near() = _near;
         }
 
     /*------------------------------------- HFUN keywords */
@@ -172,8 +171,7 @@
             std::string   _file
             )
         {
-            this->
-           _jjig->_hfun_file = _file;
+            this->_jjig->_hfun_file = _file;
         }
         __normal_call void_type push_hfun_scal (
             std::int32_t  _scal
@@ -187,15 +185,13 @@
             double        _hmax
             )
         {
-            this->
-           _jjig->_hfun_hmax = _hmax;
+            this->_jjig->_hfun_hmax = _hmax;
         }
         __normal_call void_type push_hfun_hmin (
             double        _hmin
             )
         {
-            this->
-           _jjig->_hfun_hmin = _hmin;
+            this->_jjig->_hfun_hmin = _hmin;
         }
 
     /*------------------------------------- INIT keywords */
@@ -203,8 +199,7 @@
             std::string   _file
             )
         {
-            this->
-           _jjig->_init_file = _file;
+            this->_jjig->_init_file = _file;
         }
 
     /*------------------------------------- BNDS keywords */
@@ -229,22 +224,19 @@
             std::string   _file
             )
         {
-            this->
-           _jjig->_mesh_file = _file;
+            this->_jjig->_mesh_file = _file;
         }
         __normal_call void_type push_tria_file (
             std::string   _file
             )
         {
-            this->
-           _jjig->_tria_file = _file;
+            this->_jjig->_tria_file = _file;
         }
         __normal_call void_type push_bnds_file (
             std::string   _file
             )
         {
-            this->
-           _jjig->_bnds_file = _file;
+            this->_jjig->_bnds_file = _file;
         }
 
         __normal_call void_type push_mesh_dims (
@@ -252,133 +244,133 @@
             )
         {
             this->_jjig->
-           _mesh_opts.dims() = _dims;
+                _mesh_opts.dims() = _dims;
         }
         __normal_call void_type push_mesh_iter (
             std::int32_t  _iter
             )
         {
             this->_jjig->
-           _mesh_opts.iter() = _iter;
+                _mesh_opts.iter() = _iter;
         }
         __normal_call void_type push_mesh_rule (
             std::int32_t  _rule
             )
         {
             this->_jjig->
-           _mesh_opts.rule() = _rule;
+                _mesh_opts.rule() = _rule;
         }
         __normal_call void_type push_mesh_siz1 (
             double        _siz1
             )
         {
             this->_jjig->
-           _mesh_opts.siz1() = _siz1;
+                _mesh_opts.siz1() = _siz1;
         }
         __normal_call void_type push_mesh_siz2 (
             double        _siz2
             )
         {
             this->_jjig->
-           _mesh_opts.siz2() = _siz2;
+                _mesh_opts.siz2() = _siz2;
         }
         __normal_call void_type push_mesh_siz3 (
             double        _siz3
             )
         {
             this->_jjig->
-           _mesh_opts.siz3() = _siz3;
+                _mesh_opts.siz3() = _siz3;
         }
         __normal_call void_type push_mesh_orph (
             bool          _orph
             )
         {
             this->_jjig->
-           _mesh_opts.orph() = _orph;
+                _mesh_opts.orph() = _orph;
         }
         __normal_call void_type push_mesh_lock (
             bool          _lock
             )
         {
             this->_jjig->
-           _mesh_opts.lock() = _lock;
+                _mesh_opts.lock() = _lock;
         }
         __normal_call void_type push_mesh_top1 (
             bool          _top1
             )
         {
             this->_jjig->
-           _mesh_opts.top1() = _top1;
+                _mesh_opts.top1() = _top1;
         }
         __normal_call void_type push_mesh_top2 (
             bool          _top2
             )
         {
             this->_jjig->
-           _mesh_opts.top2() = _top2;
+                _mesh_opts.top2() = _top2;
         }
         __normal_call void_type push_mesh_rad2 (
             double        _rad2
             )
         {
             this->_jjig->
-           _mesh_opts.rad2() = _rad2;
+                _mesh_opts.rad2() = _rad2;
         }
         __normal_call void_type push_mesh_rad3 (
             double        _rad3
             )
         {
             this->_jjig->
-           _mesh_opts.rad3() = _rad3;
+                _mesh_opts.rad3() = _rad3;
         }
         __normal_call void_type push_mesh_off2 (
             double        _off2
             )
         {
             this->_jjig->
-           _mesh_opts.off2() = _off2;
+                _mesh_opts.off2() = _off2;
         }
         __normal_call void_type push_mesh_off3 (
             double        _off3
             )
         {
             this->_jjig->
-           _mesh_opts.off3() = _off3;
+                _mesh_opts.off3() = _off3;
         }
         __normal_call void_type push_mesh_snk2 (
             double        _snk2
             )
         {
             this->_jjig->
-           _mesh_opts.snk2() = _snk2;
+                _mesh_opts.snk2() = _snk2;
         }
         __normal_call void_type push_mesh_snk3 (
             double        _snk3
             )
         {
             this->_jjig->
-           _mesh_opts.snk3() = _snk3;
+                _mesh_opts.snk3() = _snk3;
         }
         __normal_call void_type push_mesh_eps1 (
             double        _eps1
             )
         {
             this->_jjig->
-           _mesh_opts.eps1() = _eps1;
+                _mesh_opts.eps1() = _eps1;
         }
         __normal_call void_type push_mesh_eps2 (
             double        _eps2
             )
         {
             this->_jjig->
-           _mesh_opts.eps2() = _eps2;
+                _mesh_opts.eps2() = _eps2;
         }
         __normal_call void_type push_mesh_vol3 (
             double        _vol3
             )
         {
             this->_jjig->
-           _mesh_opts.vol3() = _vol3;
+                _mesh_opts.vol3() = _vol3;
         }
 
     /*------------------------------------- OPTM keywords */
@@ -403,63 +395,79 @@
             )
         {
             this->_jjig->
-           _iter_opts.iter() = _iter;
+                _iter_opts.iter() = _iter;
         }
         __normal_call void_type push_optm_beta (
             double        _beta
             )
         {
             this->_jjig->
-           _iter_opts.beta() = _beta;
+                _iter_opts.beta() = _beta;
         }
         __normal_call void_type push_optm_zeta (
             double        _zeta
             )
         {
             this->_jjig->
-           _iter_opts.zeta() = _zeta;
+                _iter_opts.zeta() = _zeta;
         }
         __normal_call void_type push_optm_qtol (
             double        _qtol
             )
         {
             this->_jjig->
-           _iter_opts.qtol() = _qtol;
+                _iter_opts.qtol() = _qtol;
         }
         __normal_call void_type push_optm_qlim (
             double        _qlim
             )
         {
             this->_jjig->
-           _iter_opts.qlim() = _qlim;
+                _iter_opts.qlim() = _qlim;
         }
+
+        __normal_call void_type push_optm_wmin (
+            double        _wmin
+            )
+        {
+            this->_jjig->
+                _iter_opts.wmin() = _wmin;
+        }
+        __normal_call void_type push_optm_wmax (
+            double        _wmax
+            )
+        {
+            this->_jjig->
+                _iter_opts.wmax() = _wmax;
+        }
+
         __normal_call void_type push_optm_tria (
             bool          _flag
             )
         {
             this->_jjig->
-           _iter_opts.tria() = _flag;
+                _iter_opts.tria() = _flag;
         }
         __normal_call void_type push_optm_dual (
             bool          _flag
             )
         {
             this->_jjig->
-           _iter_opts.dual() = _flag;
+                _iter_opts.dual() = _flag;
         }
         __normal_call void_type push_optm_div_ (
             bool          _flag
             )
         {
             this->_jjig->
-           _iter_opts.div_() = _flag;
+                _iter_opts.div_() = _flag;
         }
         __normal_call void_type push_optm_zip_ (
             bool          _flag
             )
         {
             this->_jjig->
-           _iter_opts.zip_() = _flag;
+                _iter_opts.zip_() = _flag;
         }
 
         } ;
@@ -703,6 +711,11 @@
                 qlim() = _jjig._optm_qlim ;
 
             _jcfg._iter_opts.
+                wmin() = _jjig._optm_wmin ;
+            _jcfg._iter_opts.
+                wmax() = _jjig._optm_wmax ;
+
+            _jcfg._iter_opts.
                 tria() = _jjig._optm_tria ;
             _jcfg._iter_opts.
                 dual() = _jjig._optm_dual ;
@@ -923,11 +936,19 @@
             _jcfg._iter_opts.qtol(),
             (real_type)  0.,
             (real_type)  1.)
-
         __testREAL("OPTM-QLIM",
             _jcfg._iter_opts.qlim(),
             (real_type)  0.,
             (real_type)  1.)
+
+        __testREAL("OPTM-WMIN",
+            _jcfg._iter_opts.wmin(),
+       -std::numeric_limits<real_type>::infinity(),
+            (real_type)  0.)
+        __testREAL("OPTM-WMAX",
+            _jcfg._iter_opts.wmax(),
+            (real_type)  0.,
+       +std::numeric_limits<real_type>::infinity())
 
         #undef  __testINTS
         #undef  __testREAL
@@ -1134,6 +1155,11 @@
             __pushRVAL(_jcfg._iter_opts.qtol()));
         _jlog.push("  OPTM-QLIM = " +
             __pushRVAL(_jcfg._iter_opts.qlim()));
+
+        _jlog.push("  OPTM-WMIN ="  +  // -ve
+            __pushRVAL(_jcfg._iter_opts.wmin()));
+        _jlog.push("  OPTM-WMAX = " +
+            __pushRVAL(_jcfg._iter_opts.wmax()));
 
         _jlog.push("  OPTM-ZIP_ = " +
             __pushBVAL(_jcfg._iter_opts.zip_()));
