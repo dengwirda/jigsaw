@@ -114,6 +114,8 @@
         printf (
        "[2s_c] JIGSAW returned code : %d \n", _retv) ;
 
+        fflush (stdout) ;
+
 
         return _retv ;
     }

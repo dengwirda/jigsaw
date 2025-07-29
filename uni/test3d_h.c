@@ -95,6 +95,8 @@
         printf (
        "[3d_h] MARCHE returned code : %d \n", _retv) ;
 
+        fflush (stdout) ;
+
 
         return _retv ;
     }

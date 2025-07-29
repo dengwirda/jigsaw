@@ -90,6 +90,8 @@
         printf (
        "[2s_g] TRIPOD returned code : %d \n", _retv) ;
 
+        fflush (stdout) ;
+
 
         return _retv ;
     }

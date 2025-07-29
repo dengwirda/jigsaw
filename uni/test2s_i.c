@@ -103,6 +103,8 @@
         printf (
        "[2s_i] MARCHE returned code : %d \n", _retv) ;
 
+        fflush (stdout) ;
+
 
         return _retv ;
     }

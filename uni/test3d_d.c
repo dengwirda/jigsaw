@@ -162,6 +162,8 @@
         printf (
        "[3d_d] JIGSAW returned code : %d \n", _retv) ;
 
+        fflush (stdout) ;
+
 
         return _retv ;
     }
