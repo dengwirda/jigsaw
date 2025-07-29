@@ -431,7 +431,7 @@
 
             __unreferenced(_opts);
 
-            real_type _tbal[ +3] ;
+            real_type _tbal[ +4] ;
             bool_type _rBND   =
                 rdel_pred::tria_ball (
                     _geom,_mesh,
