@@ -14,9 +14,11 @@
      * JIGSAW: Interface to the JIGSAW meshing library.
     --------------------------------------------------------
      *
-     * Last updated: 08 Feb., 2021
+     * JIGSAW release 1.1.0.x
      *
-     * Copyright 2013-2021
+     * Last updated: 20 Oct., 2024
+     *
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -64,7 +66,7 @@
     extern "C" {
 #   endif
 
-#   ifdef  _WIN32
+#   if defined(_WIN32) || defined(_WIN64)
 
 #   ifdef  __lib_jigsaw
 #       define SHARED __declspec(dllexport)
