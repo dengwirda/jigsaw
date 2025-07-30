@@ -211,6 +211,8 @@
             _edat._tadj    = _tpos;
             _edat._eadj    =
                 (char_type)  _fpos;
+            _edat._dups    = +0; // count num. dup's
+                                 // only in hash-set
 
             if (_test)
             {
