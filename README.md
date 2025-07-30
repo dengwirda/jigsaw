@@ -68,7 +68,7 @@ This process will build the unit-tests as a set of executables in <a href="../ma
 
 ### `Contributors`
 
-1. [@dengwirda](https://github.com/dengwirda) is `JIGSAW`'s developer and maintainer --- this work was originally the focus of my PhD at the University of Sydney.
+1. [@dengwirda](https://github.com/dengwirda) is `JIGSAW`'s developer and maintainer.
 2. [@xylar](https://github.com/xylar) contributed the `cmake` build system and `conda` environment.
 3. [@tunnellm](https://github.com/tunnellm) extended the sequential optimisation algorithms to support thread-parallelism.
 
@@ -87,7 +87,7 @@ This program may be freely redistributed under the condition that the copyright 
 
 ### `References`
 
-There are a number of publications that describe the algorithms used in `JIGSAW` in detail. If you make use of `JIGSAW` in your work, please consider including a reference to the following:
+There are a number of publications that describe the algorithms used in `JIGSAW` in detail. If you make use of `JIGSAW` in your work, please include references as appropriate:
 
 `[1]` - Darren Engwirda: Generalised primal-dual grids for unstructured co-volume schemes, J. Comp. Phys., 375, pp. 155-176, https://doi.org/10.1016/j.jcp.2018.07.025, 2018.
 
