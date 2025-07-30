@@ -17,7 +17,7 @@ This package provides the underlying `c++` source for `JIGSAW`; defining a basic
 
 ### `Code Structure`
 
-`JIGSAW` a `c++` `header-only` library. Both a basic command-line interface and a `c`-format `API` are defined:
+`JIGSAW` is a header-only `c++` library. Both a basic command-line interface and a `c`-format `API` are defined:
 
       JIGSAW::
       ├── src -- JIGSAW src code
@@ -32,14 +32,11 @@ This package provides the underlying `c++` source for `JIGSAW`; defining a basic
 
 `JIGSAW` can be built using the <a href="https://cmake.org/">`cmake`</a> utility:
 
-    * Clone or download this repository.
-    * Navigate to the root `../jigsaw/` directory.
-    * Make a new temporary directory BUILD.
-    * cd build
-    * cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
-    * cmake --build . --config BUILD_MODE --target install EXTRAS
-    * Delete the temporary BUILD directory.
-
+    Navigate to the root ../jigsaw/ directory.
+    mkdir build && cd build
+    cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
+    cmake --build . --config BUILD_MODE --target install EXTRAS
+    
 A set of executables and shared libraries is built: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, `marche` - a fast-marching solver designed to optimise mesh-spacing configurations, as well as `libjigsaw` - `JIGSAW`'s shared `API`. 
 
 `BUILD_MODE` can be used to select different compiler configurations (either `Release` or `Debug`). `EXTRAS` can be used to pass additional compile-time arguments, for example `-- -j4` will build in parallel on supported architectures.
@@ -50,7 +47,7 @@ See `example.jig` for documentation, as well as the headers in <a href="../maste
 
 After compiling the code, try running the following command-line example:
 
-    /bin/jigsaw`[.exe]` example.jig
+    /bin/jigsaw{.exe} example.jig
 
 In this example, a high-quality tetrahedral mesh is generated for the `stanford-bunny` geometry. The input geometry is specified as a triangulated surface, and is read from `../jigsaw/geo/bunny.msh`. The volume and surface mesh outputs are written to `../jigsaw/out/bunny.msh`. See the `example.jig` text-file for a description of `JIGSAW`'s configuration options. 
 
@@ -62,13 +59,11 @@ A set of unit-tests and `libjigsaw` example programs are contained in <a href=".
 
 The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> utility:
 
-    * Navigate to the `../jigsaw/uni/` directory.
-    * Make a new temporary directory BUILD.
-    * cd build
-    * cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
-    * cmake --build . --config BUILD_MODE --target install EXTRAS
-    * Delete the temporary BUILD directory.
-
+    Navigate to the ../jigsaw/uni/ directory.
+    mkdir build && cd build
+    cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
+    cmake --build . --config BUILD_MODE --target install EXTRAS
+    
 This process will build the unit-tests as a set of executables in <a href="../master/uni/">`../jigsaw/uni/`</a>. `BUILD_MODE` is a compiler configuration flag (either `Release` or `Debug`). `EXTRAS` can be used to pass additional compile-time arguments.
 
 ### `Contributors`
