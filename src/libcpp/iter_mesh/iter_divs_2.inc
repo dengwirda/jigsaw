@@ -127,9 +127,13 @@
         if (_cset.count()<=1) return ;
 
     /*--------------------------------- get edge h-sizing */
-        real_type _ball[_last + 1] ;
+        real_type _ball[_last + 1] =
+            {(real_type) 0.} ;
+        real_type _prev[_last + 1] =
+            {(real_type)+0.} ;
+
         for (auto _idim =
-        pred_type::real_dims; _idim-- != 0; )
+        pred_type::geom_dims; _idim-- != 0; )
         {
             _ball[_idim]  = (real_type) +0. ;
             _ball[_idim] +=
@@ -239,7 +243,7 @@
         typename mesh_type::quad_type _qdat ;
 
         for (auto _idim =
-        pred_type::geom_dims; _idim-- != 0; )
+        pred_type::real_dims; _idim-- != 0; )
         {
             _ndat.pval(_idim) = _ball[_idim];
         }
@@ -370,9 +374,6 @@
     /*--------------------------------- optim. node coord */
         iptr_type static
             constexpr _INUM = (iptr_type) +4;
-
-        real_type _prev[_last + 1] =
-            {(real_type)+0.};
 
         iptr_type _move = -1;
         for (auto _iloc = +0; _iloc != _INUM;
