@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 Feb., 2025
+     * Last updated: 08 Aug., 2025
      *
      * Copyright 2013-2025
      * Darren Engwirda
@@ -130,7 +130,7 @@
         EVALHFUN( _knod , _kptr )
 
         real_type _hbal = _hfun.eval(
-            &_ball[0], _node->hidx()) ;
+            &_ball[0], _tptr->hidx()) ;
 
         real_type _irho =
             _hval[_imid] / _hval[_inod] ;
@@ -252,7 +252,7 @@
         EVALHFUN( _lnod , _lptr )
 
         real_type _hbal = _hfun.eval(
-            &_ball[0], _node->hidx()) ;
+            &_ball[0], _qptr->hidx()) ;
 
         real_type _irho =
             _hval[_imid] / _hval[_inod] ;
@@ -493,15 +493,9 @@
             _hval[_knod] * (real_type)1./2. ;
 
         real_type _0val = _hfun.eval(    // eval. on dual
-            &_0bal[0], _node->hidx()) ;
-        real_type _1val = _hfun.eval(
-            &_1bal[0], _node->hidx()) ;
-        real_type _2val = _hfun.eval(
-            &_2bal[0], _node->hidx()) ;
+            &_0bal[0], _tptr->hidx()) ;
 
         _0rho = +.5 * (_0rho + _0val) ;
-        _1rho = +.5 * (_1rho + _1val) ;
-        _2rho = +.5 * (_2rho + _2val) ;
 
         _0rho = std::pow(
             _hval[_inod] / _0rho, +3) ;
@@ -678,15 +672,9 @@
             _hval[_lnod] * (real_type)1./2. ;
 
         real_type _0val = _hfun.eval(    // eval. on dual
-            &_0bal[0], _node->hidx()) ;
-        real_type _1val = _hfun.eval(
-            &_1bal[0], _node->hidx()) ;
-        real_type _2val = _hfun.eval(
-            &_2bal[0], _node->hidx()) ;
+            &_0bal[0], _qptr->hidx()) ;
 
         _0rho = +.5 * (_0rho + _0val) ;
-        _1rho = +.5 * (_1rho + _1val) ;
-        _2rho = +.5 * (_2rho + _2val) ;
 
         _0rho = std::pow(
             _hval[_inod] / _0rho, +3) ;
