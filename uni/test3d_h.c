@@ -1,6 +1,6 @@
 
-//  gcc -Wall -Wextra test2d_h.c -Xlinker -rpath=../lib
-//  -L ../lib -ljigsaw -o test2d_h
+//  gcc -Wall -Wextra test3d_h.c -Xlinker -rpath=../lib
+//  -L ../lib -ljigsaw -o test3d_h
 
 //  Use MARCHE to set "gradient-limits" on mesh-spacing data
 //
@@ -13,7 +13,7 @@
 #   include "print.h"
 #   include "stdio.h"
 
-    int test2d_h (int _verb)
+    int test3d_h (int _verb)
     {
         int _retv = 0;
 
@@ -24,25 +24,7 @@
         jigsaw_msh_t _hfun ;
         jigsaw_init_msh_t(&_hfun) ;
 
-    /*
-    --------------------------------------------------------
-     * JIGSAW's "grid" uses a column-major numbering:
-    --------------------------------------------------------
-     *
-     *                 v:5
-     *      v:2 o-------o-------o v:8
-     *          |       |       |
-     *          |       |       |
-     *          |      v:4      |
-     *      v:1 o-------o-------o v:7
-     *          |       |       |
-     *          |       |       |
-     *          |       |       |
-     *      v:0 o-------o-------o v:6
-     *                 v:3
-     *
-    --------------------------------------------------------
-     */
+    /*-------------------------------- setup JIGSAW hfun. */
 
         real_t         _hfun_xgrid[3] = {   // setup hfun.
             0., .5, 1.
@@ -52,14 +34,20 @@
             0., .5, 1.
             } ;
 
-        fp32_t         _hfun_value[9] = {
-            2.f, 2.f, 2.f, 2.f, 1.f, 2.f, 2.f,
-            2.f, 2.f
+        real_t         _hfun_zgrid[3] = {
+            0., .5, 1.
             } ;
 
-        fp32_t         _hfun_slope[9] = {
-            .4f, .4f, .4f, .4f, .1f, .4f, .4f,
-            .4f, .4f
+        fp32_t         _hfun_value[27]= {
+            2.f, 2.f, 2.f, 2.f, 1.f, 2.f, 2.f, 2.f, 2.f,
+            2.f, 2.f, 2.f, 2.f, 1.f, 2.f, 2.f, 2.f, 2.f,
+            2.f, 2.f, 2.f, 2.f, 1.f, 2.f, 2.f, 2.f, 2.f
+            } ;
+
+        fp32_t         _hfun_slope[27]= {
+            .4f, .4f, .4f, .4f, .1f, .4f, .4f, .4f, .4f,
+            .4f, .4f, .4f, .4f, .1f, .4f, .4f, .4f, .4f,
+            .4f, .4f, .4f, .4f, .1f, .4f, .4f, .4f, .4f
             } ;
 
         _hfun._flags
@@ -71,11 +59,14 @@
         _hfun._ygrid._data = &_hfun_ygrid[0] ;
         _hfun._ygrid._size = +3 ;
 
+        _hfun._zgrid._data = &_hfun_zgrid[0] ;
+        _hfun._zgrid._size = +3 ;
+
         _hfun._value._data = &_hfun_value[0] ;
-        _hfun._value._size = +9 ;
+        _hfun._value._size = +27;
 
         _hfun._slope._data = &_hfun_slope[0] ;
-        _hfun._slope._size = +9 ;
+        _hfun._slope._size = +27;
 
     /*-------------------------------- build MARCHE hfun. */
 
@@ -102,7 +93,7 @@
         }
 
         printf (
-       "[2d_h] MARCHE returned code : %d \n", _retv) ;
+       "[3d_h] MARCHE returned code : %d \n", _retv) ;
 
         fflush (stdout) ;
 
@@ -111,7 +102,7 @@
     }
 
 #   ifndef __SKIP_MAIN__
-    int main () { return test2d_h(1) ; }
+    int main () { return test3d_h(1) ; }
 #   endif//__SKIP_MAIN__
 
 

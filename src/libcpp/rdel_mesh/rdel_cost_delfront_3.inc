@@ -441,15 +441,15 @@
              tria(_tpos)->node(_fnod[ 2]);
 
             real_type _fbal [ +4];
-            geometry::circ_ball_3d(_fbal ,
+            geometry::perp_ball_3d(_fbal ,
            &_mesh._tria.
              node(_fnod[0])->pval(0),
            &_mesh._tria.
              node(_fnod[1])->pval(0),
            &_mesh._tria.
-             node(_fnod[2])->pval(0)) ;
+             node(_fnod[2])->pval(0) ) ;
 
-            _frad[_fnum] =  _fbal[3];
+            _frad[_fnum] =  _fbal[3] ;
         }
 
     /*--------------------------------- find min/max edge */

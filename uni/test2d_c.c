@@ -158,6 +158,8 @@
         printf (
        "[2d_c] JIGSAW returned code : %d \n", _retv) ;
 
+        fflush (stdout) ;
+
 
         return _retv ;
     }

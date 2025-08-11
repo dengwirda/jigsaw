@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Jul., 2022
+     * Last updated: 24 Jul., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -710,8 +710,11 @@
         real_type _r2 = _m2[2] ;
         real_type _r3 = _m3[2] ;
 
-        real_type _rb =             // chara.-length
-        std::pow( _r1 * _r2 * _r3, 1./3.) ;
+      //real_type _rb =             // chara.-length
+      //std::pow( _r1 * _r2 * _r3, 1./3.) ;
+
+        real_type _rb =
+       (_r1+_r2+_r3) / (real_type)+3. ;
 
         real_type _qb = _lb / _rb ;
 
@@ -772,8 +775,11 @@
         real_type _r2 = _m2[3] ;
         real_type _r3 = _m3[3] ;
 
-        real_type _rb =             // chara.-length
-        std::pow( _r1 * _r2 * _r3, 1./3.) ;
+      //real_type _rb =             // chara.-length
+      //std::pow( _r1 * _r2 * _r3, 1./3.) ;
+
+        real_type _rb =
+       (_r1+_r2+_r3) / (real_type)+3. ;
 
         real_type _qb = _lb / _rb ;
 

@@ -109,6 +109,8 @@
         printf (
        "[3d_f] TRIPOD returned code : %d \n", _retv) ;
 
+        fflush (stdout) ;
+
 
         return _retv ;
     }

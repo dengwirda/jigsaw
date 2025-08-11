@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 Jun., 2022
+     * Last updated: 23 Oct., 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -362,6 +362,19 @@
     #   define UPDATED(__new, __old)    \
         std::abs(__new - __old) > _FTOL*std::abs(__new)
 
+    #   define REQUEUE(__new, __old, __idx)     \
+            if(UPDATED(__new, __old)) {         \
+            if(ISALIVE(__idx))          \
+            {                           \
+                _hval[__idx]  = __new;  \
+                _sort.reduce(__idx , __idx) ;   \
+            }                           \
+            else                        \
+            {                           \
+                _hval[__idx]  = __new;  \
+                _sort.push  (__idx , __idx) ;   \
+            } }
+
         for ( ; !_sort.empty() ; )
         {
             iptr_type _base, _bidx ;
@@ -390,14 +403,17 @@
                 _mesh. tri3( _cell).node(2);
 
     /*-------------------- skip cells due to sorted order */
+                iptr_type _near = +0;
                 if (_inod != _base &&
-                   !ISALIVE(_inod)) continue ;
+                    ISALIVE(_inod)) _near++;
                 if (_jnod != _base &&
-                   !ISALIVE(_jnod)) continue ;
+                    ISALIVE(_jnod)) _near++;
                 if (_knod != _base &&
-                   !ISALIVE(_knod)) continue ;
+                    ISALIVE(_knod)) _near++;
+                
+                if (_near == 0)     continue ;
 
-                vals_type _hmax;
+                vals_type _hmax = .0;
                 _hmax = this->_hval[_inod] ;
                 _hmax = std::max(
                 _hmax , this->_hval[_jnod]);
@@ -441,29 +457,9 @@
             //  push updates one-at-a-time to ensure heap
             //  maintains its sorted order
 
-                if (_sort.
-                     keys(_inod) != _sort.null())
-                if ( UPDATED(_inew, _iold) )
-                {
-                    _hval[_inod]  = _inew;
-                    _sort.reduce(_inod , _inod) ;
-                }
-
-                if (_sort.
-                     keys(_jnod) != _sort.null())
-                if ( UPDATED(_jnew, _jold) )
-                {
-                    _hval[_jnod]  = _jnew;
-                    _sort.reduce(_jnod , _jnod) ;
-                }
-
-                if (_sort.
-                     keys(_knod) != _sort.null())
-                if ( UPDATED(_knew, _kold) )
-                {
-                    _hval[_knod]  = _knew;
-                    _sort.reduce(_knod , _knod) ;
-                }
+                REQUEUE (_inew, _iold, _inod)
+                REQUEUE (_jnew, _jold, _jnod)
+                REQUEUE (_knew, _kold, _knod)
 
                 }
                 }
@@ -488,29 +484,9 @@
             //  push updates one-at-a-time to ensure heap
             //  maintains its sorted order
 
-                if (_sort.
-                     keys(_inod) != _sort.null())
-                if ( UPDATED(_inew, _iold) )
-                {
-                    _hval[_inod]  = _inew;
-                    _sort.reduce(_inod , _inod) ;
-                }
-
-                if (_sort.
-                     keys(_jnod) != _sort.null())
-                if ( UPDATED(_jnew, _jold) )
-                {
-                    _hval[_jnod]  = _jnew;
-                    _sort.reduce(_jnod , _jnod) ;
-                }
-
-                if (_sort.
-                     keys(_knod) != _sort.null())
-                if ( UPDATED(_knew, _kold) )
-                {
-                    _hval[_knod]  = _knew;
-                    _sort.reduce(_knod , _knod) ;
-                }
+                REQUEUE (_inew, _iold, _inod)
+                REQUEUE (_jnew, _jold, _jnod)
+                REQUEUE (_knew, _kold, _knod)
 
                 }
                 }
@@ -529,6 +505,7 @@
 
     #   undef ISALIVE
     #   undef UPDATED
+    #   undef REQUEUE
     }
 
     /*
@@ -632,11 +609,12 @@
             if (this->_find) return +0. ;
 
             __unreferenced(_lptr);
+            
+            real_type _qtmp[3] = {0,0,0};
 
             for ( ; _iptr != nullptr;
                     _iptr = _iptr->_next)
             {
-                real_type  _qtmp[+3];
                 iptr_type  _TPOS =
                     _iptr->_data.ipos() ;
 
@@ -745,6 +723,14 @@
      * EVAL: eval. size-fun. value.
     --------------------------------------------------------
      */
+
+    __inline_call real_type eval (
+        real_type *_ppos
+        )
+    {
+        auto _hint = this->null_hint();
+        return eval(_ppos, _hint);
+    }
 
     __normal_call real_type eval (
         real_type *_ppos ,

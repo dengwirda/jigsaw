@@ -1,4 +1,5 @@
 function (cfg_compile_options OPT CFG)
+  # set OPT if compiling with CFG
   add_compile_options ("$<$<CONFIG:${CFG}>:${OPT}>")
 endfunction ()
 
@@ -27,9 +28,10 @@ endif ()
 if (DEFINED ICPC_LIKE)
   add_compile_options (-pedantic -Wall -Wextra -Wshadow -Wfloat-conversion)
   add_compile_options (-fp-model=precise) # needed for adapt-fp
-  add_compile_options (-fno-math-errno) # no errno checks
-  add_compile_options (-fno-trapping-math) # no fp exceptions
-  add_compile_options (-ffinite-math-only) # no explicit nans, etc
+  cfg_compile_options (-fno-math-errno RELEASE) # no errno checks
+  cfg_compile_options (-fno-trapping-math RELEASE) # no fp exceptions
+  cfg_compile_options (-fno-signed-zeros RELEASE) # -0.0 == +0.0
+  cfg_compile_options (-ffinite-math-only RELEASE) # no explicit nans, etc
 endif ()
 
 if (DEFINED MSVC_LIKE)
@@ -37,14 +39,15 @@ if (DEFINED MSVC_LIKE)
   add_compile_options (/openmp:llvm) # needed for openmp > 2.0
   add_compile_options (/fp:precise) # needed for adapt-fp
   cfg_compile_options (/GS- RELEASE) # disable buffer checks
-  cfg_compile_options (/Ot  RELEASE) # favour "fast" code
+  cfg_compile_options (/Ot RELEASE) # favour "fast" code
 endif ()
 
 if (DEFINED GCXX_LIKE)
   add_compile_options (-pedantic -Wall -Wextra -Wshadow -Wfloat-conversion)
-  add_compile_options (-fno-math-errno) # no errno checks
-  add_compile_options (-fno-trapping-math) # no fp exceptions
-  add_compile_options (-ffinite-math-only) # no explicit nans, etc
+  cfg_compile_options (-fno-math-errno RELEASE) # no errno checks
+  cfg_compile_options (-fno-trapping-math RELEASE) # no fp exceptions
+  cfg_compile_options (-fno-signed-zeros RELEASE) # -0.0 == +0.0
+  cfg_compile_options (-ffinite-math-only RELEASE) # no explicit nans, etc
 endif ()
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

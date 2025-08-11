@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Apr., 2020
+     * Last updated: 11 May., 2024
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -1570,56 +1570,1016 @@
         return ( _d44 ) ;
     }
 
+    /*
+    --------------------------------------------------------
+     *
+     * Compute an exact determinant using multi-precision
+     * expansions, a'la shewchuk
+     *
+     *   | ax  ay  az  aq  dot(a, a)  +1. |
+     *   | bx  by  bz  bq  dot(b, b)  +1. |
+     *   | cx  cy  cz  cq  dot(c, c)  +1. |
+     *   | dx  dy  dz  dq  dot(d, d)  +1. |
+     *   | ex  ey  ez  eq  dot(e, e)  +1. |
+     *   | fx  fy  fz  fq  dot(f, f)  +1. |
+     *
+     * This is the unweighted "in-ball" predicate in E^4.
+     *
+    --------------------------------------------------------
+     */
+
+    __normal_call REAL_TYPE inball4d_e (
+      __const_ptr(REAL_TYPE) _pa ,
+      __const_ptr(REAL_TYPE) _pb ,
+      __const_ptr(REAL_TYPE) _pc ,
+      __const_ptr(REAL_TYPE) _pd ,
+      __const_ptr(REAL_TYPE) _pe ,
+      __const_ptr(REAL_TYPE) _pf ,
+        bool_type &_OK
+        )
+    {
+    /*--------------- inball4d predicate, "exact" version */
+        mp::expansion< 8 > _a_lift, _b_lift,
+                           _c_lift, _d_lift,
+                           _e_lift, _f_lift;
+        mp::expansion< 4 > _d2_ab_, _d2_ac_,
+                           _d2_ad_, _d2_ae_,
+                           _d2_af_,
+                           _d2_bc_, _d2_bd_,
+                           _d2_be_, _d2_bf_,
+                           _d2_cd_, _d2_ce_,
+                           _d2_cf_,
+                           _d2_de_, _d2_df_,
+                           _d2_ef_;
+        mp::expansion< 24> _d3_abc, _d3_abd,
+                           _d3_abe, _d3_abf,
+                           _d3_acd, _d3_ace,
+                           _d3_acf,
+                           _d3_ade, _d3_adf,
+                           _d3_aef,
+                           _d3_bcd, _d3_bce,
+                           _d3_bcf,
+                           _d3_bde, _d3_bdf,
+                           _d3_bef, 
+                           _d3_cde, _d3_cdf,
+                           _d3_cef, _d3_def;
+        mp::expansion<192> _d4abcd, _d4abce,
+                           _d4abcf,
+                           _d4abde, _d4abdf,
+                           _d4abef, 
+                           _d4acde, _d4acdf,
+                           _d4acef, _d4adef,
+                           _d4bcde, _d4bcdf,
+                           _d4bcef, _d4bdef,
+                           _d4cdef;
+        mp::expansion<960> _5bcdef, _5acdef, 
+                           _5abdef, _5abcef, 
+                           _5abcdf, _5abcde;
+    //  try not to blow the stack...
+        auto _d6full = new mp::expansion<92160>() ;
+
+        _OK = true;
+
+        mp::expansion< 1 > _pa_zz_(_pa[ 2]);
+        mp::expansion< 1 > _pb_zz_(_pb[ 2]);
+        mp::expansion< 1 > _pc_zz_(_pc[ 2]);
+        mp::expansion< 1 > _pd_zz_(_pd[ 2]);
+        mp::expansion< 1 > _pe_zz_(_pe[ 2]);
+        mp::expansion< 1 > _pf_zz_(_pf[ 2]);
+
+        mp::expansion< 1 > _pa_qq_(_pa[ 3]);
+        mp::expansion< 1 > _pb_qq_(_pb[ 3]);
+        mp::expansion< 1 > _pc_qq_(_pc[ 3]);
+        mp::expansion< 1 > _pd_qq_(_pd[ 3]);
+        mp::expansion< 1 > _pe_qq_(_pe[ 3]);
+        mp::expansion< 1 > _pf_qq_(_pf[ 3]);
+
+    /*-------------------------------------- lifted terms */
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pa[ 0]),
+            mp::expansion_from_sqr(_pa[ 1]),
+            mp::expansion_from_sqr(_pa[ 2]),
+            mp::expansion_from_sqr(_pa[ 3]),
+            _a_lift ) ;
+
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pb[ 0]),
+            mp::expansion_from_sqr(_pb[ 1]),
+            mp::expansion_from_sqr(_pb[ 2]),
+            mp::expansion_from_sqr(_pb[ 3]),
+            _b_lift ) ;
+
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pc[ 0]),
+            mp::expansion_from_sqr(_pc[ 1]),
+            mp::expansion_from_sqr(_pc[ 2]),
+            mp::expansion_from_sqr(_pc[ 3]),
+            _c_lift ) ;
+
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pd[ 0]),
+            mp::expansion_from_sqr(_pd[ 1]),
+            mp::expansion_from_sqr(_pd[ 2]),
+            mp::expansion_from_sqr(_pd[ 3]),
+            _d_lift ) ;
+
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pe[ 0]),
+            mp::expansion_from_sqr(_pe[ 1]),
+            mp::expansion_from_sqr(_pe[ 2]),
+            mp::expansion_from_sqr(_pe[ 3]),
+            _e_lift ) ;
+
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pf[ 0]),
+            mp::expansion_from_sqr(_pf[ 1]),
+            mp::expansion_from_sqr(_pf[ 2]),
+            mp::expansion_from_sqr(_pf[ 3]),
+            _f_lift ) ;
+
+    /*-------------------------------------- 2 x 2 minors */
+        compute_det_2x2(_pa[ 0], _pa[ 1],
+                        _pb[ 0], _pb[ 1],
+                        _d2_ab_ ) ;
+        
+        compute_det_2x2(_pa[ 0], _pa[ 1],
+                        _pc[ 0], _pc[ 1],
+                        _d2_ac_ ) ;
+
+        compute_det_2x2(_pa[ 0], _pa[ 1],
+                        _pd[ 0], _pd[ 1],
+                        _d2_ad_ ) ;
+
+        compute_det_2x2(_pa[ 0], _pa[ 1],
+                        _pe[ 0], _pe[ 1],
+                        _d2_ae_ ) ;
+
+        compute_det_2x2(_pa[ 0], _pa[ 1],
+                        _pf[ 0], _pf[ 1],
+                        _d2_af_ ) ;
+
+        compute_det_2x2(_pb[ 0], _pb[ 1],
+                        _pc[ 0], _pc[ 1],
+                        _d2_bc_ ) ;
+
+        compute_det_2x2(_pb[ 0], _pb[ 1],
+                        _pd[ 0], _pd[ 1],
+                        _d2_bd_ ) ;
+
+        compute_det_2x2(_pb[ 0], _pb[ 1],
+                        _pe[ 0], _pe[ 1],
+                        _d2_be_ ) ;
+
+        compute_det_2x2(_pb[ 0], _pb[ 1],
+                        _pf[ 0], _pf[ 1],
+                        _d2_bf_ ) ;
+
+        compute_det_2x2(_pc[ 0], _pc[ 1],
+                        _pd[ 0], _pd[ 1],
+                        _d2_cd_ ) ;
+
+        compute_det_2x2(_pc[ 0], _pc[ 1],
+                        _pe[ 0], _pe[ 1],
+                        _d2_ce_ ) ;
+
+        compute_det_2x2(_pc[ 0], _pc[ 1],
+                        _pf[ 0], _pf[ 1],
+                        _d2_cf_ ) ;
+
+        compute_det_2x2(_pd[ 0], _pd[ 1],
+                        _pe[ 0], _pe[ 1],
+                        _d2_de_ ) ;
+                           
+        compute_det_2x2(_pd[ 0], _pd[ 1],
+                        _pf[ 0], _pf[ 1],
+                        _d2_df_ ) ;
+
+        compute_det_2x2(_pe[ 0], _pe[ 1],
+                        _pf[ 0], _pf[ 1],
+                        _d2_ef_ ) ;
+
+    /*-------------------------------------- 3 x 3 minors */
+        compute_det_3x3(_d2_bc_, _pa_zz_,
+                        _d2_ac_, _pb_zz_,
+                        _d2_ab_, _pc_zz_,
+                        _d3_abc, +3) ;
+
+        compute_det_3x3(_d2_bd_, _pa_zz_,
+                        _d2_ad_, _pb_zz_,
+                        _d2_ab_, _pd_zz_,
+                        _d3_abd, +3) ;
+
+        compute_det_3x3(_d2_be_, _pa_zz_,
+                        _d2_ae_, _pb_zz_,
+                        _d2_ab_, _pe_zz_,
+                        _d3_abe, +3) ;
+
+        compute_det_3x3(_d2_bf_, _pa_zz_,
+                        _d2_af_, _pb_zz_,
+                        _d2_ab_, _pf_zz_,
+                        _d3_abf, +3) ;
+
+        compute_det_3x3(_d2_cd_, _pa_zz_,
+                        _d2_ad_, _pc_zz_,
+                        _d2_ac_, _pd_zz_,
+                        _d3_acd, +3) ;
+
+        compute_det_3x3(_d2_ce_, _pa_zz_,
+                        _d2_ae_, _pc_zz_,
+                        _d2_ac_, _pe_zz_,
+                        _d3_ace, +3) ;
+
+        compute_det_3x3(_d2_cf_, _pa_zz_,
+                        _d2_af_, _pc_zz_,
+                        _d2_ac_, _pf_zz_,
+                        _d3_acf, +3) ;
+
+        compute_det_3x3(_d2_de_, _pa_zz_,
+                        _d2_ae_, _pd_zz_,
+                        _d2_ad_, _pe_zz_,
+                        _d3_ade, +3) ;
+
+        compute_det_3x3(_d2_df_, _pa_zz_,
+                        _d2_af_, _pd_zz_,
+                        _d2_ad_, _pf_zz_,
+                        _d3_adf, +3) ;
+
+        compute_det_3x3(_d2_ef_, _pa_zz_,
+                        _d2_af_, _pe_zz_,
+                        _d2_ae_, _pf_zz_,
+                        _d3_aef, +3) ;
+
+        compute_det_3x3(_d2_cd_, _pb_zz_,
+                        _d2_bd_, _pc_zz_,
+                        _d2_bc_, _pd_zz_,
+                        _d3_bcd, +3) ;
+
+        compute_det_3x3(_d2_ce_, _pb_zz_,
+                        _d2_be_, _pc_zz_,
+                        _d2_bc_, _pe_zz_,
+                        _d3_bce, +3) ;
+
+        compute_det_3x3(_d2_cf_, _pb_zz_,
+                        _d2_bf_, _pc_zz_,
+                        _d2_bc_, _pf_zz_,
+                        _d3_bcf, +3) ;
+
+        compute_det_3x3(_d2_de_, _pb_zz_,
+                        _d2_be_, _pd_zz_,
+                        _d2_bd_, _pe_zz_,
+                        _d3_bde, +3) ;
+
+        compute_det_3x3(_d2_df_, _pb_zz_,
+                        _d2_bf_, _pd_zz_,
+                        _d2_bd_, _pf_zz_,
+                        _d3_bdf, +3) ;
+
+        compute_det_3x3(_d2_ef_, _pb_zz_,
+                        _d2_bf_, _pe_zz_,
+                        _d2_be_, _pf_zz_,
+                        _d3_bef, +3) ;
+
+        compute_det_3x3(_d2_de_, _pc_zz_,
+                        _d2_ce_, _pd_zz_,
+                        _d2_cd_, _pe_zz_,
+                        _d3_cde, +3) ;
+
+        compute_det_3x3(_d2_df_, _pc_zz_,
+                        _d2_cf_, _pd_zz_,
+                        _d2_cd_, _pf_zz_,
+                        _d3_cdf, +3) ;
+
+        compute_det_3x3(_d2_ef_, _pc_zz_,
+                        _d2_cf_, _pe_zz_,
+                        _d2_ce_, _pf_zz_,
+                        _d3_cef, +3) ;
+
+        compute_det_3x3(_d2_ef_, _pd_zz_,
+                        _d2_df_, _pe_zz_,
+                        _d2_de_, _pf_zz_,
+                        _d3_def, +3) ;
+
+    /*-------------------------------------- 4 x 4 minors */
+        compute_det_4x4(_d3_bcd, _pa_qq_,
+                        _d3_acd, _pb_qq_,
+                        _d3_abd, _pc_qq_,
+                        _d3_abc, _pd_qq_,
+                        _d4abcd, +4) ;
+
+        compute_det_4x4(_d3_bce, _pa_qq_,
+                        _d3_ace, _pb_qq_,
+                        _d3_abe, _pc_qq_,
+                        _d3_abc, _pe_qq_,
+                        _d4abce, +4) ;
+
+        compute_det_4x4(_d3_bcf, _pa_qq_,
+                        _d3_acf, _pb_qq_,
+                        _d3_abf, _pc_qq_,
+                        _d3_abc, _pf_qq_,
+                        _d4abcf, +4) ;
+
+        compute_det_4x4(_d3_bde, _pa_qq_,
+                        _d3_ade, _pb_qq_,
+                        _d3_abe, _pd_qq_,
+                        _d3_abd, _pe_qq_,
+                        _d4abde, +4) ;
+
+        compute_det_4x4(_d3_bdf, _pa_qq_,
+                        _d3_adf, _pb_qq_,
+                        _d3_abf, _pd_qq_,
+                        _d3_abd, _pf_qq_,
+                        _d4abdf, +4) ;
+
+        compute_det_4x4(_d3_bef, _pa_qq_,
+                        _d3_aef, _pb_qq_,
+                        _d3_abf, _pe_qq_,
+                        _d3_abe, _pf_qq_,
+                        _d4abef, +4) ;
+
+        compute_det_4x4(_d3_cde, _pa_qq_,
+                        _d3_ade, _pc_qq_,
+                        _d3_ace, _pd_qq_,
+                        _d3_acd, _pe_qq_,
+                        _d4acde, +4) ;
+
+        compute_det_4x4(_d3_cdf, _pa_qq_,
+                        _d3_adf, _pc_qq_,
+                        _d3_acf, _pd_qq_,
+                        _d3_acd, _pf_qq_,
+                        _d4acdf, +4) ;
+
+        compute_det_4x4(_d3_cef, _pa_qq_,
+                        _d3_aef, _pc_qq_,
+                        _d3_acf, _pe_qq_,
+                        _d3_ace, _pf_qq_,
+                        _d4acef, +4) ;
+
+        compute_det_4x4(_d3_def, _pa_qq_,
+                        _d3_aef, _pd_qq_,
+                        _d3_adf, _pe_qq_,
+                        _d3_ade, _pf_qq_,
+                        _d4adef, +4) ;
+
+        compute_det_4x4(_d3_cde, _pb_qq_,
+                        _d3_bde, _pc_qq_,
+                        _d3_bce, _pd_qq_,
+                        _d3_bcd, _pe_qq_,
+                        _d4bcde, +4) ;
+
+        compute_det_4x4(_d3_cdf, _pb_qq_,
+                        _d3_bdf, _pc_qq_,
+                        _d3_bcf, _pd_qq_,
+                        _d3_bcd, _pf_qq_,
+                        _d4bcdf, +4) ;
+
+        compute_det_4x4(_d3_cef, _pb_qq_,
+                        _d3_bef, _pc_qq_,
+                        _d3_bcf, _pe_qq_,
+                        _d3_bce, _pf_qq_,
+                        _d4bcef, +4) ;
+
+        compute_det_4x4(_d3_def, _pb_qq_,
+                        _d3_bef, _pd_qq_,
+                        _d3_bdf, _pe_qq_,
+                        _d3_bde, _pf_qq_,
+                        _d4bdef, +4) ;
+
+        compute_det_4x4(_d3_def, _pc_qq_,
+                        _d3_cef, _pd_qq_,
+                        _d3_cdf, _pe_qq_,
+                        _d3_cde, _pf_qq_,
+                        _d4cdef, +4) ;
+
+    /*-------------------------------------- 5 x 5 minors */
+        unitary_det_5x5(_d4bcde, _d4acde,
+                        _d4abde, _d4abce,
+                        _d4abcd,
+                        _5abcde, +5) ;
+
+        unitary_det_5x5(_d4bcdf, _d4acdf,
+                        _d4abdf, _d4abcf,
+                        _d4abcd,
+                        _5abcdf, +5) ;
+
+        unitary_det_5x5(_d4bcef, _d4acef,
+                        _d4abef, _d4abcf,
+                        _d4abce,
+                        _5abcef, +5) ;
+        
+        unitary_det_5x5(_d4bdef, _d4adef,
+                        _d4abef, _d4abdf,
+                        _d4abde,
+                        _5abdef, +5) ;
+
+        unitary_det_5x5(_d4cdef, _d4adef,
+                        _d4acef, _d4acdf,
+                        _d4acde,
+                        _5acdef, +5) ;
+
+        unitary_det_5x5(_d4cdef, _d4bdef,
+                        _d4bcef, _d4bcdf,
+                        _d4bcde,
+                        _5bcdef, +5) ;
+
+    /*-------------------------------------- 6 x 6 result */
+        compute_det_6x6(_5bcdef, _a_lift,
+                        _5acdef, _b_lift,
+                        _5abdef, _c_lift,
+                        _5abcef, _d_lift,
+                        _5abcdf, _e_lift,
+                        _5abcde, _f_lift,
+                       *_d6full, +5) ;
+        
+    /*-------------------------------------- leading det. */
+        REAL_TYPE _d66 = mp::expansion_est(*_d6full) ;
+
+        delete _d6full ; return _d66 ;
+    }
+
+    __normal_call REAL_TYPE inball4d_i (
+      __const_ptr(REAL_TYPE) _pa ,
+      __const_ptr(REAL_TYPE) _pb ,
+      __const_ptr(REAL_TYPE) _pc ,
+      __const_ptr(REAL_TYPE) _pd ,
+      __const_ptr(REAL_TYPE) _pe ,
+      __const_ptr(REAL_TYPE) _pf ,
+        bool_type &_OK
+        )
+    {
+    /*--------------- inball4d predicate, "bound" version */
+        ia_flt    _afx, _afy, _afz ,
+                  _afq, _ali,
+                  _bfx, _bfy, _bfz ,
+                  _bfq, _bli,
+                  _cfx, _cfy, _cfz ,
+                  _cfq, _cli,
+                  _dfx, _dfy, _dfz ,
+                  _dfq, _dli,
+                  _efx, _efy, _efz ,
+                  _efq, _eli;
+        
+        ia_flt    _afxbfy, _bfxafy ,
+                  _afxcfy, _cfxafy ,
+                  _bfxcfy, _cfxbfy ,
+                  _cfxdfy, _dfxcfy ,
+                  _dfxafy, _afxdfy ,
+                  _bfxdfy, _dfxbfy ;
+
+        ia_flt    _ab_, _bc_, _cd_, _da_,
+                  _ac_, _bd_;
+
+
+        ia_flt    _abc, _bcd, _cda, _dab;
+
+
+        ia_flt    _d55;
+
+        ia_rnd    _rnd;                   // up rounding!
+
+        _afx.from_sub(_pa[0], _pf[0]) ;   // coord. diff.
+        _afy.from_sub(_pa[1], _pf[1]) ;
+        _afz.from_sub(_pa[2], _pf[2]) ;
+        _afq.from_sub(_pa[3], _pf[3]) ;
+
+        _bfx.from_sub(_pb[0], _pf[0]) ;
+        _bfy.from_sub(_pb[1], _pf[1]) ;
+        _bfz.from_sub(_pb[2], _pf[2]) ;
+        _bfq.from_sub(_pb[3], _pf[3]) ;
+
+        _cfx.from_sub(_pc[0], _pf[0]) ;
+        _cfy.from_sub(_pc[1], _pf[1]) ;
+        _cfz.from_sub(_pc[2], _pf[2]) ;
+        _cfq.from_sub(_pc[3], _pf[3]) ;
+
+        _dfx.from_sub(_pd[0], _pf[0]) ;
+        _dfy.from_sub(_pd[1], _pf[1]) ;
+        _dfz.from_sub(_pd[2], _pf[2]) ;
+        _dfq.from_sub(_pd[3], _pf[3]) ;
+
+        _efx.from_sub(_pe[0], _pf[0]) ;
+        _efy.from_sub(_pe[1], _pf[1]) ;
+        _efz.from_sub(_pe[2], _pf[2]) ;
+        _efq.from_sub(_pe[3], _pf[3]) ;
+
+        _ali = sqr (_afx) + sqr (_afy)    // lifted terms
+             + sqr (_afz) + sqr (_afq) ;
+
+        _bli = sqr (_bfx) + sqr (_bfy)
+             + sqr (_bfz) + sqr (_bfq) ;
+
+        _cli = sqr (_cfx) + sqr (_cfy)
+             + sqr (_cfz) + sqr (_cfq) ;
+
+        _dli = sqr (_dfx) + sqr (_dfy)
+             + sqr (_dfz) + sqr (_dfq) ;
+
+        _eli = sqr (_efx) + sqr (_efy)
+             + sqr (_efz) + sqr (_efq) ;
+
+
+        /*
+        _aexbey = _aex * _bey ;           // 2 x 2 minors
+        _bexaey = _bex * _aey ;
+        _ab_ = _aexbey - _bexaey ;
+
+        _bexcey = _bex * _cey;
+        _cexbey = _cex * _bey;
+        _bc_ = _bexcey - _cexbey ;
+
+        _cexdey = _cex * _dey;
+        _dexcey = _dex * _cey;
+        _cd_ = _cexdey - _dexcey ;
+
+        _dexaey = _dex * _aey;
+        _aexdey = _aex * _dey;
+        _da_ = _dexaey - _aexdey ;
+
+        _aexcey = _aex * _cey;
+        _cexaey = _cex * _aey;
+        _ac_ = _aexcey - _cexaey ;
+
+        _bexdey = _bex * _dey;
+        _dexbey = _dex * _bey;
+        _bd_ = _bexdey - _dexbey ;
+
+
+
+        _abc =                            // 3 x 3 minors
+          _aez * _bc_ - _bez * _ac_
+        + _cez * _ab_ ;
+
+        _bcd =
+          _bez * _cd_ - _cez * _bd_
+        + _dez * _bc_ ;
+
+        _cda =
+          _cez * _da_ + _dez * _ac_
+        + _aez * _cd_ ;
+
+        _dab =
+          _dez * _ab_ + _aez * _bd_
+        + _bez * _da_ ;
+
+
+
+        _d44 =                            // 5 x 5 result
+          _eli * _abcd
+        + _dli * _abce 
+        - _cli * _deab
+        + _bli * _cdea 
+        - _ali * _bcde ;
+        */
+
+        _OK =
+          _d55.lo() >= (REAL_TYPE)0.
+        ||_d55.up() <= (REAL_TYPE)0.;
+
+        return ( _d55.mid() ) ;
+    }
 
 
 
 
-    #define EVAL_FP_DET_2x2(__aa, __bb, __cc, __dd, \
-                            __r2, __R2)     \
-        {       \
-        REAL_TYPE __aadd, __bbcc;   \
-        __aadd = __aa * __dd ;      \
-        __bbcc = __bb * __cc ;      \
-        __r2 = __aadd - __bbcc ;    \
-                \
-        REAL_TYPE __AADD, __BBCC;   \
-        __AADD = std::abs(__aadd) ; \
-        __BBCC = std::abs(__bbcc) ; \
-        __R2 = __AADD + __BBCC ;    \
-        }
-
-    #define EVAL_FP_DET_3x3(__a2, __va, __b2, __vb, \
-                            __c2, __vc,     \
-                            __A2, __VA, __B2, __VB, \
-                            __C2, __VC,     \
-                            __r3, __R3)     \
-        {                           \
-        __r3 =  \
-          __va * __a2 + __vb * __b2 \
-        + __vc * __c2 ;             \
-                \
-        __R3 =  \
-          __VA * __A2 + __VB * __B2 \
-        + __VC * __C2 ;             \
-        }
-
-    #define EVAL_FP_DET_4x4(__a3, __va, __b3, __vb, \
-                            __c3, __vc, __d3, __vd, \
-                            __A3, __VA, __B3, __VB, \
-                            __C3, __VC, __D3, __VD, \
-                            __r4, __R4)     \
-        {                           \
-        __r4 =  \
-          __va * __a3 + __vb * __b3 \
-        + __vc * __c3 + __vd * __d3 ;       \
-                \
-        __R4 =  \
-          __VA * __A3 + __VB * __B3 \
-        + __VC * __A3 + __VD * __D3 ;       \
-        }
 
 
+    /*
+    --------------------------------------------------------
+     *
+     * Compute an exact determinant using multi-precision
+     * expansions, a'la shewchuk
+     *
+     *   | ax  ay  az  aq  dot(a, a) - aw  +1. |
+     *   | bx  by  bz  bq  dot(b, b) - bw  +1. |
+     *   | cx  cy  cz  cq  dot(c, c) - cw  +1. |
+     *   | dx  dy  dz  dq  dot(d, d) - dw  +1. |
+     *   | ex  ey  ez  eq  dot(e, e) - ew  +1. |
+     *   | fx  fy  fz  fq  dot(f, f) - fw  +1. |
+     *
+     * This is the weighted "in-ball" predicate in E^4.
+     *
+    --------------------------------------------------------
+     */
 
+    __normal_call REAL_TYPE inball4w_e (
+      __const_ptr(REAL_TYPE) _pa ,
+      __const_ptr(REAL_TYPE) _pb ,
+      __const_ptr(REAL_TYPE) _pc ,
+      __const_ptr(REAL_TYPE) _pd ,
+      __const_ptr(REAL_TYPE) _pe ,
+      __const_ptr(REAL_TYPE) _pf ,
+        bool_type &_OK
+        )
+    {
+    /*--------------- inball4w predicate, "exact" version */
+        mp::expansion< 9 > _a_lift, _b_lift,
+                           _c_lift, _d_lift,
+                           _e_lift, _f_lift;
+        mp::expansion< 8 > _t_lift;
+        mp::expansion< 4 > _d2_ab_, _d2_ac_,
+                           _d2_ad_, _d2_ae_,
+                           _d2_af_,
+                           _d2_bc_, _d2_bd_,
+                           _d2_be_, _d2_bf_,
+                           _d2_cd_, _d2_ce_,
+                           _d2_cf_,
+                           _d2_de_, _d2_df_,
+                           _d2_ef_;
+        mp::expansion< 24> _d3_abc, _d3_abd,
+                           _d3_abe, _d3_abf,
+                           _d3_acd, _d3_ace,
+                           _d3_acf,
+                           _d3_ade, _d3_adf,
+                           _d3_aef,
+                           _d3_bcd, _d3_bce,
+                           _d3_bcf,
+                           _d3_bde, _d3_bdf,
+                           _d3_bef, 
+                           _d3_cde, _d3_cdf,
+                           _d3_cef, _d3_def;
+        mp::expansion<192> _d4abcd, _d4abce,
+                           _d4abcf,
+                           _d4abde, _d4abdf,
+                           _d4abef, 
+                           _d4acde, _d4acdf,
+                           _d4acef, _d4adef,
+                           _d4bcde, _d4bcdf,
+                           _d4bcef, _d4bdef,
+                           _d4cdef;
+        mp::expansion<960> _5bcdef, _5acdef, 
+                           _5abdef, _5abcef, 
+                           _5abcdf, _5abcde;
+    //  try not to blow the stack...
+        auto _d6full = new mp::expansion<103680>();
+
+        _OK = true;
+
+        mp::expansion< 1 > _pa_zz_(_pa[ 2]);
+        mp::expansion< 1 > _pb_zz_(_pb[ 2]);
+        mp::expansion< 1 > _pc_zz_(_pc[ 2]);
+        mp::expansion< 1 > _pd_zz_(_pd[ 2]);
+        mp::expansion< 1 > _pe_zz_(_pe[ 2]);
+        mp::expansion< 1 > _pf_zz_(_pf[ 2]);
+
+        mp::expansion< 1 > _pa_qq_(_pa[ 3]);
+        mp::expansion< 1 > _pb_qq_(_pb[ 3]);
+        mp::expansion< 1 > _pc_qq_(_pc[ 3]);
+        mp::expansion< 1 > _pd_qq_(_pd[ 3]);
+        mp::expansion< 1 > _pe_qq_(_pe[ 3]);
+        mp::expansion< 1 > _pf_qq_(_pf[ 3]);
+
+    /*-------------------------------------- lifted terms */
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pa[ 0]),
+            mp::expansion_from_sqr(_pa[ 1]),
+            mp::expansion_from_sqr(_pa[ 2]),
+            mp::expansion_from_sqr(_pa[ 3]),
+            _t_lift ) ;
+        mp::expansion_sub(
+            _t_lift , _pa[ 4] , _a_lift);
+
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pb[ 0]),
+            mp::expansion_from_sqr(_pb[ 1]),
+            mp::expansion_from_sqr(_pb[ 2]),
+            mp::expansion_from_sqr(_pb[ 3]),
+            _t_lift ) ;
+        mp::expansion_sub(
+            _t_lift , _pb[ 4] , _b_lift);
+
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pc[ 0]),
+            mp::expansion_from_sqr(_pc[ 1]),
+            mp::expansion_from_sqr(_pc[ 2]),
+            mp::expansion_from_sqr(_pc[ 3]),
+            _t_lift ) ;
+        mp::expansion_sub(
+            _t_lift , _pc[ 4] , _c_lift);
+
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pd[ 0]),
+            mp::expansion_from_sqr(_pd[ 1]),
+            mp::expansion_from_sqr(_pd[ 2]),
+            mp::expansion_from_sqr(_pd[ 3]),
+            _t_lift ) ;
+        mp::expansion_sub(
+            _t_lift , _pd[ 4] , _d_lift);
+
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pe[ 0]),
+            mp::expansion_from_sqr(_pe[ 1]),
+            mp::expansion_from_sqr(_pe[ 2]),
+            mp::expansion_from_sqr(_pe[ 3]),
+            _t_lift ) ;
+        mp::expansion_sub(
+            _t_lift , _pe[ 4] , _e_lift);
+
+        mp::expansion_add(
+            mp::expansion_from_sqr(_pf[ 0]),
+            mp::expansion_from_sqr(_pf[ 1]),
+            mp::expansion_from_sqr(_pf[ 2]),
+            mp::expansion_from_sqr(_pf[ 3]),
+            _t_lift ) ;
+        mp::expansion_sub(
+            _t_lift , _pf[ 4] , _f_lift);
+
+    /*-------------------------------------- 2 x 2 minors */
+        compute_det_2x2(_pa[ 0], _pa[ 1],
+                        _pb[ 0], _pb[ 1],
+                        _d2_ab_ ) ;
+        
+        compute_det_2x2(_pa[ 0], _pa[ 1],
+                        _pc[ 0], _pc[ 1],
+                        _d2_ac_ ) ;
+
+        compute_det_2x2(_pa[ 0], _pa[ 1],
+                        _pd[ 0], _pd[ 1],
+                        _d2_ad_ ) ;
+
+        compute_det_2x2(_pa[ 0], _pa[ 1],
+                        _pe[ 0], _pe[ 1],
+                        _d2_ae_ ) ;
+
+        compute_det_2x2(_pa[ 0], _pa[ 1],
+                        _pf[ 0], _pf[ 1],
+                        _d2_af_ ) ;
+
+        compute_det_2x2(_pb[ 0], _pb[ 1],
+                        _pc[ 0], _pc[ 1],
+                        _d2_bc_ ) ;
+
+        compute_det_2x2(_pb[ 0], _pb[ 1],
+                        _pd[ 0], _pd[ 1],
+                        _d2_bd_ ) ;
+
+        compute_det_2x2(_pb[ 0], _pb[ 1],
+                        _pe[ 0], _pe[ 1],
+                        _d2_be_ ) ;
+
+        compute_det_2x2(_pb[ 0], _pb[ 1],
+                        _pf[ 0], _pf[ 1],
+                        _d2_bf_ ) ;
+
+        compute_det_2x2(_pc[ 0], _pc[ 1],
+                        _pd[ 0], _pd[ 1],
+                        _d2_cd_ ) ;
+
+        compute_det_2x2(_pc[ 0], _pc[ 1],
+                        _pe[ 0], _pe[ 1],
+                        _d2_ce_ ) ;
+
+        compute_det_2x2(_pc[ 0], _pc[ 1],
+                        _pf[ 0], _pf[ 1],
+                        _d2_cf_ ) ;
+
+        compute_det_2x2(_pd[ 0], _pd[ 1],
+                        _pe[ 0], _pe[ 1],
+                        _d2_de_ ) ;
+                           
+        compute_det_2x2(_pd[ 0], _pd[ 1],
+                        _pf[ 0], _pf[ 1],
+                        _d2_df_ ) ;
+
+        compute_det_2x2(_pe[ 0], _pe[ 1],
+                        _pf[ 0], _pf[ 1],
+                        _d2_ef_ ) ;
+
+    /*-------------------------------------- 3 x 3 minors */
+        compute_det_3x3(_d2_bc_, _pa_zz_,
+                        _d2_ac_, _pb_zz_,
+                        _d2_ab_, _pc_zz_,
+                        _d3_abc, +3) ;
+
+        compute_det_3x3(_d2_bd_, _pa_zz_,
+                        _d2_ad_, _pb_zz_,
+                        _d2_ab_, _pd_zz_,
+                        _d3_abd, +3) ;
+
+        compute_det_3x3(_d2_be_, _pa_zz_,
+                        _d2_ae_, _pb_zz_,
+                        _d2_ab_, _pe_zz_,
+                        _d3_abe, +3) ;
+
+        compute_det_3x3(_d2_bf_, _pa_zz_,
+                        _d2_af_, _pb_zz_,
+                        _d2_ab_, _pf_zz_,
+                        _d3_abf, +3) ;
+
+        compute_det_3x3(_d2_cd_, _pa_zz_,
+                        _d2_ad_, _pc_zz_,
+                        _d2_ac_, _pd_zz_,
+                        _d3_acd, +3) ;
+
+        compute_det_3x3(_d2_ce_, _pa_zz_,
+                        _d2_ae_, _pc_zz_,
+                        _d2_ac_, _pe_zz_,
+                        _d3_ace, +3) ;
+
+        compute_det_3x3(_d2_cf_, _pa_zz_,
+                        _d2_af_, _pc_zz_,
+                        _d2_ac_, _pf_zz_,
+                        _d3_acf, +3) ;
+
+        compute_det_3x3(_d2_de_, _pa_zz_,
+                        _d2_ae_, _pd_zz_,
+                        _d2_ad_, _pe_zz_,
+                        _d3_ade, +3) ;
+
+        compute_det_3x3(_d2_df_, _pa_zz_,
+                        _d2_af_, _pd_zz_,
+                        _d2_ad_, _pf_zz_,
+                        _d3_adf, +3) ;
+
+        compute_det_3x3(_d2_ef_, _pa_zz_,
+                        _d2_af_, _pe_zz_,
+                        _d2_ae_, _pf_zz_,
+                        _d3_aef, +3) ;
+
+        compute_det_3x3(_d2_cd_, _pb_zz_,
+                        _d2_bd_, _pc_zz_,
+                        _d2_bc_, _pd_zz_,
+                        _d3_bcd, +3) ;
+
+        compute_det_3x3(_d2_ce_, _pb_zz_,
+                        _d2_be_, _pc_zz_,
+                        _d2_bc_, _pe_zz_,
+                        _d3_bce, +3) ;
+
+        compute_det_3x3(_d2_cf_, _pb_zz_,
+                        _d2_bf_, _pc_zz_,
+                        _d2_bc_, _pf_zz_,
+                        _d3_bcf, +3) ;
+
+        compute_det_3x3(_d2_de_, _pb_zz_,
+                        _d2_be_, _pd_zz_,
+                        _d2_bd_, _pe_zz_,
+                        _d3_bde, +3) ;
+
+        compute_det_3x3(_d2_df_, _pb_zz_,
+                        _d2_bf_, _pd_zz_,
+                        _d2_bd_, _pf_zz_,
+                        _d3_bdf, +3) ;
+
+        compute_det_3x3(_d2_ef_, _pb_zz_,
+                        _d2_bf_, _pe_zz_,
+                        _d2_be_, _pf_zz_,
+                        _d3_bef, +3) ;
+
+        compute_det_3x3(_d2_de_, _pc_zz_,
+                        _d2_ce_, _pd_zz_,
+                        _d2_cd_, _pe_zz_,
+                        _d3_cde, +3) ;
+
+        compute_det_3x3(_d2_df_, _pc_zz_,
+                        _d2_cf_, _pd_zz_,
+                        _d2_cd_, _pf_zz_,
+                        _d3_cdf, +3) ;
+
+        compute_det_3x3(_d2_ef_, _pc_zz_,
+                        _d2_cf_, _pe_zz_,
+                        _d2_ce_, _pf_zz_,
+                        _d3_cef, +3) ;
+
+        compute_det_3x3(_d2_ef_, _pd_zz_,
+                        _d2_df_, _pe_zz_,
+                        _d2_de_, _pf_zz_,
+                        _d3_def, +3) ;
+
+    /*-------------------------------------- 4 x 4 minors */
+        compute_det_4x4(_d3_bcd, _pa_qq_,
+                        _d3_acd, _pb_qq_,
+                        _d3_abd, _pc_qq_,
+                        _d3_abc, _pd_qq_,
+                        _d4abcd, +4) ;
+
+        compute_det_4x4(_d3_bce, _pa_qq_,
+                        _d3_ace, _pb_qq_,
+                        _d3_abe, _pc_qq_,
+                        _d3_abc, _pe_qq_,
+                        _d4abce, +4) ;
+
+        compute_det_4x4(_d3_bcf, _pa_qq_,
+                        _d3_acf, _pb_qq_,
+                        _d3_abf, _pc_qq_,
+                        _d3_abc, _pf_qq_,
+                        _d4abcf, +4) ;
+
+        compute_det_4x4(_d3_bde, _pa_qq_,
+                        _d3_ade, _pb_qq_,
+                        _d3_abe, _pd_qq_,
+                        _d3_abd, _pe_qq_,
+                        _d4abde, +4) ;
+
+        compute_det_4x4(_d3_bdf, _pa_qq_,
+                        _d3_adf, _pb_qq_,
+                        _d3_abf, _pd_qq_,
+                        _d3_abd, _pf_qq_,
+                        _d4abdf, +4) ;
+
+        compute_det_4x4(_d3_bef, _pa_qq_,
+                        _d3_aef, _pb_qq_,
+                        _d3_abf, _pe_qq_,
+                        _d3_abe, _pf_qq_,
+                        _d4abef, +4) ;
+
+        compute_det_4x4(_d3_cde, _pa_qq_,
+                        _d3_ade, _pc_qq_,
+                        _d3_ace, _pd_qq_,
+                        _d3_acd, _pe_qq_,
+                        _d4acde, +4) ;
+
+        compute_det_4x4(_d3_cdf, _pa_qq_,
+                        _d3_adf, _pc_qq_,
+                        _d3_acf, _pd_qq_,
+                        _d3_acd, _pf_qq_,
+                        _d4acdf, +4) ;
+
+        compute_det_4x4(_d3_cef, _pa_qq_,
+                        _d3_aef, _pc_qq_,
+                        _d3_acf, _pe_qq_,
+                        _d3_ace, _pf_qq_,
+                        _d4acef, +4) ;
+
+        compute_det_4x4(_d3_def, _pa_qq_,
+                        _d3_aef, _pd_qq_,
+                        _d3_adf, _pe_qq_,
+                        _d3_ade, _pf_qq_,
+                        _d4adef, +4) ;
+
+        compute_det_4x4(_d3_cde, _pb_qq_,
+                        _d3_bde, _pc_qq_,
+                        _d3_bce, _pd_qq_,
+                        _d3_bcd, _pe_qq_,
+                        _d4bcde, +4) ;
+
+        compute_det_4x4(_d3_cdf, _pb_qq_,
+                        _d3_bdf, _pc_qq_,
+                        _d3_bcf, _pd_qq_,
+                        _d3_bcd, _pf_qq_,
+                        _d4bcdf, +4) ;
+
+        compute_det_4x4(_d3_cef, _pb_qq_,
+                        _d3_bef, _pc_qq_,
+                        _d3_bcf, _pe_qq_,
+                        _d3_bce, _pf_qq_,
+                        _d4bcef, +4) ;
+
+        compute_det_4x4(_d3_def, _pb_qq_,
+                        _d3_bef, _pd_qq_,
+                        _d3_bdf, _pe_qq_,
+                        _d3_bde, _pf_qq_,
+                        _d4bdef, +4) ;
+
+        compute_det_4x4(_d3_def, _pc_qq_,
+                        _d3_cef, _pd_qq_,
+                        _d3_cdf, _pe_qq_,
+                        _d3_cde, _pf_qq_,
+                        _d4cdef, +4) ;
+
+    /*-------------------------------------- 5 x 5 minors */
+        unitary_det_5x5(_d4bcde, _d4acde,
+                        _d4abde, _d4abce,
+                        _d4abcd,
+                        _5abcde, +5) ;
+
+        unitary_det_5x5(_d4bcdf, _d4acdf,
+                        _d4abdf, _d4abcf,
+                        _d4abcd,
+                        _5abcdf, +5) ;
+
+        unitary_det_5x5(_d4bcef, _d4acef,
+                        _d4abef, _d4abcf,
+                        _d4abce,
+                        _5abcef, +5) ;
+        
+        unitary_det_5x5(_d4bdef, _d4adef,
+                        _d4abef, _d4abdf,
+                        _d4abde,
+                        _5abdef, +5) ;
+
+        unitary_det_5x5(_d4cdef, _d4adef,
+                        _d4acef, _d4acdf,
+                        _d4acde,
+                        _5acdef, +5) ;
+
+        unitary_det_5x5(_d4cdef, _d4bdef,
+                        _d4bcef, _d4bcdf,
+                        _d4bcde,
+                        _5bcdef, +5) ;
+
+    /*-------------------------------------- 6 x 6 result */
+        compute_det_6x6(_5bcdef, _a_lift,
+                        _5acdef, _b_lift,
+                        _5abdef, _c_lift,
+                        _5abcef, _d_lift,
+                        _5abcdf, _e_lift,
+                        _5abcde, _f_lift,
+                       *_d6full, +5) ;
+        
+    /*-------------------------------------- leading det. */
+        REAL_TYPE _d66 = mp::expansion_est(*_d6full) ;
+
+        delete _d6full ; return _d66 ;
+    }
 
 
 

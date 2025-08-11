@@ -7,15 +7,17 @@
   <img src = "../master/img/bunny-TRIA4-3.png" width="20%" hspace="0.25%">
 </p>
 
-`JIGSAW` is an unstructured mesh generator and tessellation library; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. `JIGSAW` includes refinement-based algorithms for the construction of new meshes, optimisation-driven techniques for the improvement of existing grids, as well as routines to assemble (restricted) Delaunay tessellations, Voronoi complexes and Power diagrams. 
+`JIGSAW` is an unstructured mesh generator and tessellation library; designed to generate high-quality triangulations and polyhedral decompositions of general planar, surface and volumetric domains. 
 
-This package provides the underlying `c++` source for `JIGSAW`; defining a basic command-line interface and a `c`-format `API`. Higher-level scripting interfaces, supporting a range of additional facilities for file I/O, mesh visualisation and post-processing operations are also available, including for <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> <a href="https://github.com/dengwirda/jigsaw-matlab">here</a> and for <a href="https://www.python.org/">`PYTHON`</a> <a href="https://github.com/dengwirda/jigsaw-python">here</a>.
+`JIGSAW` includes refinement-based algorithms for constructing new meshes, optimisation-driven techniques for improving existing grids, as well as routines to assemble (restricted) Delaunay tessellations, Voronoi complexes and Power diagrams. 
 
-`JIGSAW` is compiled and tested on various `64-bit` `Linux`, `Windows` and `MacOS` platforms using the `g++`, `clang++` and `msvc` compilers.
+This package provides the underlying `c++` source for `JIGSAW`; defining a basic command-line interface and a `c`-format `API`. Higher-level scripting interfaces, supporting additional facilities for file I/O, mesh visualisation and post-processing operations are also available, including for <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="http://www.gnu.org/software/octave">`OCTAVE`</a> <a href="https://github.com/dengwirda/jigsaw-matlab">here</a> and for <a href="https://www.python.org/">`PYTHON`</a> <a href="https://github.com/dengwirda/jigsaw-python">here</a>.
+
+`JIGSAW` has been compiled and tested on various `64-bit` `Linux`, `Windows` and `MacOS` platforms using `>=c++17` versions of the `g++`, `clang++` and `msvc` compilers.
 
 ### `Code Structure`
 
-`JIGSAW` is written as a `header-only` library in `c++`. Both a basic command-line interface and a `c`-format `API` are defined:
+`JIGSAW` is a header-only `c++` library. Both a basic command-line interface and a `c`-format `API` are defined:
 
       JIGSAW::
       ├── src -- JIGSAW src code
@@ -28,59 +30,26 @@ This package provides the underlying `c++` source for `JIGSAW`; defining a basic
 
 ### `Getting Started`
 
-The first step is to compile and configure the code! `JIGSAW` can either be built directly from src, or installed using the <a href="https://anaconda.org/conda-forge/jigsaw">`conda`</a> package manager.
+`JIGSAW` can be built using the <a href="https://cmake.org/">`cmake`</a> utility:
 
-### `Building from src`
+    Navigate to the root ../jigsaw/ directory.
+    mkdir build && cd build
+    cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
+    cmake --build . --config BUILD_MODE --target install EXTRAS
+    
+A set of executables and shared libraries is built: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, `marche` - a fast-marching solver designed to optimise mesh-spacing configurations, as well as `libjigsaw` - `JIGSAW`'s shared `API`. 
 
-The full `JIGSAW` src can be found in <a href="../master/src/">`../jigsaw/src/`</a>. It has been built using various `c++17` conforming versions of the `g++`, `clang++` and `msvc` compilers.
+`BUILD_MODE` can be used to select different compiler configurations (either `Release` or `Debug`). `EXTRAS` can be used to pass additional compile-time arguments, for example `-- -j4` will build in parallel on supported architectures.
 
-`JIGSAW` is a `header-only` package - the single main `jigsaw.cpp` file simply `#include`'s the rest of the library directly. `JIGSAW` does not currently dependent on any external packages or libraries.
+See `example.jig` for documentation, as well as the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
-`JIGSAW` consists of several pieces: `(a)` a set of command-line utilities that read and write mesh data from/to file, and `(b)` a shared library, accessible via a `c`-format `API`.
+### `cmd-line Examples`
 
-### `Using cmake`
+After compiling the code, try running the following command-line example:
 
-`JIGSAW` can be built using the <a href="https://cmake.org/">`cmake`</a> utility. To build, follow the steps below:
+    /bin/jigsaw{.exe} example.jig
 
-    * Clone or download this repository.
-    * Navigate to the root `../jigsaw/` directory.
-    * Make a new temporary directory BUILD.
-    * cd build
-    * cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
-    * cmake --build . --config BUILD_MODE --target install EXTRAS
-    * Delete the temporary BUILD directory.
-
-This process will build a series of executables and shared libraries: `jigsaw` itself - the main command-line meshing utility, `tripod` - `JIGSAW`'s tessellation infrastructure, `marche` - a fast-marching solver designed to optimise mesh-spacing configurations, as well as `libjigsaw` - `JIGSAW`'s shared `API`. 
-
-`BUILD_MODE` can be used to select different compiler configurations and should generally either be `Release` or `Debug`. `EXTRAS` can be used to pass additional compile-time arguments, for example `-- -j 4` will build in parallel on supported architectures.
-
-See `example.jig` for documentation on calling the command-line executables, and the headers in <a href="../master/inc/">`../jigsaw/inc/`</a> for details on the `API`.
-
-### `Using conda`
-
-`JIGSAW` is also available as a `conda` environment. To install and use, follow the steps below:
-
-    * Ensure you have conda installed. If not, consider miniconda as a lightweight option.
-    * Add conda-forge as a channel: conda config --add channels conda-forge
-    * Create a jigsaw environment: conda create -n jigsaw jigsaw
-
-Each time you want to use `JIGSAW` simply activate the environment using: `conda activate jigsaw`
-
-Once activated, the various `JIGSAW` command-line utilities will be available in your run path, `JIGSAW`'s shared library (`libjigsaw`) will be available in your library path and its include files in your include path.
-
-### `CMD-line Examples`
-
-After compiling the code, try running the following command-line example to get started:
-````
-On WIN platforms:
-
-\bin\jigsaw.exe example.jig
-
-On LNX platforms:
-
-/bin/jigsaw     example.jig
-````
-In this example, a high-quality tetrahedral mesh is generated for the 'stanford-bunny' geometry and the result written to file. The input geometry is specified as a triangulated surface, and is read from `../jigsaw/geo/bunny.msh`. The volume and surface mesh outputs are written to `../jigsaw/out/bunny.msh`. See the `example.jig` text-file for a description of `JIGSAW`'s configuration options. 
+In this example, a high-quality tetrahedral mesh is generated for the `stanford-bunny` geometry. The input geometry is specified as a triangulated surface, and is read from `../jigsaw/geo/bunny.msh`. The volume and surface mesh outputs are written to `../jigsaw/out/bunny.msh`. See the `example.jig` text-file for a description of `JIGSAW`'s configuration options. 
 
 A repository of additional surface models generated using `JIGSAW` can be found <a href="https://github.com/dengwirda/jigsaw-models">here</a>. A description of the `*.jig` and `*.msh` input file formats can be found in the <a href="https://github.com/dengwirda/jigsaw/wiki">wiki</a>.
 
@@ -88,20 +57,18 @@ A repository of additional surface models generated using `JIGSAW` can be found 
 
 A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/uni/">`../jigsaw/uni/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/inc/">`../jigsaw/inc/`</a>. 
 
-The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> utility. To build, follow the steps below:
+The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> utility:
 
-    * Navigate to the `../jigsaw/uni/` directory.
-    * Make a new temporary directory BUILD.
-    * cd build
-    * cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
-    * cmake --build . --config BUILD_MODE --target install EXTRAS
-    * Delete the temporary BUILD directory.
-
-This process will build the unit-tests as a series of executables in <a href="../master/uni/">`../jigsaw/uni/`</a>. `BUILD_MODE` is a compiler configuration flag: either `Release` or `Debug`. `EXTRAS` can be used to pass additional compile-time arguments.
+    Navigate to the ../jigsaw/uni/ directory.
+    mkdir build && cd build
+    cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
+    cmake --build . --config BUILD_MODE --target install EXTRAS
+    
+This process will build the unit-tests as a set of executables in <a href="../master/uni/">`../jigsaw/uni/`</a>. `BUILD_MODE` is a compiler configuration flag (either `Release` or `Debug`). `EXTRAS` can be used to pass additional compile-time arguments.
 
 ### `Contributors`
 
-1. [@dengwirda](https://github.com/dengwirda) is `JIGSAW`'s developer and maintainer --- this work was originally the focus of my PhD at the University of Sydney.
+1. [@dengwirda](https://github.com/dengwirda) is `JIGSAW`'s developer and maintainer.
 2. [@xylar](https://github.com/xylar) contributed the `cmake` build system and `conda` environment.
 3. [@tunnellm](https://github.com/tunnellm) extended the sequential optimisation algorithms to support thread-parallelism.
 
@@ -120,7 +87,7 @@ This program may be freely redistributed under the condition that the copyright 
 
 ### `References`
 
-There are a number of publications that describe the algorithms used in `JIGSAW` in detail. If you make use of `JIGSAW` in your work, please consider including a reference to the following:
+There are a number of publications that describe the algorithms used in `JIGSAW` in detail. If you make use of `JIGSAW` in your work, please include references as appropriate:
 
 `[1]` - Darren Engwirda: Generalised primal-dual grids for unstructured co-volume schemes, J. Comp. Phys., 375, pp. 155-176, https://doi.org/10.1016/j.jcp.2018.07.025, 2018.
 

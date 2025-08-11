@@ -367,8 +367,8 @@
         containers::array<half_type> _hset ;
         _tset. set_alloc(+32);
         _hset. set_alloc(+32);
-        edge_loop( _mesh, _enod,
-            _tadj, _fadj, _tset) ;
+         edge_loop (
+            _mesh, _enod, _tadj, _fadj, _tset) ;
 
         if (_tset.count()<+3) return false ;
 
@@ -1032,9 +1032,7 @@
     //  nudge away from orthoball, to sanitise degenerate
     //  cases adj. to sharp boundaries
 
-        real_type static const _bump =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), +0.5) ;
+        real_type constexpr _bump = 0.01 ;
 
         real_type _test[3] ;
         _test[0] = (real_type)1./4. * (

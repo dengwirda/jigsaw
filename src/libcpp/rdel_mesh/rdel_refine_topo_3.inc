@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 Jul., 2021
+     * Last updated: 21 Apr., 2024
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -598,7 +598,7 @@
             _geom.intersect( _fdat ,
                              _halo ) ;
 
-            if (_halo._list.count() <=  +2)
+        //!!if (_halo._list.count() <=  +2)
             {
     /*--------------------- keep "best" intersections */
             auto _ioff = _halo._list.tend();

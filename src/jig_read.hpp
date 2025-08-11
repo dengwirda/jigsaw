@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 27 Jul., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -137,6 +137,12 @@
     __normal_call void_type push_mesh_siz3 (
         double       /*_siz3*/
         ) { }
+    __normal_call void_type push_mesh_orph (
+        bool         /*_orph*/
+        ) { }    
+    __normal_call void_type push_mesh_lock (
+        bool         /*_lock*/
+        ) { }    
     __normal_call void_type push_mesh_top1 (
         bool         /*_top1*/
         ) { }
@@ -191,6 +197,12 @@
         ) { }
     __normal_call void_type push_optm_qlim (
         double       /*_qlim*/
+        ) { }
+    __normal_call void_type push_optm_wmin (
+        double       /*_wmin*/
+        ) { }
+    __normal_call void_type push_optm_wmax (
+        double       /*_wmax*/
         ) { }
     __normal_call void_type push_optm_tria (
         bool         /*_flag*/
@@ -601,6 +613,16 @@
             __putREAL(push_mesh_vol3, _stok) ;
                 }
             else
+            if (_stok[0] == "MESH_ORPH")
+                {
+            __putBOOL(push_mesh_orph, _stok) ;
+                }
+            else
+            if (_stok[0] == "MESH_LOCK")
+                {
+            __putBOOL(push_mesh_lock, _stok) ;
+                }            
+            else
             if (_stok[0] == "MESH_TOP1")
                 {
             __putBOOL(push_mesh_top1, _stok) ;
@@ -651,9 +673,20 @@
                 {
             __putREAL(push_optm_qtol, _stok) ;
                 }
+            else
             if (_stok[0] == "OPTM_QLIM")
                 {
             __putREAL(push_optm_qlim, _stok) ;
+                }
+            else
+            if (_stok[0] == "OPTM_WMIN")
+                {
+            __putREAL(push_optm_wmin, _stok) ;
+                }
+            else
+            if (_stok[0] == "OPTM_WMAX")
+                {
+            __putREAL(push_optm_wmax, _stok) ;
                 }
             else
             if (_stok[0] == "OPTM_ZIP_")

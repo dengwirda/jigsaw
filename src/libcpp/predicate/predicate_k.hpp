@@ -60,7 +60,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Apr., 2020
+     * Last updated: 11 May., 2024
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -76,7 +76,7 @@
 #   define __PREDICATE_K__
 
 #   define USE_KERNEL_FLTPOINT
-//  define USE_KERNEL_INTERVAL
+#   define USE_KERNEL_INTERVAL
 
     namespace geompred {
 
@@ -701,6 +701,113 @@
 
         _rr = inball3w_e(               // "exact" kernel
             _pa, _pb, _pc, _pd, _pe, _OK
+            ) ;
+
+        if (_OK) return _rr ;
+
+        return (REAL_TYPE) +0.0E+00;
+        }
+    }
+
+    __inline_call REAL_TYPE inball4d (
+      __const_ptr(REAL_TYPE) _pa ,
+      __const_ptr(REAL_TYPE) _pb ,
+      __const_ptr(REAL_TYPE) _pc ,
+      __const_ptr(REAL_TYPE) _pd ,
+      __const_ptr(REAL_TYPE) _pe ,
+      __const_ptr(REAL_TYPE) _pf
+        )
+    {
+    /*------------ inball4d predicate, "filtered" version */
+        REAL_TYPE _rr;
+        bool_type _OK;
+
+        /*
+    #   ifdef USE_KERNEL_FLTPOINT
+        _nn_calls[INBALL4D_f] += +1;
+
+        _rr = inball4d_f(               // "float" kernel
+            _pa, _pb, _pc, _pd, _pe, _pf, _OK
+            ) ;
+
+        if (_OK && std::isnormal(_rr))
+            return _rr ;
+    #   endif
+
+    #   ifdef USE_KERNEL_INTERVAL
+        _nn_calls[INBALL4D_i] += +1;
+
+        _rr = inball4d_i(               // "bound" kernel
+            _pa, _pb, _pc, _pd, _pe, _pf, _OK
+            ) ;
+
+        if (_OK) return _rr ;
+    #   endif
+        */
+
+        _nn_calls[INBALL4D_e] += +1;
+
+        _rr = inball4d_e(               // "exact" kernel
+            _pa, _pb, _pc, _pd, _pe, _pf, _OK
+            ) ;
+
+        if (_OK) return _rr ;
+
+        return (REAL_TYPE) +0.0E+00;
+    }
+
+    __inline_call REAL_TYPE inball4w (
+      __const_ptr(REAL_TYPE) _pa ,
+      __const_ptr(REAL_TYPE) _pb ,
+      __const_ptr(REAL_TYPE) _pc ,
+      __const_ptr(REAL_TYPE) _pd ,
+      __const_ptr(REAL_TYPE) _pe ,
+      __const_ptr(REAL_TYPE) _pf
+        )
+    {
+    /*------------ inball3w predicate, "filtered" version */
+        if (_pa [ 4] == _pb [ 4] &&
+            _pb [ 4] == _pc [ 4] &&
+            _pc [ 4] == _pd [ 4] &&
+            _pd [ 4] == _pe [ 4] &&
+            _pe [ 4] == _pf [ 4] )
+        {
+        return inball4d (   // equal weights, do inball4d
+            _pa, _pb, _pc, _pd, _pe, _pf
+            ) ;
+        }
+        else
+        {
+        REAL_TYPE _rr;      // given weights, full kernel
+        bool_type _OK;
+
+        /*
+    #   ifdef USE_KERNEL_FLTPOINT
+        _nn_calls[INBALL4W_f] += +1;
+
+        _rr = inball4w_f(               // "float" kernal
+            _pa, _pb, _pc, _pd, _pe, _pf, _OK
+            ) ;
+
+        if (_OK && std::isnormal(_rr))
+            return _rr ;
+    #   endif
+
+    #   ifdef USE_KERNEL_INTERVAL
+        _nn_calls[INBALL4D_i] += +1;
+
+        _rr = inball4w_i(               // "bound" kernel
+            _pa, _pb, _pc, _pd, _pe, _pf, _OK
+            ) ;
+
+        if (_OK) return _rr ;
+    #   endif
+        */
+
+        _nn_calls[INBALL4W_e] += +1;
+
+        _rr = inball4w_e(               // "exact" kernel
+            _pa, _pb, _pc, _pd, _pe, _pf, _OK
             ) ;
 
         if (_OK) return _rr ;

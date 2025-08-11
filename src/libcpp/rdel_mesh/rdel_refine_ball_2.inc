@@ -147,6 +147,73 @@
         }
         } ;
 
+        typedef mesh::keep_all_2d
+             <real_type, iptr_type> halo_pred;
+
+        class feat_pred
+        {
+        public  :
+        __static_call
+        __inline_call char_type feat_kind (
+            real_type *_apex,
+        typename halo_pred::list_type & _list,
+            rdel_opts &_args
+            )
+        {
+            char_type _feat =  null_feat ;
+            
+            real_type constexpr _DtoR =
+           (real_type)+3.141592653589793 / 180. ;
+
+            real_type _phi1 =
+           (real_type)+180. - _args.phi1() ;
+            real_type _eta1 =
+           (real_type)+  0. + _args.eta1() ;
+
+            real_type _hard =
+                std::cos( _phi1 * _DtoR) ;
+            real_type _soft =
+                std::cos( _eta1 * _DtoR) ;
+
+            for(auto _ipos  = _list.head() ;
+                     _ipos != _list.tend() ;
+                   ++_ipos  )
+            {
+            for(auto _jpos  = _ipos+1 ;
+                     _jpos != _list.tend() ;
+                   ++_jpos  )
+            {
+                real_type _ivec[2] ;
+                geometry::vector_2d(
+                   &_apex[0], &_ipos->pval(0),
+                    _ivec) ;
+
+                real_type _jvec[2] ;
+                geometry::vector_2d(
+                   &_apex[0], &_jpos->pval(0),
+                    _jvec) ;
+
+                real_type _acos = geometry::
+                    cosine_2d(_ivec, _jvec) ;
+                    
+    /*------------ tag as "feature" if angle sharp enough */
+                if (_acos <= _hard)
+                {
+                    _feat  =
+                std::max (_feat, hard_feat) ;
+                }
+                else
+                if (_acos <= _soft)
+                {
+                    _feat  =
+                std::max (_feat, soft_feat) ;
+                }
+            }
+            }
+            return  _feat;
+        }
+        } ;
+
     /*--------------------- refine next "protecting ball" */
         typename rdel_opts::node_kind
         _kind =  rdel_opts::null_kind ;
@@ -199,7 +266,7 @@
             (real_type) +3./8. * +3./8. ;
 
         real_type static constexpr _STOL =
-            (real_type) +1./2. * +1./2. ;
+            (real_type) +4./9. * +4./9. ;
 
         iptr_type _base = _ball._node[0];
         real_type _rmax = _ball._ball[2];
@@ -267,11 +334,7 @@
         _hdat._pmid[0] = _ball._ball[0] ;
         _hdat._pmid[1] = _ball._ball[1] ;
 
-        mesh::keep_all_2d <
-            real_type, iptr_type> _pred ;
-        mesh::keep_all_2d <
-            real_type, iptr_type> _halo ;
-
+        halo_pred _pred, _halo ;
         for(auto _iter = 96; _iter-- != +0 ; )
         {
             bool_type _okay = true;
@@ -305,7 +368,7 @@
                     (real_type) +.67 ;
                 continue ;
             }
-
+            
             _okay = _okay & _geom.intersect (
                     _hdat, _halo) ; // bracket
 
@@ -322,7 +385,19 @@
                     (real_type) +.67 ;
                 continue ;
             }
-            else break ;
+            
+            /*
+            if (feat_pred::feat_kind (
+                   &_pdat._pmid[0], 
+                _pred._list, _args) != hard_feat)
+            {
+                _ball._ball[2] *=   // reduce R for FEAT.
+                    (real_type) +.67 ;
+                continue ;
+            }
+            else */
+            
+            break ;
         }
 
         return ( _kind ) ;

@@ -4,7 +4,7 @@
  * a chained hash-table.
 ------------------------------------------------------------
  *
- * HASH-TABLE is a dynamically-sized, chained hash-table
+ * HASH-TABLE is a dynamically-sized, chained hashtable
  * implementation, essentially a linear array of singly-
  * linked hash buckets.
  *
@@ -103,7 +103,7 @@
                     pred_type   ,
                     allocator   >       self_type ;
 
-    size_type static constexpr _mini_count = +8 ;
+    size_type static constexpr _mini_count = 32 ;
 
     public  :
 
@@ -156,17 +156,11 @@
         )
     {
     /*------------------------------- round to next 2^pwr */
-        _slots = next_pwr2 (_slots);
+        _slots = next_pwr2 (_slots * 1) ;
 
     /*------------------------------- inc/dec. table size */
-        if (_slots <
-                this->_mini_count )
-            this->_lptr.set_count (
-            this->_mini_count ,
-                       _alloc ,  nullptr) ;
-        else
-            this->_lptr.set_count (
-               _slots, _alloc ,  nullptr) ;
+        this->_lptr.set_count(std::max(
+        _slots, this->_mini_count), _alloc,  nullptr) ;
 
     /*------------------------------- re-hash all objects */
         redo_hash() ;
@@ -176,14 +170,13 @@
         )
     {
     /*------------------------------- increase table size */
-        if (this->_lptr.count() <
-                this->_mini_count )
+        if (this->_lptr.count() <  this->_mini_count)
             this->_lptr.set_count (
             this->_mini_count ,
         containers::tight_alloc, nullptr) ;
         else
             this->_lptr.set_count (
-            this->_lptr.count()*+2,
+            this->_lptr.count()*2 ,
         containers::tight_alloc, nullptr) ;
 
     /*------------------------------- re-hash all objects */

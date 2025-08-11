@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Dec., 2022
+     * Last updated: 27 Jul., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda,
      * Marc Tunnell
      * d.engwirda@gmail.com
@@ -72,8 +72,8 @@
         kern_kind  _kern ,  // optim. kernel selector
         iptr_type &_move ,  // > 0 if move successful
         conn_list &_conn ,  // list of adj. cells
-        real_list &_qold ,  // list of old adj. costs
-        real_list &_qnew ,  // list of new adj. costs
+        fp32_list &_qold ,  // list of old adj. costs
+        fp32_list &_qnew ,  // list of new adj. costs
         real_type  _QMIN ,  // minimum adj. old costs
         real_type  _QLIM ,  // cell quality threshold
         real_type  _QMOV ,
@@ -114,8 +114,8 @@
         kern_kind  _kern ,  // optim. kernel selector
         iptr_type &_move ,  // > 0 if move successful
         conn_list &_conn ,  // list of adj. cells
-        real_list &_qold ,  // list of old adj. costs
-        real_list &_qnew ,  // list of new adj. costs
+        fp32_list &_qold ,  // list of old adj. costs
+        fp32_list &_qnew ,  // list of new adj. costs
         real_type  _QMIN ,  // minimum adj. old costs
         real_type  _QLIM ,  // cell quality threshold
         real_type  _QMOV ,
@@ -207,13 +207,8 @@
         _xeps = std::pow(_xeps, 2) ;
         _xtol = std::pow(_xtol, 2) ;
 
-        real_type _SCAL[_ITER] = {  // overrelaxation
-            (real_type) std::sqrt( 2.0 ) ,
-            (real_type) +1.00,
-            (real_type) +0.50,
-            (real_type) +0.25,
-            (real_type) +.125  } ;
-
+        real_type _SCAL = 4. / 3.;  // overrelaxation
+            
     /*---------------- do backtracking line search iter's */
 
     //  ifdef  __use_timers
@@ -236,8 +231,7 @@
                 _iter != _ITER; ++_iter )
         {
     /*---------------- push update along search direction */
-            real_type _scal = _SCAL[_iter];
-
+            real_type _scal = _SCAL;
             real_type _zeta = _opts._zeta *
                 std::min ((real_type)1.,_scal) ;
 
@@ -277,6 +271,8 @@
             if (_lmov <= _XEPS * _lsqr) break;
 
           //_move  = +1 ; return ;
+          
+            _SCAL *= (real_type) 0.5 ;
 
     /*---------------- test quasi-monotonicity w.r.t. Q^T */
             _qnew.set_count(0) ;
@@ -341,8 +337,8 @@
         real_type  _last ,  // lagged line direction
         iptr_type &_move ,  // > 0 if move successful
         conn_list &_conn ,  // list of adj. cells
-        real_list &_dold ,  // list of old adj. costs
-        real_list &_dnew ,  // list of new adj. costs
+        fp32_list &_dold ,  // list of old adj. costs
+        fp32_list &_dnew ,  // list of new adj. costs
         real_type  _DMIN ,  // minimum adj. old costs
         real_type  _DLIM ,  // dual quality threshold
         real_type  _DMOV ,
@@ -400,13 +396,8 @@
             _node->pval(
                 pred_type::real_dims - 1);
 
-        real_type _SCAL[_ITER] = {  // overrelaxation
-            (real_type) std::sqrt( 2.0 ) ,
-            (real_type) +1.00,
-            (real_type) +0.50,
-            (real_type) +0.25,
-            (real_type) +.125  } ;
-
+        real_type _SCAL = 4. / 3.;  // overrelaxation
+            
     /*---------------- do backtracking line search iter's */
 
     //  ifdef  __use_timers
@@ -419,8 +410,8 @@
         for (auto _iter = +0 ;
                 _iter != _ITER; ++_iter )
         {
-            real_type _scal = _SCAL[_iter];
-
+            real_type _wmov;
+            real_type _scal = _SCAL;
             real_type _zeta = _opts._zeta *
                 (real_type)3./4. *
             std::min((real_type)1.,_scal) ;
@@ -437,22 +428,24 @@
             _step * ((real_type)0.+_zeta) +
             _line * ((real_type)1.-_zeta));
 
-            _node->pval(real_dims-1) =
-                std::max(-_wadj ,
+        //  set upper/lower limits on weights
+            _node->pval(real_dims-1) = std::max(
+                _wadj * _opts.wmin(),
             _node->pval(real_dims-1));
 
-            _node->pval(real_dims-1) =
-                std::min(+_wadj ,
+            _node->pval(real_dims-1) = std::min(
+                _wadj * _opts.wmax(),
             _node->pval(real_dims-1));
 
-            real_type _wmov =
-                std::abs (_save -
+            _wmov = std::abs (_save -
             _node->pval(real_dims-1));
 
             real_type _wtol = _weps * _wadj *
             std::min ((real_type)1.0, _scal);
 
             if (_wmov <= _wtol) break;
+            
+            _SCAL *= (real_type) 0.5 ;
 
     /*---------------- test quasi-monotonicity w.r.t. Q^D */
             _dnew.set_count(0) ;
@@ -533,8 +526,8 @@
         iptr_type  _iout ,  // outer iteration marker
         iter_opts &_opts ,  // user options
         conn_list &_conn ,  // space for connectivity
-        real_list &_qold ,  // space for adj. costs
-        real_list &_qnew ,  // space for adj. costs
+        fp32_list &_qold ,  // space for adj. costs
+        fp32_list &_qnew ,  // space for adj. costs
         real_type  _QLIM ,  // cell quality threshold
         real_type  _QMOV ,
         iter_stat &_tcpu    // CPU timers/info
@@ -625,7 +618,7 @@
 
         iptr_type _pful, _pbnd;
         conn_list _conn;
-        real_list _qold, _qnew;
+        fp32_list _qold, _qnew;
 
     #   ifdef  __use_timers
         typename std ::chrono::
@@ -774,7 +767,7 @@
                   _QLIM, _QMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
-        real_list _QOLD, _QNEW;
+        fp32_list _QOLD, _QNEW;
         iptr_list _NSET;
         iptr_type _pass  = 0u ;
         iptr_type _anum;
@@ -832,7 +825,7 @@
                   _QLIM, _QMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
-        real_list _QOLD, _QNEW;
+        fp32_list _QOLD, _QNEW;
         iptr_list _NSET;
         iptr_type _anum;
     #   pragma omp for nowait  schedule(static,1)
@@ -890,7 +883,7 @@
                   _QLIM, _QMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
-        real_list _QOLD, _QNEW;
+        fp32_list _QOLD, _QNEW;
         iptr_list _NSET;
         iptr_type _pass  = 1u ;
         iptr_type _anum;
@@ -1023,8 +1016,8 @@
         iptr_type  _iout ,  // outer iteration marker
         iter_opts &_opts ,  // user options
         conn_list &_conn ,  // space for connectivity
-        real_list &_dold ,  // space for adj. costs
-        real_list &_dnew ,  // space for adj. costs
+        fp32_list &_dold ,  // space for adj. costs
+        fp32_list &_dnew ,  // space for adj. costs
         real_type  _DLIM ,  // dual quality threshold
         real_type  _DMOV ,
         iter_stat &_tcpu    // CPU timers/info
@@ -1110,7 +1103,7 @@
 
         iptr_type _pful, _pbnd;
         conn_list _conn;
-        real_list _dold, _dnew;
+        fp32_list _dold, _dnew;
 
     #   ifdef  __use_timers
         typename std ::chrono::
@@ -1259,7 +1252,7 @@
                   _DLIM, _DMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
-        real_list _DOLD, _DNEW;
+        fp32_list _DOLD, _DNEW;
         iptr_list _NSET;
         iptr_type _pass  = 0u ;
         iptr_type _anum;
@@ -1317,7 +1310,7 @@
                   _DLIM, _DMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
-        real_list _DOLD, _DNEW;
+        fp32_list _DOLD, _DNEW;
         iptr_list _NSET;
         iptr_type _anum;
     #   pragma omp for nowait  schedule(static,1)
@@ -1375,7 +1368,7 @@
                   _DLIM, _DMOV, _tcpu)
         {
         conn_list _CSET; // thread-local arrays
-        real_list _DOLD, _DNEW;
+        fp32_list _DOLD, _DNEW;
         iptr_list _NSET;
         iptr_type _pass  = 1u ;
         iptr_type _anum;

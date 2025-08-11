@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 26 Jul., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -99,6 +99,10 @@
         _jcfg->_mesh_iter = (indx_t)
             std::numeric_limits< indx_t >::max() ;
 
+        _jcfg->_mesh_orph = (indx_t) +1 ;
+
+        _jcfg->_mesh_lock = (indx_t) +0 ;
+
         _jcfg->_mesh_top1 = (indx_t) +0 ;
         _jcfg->_mesh_top2 = (indx_t) +0 ;
 
@@ -108,12 +112,12 @@
         _jcfg->_mesh_off2 = (real_t) +0.90 ;
         _jcfg->_mesh_off3 = (real_t) +1.10 ;
 
-        real_t _SIZ1 = +1./1. * 4./3. ;
+        real_t const _SIZ1 = 1./1. * 4./3. ;
 
-        real_t _SIZ2 = +5./8. * 4./3. +
+        real_t const _SIZ2 = 5./8. * 4./3. +
             3./8. * 2. / (1. + std::sqrt(1./3.)) ;
 
-        real_t _SIZ3 = +5./8. * 4./3. +
+        real_t const _SIZ3 = 5./8. * 4./3. +
             3./8. * 2. / (1. + std::sqrt(3./8.)) ;
 
         _jcfg->_mesh_siz1 = (real_t) _SIZ1 ;
@@ -123,8 +127,8 @@
         _jcfg->_mesh_snk2 = (real_t) + 1./5. ;
         _jcfg->_mesh_snk3 = (real_t) + 1./3. ;
 
-        _jcfg->_mesh_eps1 = (real_t) + 1./3. ;
-        _jcfg->_mesh_eps2 = (real_t) + 1./3. ;
+        _jcfg->_mesh_eps1 = (real_t) + 5./12.; // .41667...
+        _jcfg->_mesh_eps2 = (real_t) + 5./12.;
 
         _jcfg->_mesh_vol3 = (real_t) + 0./1. ;
 
@@ -139,7 +143,10 @@
         _jcfg->_optm_zeta = (real_t) +0.8250 ;
 
         _jcfg->_optm_qtol = (real_t) +1.E-04 ;
-        _jcfg->_optm_qlim = (real_t) +14./15.; // .9333...
+        _jcfg->_optm_qlim = (real_t) +11./12.; // .91667...
+
+        _jcfg->_optm_wmin = (real_t) -7. / 8.; // .87500
+        _jcfg->_optm_wmax = (real_t) +1. /80.; // .01250
 
         _jcfg->_optm_tria = (indx_t) +1 ;
         _jcfg->_optm_dual = (indx_t) +0 ;

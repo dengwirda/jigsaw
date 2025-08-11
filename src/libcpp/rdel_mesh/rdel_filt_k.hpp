@@ -216,11 +216,15 @@
     typedef keep_base_2d <
             real_type ,
             iptr_type    >  pred_base ;
+        
+    typedef typename 
+       pred_base::node_data node_type ;
+            
+    typedef containers::array <
+            node_type    >  list_type ;
 
     public  :
-    containers::array <
-        typename pred_base::node_data>  _list ;
-
+    list_type                   _list ;
     iptr_type                   _inum ;
     bool_type                   _find ;
 
@@ -291,10 +295,14 @@
             real_type ,
             iptr_type    >  pred_base ;
 
-    public  :
-    containers::array <
-        typename pred_base::node_data>  _list ;
+    typedef typename 
+       pred_base::node_data node_type ;
+            
+    typedef containers::array <
+            node_type    >  list_type ;
 
+    public  :
+    list_type                   _list ;
     iptr_type                   _inum ;
     bool_type                   _find ;
 

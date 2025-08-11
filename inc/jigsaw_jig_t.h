@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 27 Jul., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -211,6 +211,30 @@
 
     /*
     --------------------------------------------------------
+     * MESH_ORPH - {default=true} allow "orphaned" facets
+     * to remain in the mesh. A K-1 dimensional subcell is
+     * orphaned if it does not appear in any K-dimensional 
+     * cell, e.g. a surface triangle that is not the face 
+     * of any interior tetrahedron.
+    --------------------------------------------------------
+     */
+
+        indx_t                  _mesh_orph ;
+
+    /*
+    --------------------------------------------------------
+     * MESH_LOCK - {default=false} prevent the refinement
+     * of subfaces during subsequent refinement. The
+     * refinement of a K-dimensional cell is deferred if
+     * doing so would cause any K-1 dimensional subfaces to 
+     * be refined.
+    --------------------------------------------------------
+     */
+
+        indx_t                  _mesh_lock ;
+
+    /*
+    --------------------------------------------------------
      * MESH_TOP1 - {default=false} enforce 1-dim. topolog-
      * ical constraints. 1-dim. edges are refined until all
      * embedded nodes are "locally 1-manifold", i.e. nodes
@@ -339,7 +363,7 @@
 
     /*
     --------------------------------------------------------
-     * MESH_EPS1 - {default=0.33} max. surface-discretisa-
+     * MESH_EPS1 - {default=5/12} max. surface-discretisa-
      * tion error multiplier for 1-edge elements. 1-edge
      * elements are refined until the surface-disc. error
      * is less-than EPS1 * HFUN(X).
@@ -350,7 +374,7 @@
 
     /*
     --------------------------------------------------------
-     * MESH_EPS2 - {default=0.33} max. surface-discretisa-
+     * MESH_EPS2 - {default=5/12} max. surface-discretisa-
      * tion error multiplier for 2-tria elements. 2-tria
      * elements are refined until the surface-disc. error
      * is less-than EPS2 * HFUN(X).
@@ -447,13 +471,31 @@
 
     /*
     --------------------------------------------------------
-     * OPTM_QLIM - {default=0.9333} threshold on mesh cost
+     * OPTM_QLIM - {default=.91667} threshold on mesh cost
      * function above which gradient-based optimisation is
      * attempted.
     --------------------------------------------------------
      */
 
         real_t                  _optm_qlim ;
+
+    /*
+    --------------------------------------------------------
+     * OPTM_WMIN - {default=-7./8.} lower limit on dual 
+     * mesh weights relative to cell radius.
+    --------------------------------------------------------
+     */
+
+        real_t                  _optm_wmin ;
+
+    /*
+    --------------------------------------------------------
+     * OPTM_WMAX - {default=+1./80} upper limit on dual 
+     * mesh weights relative to cell radius.
+    --------------------------------------------------------
+     */
+
+        real_t                  _optm_wmax ;
 
     /*
     --------------------------------------------------------

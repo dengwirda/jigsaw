@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Jun., 2019
+     * Last updated: 21 Jan., 2024
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -83,16 +83,17 @@
     __normal_call void_type clip (
         )  {}
 
-    __normal_call void_type eval (
-        real_type/*_ppos*/ ,
-        hint_type/*_hint*/
-        )  {}
+    __inline_call real_type eval (
+        real_type * /*_ppos*/
+        )
+    {   return ( (real_type) 0. );
+    }
 
     __inline_call real_type eval (
-        real_type *_ppos ,
-        hint_type&&_hint = null_hint ()
+        real_type * /*_ppos*/ ,
+        hint_type & /*_hint*/
         )
-    {   return eval(_ppos, _hint);
+    {   return ( (real_type) 0. );
     }
 
     } ;

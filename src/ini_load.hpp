@@ -469,6 +469,9 @@
         {
             save_point () ;           // lon-lat to R^3
             save_power () ;           // match to point
+  
+            this->                    // pts now in R^3
+           _init->_kind = jmsh_kind::euclidean_mesh ;
         }
         } ;
 

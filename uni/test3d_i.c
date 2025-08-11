@@ -1,6 +1,6 @@
 
-//  gcc -Wall -Wextra test2s_i.c -Xlinker -rpath=../lib
-//  -L ../lib -ljigsaw -o test2s_i
+//  gcc -Wall -Wextra test3d_i.c -Xlinker -rpath=../lib
+//  -L ../lib -ljigsaw -o test3d_i
 
 //  Use MARCHE to set "gradient-limits" on mesh-spacing data
 //
@@ -13,7 +13,7 @@
 #   include "print.h"
 #   include "stdio.h"
 
-    int test2s_i (int _verb)
+    int test3d_i (int _verb)
     {
         int _retv = 0;
 
@@ -26,31 +26,34 @@
 
     /*-------------------------------- setup JIGSAW hfun. */
 
-        real_t PI = 3.14159265358979323846 ;
-
-        real_t _radii[3] = {+1., +1., +1.
+        jigsaw_VERT3_t _hfun_vert3[9] = {  // setup hfun.
+            { {.5, .5, 0.}, +0 } ,
+            { {0., 0., 0.}, +0 } ,
+            { {1., 0., 0.}, +0 } ,
+            { {1., 1., 0.}, +0 } ,
+            { {0., 1., 0.}, +0 } ,
+            { {0., 0., 1.}, +0 } ,
+            { {1., 0., 1.}, +0 } ,
+            { {1., 1., 1.}, +0 } ,
+            { {0., 1., 1.}, +0 } ,
             } ;
 
-        jigsaw_VERT2_t _hfun_vert2[6] = {
-            { {-1.0 * PI, +0.0 * PI}, +0 } ,
-            { {-.33 * PI, +0.0 * PI}, +0 } ,
-            { {+.33 * PI, +0.0 * PI}, +0 } ,
-            { {+1.0 * PI, +0.0 * PI}, +0 } ,
-            { {+0.0 * PI, +0.5 * PI}, +0 } ,
-            { {+0.0 * PI, -0.5 * PI}, +0 } ,
+        jigsaw_TRIA4_t _hfun_tria4[10] = {
+            { {0, 5, 2, 1}, +0 } ,
+            { {0, 6, 5, 2}, +0 } ,
+            { {7, 0, 6, 2}, +0 } ,
+            { {7, 0, 3, 2}, +0 } ,
+            { {8, 0, 5, 1}, +0 } ,
+            { {8, 0, 4, 1}, +0 } ,
+            { {8, 0, 6, 5}, +0 } ,
+            { {8, 7, 0, 6}, +0 } ,
+            { {8, 0, 4, 3}, +0 } ,
+            { {8, 7, 0, 3}, +0 } ,
             } ;
 
-        jigsaw_TRIA3_t _hfun_tria3[6] = {
-            { {+0, +1, +4}, +0 } ,
-            { {+1, +2, +4}, +0 } ,
-            { {+2, +3, +4}, +0 } ,
-            { {+1, +0, +5}, +0 } ,
-            { {+2, +1, +5}, +0 } ,
-            { {+3, +2, +5}, +0 } ,
-            } ;
-
-        fp32_t _hfun_value[6] = {
-            2.f, 2.f, 2.f, 2.f, 1.f, 2.f
+        fp32_t         _hfun_value[9]= {
+            .5f, .5f, .5f, .5f, .5f,
+            1.f, 1.f, 1.f, 1.f
             } ;
 
         fp32_t _hfun_slope[1] = {
@@ -58,23 +61,19 @@
             } ;
 
         _hfun._flags
-            = JIGSAW_ELLIPSOID_MESH;
+            = JIGSAW_EUCLIDEAN_MESH;
 
-        _hfun._radii._data = &_radii[0] ;
-        _hfun._radii._size = +3 ;
+        _hfun._vert3._data = &_hfun_vert3[0] ;
+        _hfun._vert3._size = +9 ;
 
-        _hfun._vert2._data = &_hfun_vert2[0] ;
-        _hfun._vert2._size = +6 ;
-
-        _hfun._tria3._data = &_hfun_tria3[0] ;
-        _hfun._tria3._size = +6 ;
+        _hfun._tria4._data = &_hfun_tria4[0] ;
+        _hfun._tria4._size = +10;
 
         _hfun._value._data = &_hfun_value[0] ;
-        _hfun._value._size = +6 ;
+        _hfun._value._size = +9 ;
 
         _hfun._slope._data = &_hfun_slope[0] ;
         _hfun._slope._size = +1 ;
-
 
     /*-------------------------------- build MARCHE hfun. */
 
@@ -101,7 +100,7 @@
         }
 
         printf (
-       "[2s_i] MARCHE returned code : %d \n", _retv) ;
+       "[3d_i] MARCHE returned code : %d \n", _retv) ;
 
         fflush (stdout) ;
 
@@ -110,7 +109,7 @@
     }
 
 #   ifndef __SKIP_MAIN__
-    int main () { return test2s_i(1) ; }
+    int main () { return test3d_i(1) ; }
 #   endif//__SKIP_MAIN__
 
 

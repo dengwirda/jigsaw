@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 21 Apr., 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -123,6 +123,10 @@
 
         real_type   _vol3 ;     // volume-length ratio
 
+        bool_type   _orph ;     // allow "orphaned" facets
+
+        bool_type   _lock ;     // stop subface refinement
+
         bool_type   _top1 ;     // impose 1-"manifold-ness"
         bool_type   _top2 ;     // impose 2-"manifold-ness"
 
@@ -135,7 +139,7 @@
             iptr_type _rule = +0 ;
             __setbit( _rule, offH_kind) ;
             __setbit( _rule, offC_kind) ;
-        //  __setbit( _rule, offT_kind) ;
+            __setbit( _rule, offT_kind) ;
             __setbit( _rule, sink_kind) ;
 
             return _rule ;
@@ -209,6 +213,12 @@
 
             this->_vol3 =
             real_type(_jjig._mesh_vol3) ;
+
+            this->_orph = 
+            bool_type(_jjig._mesh_orph) ;
+
+            this->_lock = 
+            bool_type(_jjig._mesh_lock) ;
 
             this->_top1 =
             bool_type(_jjig._mesh_top1) ;
@@ -326,6 +336,16 @@
         __inline_call real_type      & vol3 (
             )
         {   return  this->_vol3 ;
+        }
+
+        __inline_call bool_type      & orph (
+            )
+        {   return  this->_orph ;
+        }
+
+        __inline_call bool_type      & lock (
+            )
+        {   return  this->_lock ;
         }
 
         __inline_call bool_type      & top1 (
@@ -447,6 +467,16 @@
         __inline_call real_type const& vol3 (
             ) const
         {   return  this->_vol3 ;
+        }
+
+        __inline_call bool_type const& orph (
+            ) const
+        {   return  this->_orph ;
+        }
+
+        __inline_call bool_type const& lock (
+            ) const
+        {   return  this->_lock ;
         }
 
         __inline_call bool_type const& top1 (

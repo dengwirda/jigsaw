@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 26 Jul., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -159,6 +159,12 @@
                 _file << "MESH_SIZ3 = " <<
                     _jcfg->_mesh_siz3 << "\n" ;
 
+                _file << "MESH_ORPH = " <<
+                    _jcfg->_mesh_orph << "\n" ;
+
+                _file << "MESH_LOCK = " <<
+                    _jcfg->_mesh_lock << "\n" ;
+
                 _file << "MESH_TOP1 = " <<
                     _jcfg->_mesh_top1 << "\n" ;
                 _file << "MESH_TOP2 = " <<
@@ -226,6 +232,11 @@
                     _jcfg->_optm_qtol << "\n" ;
                 _file << "OPTM_QLIM = " <<
                     _jcfg->_optm_qlim << "\n" ;
+
+                _file << "OPTM_WMIN = " <<
+                    _jcfg->_optm_wmin << "\n" ;
+                _file << "OPTM_WMAX = " <<
+                    _jcfg->_optm_wmax << "\n" ;
 
                 _file << "OPTM_TRIA = " <<
                     _jcfg->_optm_tria << "\n" ;

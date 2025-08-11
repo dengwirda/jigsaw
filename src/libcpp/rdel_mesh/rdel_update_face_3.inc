@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 Aug., 2022
+     * Last updated: 11 Nov., 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -260,13 +260,12 @@
             _tnod[1] = _mesh._tria.
             tria(_tpos)->node(_tnod[1]);
 
-        /*--------------- face contains higher dim. nodes */
             if (_mesh._tria.node(
-                _tnod[0])->fdim() > 1 ||
+                _tnod[0])->fdim() < 2 &&
                 _mesh._tria.node(
-                _tnod[1])->fdim() > 1 )
-                continue   ;
-
+                _tnod[1])->fdim() < 2 )
+            {
+        /*--------------- face contains correct k^d nodes */
             algorithms::isort (
                 &_tnod[0], &_tnod[2],
                     std::less<iptr_type>()) ;
@@ -279,14 +278,16 @@
             _cdat._node[0] = _tnod[ 0] ;
             _cdat._node[1] = _tnod[ 1] ;
 
+            bool_type _test = true;
             typename mesh_type::
                      edge_list::
                 item_type *_mptr = nullptr  ;
+        //  pragma omp critical(update_face_edg2)
             if(_edge_test.
                 find( _edat, _mptr) )
             {
         /*--------------------------- don't test repeats! */
-                continue   ;
+                _test = false;
             }
 
             _cdat._pass    = _pass;
@@ -296,37 +297,39 @@
             _edat._eadj    =
                 (char_type)  _fpos;
 
+            if (_test)
+            {
         /*--------------------------- call edge predicate */
-            real_type _fbal[ 4];
-            real_type _sbal[ 4];
+            real_type _fbal[ 4] ;
+            real_type _sbal[ 4] ;
             mesh_pred::edge_cost (
-                _geom,_hfun,
-                _mesh,
-                _edat._tadj,
-                _edat._eadj,
-                _opts,_cdat,
-                _edat._part,
-                _edat._feat,
-                _edat._topo,
-                _edat._kind,
-                _fbal,_sbal)   ;
-
+                    _geom, _hfun, _mesh,
+                    _edat. _tadj,
+                    _edat. _eadj,
+                    _opts, _cdat,
+                    _edat. _part,
+                    _edat. _feat,
+                    _edat. _topo,
+                    _edat. _kind,
+                    _fbal, _sbal) ;
+            
         /*--------------------------- push edge onto mesh */
-            if (_edat._kind
-                    == mesh::ring_item)
+        //  pragma omp critical(update_face_edg2)
+            {
+            if (_edat._kind == mesh::ring_item)
                 _escr. push_tail(_cdat) ;
 
-            if (_edat._kind
-                    != mesh::null_item)
+            if (_edat._kind != mesh::null_item)
                 _nedg += +1 ;
 
-            if (_edat._kind
-                    != mesh::null_item)
+            if (_edat._kind != mesh::null_item)
                 _eset. push_tail(_edat) ;
 
+            _edge_test.push (_edat) ;
+            }
+            }
 
-            _edge_test.push( _edat) ;
-
+            }
         } // for (auto _fpos = +6; _fpos-- != +0; )
     }
 
@@ -381,15 +384,14 @@
             _tnod[2] = _mesh._tria.
             tria(_tpos)->node(_tnod[2]);
 
-        /*--------------- face contains higher dim. nodes */
             if (_mesh._tria.node(
-                _tnod[0])->fdim() > 2 ||
+                _tnod[0])->fdim() < 3 &&
                 _mesh._tria.node(
-                _tnod[1])->fdim() > 2 ||
+                _tnod[1])->fdim() < 3 &&
                 _mesh._tria.node(
-                _tnod[2])->fdim() > 2 )
-                continue   ;
-
+                _tnod[2])->fdim() < 3 )
+            {
+        /*--------------- face contains correct k^d nodes */
             algorithms::isort (
                 &_tnod[0], &_tnod[3],
                     std::less<iptr_type>()) ;
@@ -404,9 +406,11 @@
             _cdat._node[1] = _tnod[ 1] ;
             _cdat._node[2] = _tnod[ 2] ;
 
+            bool_type _test = true;
             typename mesh_type::
                      face_list::
                 item_type *_mptr = nullptr  ;
+        //  pragma omp critical(update_face_tri3)
             if(_face_test.
                 find( _fdat, _mptr) )
             {
@@ -415,7 +419,7 @@
                 _mptr->_data._dups;
 
         /*--------------------------- don't test repeats! */
-                continue   ;
+                _test = false ;
             }
 
             _cdat._pass    = _pass;
@@ -427,42 +431,42 @@
             _fdat._dups    = +0; // count num. dup's
                                  // only in hash-set
 
+            if (_test)
+            {
         /*--------------------------- call face predicate */
-            char_type _topo[ 2], _feat;
-            real_type _fbal[ 4];
-            real_type _sbal[ 4];
+            char_type _topo[ 2] , _feat;
+            real_type _fbal[ 4] ;
+            real_type _sbal[ 4] ;
             mesh_pred::face_cost (
-                _geom,_hfun,
-                _mesh,
-                _fdat._tadj,
-                _fdat._fadj,
-                _opts,_cdat,
-                _fdat._part,
-                _feat,_topo,
-                _fdat._kind,
-                _fbal,_sbal)   ;
-
+                    _geom, _hfun, _mesh,
+                    _fdat. _tadj,
+                    _fdat. _fadj,
+                    _opts, _cdat,
+                    _fdat. _part,
+                    _feat, _topo,
+                    _fdat. _kind,
+                    _fbal, _sbal) ;
+            
         /*--------------------------- push face onto mesh */
-            if (_fdat._kind
-                    == mesh::ring_item)
+        //  pragma omp critical(update_face_tri3)
+            {
+            if (_fdat._kind == mesh::ring_item)
                 _fscr. push_tail(_cdat) ;
 
-            if (_fdat._kind
-                    != mesh::null_item)
+            if (_fdat._kind != mesh::null_item)
                 _nfac += +1 ;
 
-            if (_fdat._kind
-                    != mesh::null_item)
-                _fdat.
-                _dups  = +1 ;
+            if (_fdat._kind != mesh::null_item)
+                _fdat._dups = +1 ;
 
-            if (_fdat._kind
-                    != mesh::null_item)
+            if (_fdat._kind != mesh::null_item)
                 _fset. push_tail(_fdat) ;
 
+            _face_test.push (_fdat) ;
+            }
+            }
 
-            _face_test.push( _fdat) ;
-
+            }
         } // for (auto _fpos = +4; _fpos-- != +0; )
     }
 
@@ -502,17 +506,16 @@
             _tnod[3] = _mesh.
             _tria.tria(_tpos)->node(3);
 
-        /*--------------- face contains higher dim. nodes */
             if (_mesh._tria.node(
-                _tnod[0])->fdim() > 3 ||
+                _tnod[0])->fdim() < 4 &&
                 _mesh._tria.node(
-                _tnod[1])->fdim() > 3 ||
+                _tnod[1])->fdim() < 4 &&
                 _mesh._tria.node(
-                _tnod[2])->fdim() > 3 ||
+                _tnod[2])->fdim() < 4 &&
                 _mesh._tria.node(
-                _tnod[3])->fdim() > 3 )
-                return  ;
-
+                _tnod[3])->fdim() < 4 )
+            {
+        /*--------------- face contains correct k^d nodes */
             tria_data _tdat;
             _tdat._node[0] = _tnod[ 0] ;
             _tdat._node[1] = _tnod[ 1] ;
@@ -527,8 +530,7 @@
             _cdat._node[2] = _tnod[ 2] ;
             _cdat._node[3] = _tnod[ 3] ;
 
-
-        //!!_tria_test.push( _tdat) ; won't have repeats!
+        //  _tria_test.push( _tdat) ; guarantee no repeats!
 
         /*--------------------------- calc tria cost/kind */
             _tdat._part =  _sign ;
@@ -537,27 +539,28 @@
             _tdat._pass =  _pass ;
 
             mesh_pred::tria_cost (
-                _geom,_hfun,
-                _mesh,
-                _tdat._tadj,
-                _opts,_cdat,
-                _tdat._part,
-                _tdat._kind)   ;
+                    _geom, _hfun, _mesh,
+                    _tdat. _tadj,
+                    _opts, _cdat,
+                    _tdat. _part,
+                    _tdat. _kind);
 
             _sign = _tdat. _part ;
 
         /*--------------------------- push tria onto mesh */
-            if (_tdat._kind
-                    == mesh::ring_item)
+        //  pragma omp critical(update_face_tri4)
+            {
+            if (_tdat._kind == mesh::ring_item)
                 _tscr. push_tail(_cdat) ;
 
-            if (_tdat._kind
-                    != mesh::null_item)
+            if (_tdat._kind != mesh::null_item)
                 _ntri += +1 ;
 
-            if (_tdat._kind
-                    != mesh::null_item)
+            if (_tdat._kind != mesh::null_item)
                 _tset. push_tail(_tdat) ;
+            }
+
+            }
         }
     }
 
@@ -645,96 +648,109 @@
         iptr_type _ntri = +0 ;
         iptr_type _ndup = +0 ;
 
+    //  iptr_type _ncpu = +1 ;  //!! sequential for now...
+
+    //  ifdef  __use_openmp
+    //  omp_set_num_threads(_ncpu);
+    //  else
+    //  __unreferenced (_ncpu) ;
+    //  endif//__use_openmp
+
     /*------------------------- calc. voronoi-dual points */
-        for( auto _iter  = _tnew.head();
-                  _iter != _tnew.tend();
-                ++_iter  )
+        //  pragma omp parallel default(shared)
         {
-            if (_init)
-            tria_circ(_mesh,*_iter) ;
+        //  pragma omp for schedule(static)
+            for( auto _iter  = _tnew.head();
+                      _iter != _tnew.tend();
+                    ++_iter  )
+            {
+            if (_init) tria_circ(_mesh, *_iter) ;
+            }
         }
 
     /*------------- push any new protecting balls created */
         if (_dim0 <= node_mode &&
             _dim1 >= node_mode )
         {
-        for( auto _iter  = _nnew.head();
-                  _iter != _nnew.tend();
-                ++_iter  )
-        {
-            char_type _kind = feat_ball;
+            for( auto _iter  = _nnew.head();
+                      _iter != _nnew.tend();
+                    ++_iter  )
+            {
+                char_type _kind = feat_ball;
 
-            init_ball(_mesh, _geom ,
-                      _hfun,*_iter ,
-                      _bdat, _bscr ,
-                      _kind,
-                      _pass, _opts) ;
-        }
+                init_ball( _mesh, _geom, _hfun,
+                   *_iter, _bdat, _bscr,
+                           _kind, _pass, _opts) ;
+            }
         }
     /*------------- push any new restricted edges created */
         if (_dim0 <= edge_mode &&
             _dim1 >= edge_mode )
         {
-        _mesh._etwo.clear();
-        _mesh._etwo.set_slots(_tnew.count() * +6) ;
+            _mesh._etwo.clear();
+            _mesh._etwo.set_slots(_tnew.count() * +6) ;
 
-        for( auto _iter  = _tnew.head();
-                  _iter != _tnew.tend();
-                ++_iter  )
-        {
-            push_edge(_mesh, _geom ,
-                      _hfun,*_iter ,
-                      _edat, _escr ,
-                      _mesh. _etwo ,
-                      _nedg,
-                      _pass, _opts) ;
-        }
+        //  pragma omp parallel default(shared)
+            {
+        //  pragma omp for schedule(static)
+            for( auto _iter  = _tnew.head();
+                      _iter != _tnew.tend();
+                    ++_iter  )
+            {
+                push_edge( _mesh, _geom, _hfun,
+                   *_iter, _edat, _escr,
+                           _mesh. _etwo,
+                           _nedg, _pass, _opts) ;
+            }
+            }
         }
     /*------------- push any new restricted faces created */
         if (_dim0 <= face_mode &&
             _dim1 >= face_mode )
         {
-        _mesh._ftwo.clear();
-        _mesh._ftwo.set_slots(_tnew.count() * +4) ;
+            _mesh._ftwo.clear();
+            _mesh._ftwo.set_slots(_tnew.count() * +4) ;
 
-        for( auto _iter  = _tnew.head();
-                  _iter != _tnew.tend();
-                ++_iter  )
-        {
-            push_face(_mesh, _geom ,
-                      _hfun,*_iter ,
-                      _fdat, _fscr ,
-                      _mesh. _ftwo ,
-                      _nfac, _ndup ,
-                      _pass, _opts) ;
-        }
+        //  pragma omp parallel default(shared)
+            {
+        //  pragma omp for schedule(static)
+            for( auto _iter  = _tnew.head();
+                      _iter != _tnew.tend();
+                    ++_iter  )
+            {
+                push_face( _mesh, _geom, _hfun,
+                   *_iter, _fdat, _fscr,
+                           _mesh. _ftwo,
+                    _nfac, _ndup, _pass, _opts) ;
+            }
+            }
         }
     /*------------- push any new restricted trias created */
         if (_dim0 <= tria_mode &&
             _dim1 >= tria_mode )
         {
-    //  _mesh._ttwo.clear();
-    //  _mesh._ttwo.set_slots(_tnew.count() * +1) ;
+        //  _mesh._ttwo.clear();
+        //  _mesh._ttwo.set_slots(_tnew.count() * +1) ;
 
-        bool_type _safe = true ;
+            bool_type _safe = true ;
+            if (_dim0 >  +0) _safe = false ;
+        //  if (_nfac >= +1) _safe = false ;
+            if (_ndup >= +1) _safe = false ;
 
-        if (_dim0 >  +0) _safe = false ;
+        //  pragma omp parallel default(shared)
+            {
+        //  pragma omp for schedule(static)
+            for( auto _iter  = _tnew.head();
+                      _iter != _tnew.tend();
+                    ++_iter )
+            {
+               _sign =   (!_safe) ? -1 : _sign;
 
-    //  if (_nfac >= +1) _safe = false ;
-        if (_ndup >= +1) _safe = false ;
-
-        for( auto _iter  = _tnew.head();
-                  _iter != _tnew.tend();
-                ++_iter )
-        {
-           _sign =  (!_safe) ? -1 : _sign ;
-
-            push_tria(_mesh, _geom ,
-                      _hfun,*_iter ,
-                      _sign, _tdat ,
-                      _tscr, _ntri,
-                      _pass, _opts) ;
-        }
+                push_tria( _mesh, _geom, _hfun,
+                   *_iter, _sign, _tdat, 
+                    _tscr, _ntri, _pass, _opts) ;
+            }
+            }
         }
     }
 

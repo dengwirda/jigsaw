@@ -41,11 +41,11 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * JIGSAW release 1.0.0.x
+     * JIGSAW release 1.1.0.x
      *
-     * Last updated: 11 Dec., 2022
+     * Last updated: 20 Oct., 2024
      *
-     * Copyright 2013 -- 2022
+     * Copyright 2013 -- 2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -193,7 +193,7 @@
     --------------------------------------------------------
      */
 
-#   define __JGSWVSTR "JIGSAW VERSION 1.0.0"
+#   define __JGSWVSTR "JIGSAW VERSION 1.1.0"
 
 #   if  defined(  USE_NETCDF)
 #       define  __use_netcdf
@@ -233,7 +233,7 @@
 #   endif
 
 #   define __jloglndv   \
-"#------------------------------------------------------------\n"
+"#-----------------------------------------------------------------------\n"
 
     /*---------------------------------- for i/o on files */
 
@@ -907,7 +907,7 @@
         std::stringstream _sstr;
         _sstr << "  Done. ("
               << std::scientific
-              << std::setprecision(2)
+              << std::setprecision(3)
               << time_span(_ttic, _ttoc )
               << "sec)\n\n" ;
 

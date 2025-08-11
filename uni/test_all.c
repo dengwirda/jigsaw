@@ -33,8 +33,8 @@
 #   include "test3d_e.c"
 #   include "test3d_f.c"
 #   include "test3d_g.c"
-//  include "test3d_h.c"
-//  include "test3d_i.c"
+#   include "test3d_h.c"
+#   include "test3d_i.c"
 
     int main ()
     {
@@ -96,10 +96,10 @@
             return _retv ;
         if ((_retv = test3d_g(_verb)) != 0)
             return _retv ;
-    //  if ((_retv = test3d_h(_verb)) != 0)
-    //      return _retv ;
-    //  if ((_retv = test3d_i(_verb)) != 0)
-    //      return _retv ;
+        if ((_retv = test3d_h(_verb)) != 0)
+            return _retv ;
+        if ((_retv = test3d_i(_verb)) != 0)
+            return _retv ;
 
         return _retv ;
     }

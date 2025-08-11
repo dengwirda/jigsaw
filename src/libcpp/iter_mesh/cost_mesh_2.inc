@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Jun., 2022
+     * Last updated: 07 Apr., 2024
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2024
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -56,8 +56,8 @@
 
     __static_call
     __normal_call void_type move_okay (
-        real_list &_cdst ,  // list of new adj. costs
-        real_list &_csrc ,  // list of old adj. costs
+        fp32_list &_cdst ,  // list of new adj. costs
+        fp32_list &_csrc ,  // list of old adj. costs
         iptr_type &_move ,  // > +0 if move acceptable
         real_type  _good = +9.25E-01,
         real_type  _qtol = +1.00E-04,
@@ -72,55 +72,55 @@
         if (_csrc.empty()) return ;
 
     /*--------------------- calc. min. + mean metrics */
-        real_type _zero =
-            +std::numeric_limits
-                <real_type>::epsilon ();
-        real_type _0src =
-            +std::numeric_limits
-                <real_type>::infinity();
-        real_type _0dst =
-            +std::numeric_limits
-                <real_type>::infinity();
+        double _zero =
+       +std::numeric_limits<double>::epsilon ();
+        double _0src =
+       +std::numeric_limits<double>::infinity();
+        double _0dst =
+       +std::numeric_limits<double>::infinity();
 
     /*--------------------- compute harmonic averages */
         _good = std::pow(_good, +7./8.);
 
-        real_type _msrc, _mdst;
-        _msrc = (real_type) +0. ;
-        _mdst = (real_type) +0. ;
+        double _msrc = (double)+0.;
+        double _mdst = (double)+0.;
 
         for (auto _iter  = _csrc.head(),
                   _tend  = _csrc.tend();
                   _iter != _tend;
                 ++_iter  )
         {
+            double _cost = (double)*_iter;
+        
             _0src  =
-            std::min(_0src, *_iter) ;
+            std::min(_0src,  _cost ) ;
 
-            _msrc += std::pow(
-            (real_type)1. / *_iter, +8);
+            _msrc += std::pow (
+           (double)(1. / _cost), 8 ) ;
         }
         for (auto _iter  = _cdst.head(),
                   _tend  = _cdst.tend();
                   _iter != _tend;
                 ++_iter  )
         {
+            double _cost = (double)*_iter;
+        
             _0dst  =
-            std::min(_0dst, *_iter) ;
-
+            std::min(_0dst,  _cost ) ;
+            
             _mdst += std::pow (
-            (real_type)1. / *_iter, +8);
+           (double)(1. / _cost), 8 ) ;
         }
 
         _msrc  = std::pow(
-        _csrc.count() / _msrc, +1./8.0);
+        _csrc.count() / _msrc, 1/8.) ;
         _mdst  = std::pow(
-        _cdst.count() / _mdst, +1./8.0);
+        _cdst.count() / _mdst, 1/8.) ;
 
         _qtol /=
-        std::pow(_csrc.count(), 1./8.0);
+        std::pow(_csrc.count(),1/8.) ;
         _qtol /=
-        std::pow(_cdst.count(), 1./8.0);
+        std::pow(_cdst.count(),1/8.) ;
 
     /*---------------------------- test move = "okay" */
         if (_0dst >= _good)
@@ -142,8 +142,8 @@
 
             if (_move > +0) return ;
         }
-
     }
+
 
     /*
     --------------------------------------------------------
@@ -155,7 +155,7 @@
     __normal_call real_type loop_cost (
         mesh_type &_mesh ,      // mesh object
         conn_list &_cset ,      // list of adj. cells
-        real_list &_cost ,      // list of adj. costs
+        fp32_list &_cost ,      // list of adj. costs
         cell_kind const&        // cell costs on CSET
         )
     {
@@ -211,10 +211,9 @@
                 }
             }
 
-            _qmin =
-            std::min (_qmin, _cscr) ;
+            _qmin = std::min(_qmin, _cscr) ;
 
-            _cost.push_tail (_cscr) ;
+            _cost.push_tail ((float)_cscr) ;
         }
 
         return ( _qmin )  ;
@@ -224,7 +223,7 @@
     __normal_call real_type loop_cost (
         mesh_type &_mesh ,      // mesh object
         conn_list &_cset ,      // list of adj. cells
-        real_list &_cost ,      // list of adj. costs
+        fp32_list &_cost ,      // list of adj. costs
         dual_kind const&        // dual costs on CSET
         )
     {
@@ -280,10 +279,9 @@
                 }
             }
 
-            _qmin =
-            std::min (_qmin, _cscr) ;
+            _qmin = std::min(_qmin, _cscr) ;
 
-            _cost.push_tail (_cscr) ;
+            _cost.push_tail ((float)_cscr) ;
         }
 
         return ( _qmin )  ;

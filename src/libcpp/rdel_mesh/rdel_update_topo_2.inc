@@ -73,7 +73,7 @@
                 _mesh._tria._nset.count(),
                     containers::loose_alloc , -1) ;
 
-        /*------------------------- add all: everything "new" */
+    /*------------------------- add all: everything "new" */
             node_data _ndat ;
             for (auto _iter  = _enew.head();
                       _iter != _enew.tend();
@@ -109,14 +109,14 @@
                     containers::loose_alloc , -1) ;
 
             {
-        /*------------------------- init. for local hash obj. */
+    /*------------------------- init. for local hash obj. */
             _mesh._etwo.clear();
             _mesh._etwo.
                 set_slots(_enew.count() * 2) ;
 
              auto& _eset = _mesh. _etwo;
 
-        /*------------------------- add "old" absent in "new" */
+    /*------------------------- add "old" absent in "new" */
             node_data _ndat ;
             for (auto _iter  = _enew.head();
                       _iter != _enew.tend();
@@ -158,14 +158,14 @@
             }
 
             {
-        /*------------------------- init. for local hash obj. */
+    /*------------------------- init. for local hash obj. */
             _mesh._etwo.clear();
             _mesh._etwo.
                 set_slots(_eold.count() * 2) ;
 
              auto& _eset = _mesh. _etwo;
 
-        /*------------------------- add "new" absent in "old" */
+    /*------------------------- add "new" absent in "old" */
             node_data _ndat ;
             for (auto _iter  = _eold.head();
                       _iter != _eold.tend();

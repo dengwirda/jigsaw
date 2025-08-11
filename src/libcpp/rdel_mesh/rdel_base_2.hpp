@@ -555,9 +555,7 @@
     //  nudge away from orthoball, to sanitise degenerate
     //  cases adj. to sharp boundaries
 
-        real_type static const _bump =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), +0.5) ;
+        real_type constexpr _bump = 0.01 ;
 
         real_type _test[2] ;
         _test[0] = (real_type)1./3. * (

@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 Jul., 2021
+     * Last updated: 08 Aug., 2025
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -82,7 +82,7 @@
     /*------------------------- node type for ITER-MESH-2 */
         public  :
 
-        iptr_type                     _hidx = 0 ;
+        iptr_type                     _hidx =-1 ;
         iptr_type                     _itag = 0 ;
 
         char_type                     _fdim = 0 ;
@@ -130,6 +130,7 @@
         public  :
 
         iptr_type                     _itag = 0 ;
+        iptr_type                     _hidx =-1 ;
 
         public  :
 
@@ -140,6 +141,14 @@
         __inline_call iptr_type const& itag (
             ) const
         {   return  this->_itag ;
+        }
+        __inline_call iptr_type      & hidx (
+            )
+        {   return  this->_hidx ;
+        }
+        __inline_call iptr_type const& hidx (
+            ) const
+        {   return  this->_hidx ;
         }
         } ;
 
@@ -149,6 +158,7 @@
         public  :
 
         iptr_type                     _itag = 0 ;
+        iptr_type                     _hidx =-1 ;
 
         public  :
 
@@ -159,6 +169,14 @@
         __inline_call iptr_type const& itag (
             ) const
         {   return  this->_itag ;
+        }
+        __inline_call iptr_type      & hidx (
+            )
+        {   return  this->_hidx ;
+        }
+        __inline_call iptr_type const& hidx (
+            ) const
+        {   return  this->_hidx ;
         }
         } ;
 
@@ -168,6 +186,7 @@
         public  :
 
         iptr_type                     _itag = 0 ;
+        iptr_type                     _hidx =-1 ;
 
         public  :
 
@@ -178,6 +197,14 @@
         __inline_call iptr_type const& itag (
             ) const
         {   return  this->_itag ;
+        }
+        __inline_call iptr_type      & hidx (
+            )
+        {   return  this->_hidx ;
+        }
+        __inline_call iptr_type const& hidx (
+            ) const
+        {   return  this->_hidx ;
         }
         } ;
 

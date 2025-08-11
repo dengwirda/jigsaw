@@ -148,6 +148,32 @@
         return _head ;
     }
 
+    /*
+    --------------------------------------------------------
+     * IS-UNIQUE: returns TRUE if VAL disjoint to SEQ.
+    --------------------------------------------------------
+     */
+
+    template <
+        typename  iter_type ,
+        typename  data_type ,
+        typename  pred_type
+             >
+    __normal_call bool_type is_unique (
+        iter_type _head ,  // head of sequence to search
+        iter_type _tend ,  // last of sequence to search
+        data_type _xval ,  // value to search for
+        pred_type _same    // comparison predicate
+        )
+    {
+        for (; _head != _tend; ++_head)
+        {
+            if (_same(*_head, _xval)) return false ;
+        }
+        
+        return true ;
+    }
+
 
     }
 

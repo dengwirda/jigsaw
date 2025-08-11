@@ -88,19 +88,14 @@ jobs:
         run: |
           cd ${{github.workspace}}/uni/build
           cmake --build . --config ${{env.BUILD_TYPE}} --target install
-        
+      
       - name: Prep. tests for jigsaw
         if: startsWith(matrix.config.os, 'windows')
         run: |
           cd ${{github.workspace}}/uni
           cp ../lib/jigsaw.dll .
 
-      - name: Eval. tests for jigsaw
-        run: |
-          cd ${{github.workspace}}/uni
-          ./test_all
-          
-      - name: Extra tests for jigsaw
+      - name: Tests for cmd-jigsaw
         run: |
           cd ${{github.workspace}}
           ./bin/jigsaw example.jig
@@ -109,6 +104,11 @@ jobs:
           ./bin/jigsaw geo/parts.jig
           ./bin/jigsaw geo/earth.jig
           ./bin/jigsaw geo/lakes.jig
-
+  
+      - name: Tests for lib-jigsaw
+        run: |
+          cd ${{github.workspace}}/uni
+          ./test_all
+      
       - name: Clean tests for jigsaw
         run: rm -r ${{github.workspace}}/uni/build

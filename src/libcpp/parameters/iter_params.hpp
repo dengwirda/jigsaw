@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 27 Jul., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -84,6 +84,9 @@
         real_type   _qtol ;     // convergence tolerance
         real_type   _qlim ;     // fallback score threshold
 
+        real_type   _wmin ;     // up/lo limits on weights
+        real_type   _wmax ;
+
         bool_type   _zip_ ;     // do cell merge operations
         bool_type   _div_ ;     // do cell split operations
         bool_type   _tria ;     // mesh cell optimisation
@@ -115,6 +118,11 @@
             real_type(_jjig._optm_qtol) ;
             this->_qlim =
             real_type(_jjig._optm_qlim) ;
+
+            this->_wmin =
+            real_type(_jjig._optm_wmin) ;
+            this->_wmax =
+            real_type(_jjig._optm_wmax) ;
 
             this->_zip_ =
             bool_type(_jjig._optm_zip_) ;
@@ -157,6 +165,15 @@
         __inline_call real_type      & qlim (
             )
         {   return  this->_qlim ;
+        }
+
+        __inline_call real_type      & wmin (
+            )
+        {   return  this->_wmin ;
+        }
+        __inline_call real_type      & wmax (
+            )
+        {   return  this->_wmax ;
         }
 
         __inline_call bool_type      & zip_ (
@@ -207,6 +224,15 @@
         __inline_call real_type const& qlim (
             ) const
         {   return  this->_qlim ;
+        }
+
+        __inline_call real_type const& wmin (
+            ) const
+        {   return  this->_wmin ;
+        }
+        __inline_call real_type const& wmax (
+            ) const
+        {   return  this->_wmax ;
         }
 
         __inline_call bool_type const& zip_ (

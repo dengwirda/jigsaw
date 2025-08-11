@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 26 Jul., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -208,6 +208,20 @@
             this->
            _jjig->_mesh_siz3 = _siz3;
         }
+        __normal_call void_type push_mesh_orph (
+            bool          _orph
+            )
+        {
+            this->
+           _jjig->_mesh_orph = _orph;
+        }
+        __normal_call void_type push_mesh_lock (
+            bool          _lock
+            )
+        {
+            this->
+           _jjig->_mesh_lock = _lock;
+        }
         __normal_call void_type push_mesh_top1 (
             bool          _top1
             )
@@ -335,6 +349,20 @@
         {
             this->
            _jjig->_optm_qlim = _qlim;
+        }
+        __normal_call void_type push_optm_wmin (
+            double        _wmin
+            )
+        {
+            this->
+           _jjig->_optm_wmin = _wmin;
+        }
+        __normal_call void_type push_optm_wmax (
+            double        _wmax
+            )
+        {
+            this->
+           _jjig->_optm_wmax = _wmax;
         }
         __normal_call void_type push_optm_tria (
             bool          _flag

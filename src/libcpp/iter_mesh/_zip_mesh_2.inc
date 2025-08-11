@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Dec., 2022
+     * Last updated: 21 Jan., 2025
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2025
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -69,7 +69,9 @@
         iptr_type  _imrk ,  // outer iteration marker
         iter_opts &_opts ,  // user options
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,  // cell quality tolerance
         real_type  _DLIM ,  // dual quality threshold
+        real_type  _DMOV ,  // dual quality tolerance
         size_t    &_nzip ,  // number of successful zip's
         size_t    &_ndiv ,  // number of successful div's
         iter_stat &_tcpu    // CPU timers/info
@@ -139,13 +141,16 @@
         typedef containers::
             array<sort_data> sort_list ;
 
+        __unreferenced ( _QLIM );
+        __unreferenced ( _QMOV );
         __unreferenced ( _DLIM );
+        __unreferenced ( _DMOV );
 
         sort_list _sort ;
         conn_list _iadj , _jadj, _kadj ;
         conn_list _conn , _cset;
         conn_list _iset , _jset, _kset ;
-        real_list _qold , _qnew, _qtmp ;
+        fp32_list _qold , _qnew, _qtmp ;
 
         _nzip = +0 ; _ndiv = +0 ;
 
@@ -300,9 +305,10 @@
                     _imrk, _tadj,
                     _kern, _move, _nnew,
                     _iset, _jset, _kset,
-                    _iadj, _jadj, _kadj,
-                    _cset, _qold, _qnew,
-                    _qtmp, _QLIM, _tcpu) ;
+                    _iadj, _jadj, 
+                    _kadj, _cset, 
+                    _qold, _qnew, _qtmp, 
+                    _QLIM, _QMOV, _tcpu) ;
 
                 if (_move)
                 {
@@ -332,7 +338,9 @@
         iptr_type  _imrk ,  // outer iteration marker
         iter_opts &_opts ,  // user options
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,  // cell quality tolerance
         real_type  _DLIM ,  // dual quality threshold
+        real_type  _DMOV ,  // dual quality tolerance
         size_t    &_nzip ,  // number of successful zip's
         size_t    &_ndiv ,  // number of successful div's
         iter_stat &_tcpu    // CPU timers/info
@@ -400,12 +408,15 @@
         typedef containers::
             array<sort_data> sort_list ;
 
+        __unreferenced ( _QLIM );
+        __unreferenced ( _QMOV );
         __unreferenced ( _DLIM );
+        __unreferenced ( _DMOV );
 
         sort_list _sort ;
         conn_list _aset , _bset, _cset ;
         conn_list _conn , _iset, _jset ;
-        real_list _qold , _qnew, _qtmp ;
+        fp32_list _qold , _qnew, _qtmp ;
 
         _nzip = +0 ; _ndiv = +0 ;
 
@@ -501,8 +512,8 @@
                     _kern, _move, _nnew,
                     _iset, _jset,
                     _aset, _bset,
-                    _qold, _qnew,
-                    _qtmp, _QLIM, _tcpu) ;
+                    _qold, _qnew, _qtmp, 
+                    _QLIM, _QMOV, _tcpu) ;
 
                 if (_move)
                 {
@@ -554,8 +565,8 @@
                     _kern, _move, _nnew,
                     _iset, _jset,
                     _aset, _bset, _cset,
-                    _qold, _qnew,
-                    _qtmp, _QLIM, _tcpu) ;
+                    _qold, _qnew, _qtmp, 
+                    _QLIM, _QMOV, _tcpu) ;
 
                 if (_move)
                 {
@@ -585,7 +596,9 @@
         iptr_type  _imrk ,  // outer iteration marker
         iter_opts &_opts ,  // user options
         real_type  _QLIM ,  // cell quality threshold
+        real_type  _QMOV ,  // cell quality tolerance
         real_type  _DLIM ,  // dual quality threshold
+        real_type  _DMOV ,  // dual quality tolerance
         size_t    &_nzip ,  // number of successful zip's
         size_t    &_ndiv ,  // number of successful div's
         iter_stat &_tcpu    // CPU timers/info
@@ -604,15 +617,15 @@
 
     /*--------------------- zip//div topo. cell hierarchy */
         _zip_fcel( _geom, _mesh, _hfun,
-            _kern, _hval,
-            _nset, _mark, _imrk,
-            _opts, _QLIM, _DLIM,
+            _kern, _hval, _nset, _mark, 
+            _imrk, _opts, 
+            _QLIM, _QMOV, _DLIM, _DMOV,
             _nzip, _ndiv, _tcpu) ;
 
         _zip_ecel( _geom, _mesh, _hfun,
-            _kern, _hval,
-            _nset, _mark, _imrk,
-            _opts, _QLIM, _DLIM,
+            _kern, _hval, _nset, _mark, 
+            _imrk, _opts, 
+            _QLIM, _QMOV, _DLIM, _DMOV,
             _nzip, _ndiv, _tcpu) ;
 
     #   ifdef  __use_timers

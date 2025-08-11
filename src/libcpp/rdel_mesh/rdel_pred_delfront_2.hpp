@@ -154,7 +154,7 @@
     /*------------------------ max. frontal "redo" steps */
 
     iptr_type static constexpr _REDO = 32 ;
-    iptr_type static constexpr _STEP =  8 ;
+    iptr_type static constexpr _STEP = 8 ;
     real_type static constexpr
         _OKAY = (real_type) +5./6. ;
 
@@ -388,9 +388,8 @@
         if (_kind == rdel_opts::null_kind )
         {
     /*----------------------- attempt offcentre placement */
-            if(__chkbit(_args.rule(),
-                    rdel_opts
-                  ::offH_kind) )
+            if(__chkbit(_args.rule(), 
+                rdel_opts::offH_kind) )
             _kind = edge_offh( _geom,
                 _size, _mesh , _enod,
                 _pmax, _ppos , _args) ;
@@ -454,27 +453,24 @@
 
     /*--------------------------------- calc. 3-tria ball */
         real_type  _tbal[3];
-        _tbal[0] = _mesh.
-            _tria.tria(_tpos)->circ(0);
-        _tbal[1] = _mesh.
-            _tria.tria(_tpos)->circ(1);
+        _tbal[0] = 
+            _mesh._tria.tria(_tpos)->circ(0) ;
+        _tbal[1] = 
+            _mesh._tria.tria(_tpos)->circ(1) ;
         _tbal[2] = (real_type)+0. ;
 
         auto _hash =
              _mesh._tria._nset.count();
 
         _tbal[2]+=
-        geometry::lensqr_2d (_tbal,
-            &_mesh._tria.node(
-                _tnod[0])->pval( 0)) ;
+            geometry::lensqr_2d (_tbal,
+       &_mesh._tria.node(_tnod[0])->pval(0)) ;
         _tbal[2]+=
-        geometry::lensqr_2d (_tbal,
-            &_mesh._tria.node(
-                _tnod[1])->pval( 0)) ;
+            geometry::lensqr_2d (_tbal,
+       &_mesh._tria.node(_tnod[1])->pval(0)) ;
         _tbal[2]+=
-        geometry::lensqr_2d (_tbal,
-            &_mesh._tria.node(
-                _tnod[2])->pval( 0)) ;
+            geometry::lensqr_2d (_tbal,
+       &_mesh._tria.node(_tnod[2])->pval(0)) ;
 
         _tbal[2]/= (real_type)+3. ;
 
@@ -586,20 +582,18 @@
         {
     /*----------------------- attempt offcentre placement */
             if(__chkbit(_args.rule(),
-                    rdel_opts
-                  ::offH_kind) )
+                rdel_opts::offH_kind) )
             _kind = tria_offh( _geom,
-                _size , _mesh, _enod,
-                _ebal , _tbal, _dvec,
-                _ppos , _args) ;
+                _size , _mesh, 
+                _enod , _ebal, _tbal, 
+                _dvec , _ppos, _args) ;
         }
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
         {
     /*----------------------- attempt sink-type placement */
             if(__chkbit(_args.rule(),
-                    rdel_opts
-                  ::sink_kind) )
+                rdel_opts::sink_kind) )
             _kind = tria_sink( _geom,
                 _size , _mesh,
                 _tpos , _tnod, _tbal,
