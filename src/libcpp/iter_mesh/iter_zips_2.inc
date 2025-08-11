@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Jan., 2025
+     * Last updated: 04 Aug., 2025
      *
      * Copyright 2013-2025
      * Darren Engwirda
@@ -331,7 +331,7 @@
         real_type  _QMOV ,  // cell quality tolerance
         iter_stat &_tcpu ,  // cpu timers/info
         real_type  _lmax    // zip. spacing threshold
-            = (real_type) +8.88888E-01 ,
+            = (real_type) +8.91667E-01 ,
         real_type  _qinc    // zip. quality threshold
             = (real_type) +3.33333E-03
         )
@@ -467,7 +467,7 @@
     //  bail-out early if the topological defect would be
     //  made worse if the zip is done
 
-        if (_dnew > _dnow + 1) return;
+        if (_dnew > _dnow + 0) return;
 
     //  if more regular topo. is constructed via the edge
     //  zip, make it easier to do so!
@@ -479,7 +479,7 @@
            -_qtol *std::max(0, _dnow-_dnew) ;
 
         real_type _lerr = (real_type)
-           +_qtol *std::max(0, _dnow-_dnew) ;        
+           +_qtol *std::max(0, _dnow-_dnew) ;
 
         if (_dnew < _dnow - 0)
         {                            // no oscl. wrt. div
@@ -657,7 +657,7 @@
             _cset, _qdst,  cell_kind()) ;
 
         move_okay( _qdst, _qsrc, _move,
-            _QMOV, _qinc) ;
+            +1.0 , _qinc) ;
 
         if((_okay  =  (_move > 0) && 
             _QMIN >=  (_qmin + _qinc)))
@@ -714,7 +714,7 @@
         real_type  _QMOV ,  // cell quality tolerance
         iter_stat &_tcpu ,  // cpu timers/info
         real_type  _lmax    // zip. spacing threshold
-            = (real_type) +8.66667E-01 ,
+            = (real_type) +8.91667E-01 ,
         real_type  _qinc    // zip. quality threshold
             = (real_type) +3.33333E-03
         )
@@ -805,7 +805,7 @@
         auto _nerr =
             (iptr_type)(_DEG_TRIA3-_ndeg) ;
 
-        auto _dnew = std::abs(_nerr) ;
+        auto _dnew =(std::abs(_nerr) * 3) / 2 ;
         auto _dnow = std::abs(_ierr) +
                      std::abs(_jerr) +
                      std::abs(_kerr) ;
@@ -815,6 +815,29 @@
 
         if (_dnew > _dnow + 0) return ;
 
+    //  if more regular topo. is constructed via the edge
+    //  zip, make it easier to do so!
+
+        real_type _qtol = 
+            std::min( +1./36., +1. - _QMOV) ;
+
+        real_type _qerr = (real_type)
+           -_qtol *std::max(0, _dnow-_dnew) ;
+
+        real_type _lerr = (real_type)
+           +_qtol *std::max(0, _dnow-_dnew) ;
+
+        if (_dnew < _dnow - 0)
+        {                            // no oscl. wrt. div
+        _qerr/= std::pow ( _iout, +1./4.) ;
+        _qinc = std::min ( _qinc,
+                           _qinc + _qerr) ;
+
+        _lerr/= std::pow ( _iout, +1./4.) ;
+        _lmax = std::max ( _lmax,
+                           _lmax + _lerr) ;
+        }
+        
     /*--------------------------------- get face h-sizing */
         real_type _pbal[ _last + 1 ] ;
         pred_type::tri3_ball ( _pbal ,
@@ -983,7 +1006,7 @@
             _cset, _qdst,  cell_kind()) ;
 
         move_okay( _qdst, _qsrc, _move,
-            _QMOV, _qinc) ;
+            +1.0 , _qinc) ;
 
         if((_okay  =  (_move > 0) && 
             _QMIN >=  (_qmin + _qinc)))

@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Jan., 2025
+     * Last updated: 04 Aug., 2025
      *
      * Copyright 2013-2025
      * Darren Engwirda
@@ -77,7 +77,7 @@
         real_type  _QMOV ,  // cell quality tolerance
         iter_stat &_tcpu ,  // cpu timers/info
         real_type  _lmin    // div. spacing threshold
-            = (real_type) +1.16667E+00 ,
+            = (real_type) +1.11111E+00 ,
         real_type  _qinc    // div. quality threshold
             = (real_type) +3.33333E-03
         )
@@ -205,7 +205,7 @@
 
         real_type _qerr = -std::min(1./12., 1. - _QMOV) ;
         _qerr*= std::max (_ierr, _jerr ) ;
-        _qerr/= std::pow (_iout, +1./2.) ;  // stop oscl.
+        _qerr/= std::pow (_iout, +1./4.) ;  // stop oscl.
         _qinc = std::min (_qinc,
                           _qinc + _qerr) ;
 
@@ -218,7 +218,7 @@
 
         real_type _qerr = -std::min(1./12., 1. - _QMOV) ;
         _qerr*= std::max (_ierr, _jerr ) ;
-        _qerr/= std::pow (_iout, +1./2.) ;  // stop oscl.
+        _qerr/= std::pow (_iout, +1./4.) ;  // stop oscl.
         _qinc = std::min (_qinc,
                           _qinc + _qerr) ;
 
@@ -407,7 +407,7 @@
             _cnew, _qdst,  cell_kind()) ;
 
         move_okay( _qdst, _qsrc, _move,
-            _QMOV, _qinc) ;
+            +1.0 , _qinc) ;
 
         if((_okay  =  (_move > 0) && 
             _QMIN >=  (_qmin + _qinc)))
