@@ -59,7 +59,13 @@ endif ()
 
 # try to find netcdf support
 
-find_library (NETCDF_LIBRARY NAMES netcdf)
+if (DEFINED NETCDF_USER_PATH)
+  message (STATUS "Testing user NetCDF path")
+  find_library (NETCDF_LIBRARY NAMES netcdf 
+                PATHS ${NETCDF_USER_PATH} NO_DEFAULT_PATH)
+else ()
+  find_library (NETCDF_LIBRARY NAMES netcdf)
+endif ()
 
 if (NETCDF_LIBRARY)
   message (STATUS "NetCDF library found")
@@ -70,7 +76,13 @@ endif ()
 
 # try to find openmp support
 
-find_package (OpenMP)
+if (DEFINED OPENMP_USER_PATH)
+  message (STATUS "Testing user OpenMP path")
+  find_package (OpenMP 
+                PATHS ${OPENMP_USER_PATH} NO_DEFAULT_PATH)
+else ()
+  find_package (OpenMP)
+endif ()
 
 if (OpenMP_CXX_FOUND AND (OpenMP_CXX_VERSION LESS 3))
   set (OpenMP_CXX_FOUND FALSE)
