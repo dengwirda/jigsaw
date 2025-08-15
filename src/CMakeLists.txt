@@ -4,9 +4,15 @@ function (cfg_compile_options OPT CFG)
 endfunction ()
 
 include (CheckCXXCompilerFlag)
+include (CheckIPOSupported)
 
 set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
+check_ipo_supported (RESULT IPO OUTPUT IPO_ERR LANGUAGES C CXX)
+
+if (IPO)
+  set (CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif ()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"   OR
     CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
@@ -59,7 +65,13 @@ endif ()
 
 # try to find netcdf support
 
-find_library (NETCDF_LIBRARY NAMES netcdf)
+if (DEFINED NETCDF_USER_PATH)
+  message (STATUS "Testing user NetCDF path")
+  find_library (NETCDF_LIBRARY NAMES netcdf 
+                PATHS ${NETCDF_USER_PATH} NO_DEFAULT_PATH)
+else ()
+  find_library (NETCDF_LIBRARY NAMES netcdf)
+endif ()
 
 if (NETCDF_LIBRARY)
   message (STATUS "NetCDF library found")
@@ -70,7 +82,14 @@ endif ()
 
 # try to find openmp support
 
-find_package (OpenMP)
+if (DEFINED OPENMP_USER_PATH)
+  message (STATUS "Testing user OpenMP path")
+  set (  OpenMP_C_INCLUDE_DIR ${OPENMP_USER_PATH})
+  set (OpenMP_CXX_INCLUDE_DIR ${OPENMP_USER_PATH})
+  find_package (OpenMP)
+else ()
+  find_package (OpenMP)
+endif ()
 
 if (OpenMP_CXX_FOUND AND (OpenMP_CXX_VERSION LESS 3))
   set (OpenMP_CXX_FOUND FALSE)
@@ -80,6 +99,7 @@ endif ()
 if (OpenMP_CXX_FOUND)
   message (STATUS "OpenMP library found")
   message (STATUS "OpenMP inc. lib: ${OpenMP_CXX_LIB_NAMES}")
+  message (STATUS "OpenMP inc. lib: ${OpenMP_CXX_LIBRARIES}")
 else ()
   message (STATUS "OpenMP library not found")
 endif ()
