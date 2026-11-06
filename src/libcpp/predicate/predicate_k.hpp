@@ -75,6 +75,8 @@
 #   ifndef __PREDICATE_K__
 #   define __PREDICATE_K__
 
+#   include <atomic>
+
 #   define USE_KERNEL_FLTPOINT
 #   define USE_KERNEL_INTERVAL
 
@@ -103,7 +105,7 @@
     INBALL4W_f, INBALL4W_i, INBALL4W_e ,
     LASTKERNEL } ;
 
-    size_t _nn_calls[LASTKERNEL] = {0} ;
+    std::atomic<size_t> _nn_calls[LASTKERNEL] = {} ;
 
 #   include "orient_k.hpp"
 #   include "bisect_k.hpp"
@@ -688,7 +690,7 @@
     #   endif
 
     #   ifdef USE_KERNEL_INTERVAL
-        _nn_calls[INBALL3D_i] += +1;
+        _nn_calls[INBALL3W_i] += +1;
 
         _rr = inball3w_i(               // "bound" kernel
             _pa, _pb, _pc, _pd, _pe, _OK

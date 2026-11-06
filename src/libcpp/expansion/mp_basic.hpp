@@ -63,7 +63,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 Apr., 2020
+     * Last updated: 07 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -566,7 +566,7 @@
 
         _ss = _a0 * _b0 ;
         _ss = fma(_a1, _b0, _ss);
-        _ss = fma(_a0, _b0, _ss);
+        _ss = fma(_a0, _b1, _ss);
 
         _t0 = _t0 + _ss ;
 

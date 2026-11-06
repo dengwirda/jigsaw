@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Apr., 2020
+     * Last updated: 07 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -275,7 +275,7 @@
 
     __inline_call ia_flt  operator - (
         ) const
-    {   return   ia_flt(-lo(), -up());
+    {   return   ia_flt(-up(), -lo());
     }
 
     __inline_call ia_flt& operator+= (      // via double
@@ -530,7 +530,7 @@
             REAL_TYPE _u1, _u2;
             _u1 = mul_up(_aa.lo(), _bb.lo());
             _u2 = mul_up(_aa.up(), _bb.up());
-            _up = std::min(_u1, _u2);
+            _up = std::max(_u1, _u2);
         }
         else                            // mix * -ve
         {
