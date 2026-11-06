@@ -163,7 +163,7 @@
     /*-------------------------- test flow along boundary */
         bool_type _o1 = EIKONAL_edge_2d (
                 _p1, _h1, _g1,
-                _p3, _h3, _g3)
+                _p3, _h3, _g3) ;
 
         bool_type _o2 = EIKONAL_edge_2d (
                 _p2, _h2, _g2,
@@ -271,7 +271,7 @@
     /*-------------------------- test flow along boundary */
         bool_type _o1 = EIKONAL_edge_3d (
                 _p1, _h1, _g1,
-                _p3, _h3, _g3)
+                _p3, _h3, _g3) ;
 
         bool_type _o2 = EIKONAL_edge_3d (
                 _p2, _h2, _g2,
