@@ -350,20 +350,29 @@
     __inline_call real_type mid (
         ) const
     {
-        real_type _mm = lo() + up() ;
+        real_type constexpr _hh =
+           ((real_type)+0.5) * 
+        std::numeric_limits<real_type>::max() ;
+        real_type constexpr _ll =
+           ((real_type)+0.5) *
+        std::numeric_limits<real_type>::min() ;
 
-        if (!std::isfinite(_mm))
-        {
-            _mm  =
-           (lo() / (real_type)+2.)+
-           (up() / (real_type)+2.);
-        }
-        else
-        {
-            _mm /= (real_type)+2. ;
-        }
+        real_type _al = std::abs(lo());
+        real_type _au = std::abs(up());
+        
+        real_type two = (real_type)2.0;
 
-        return _mm ;
+        if (_al <= _hh && _au <= _hh)
+            return (lo() + up()) / two;
+
+        if (_al < _ll)
+            return lo() + (up()  / two) ;
+
+        if (_au < _ll)
+            return up() + (lo()  / two) ;
+ 
+        return ( lo() / two + 
+                 up() / two ) ;
     }
 
     __inline_call real_type rad (
