@@ -1454,22 +1454,22 @@
 
         _ali = _aex * _aex + _aey * _aey  // lifted terms
              + _aez * _aez ;
-        _ALI = std::abs (_ali) ;
+        _ALI = _ali + std::abs (_aew) ;
         _ali-= _aew ;
 
         _bli = _bex * _bex + _bey * _bey
              + _bez * _bez ;
-        _BLI = std::abs (_bli) ;
+        _BLI = _bli + std::abs (_bew) ;
         _bli-= _bew ;
 
         _cli = _cex * _cex + _cey * _cey
              + _cez * _cez ;
-        _CLI = std::abs (_cli) ;
+        _CLI = _cli + std::abs (_cew) ;
         _cli-= _cew ;
 
         _dli = _dex * _dex + _dey * _dey
              + _dez * _dez ;
-        _DLI = std::abs (_dli) ;
+        _DLI = _dli + std::abs (_dew) ;
         _dli-= _dew ;
 
         _aexbey = _aex * _bey ;           // 2 x 2 minors
