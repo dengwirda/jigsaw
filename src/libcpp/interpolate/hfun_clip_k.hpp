@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Oct., 2024
+     * Last updated: 06 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -161,13 +161,15 @@
         polyroots(_at, _bt, _ct, _tt) )
         {
     /*-------------------------- test flow along boundary */
-        return EIKONAL_edge_2d (
+        bool_type _o1 = EIKONAL_edge_2d (
                 _p1, _h1, _g1,
                 _p3, _h3, _g3)
 
-            || EIKONAL_edge_2d (
+        bool_type _o2 = EIKONAL_edge_2d (
                 _p2, _h2, _g2,
                 _p3, _h3, _g3) ;
+
+        return  ( _o1 || _o2 ) ;
         }
         else
         {
@@ -267,13 +269,15 @@
         polyroots(_at, _bt, _ct, _tt) )
         {
     /*-------------------------- test flow along boundary */
-        return EIKONAL_edge_3d (
+        bool_type _o1 = EIKONAL_edge_3d (
                 _p1, _h1, _g1,
                 _p3, _h3, _g3)
 
-            || EIKONAL_edge_3d (
+        bool_type _o2 = EIKONAL_edge_3d (
                 _p2, _h2, _g2,
                 _p3, _h3, _g3) ;
+
+        return  ( _o1 || _o2 ) ;
         }
         else
         {
