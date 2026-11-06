@@ -90,7 +90,7 @@
         std::is_same<REAL_TYPE, double>::value;
 #   elif defined(FP_FAST_FMAF)
     bool constexpr _has_fma =
-        std::is_same<REAL_TYPE, single>::value;
+        std::is_same<REAL_TYPE, float >::value;
 #   else
     bool constexpr _has_fma = false;
 #   endif
