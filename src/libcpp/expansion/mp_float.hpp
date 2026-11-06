@@ -117,7 +117,12 @@
     __inline_call void push (
         real_type  _xx
         )
-    {   this->_xdat[this->_xlen++] = _xx ;
+    {   
+        assert ( this->_xlen >= 0 && 
+                 this->_xlen < this->_size &&
+            "expansion: insufficient alloc.") ;
+
+        this->_xdat[this->_xlen++] = _xx ;
     }
 
 /*------------------------------ query the expansion size */
@@ -139,7 +144,8 @@
         indx_type  _ii
         )
     {
-        assert ( _ii < this->_size &&
+        assert ( _ii >= 0 && 
+                 _ii < this->_size &&
             "expansion: index out of bounds") ;
 
         return ( this->_xdat[_ii] ) ;
@@ -149,7 +155,8 @@
         indx_type  _ii
         ) const
     {
-        assert ( _ii<= this->_size &&
+        assert ( _ii >= 0 && 
+                 _ii < this->_size &&
             "expansion: index out of bounds") ;
 
         return ( this->_xdat[_ii] ) ;

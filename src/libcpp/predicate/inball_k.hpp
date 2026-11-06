@@ -506,20 +506,17 @@
         _cdy = _pc [1] - _pd [1] ;
         _cdw = _pc [2] - _pd [2] ;
 
-        _ali = _adx * _adx + _ady * _ady  // lifted terms
-             - _adw ;
+        _ali = _adx * _adx + _ady * _ady ; // lifted terms
+        _ALI = _ali + std::abs (_adw) ;
+        _ali-= _adw ;
 
-        _ALI = std::abs (_ali) ;
+        _bli = _bdx * _bdx + _bdy * _bdy ;
+        _BLI = _bli + std::abs (_bdw) ;
+        _bli-= _bdw ;
 
-        _bli = _bdx * _bdx + _bdy * _bdy
-             - _bdw ;
-
-        _BLI = std::abs (_bli) ;
-
-        _cli = _cdx * _cdx + _cdy * _cdy
-             - _cdw ;
-
-        _CLI = std::abs (_cli) ;
+        _cli = _cdx * _cdx + _cdy * _cdy ;
+        _CLI = _cli + std::abs (_cdw) ;
+        _cli-= _cdw ;
 
         _bdxcdy = _bdx * _cdy ;           // 2 x 2 minors
         _cdxbdy = _cdx * _bdy ;
@@ -1456,24 +1453,24 @@
         _DEZ = std::abs (_dez) ;
 
         _ali = _aex * _aex + _aey * _aey  // lifted terms
-             + _aez * _aez - _aew ;
-
+             + _aez * _aez ;
         _ALI = std::abs (_ali) ;
+        _ali-= _aew ;
 
         _bli = _bex * _bex + _bey * _bey
-             + _bez * _bez - _bew ;
-
+             + _bez * _bez ;
         _BLI = std::abs (_bli) ;
+        _bli-= _bew ;
 
         _cli = _cex * _cex + _cey * _cey
-             + _cez * _cez - _cew ;
-
+             + _cez * _cez ;
         _CLI = std::abs (_cli) ;
+        _cli-= _cew ;
 
         _dli = _dex * _dex + _dey * _dey
-             + _dez * _dez - _dew ;
-
+             + _dez * _dez ;
         _DLI = std::abs (_dli) ;
+        _dli-= _dew ;
 
         _aexbey = _aex * _bey ;           // 2 x 2 minors
         _bexaey = _bex * _aey ;
