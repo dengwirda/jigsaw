@@ -168,9 +168,9 @@
         )
     {
     /*--------------- inball2d predicate, "bound" version */
-        ia_flt    _adx, _ady, _adw ,
-                  _bdx, _bdy, _bdw ,
-                  _cdx, _cdy, _cdw ;
+        ia_flt    _adx, _ady,
+                  _bdx, _bdy,
+                  _cdx, _cdy;
         ia_flt    _ali, _bli, _cli ;
         ia_flt    _bdxcdy, _cdxbdy ,
                   _cdxady, _adxcdy ,
@@ -182,15 +182,12 @@
 
         _adx.from_sub(_pa[0], _pd[0]) ;   // coord. diff.
         _ady.from_sub(_pa[1], _pd[1]) ;
-        _adw.from_sub(_pa[2], _pd[2]) ;
 
         _bdx.from_sub(_pb[0], _pd[0]) ;
         _bdy.from_sub(_pb[1], _pd[1]) ;
-        _bdw.from_sub(_pb[2], _pd[2]) ;
 
         _cdx.from_sub(_pc[0], _pd[0]) ;
         _cdy.from_sub(_pc[1], _pd[1]) ;
-        _cdw.from_sub(_pc[2], _pd[2]) ;
 
         _ali =  sqr (_adx) + sqr (_ady) ; // lifted terms
 
