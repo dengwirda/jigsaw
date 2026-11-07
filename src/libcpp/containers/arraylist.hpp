@@ -41,9 +41,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 11 Apr., 2018
+ * Last updated: 07 Nov., 2026
  *
- * Copyright 2013-2018
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -359,6 +359,7 @@
 
             item_type*_item =*_iter ;
             item_type*_next ;
+          *_iter = nullptr ;
         /*----------------------------- free current list */
             for(;_item != nullptr;
                  _item  = _next)
