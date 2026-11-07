@@ -625,11 +625,11 @@
                 REQUEUE (_inew, _iold, _pair)
                 }
 
-                if (_jpjj==JEND)
+                if (_jpjj==JBEG)
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _jpii, JBEG, _pair) ;
+                    _jpii, JEND, _pair) ;
                 REQUEUE (_jnew, _jold, _pair)
                 }
 
@@ -641,11 +641,11 @@
                 REQUEUE (_knew, _kold, _pair)
                 }
 
-                if (_lpjj==JBEG)
+                if (_lpjj==JEND)
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _lpii, JEND, _pair) ;
+                    _lpii, JBEG, _pair) ;
                 REQUEUE (_lnew, _lold, _pair)
                 }
                 }
@@ -686,11 +686,11 @@
                 REQUEUE (_inew, _iold, _pair)
                 }
 
-                if (_jpjj==JEND)
+                if (_jpjj==JBEG)
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _jpii, JBEG, _pair) ;
+                    _jpii, JEND, _pair) ;
                 REQUEUE (_jnew, _jold, _pair)
                 }
 
@@ -702,11 +702,11 @@
                 REQUEUE (_knew, _kold, _pair)
                 }
 
-                if (_lpjj==JBEG)
+                if (_lpjj==JEND)
                 {
                 iptr_type _pair;
                 indx_from_subs(
-                    _lpii, JEND, _pair) ;
+                    _lpii, JBEG, _pair) ;
                 REQUEUE (_lnew, _lold, _pair)
                 }
                 }
