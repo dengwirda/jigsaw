@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 Oct., 2024
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -671,8 +671,8 @@
        (float)     _ppos[0] ,
        (float)     _ppos[1] } ;
 
-        real_type _hOUT =
-    +std::numeric_limits<real_type>::infinity() ;
+        real_type _hOUT = std::
+            numeric_limits<real_type>::infinity() ;
 
         if (hint_okay(_hint))
         {
@@ -682,6 +682,11 @@
                     _hint)  )
             {
             _hint =  this->null_hint();
+            }
+            else
+            {
+            geometry::
+            copy_node_2d(_QPOS, _QTMP);
             }
         }
         else
