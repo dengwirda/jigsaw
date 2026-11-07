@@ -181,8 +181,8 @@
             {
                 _next = _head->_next;
                  base_type::
-                 push_item(_root, _head);
-                _head = _next;
+                    push_item( _root , _head ) ;
+                _head = _next ;
             }
         }
 
