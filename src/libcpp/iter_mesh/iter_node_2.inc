@@ -325,8 +325,7 @@
 
         _ladj = (real_type) +0.0 ;
 
-        real_type _wsum =
-       +std::numeric_limits<real_type>::epsilon();
+        real_type _wsum = (real_type)+0.0 ;
 
         iptr_type _cnum = +0  ;
 
@@ -355,6 +354,7 @@
 
         if (_cnum > +0)
         {
+            if (_wsum > (real_type)+0.0)
             for (auto _idim =
             pred_type::geom_dims ; _idim-- != 0; )
             {
@@ -744,8 +744,7 @@
 
         _ladj = (real_type) +0.0 ;
 
-        real_type _wsum =
-       +std::numeric_limits<real_type>::epsilon();
+        real_type _wsum = (real_type)+0.0 ;
 
         iptr_type _cnum = +0  ;
 
@@ -774,6 +773,7 @@
 
         if (_cnum > +0)
         {
+            if (_wsum > (real_type)+0.0)
             for (auto _idim =
             pred_type::geom_dims ; _idim-- != 0; )
             {
