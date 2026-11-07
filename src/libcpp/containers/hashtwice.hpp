@@ -428,6 +428,10 @@
             }
         }
 
+    /*------------------------------- don't scan it twice */
+        if (_hash[0] == _hash[1])
+        return false ;
+
     /*------------------------------- scan list from head */
         _same = this->_lptr[_hash[1]];
     /*------------------------------- check exact matches */
@@ -473,6 +477,10 @@
                 return true ;
             }
         }
+
+    /*------------------------------- don't scan it twice */
+        if (_hash[0] == _hash[1])
+        return false ;
 
     /*------------------------------- scan list from head */
         _spos = this->_lptr[_hash[1]];
@@ -523,6 +531,10 @@
                 _list.push_tail(_same);
             }
         }
+
+    /*------------------------------- don't scan it twice */
+        if (_hash[0] == _hash[1])
+        return ( !_list.empty() );
 
     /*------------------------------- scan list from head */
         _same = this->_lptr[_hash[1]] ;
