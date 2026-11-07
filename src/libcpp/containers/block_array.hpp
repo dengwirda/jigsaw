@@ -47,9 +47,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 27 Apr., 2020
+ * Last updated: 08 Nov., 2026
  *
- * Copyright 2013-2020
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -610,7 +610,7 @@
 
     __inline_call allocator get_alloc ( // return alloc obj.
         ) const
-    { return static_cast<allocator>(  *this ) ;
+    {   return this->_block.get_alloc() ;
     }
 
     __inline_call size_type count (// return container count
@@ -751,11 +751,20 @@
         size_type result = count();
         size_type offset = count()>>_pwr2;
 
-        if (result == alloc())
-        inc_alloc(result + 1);
+        if (result != alloc())
+        {
+            this-> _block[offset].
+            push_tail(__copy(data_type,_data)) ;
+        }
+        else
+        {
+            data_type _temp(
+                __copy(data_type,_data)) ;
 
-        this-> _block[offset].
-        push_tail(__copy(data_type,_data)) ;
+            inc_alloc(result + 1);
+            this-> _block[offset].
+            push_tail(__move(data_type,_temp)) ;
+        }
         this-> _count += + 1 ;
 
         return result ;
@@ -768,11 +777,20 @@
         size_type result = count();
         size_type offset = count()>>_pwr2;
 
-        if (result == alloc())
-        inc_alloc(result + 1);
+        if (result != alloc())
+        {
+            this-> _block[offset].
+            push_tail(__move(data_type,_data)) ;
+        }
+        else
+        {
+            data_type _temp(
+                __move(data_type,_data)) ;
 
-        this-> _block[offset].
-        push_tail(__move(data_type,_data)) ;
+            inc_alloc(result + 1);
+            this-> _block[offset].
+            push_tail(__move(data_type,_temp)) ;
+        }
         this-> _count += + 1 ;
 
         return result ;
