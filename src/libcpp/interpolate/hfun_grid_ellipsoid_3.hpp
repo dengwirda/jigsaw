@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Oct., 2024
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -272,11 +272,14 @@
             std::abs(_xdel) < _FTOL ;
 
     /*-------------------------- sum for extrap. at poles */
-        double _xtop = 0., _xbot = 0. ;
+        double _xtop = 0.0, _xbot = 0.0 ;
+
+        auto _xend = this->_wrap ? 
+            _xpos.tail() : _xpos.tend() ;
 
         iptr_type _indx, _jpos = +0 ;
         for (auto _iter  = _xpos.head() ;
-                  _iter != _xpos.tail() ;
+                  _iter != _xend;
                 ++_iter, ++_jpos)
         {
             iptr_type _n = -1 +
@@ -285,18 +288,18 @@
             indx_from_subs(
                 +0, _jpos, _indx) ;
 
-            _xtop += this->_hmat[_indx] ;
+            _xbot += this->_hmat[_indx] ;
 
             indx_from_subs(
                 _n, _jpos, _indx) ;
 
-            _xbot += this->_hmat[_indx] ;
+            _xtop += this->_hmat[_indx] ;
         }
 
-        this->_htop = (vals_type)(
-            _xtop / this->_xpos.count() ) ;
-        this->_hbot = (vals_type)(
-            _xbot / this->_xpos.count() ) ;
+        this->_htop = 
+            (vals_type) (_xtop / _jpos) ;
+        this->_hbot = 
+            (vals_type) (_xbot / _jpos) ;
     }
 
     /*
