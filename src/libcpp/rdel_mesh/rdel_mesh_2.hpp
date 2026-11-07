@@ -1207,6 +1207,7 @@
                 }
 
     #           ifdef  __use_timers
+                _ttoc = _time.now() ;
                 _tcpu._list_push +=
                     _tcpu.nano_span(_ttic,_ttoc) ;
     #           endif//__use_timers
