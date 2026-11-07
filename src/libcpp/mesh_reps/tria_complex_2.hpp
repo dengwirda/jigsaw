@@ -331,6 +331,9 @@
     __normal_call void_type make_link (
         )
     {
+        this->_mmE2.empty () ;
+        this->_mmT3.empty () ;
+
         this->_mmE2.set_slots(
        (this->_llE2.count()*5) / 4 + 1 +
        (this->_llT3.count()*3) / 2 + 1
