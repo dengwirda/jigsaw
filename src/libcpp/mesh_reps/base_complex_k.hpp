@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Dec., 2022
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2020--2022
+     * Copyright 2020--2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -710,6 +710,14 @@
             if (_itop == -1)
             {
         /*----- if it's a "top"-level face, copy data */
+                if (_mesh._llE2[*_same].
+                     self() >= 1)
+                for (auto _n = 2; _n-- != 0; )
+                {
+                    _mesh.node(_edat.node(_n)).
+                        ndeg(EDGE2_tag)-= 1 ;
+                }
+
                 _mesh._llE2[*_same] =
                 _mesh._llE2[ _ipos] ;
             }
@@ -722,6 +730,7 @@
             }
 
             _put_edge(_mesh, _ipos) ;
+            _ipos = *_same ;
         }
         else
         {
@@ -838,6 +847,14 @@
             if (_itop == -1)
             {
         /*----- if it's a "top"-level face, copy data */
+                if (_mesh._llT3[*_same].
+                     self() >= 1)
+                for (auto _n = 3; _n-- != 0; )
+                {
+                    _mesh.node(_tdat.node(_n)).
+                        ndeg(TRIA3_tag)-= 1 ;
+                }
+
                 _mesh._llT3[*_same] =
                 _mesh._llT3[ _ipos] ;
             }
@@ -850,6 +867,7 @@
             }
 
             _put_tri3(_mesh, _ipos) ;
+            _ipos = *_same ;
         }
         else
         {
@@ -974,6 +992,14 @@
             if (_itop == -1)
             {
         /*----- if it's a "top"-level face, copy data */
+                if (_mesh._llQ4[*_same].
+                     self() >= 1)
+                for (auto _n = 4; _n-- != 0; )
+                {
+                    _mesh.node(_qdat.node(_n)).
+                        ndeg(QUAD4_tag)-= 1 ;
+                }
+
                 _mesh._llQ4[*_same] =
                 _mesh._llQ4[ _ipos] ;
             }
@@ -986,6 +1012,7 @@
             }
 
             _put_quad(_mesh, _ipos) ;
+            _ipos = *_same ;
         }
         else
         {
@@ -1110,6 +1137,14 @@
             if (_itop == -1)
             {
         /*----- if it's a "top"-level face, copy data */
+                if (_mesh._llT4[*_same].
+                     self() >= 1)
+                for (auto _n = 4; _n-- != 0; )
+                {
+                    _mesh.node(_tdat.node(_n)).
+                        ndeg(TRIA4_tag)-= 1 ;
+                }
+
                 _mesh._llT4[*_same] =
                 _mesh._llT4[ _ipos] ;
             }
@@ -1122,6 +1157,7 @@
             }
 
             _put_tri4(_mesh, _ipos) ;
+            _ipos = *_same ;
         }
         else
         {
