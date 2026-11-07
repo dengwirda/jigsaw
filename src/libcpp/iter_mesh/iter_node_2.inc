@@ -1122,12 +1122,15 @@
         float     _qmin =
        +std::numeric_limits<float    >::infinity();
 
-        real_type _bmin[_last] = {
-       +std::numeric_limits<real_type>::infinity()
-            } ;
-        real_type _bmax[_last] = {
-       -std::numeric_limits<real_type>::infinity()
-            } ;
+        real_type _bmin[_last], _bmax[_last] ;
+        for (auto _idim  =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+            _bmin[_idim] =
+           +std::numeric_limits<real_type>::infinity();
+            _bmax[_idim] =
+           -std::numeric_limits<real_type>::infinity();
+        }
 
         iptr_type _cnum  = + 0 ;
         for (auto _next  = _conn.head() ,
