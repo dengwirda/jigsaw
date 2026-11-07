@@ -399,7 +399,7 @@
                             _p2, _h2, _g2,
                             _p4, _hn, _g4)  )
         {
-            _uu = (real_type)0.;
+            _uu = (real_type).5;
             _vv = (real_type).5;
         }
                         
@@ -407,8 +407,8 @@
                             _p3, _h3, _g3,
                             _p4, _hn, _g4)  )
         {
-            _uu = (real_type).5;
-            _vv = (real_type)0.;
+            _uu = (real_type)0.;
+            _vv = (real_type).5;
         }
                   
         if (EIKONAL_tria_3d(_p3, _h3, _g3,
@@ -416,7 +416,7 @@
                             _p4, _hn, _g4)  )
         {
             _uu = (real_type).5;
-            _vv = (real_type).5;   
+            _vv = (real_type)0.;   
         }
         
         for (auto _iter = 8; _iter-- != +0; )
@@ -441,7 +441,7 @@
         
     /*---------------------- local line-search relaxation */
         bool _up = false;
-        for (auto _line = 4; _line-- != +0; )
+        for (auto _line = 8; _line-- != +0; )
         {
         real_type _tt = +1. ;
         real_type _un = _uu - _ss * _du ;
