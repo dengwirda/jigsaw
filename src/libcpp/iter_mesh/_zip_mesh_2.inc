@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Jan., 2025
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -151,8 +151,6 @@
         conn_list _conn , _cset;
         conn_list _iset , _jset, _kset ;
         fp32_list _qold , _qnew, _qtmp ;
-
-        _nzip = +0 ; _ndiv = +0 ;
 
     //  assemble list of faces attached to "recent" nodes
 
@@ -418,8 +416,6 @@
         conn_list _conn , _iset, _jset ;
         fp32_list _qold , _qnew, _qtmp ;
 
-        _nzip = +0 ; _ndiv = +0 ;
-
     //  assemble list of edges attached to "recent" nodes
 
     #   ifdef  __use_timers
@@ -616,6 +612,8 @@
     #   endif//__use_timers
 
     /*--------------------- zip//div topo. cell hierarchy */
+        _nzip = 0; _ndiv = 0;
+
         _zip_fcel( _geom, _mesh, _hfun,
             _kern, _hval, _nset, _mark, 
             _imrk, _opts, 
