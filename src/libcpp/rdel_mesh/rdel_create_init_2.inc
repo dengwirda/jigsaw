@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 Jul., 2021
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -255,7 +255,7 @@
                 <real_type>::infinity();
 
         _imap.set_count (
-            _iset.count(),
+            _init._mesh.node().count (),
         containers::tight_alloc, _null);
 
         real_type _pmid[2] ;
