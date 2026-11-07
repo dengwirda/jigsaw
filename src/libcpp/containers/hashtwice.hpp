@@ -165,17 +165,29 @@
         )
     {
     /*------------------------------- round to next 2^pwr */
-        _slots = next_pwr2 (_slots);
+        _slots = std::max(next_pwr2(_slots*1),
+                          this->_mini_count );
+
+    /*------------------------------- don't delete if dec */
+        for (auto _ipos = _slots;
+                  _ipos < this->_lptr.count(); 
+                ++_ipos )
+        {
+            item_type *_root, *_head, *_next ;
+           _root = this->_lptr[  +0 ];
+           _head = this->_lptr[_ipos];
+            this->_lptr[_ipos] = nullptr;
+            while(_head != nullptr)
+            {
+                _next = _head->_next;
+                 base_type::
+                 push_item(_root, _head);
+                _head = _next;
+            }
+        }
 
     /*------------------------------- inc/dec. table size */
-        if (_slots <
-                this->_mini_count )
-            this->_lptr.set_count (
-            this->_mini_count ,
-                       _alloc ,  nullptr) ;
-        else
-            this->_lptr.set_count (
-               _slots, _alloc ,  nullptr) ;
+        this->_lptr.set_count(_slots, _alloc, nullptr) ;
 
     /*------------------------------- re-hash all objects */
         redo_hash() ;
@@ -185,8 +197,7 @@
         )
     {
     /*------------------------------- increase table size */
-        if (this->_lptr.count() <
-                this->_mini_count )
+        if (this->_lptr.count() < this->_mini_count)
             this->_lptr.set_count (
             this->_mini_count ,
         containers::tight_alloc, nullptr) ;
