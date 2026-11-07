@@ -484,12 +484,14 @@
             _ha * _um + _hb * _vm + _h3
                 + _gg * std::sqrt(_dm)) ;
             
-        if (_hm < _hn || _ss <= 0.)
+        if (_hm < _hn)
         {
     /*---------------------- move on to new better optima */
             _uu = _um; _vv = _vm; _hn = _hm; 
             _up = true; break ;
         }
+        else 
+        if (_ss <= 0.)  break ; // retain candidate at stall
         else { _ss *= (real_type).5; }
         }       
     /*---------------------- done if stuck or on boundary */
