@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Aug., 2025
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -883,6 +883,7 @@
                           _bmin[_idim] ;
 
         real_type _hdel = _HINC*_binc;
+        if (_hdel == (real_type)+0.) continue;
         real_type _dsup , _dsdn ;
         {
     /*------------------ centred finite-diff. for dQ / dx */
@@ -1032,6 +1033,7 @@
                           _bmin[_idim] ;
 
         real_type _hdel = _HINC*_binc;
+        if (_hdel == (real_type)+0.) continue;
         real_type _dsup , _dsdn ;
         {
     /*------------------ centred finite-diff. for dQ / dx */
