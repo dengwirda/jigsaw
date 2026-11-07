@@ -178,8 +178,10 @@
         real_type _zrat =
             _ppos[2] / _rrad [2] ;
 
-        _zrat = std::min(+1.,_zrat);
-        _zrat = std::max(-1.,_zrat);
+        _zrat = std::min(
+            (real_type) +1., _zrat);
+        _zrat = std::max(
+            (real_type) -1., _zrat);
 
         _apos[0]= std::atan2(_ymul,
                              _xmul);

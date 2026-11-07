@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 Nov., 2026
+     * Last updated: 07 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -64,6 +64,8 @@
     /*
     --------------------------------------------------------
      * pairwise sign helpers.
+     * Review refactor: reuse these strict comparisons below.
+     * Both helpers return false when either operand is zero.
     --------------------------------------------------------
      */
 
@@ -879,9 +881,12 @@
                 (double*)_PA ,
                 (double*)_PP )   ;
 
-            if (((_s1 < 0. && _s2 > 0.) || (_s1 > 0. && _s2 < 0.)) ||
-                ((_s2 < 0. && _s3 > 0.) || (_s2 > 0. && _s3 < 0.)) ||
-                ((_s3 < 0. && _s1 > 0.) || (_s3 > 0. && _s1 < 0.)) )
+            if ( (_s1 == 0. && 
+                  _s2 == 0. && 
+                  _s3 == 0. ) ||
+                is_diff_sign(_s1, _s2) ||
+                is_diff_sign(_s2, _s3) ||
+                is_diff_sign(_s3, _s1) )
             {
 
             real_type _dm = +std::
@@ -962,6 +967,23 @@
 
         real_type _nv[3];
         tria_norm_3d(_pa, _pb, _pc, _nv);
+
+        // collapsed triangle: no normal
+        if (_nv[0] == 0. && _nv[1] == 0. && 
+            _nv[2] == 0. )
+        {
+            real_type _dm = 
+                std::numeric_limits
+                    <real_type>::infinity();
+
+            real_type _qt[3];
+            _ht = null_hits;
+            __projface3d(_pa, _pb);
+            __projface3d(_pb, _pc);
+            __projface3d(_pc, _pa);
+
+            return ( true ) ;
+        }
 
         real_type _pt[3];
         proj_flat_3d(_pp, _pa, _nv, _pt);
@@ -1067,20 +1089,20 @@
 
         {
     /*----------------------- test node-tria intersection */
-            // best-conditioned projector
             int _ax = 0;
-            if (std::abs(_nv[1]) > std::abs(_nv[_ax])) 
+            if (std::abs(_nv[1]) > 
+                std::abs(_nv[_ax]) ) 
                 _ax = 1;
-            if (std::abs(_nv[2]) > std::abs(_nv[_ax])) 
+            if (std::abs(_nv[2]) > 
+                std::abs(_nv[_ax]) ) 
                 _ax = 2;
+
+            // best-conditioned projector
             int _pr = 2 - _ax; // yz, xz, xy
             if (
-            ((_s1[_pr] < 0. && _s2[_pr] > 0.) ||
-             (_s1[_pr] > 0. && _s2[_pr] < 0.)) ||
-            ((_s2[_pr] < 0. && _s3[_pr] > 0.) ||
-             (_s2[_pr] > 0. && _s3[_pr] < 0.)) ||
-            ((_s3[_pr] < 0. && _s1[_pr] > 0.) ||
-             (_s3[_pr] > 0. && _s1[_pr] < 0.)))
+            is_diff_sign(_s1[_pr], _s2[_pr]) ||
+            is_diff_sign(_s2[_pr], _s3[_pr]) ||
+            is_diff_sign(_s3[_pr], _s1[_pr]) )
             {
 
             real_type _dm = +std::
@@ -1192,12 +1214,16 @@
                 (double*)_PC ,
                 (double*)_PP )   ;
 
-            if (((_s1 < 0. && _s2 > 0.) || (_s1 > 0. && _s2 < 0.)) ||
-                ((_s2 < 0. && _s3 > 0.) || (_s2 > 0. && _s3 < 0.)) ||
-                ((_s3 < 0. && _s1 > 0.) || (_s3 > 0. && _s1 < 0.)) ||
-                ((_s1 < 0. && _s4 > 0.) || (_s1 > 0. && _s4 < 0.)) ||
-                ((_s2 < 0. && _s4 > 0.) || (_s2 > 0. && _s4 < 0.)) ||
-                ((_s3 < 0. && _s4 > 0.) || (_s3 > 0. && _s4 < 0.)) )
+            if ( (_s1 == 0. && 
+                  _s2 == 0. && 
+                  _s3 == 0. && 
+                  _s4 == 0. ) ||
+                is_diff_sign(_s1, _s2) ||
+                is_diff_sign(_s2, _s3) ||
+                is_diff_sign(_s3, _s1) ||
+                is_diff_sign(_s1, _s4) ||
+                is_diff_sign(_s2, _s4) ||
+                is_diff_sign(_s3, _s4) )
             {
 
             real_type _dm = +std::
@@ -1386,7 +1412,7 @@
                 (double*)_PA ,
                 (double*)_PP )   ;
 
-            if ((_sa > 0. && _sb > 0.) || (_sa < 0. && _sb < 0.))
+            if (is_same_sign(_sa, _sb))
             {
     /*----------------------- have node-line intersection */
             copy_node_2d(_qq, _pp) ;
@@ -1527,7 +1553,7 @@
                 (double*)_PA ,
                 (double*)_PP )   ;
 
-            if ((_sa > 0. && _sb > 0.) || (_sa < 0. && _sb < 0.))
+            if (is_same_sign(_sa, _sb))
             {
     /*----------------------- have node-line intersection */
             copy_node_3d(_qq, _pp) ;
@@ -1638,7 +1664,7 @@
             if (_bind)
             {
     /*----------------------- no intersections: null hits */
-            if ((_sa < 0. && _sb > 0.) || (_sa > 0. && _sb < 0.))
+            if (is_diff_sign(_sa, _sb))
             return null_hits;
             }
 
@@ -1657,7 +1683,7 @@
             if (_bind)
             {
     /*----------------------- no intersections: null hits */
-            if ((_sc < 0. && _sd > 0.) || (_sc > 0. && _sd < 0.))
+            if (is_diff_sign(_sc, _sd))
             return null_hits;
             }
 
@@ -1937,9 +1963,9 @@
                 (double*)_PP )   ;
 
     /*----------------------- test intersection hierarchy */
-            if (((_s1 < 0. && _s2 > 0.) || (_s1 > 0. && _s2 < 0.)) ||
-                ((_s1 < 0. && _s3 > 0.) || (_s1 > 0. && _s3 < 0.)) ||
-                ((_s2 < 0. && _s3 > 0.) || (_s2 > 0. && _s3 < 0.)) )
+            if (is_diff_sign(_s1, _s2) ||
+                is_diff_sign(_s1, _s3) ||
+                is_diff_sign(_s2, _s3) )
             {
     /*----------------------- no intersections: null hits */
             return null_hits ;
@@ -2107,9 +2133,9 @@
                 (double*)_T1 ,
                 (double*)_TP )  ;
 
-            if (((_s1[0] < 0. && _s2[0] > 0.) || (_s1[0] > 0. && _s2[0] < 0.)) ||
-                ((_s2[0] < 0. && _s3[0] > 0.) || (_s2[0] > 0. && _s3[0] < 0.)) ||
-                ((_s3[0] < 0. && _s1[0] > 0.) || (_s3[0] > 0. && _s1[0] < 0.)) )
+            if (is_diff_sign(_s1[0], _s2[0]) ||
+                is_diff_sign(_s2[0], _s3[0]) ||
+                is_diff_sign(_s3[0], _s1[0]) )
             {
     /*----------------------- no intersections: null hits */
             return null_hits ;
@@ -2139,9 +2165,9 @@
                 (double*)_T1 ,
                 (double*)_TP )  ;
 
-            if (((_s1[1] < 0. && _s2[1] > 0.) || (_s1[1] > 0. && _s2[1] < 0.)) ||
-                ((_s2[1] < 0. && _s3[1] > 0.) || (_s2[1] > 0. && _s3[1] < 0.)) ||
-                ((_s3[1] < 0. && _s1[1] > 0.) || (_s3[1] > 0. && _s1[1] < 0.)) )
+            if (is_diff_sign(_s1[1], _s2[1]) ||
+                is_diff_sign(_s2[1], _s3[1]) ||
+                is_diff_sign(_s3[1], _s1[1]) )
             {
     /*----------------------- no intersections: null hits */
             return null_hits ;
@@ -2171,9 +2197,9 @@
                 (double*)_T1 ,
                 (double*)_TP )  ;
 
-            if (((_s1[2] < 0. && _s2[2] > 0.) || (_s1[2] > 0. && _s2[2] < 0.)) ||
-                ((_s2[2] < 0. && _s3[2] > 0.) || (_s2[2] > 0. && _s3[2] < 0.)) ||
-                ((_s3[2] < 0. && _s1[2] > 0.) || (_s3[2] > 0. && _s1[2] < 0.)) )
+            if (is_diff_sign(_s1[2], _s2[2]) ||
+                is_diff_sign(_s2[2], _s3[2]) ||
+                is_diff_sign(_s3[2], _s1[2]) )
             {
     /*----------------------- no intersections: null hits */
             return null_hits ;
@@ -2358,7 +2384,7 @@
             if (_bind)
             {
     /*----------------------- no intersections: null hits */
-            if ((_sa < 0. && _sb > 0.) || (_sa > 0. && _sb < 0.))
+            if (is_diff_sign(_sa, _sb))
             return null_hits ;
             }
 
@@ -2387,13 +2413,13 @@
             if (_bind)
             {
     /*----------------------- no intersections: null hits */
-            if ((_s1 < 0. && _s2 > 0.) || (_s1 > 0. && _s2 < 0.))
+            if (is_diff_sign(_s1, _s2))
             return null_hits ;
 
-            if ((_s2 < 0. && _s3 > 0.) || (_s2 > 0. && _s3 < 0.))
+            if (is_diff_sign(_s2, _s3))
             return null_hits ;
 
-            if ((_s3 < 0. && _s1 > 0.) || (_s3 > 0. && _s1 < 0.))
+            if (is_diff_sign(_s3, _s1))
             return null_hits ;
             }
 
@@ -2436,6 +2462,7 @@
             {
     /*----------------------- have line-edge intersection */
             double _WS = _s2 + _s3 ;
+            if (_WS == +0.) return null_hits ;
             double _W1 = _s2 / _WS ;
             double _W2 = _s3 / _WS ;
 
@@ -2462,6 +2489,7 @@
             {
     /*----------------------- have line-edge intersection */
             double _WS = _s1 + _s3 ;
+            if (_WS == +0.) return null_hits ;
             double _W2 = _s3 / _WS ;
             double _W3 = _s1 / _WS ;
 
@@ -2488,6 +2516,7 @@
             {
     /*----------------------- have line-edge intersection */
             double _WS = _s1 + _s2 ;
+            if (_WS == +0.) return null_hits ;
             double _W3 = _s1 / _WS ;
             double _W1 = _s2 / _WS ;
 
@@ -2513,6 +2542,7 @@
             {
     /*----------------------- have line-face intersection */
             double _WS = _s1 + _s2 + _s3 ;
+            if (_WS == +0.) return null_hits ;
             double _W1 = _s2 / _WS ;
             double _W2 = _s3 / _WS ;
             double _W3 = _s1 / _WS ;
