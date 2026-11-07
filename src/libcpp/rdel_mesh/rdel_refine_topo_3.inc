@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2024
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -556,6 +556,9 @@
         if(__chkbit(
         _opts.rule(),rdel_opts::offT_kind) )
         {
+            if ( _kind == rdel_opts::null_kind )
+                return _kind ;
+
     /*--------------------- calc. "skinny" off-centre */
             _vdir[3] =
             geometry::normalise_3d (_vdir) ;
@@ -781,6 +784,9 @@
         if(__chkbit(
         _opts.rule(),rdel_opts::offT_kind) )
         {
+            if ( _kind == rdel_opts::null_kind )
+                return _kind ;
+
     /*--------------------- calc. "skinny" off-centre */
             _vnrm[3] =
             geometry::normalise_3d (_vnrm) ;

@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 Jul., 2021
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -260,6 +260,9 @@
         if(__chkbit(
         _opts.rule(),rdel_opts::offT_kind) )
         {
+            if ( _kind == rdel_opts::null_kind )
+                return _kind ;
+
     /*--------------------- calc. "skinny" off-centre */
             _vnrm[2] =
             geometry::normalise_2d (_vnrm) ;
