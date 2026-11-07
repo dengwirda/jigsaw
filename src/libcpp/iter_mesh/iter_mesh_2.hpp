@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 Dec., 2024
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda,
      * Marc Tunnell
      * d.engwirda@gmail.com
@@ -421,6 +421,8 @@
             _QMIN = std::min (_QMIN, _qmin) ;
             }
         }
+    #   else
+            _QMIN = _qmin ;
     #   endif//__use_openmp
         }
 
