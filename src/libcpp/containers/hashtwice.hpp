@@ -179,11 +179,12 @@
             this->_lptr[_ipos] = nullptr;
             while(_head != nullptr)
             {
-                _next = _head->_next;
+                _next = _head->_next ;
                  base_type::
                     push_item( _root , _head ) ;
                 _head = _next ;
             }
+            this->_lptr[ 0 ] = _root ;
         }
 
     /*------------------------------- inc/dec. table size */
