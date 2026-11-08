@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 Jul., 2025
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -1094,7 +1094,7 @@
             __pushRVAL(_jcfg._mesh_opts.siz1()));
         _jlog.push("  MESH-SIZ2 = " +
             __pushRVAL(_jcfg._mesh_opts.siz2()));
-        _jlog.push("  MESH-SIZ2 = " +
+        _jlog.push("  MESH-SIZ3 = " +
             __pushRVAL(_jcfg._mesh_opts.siz3()));
 
         _jlog.push("  MESH-EPS1 = " +
