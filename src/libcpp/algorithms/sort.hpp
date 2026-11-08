@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 Jul., 2019
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -70,6 +70,8 @@
         pred_type _less    // comparison predicate
         )
     {
+        if (_head == _tail) return ( true ) ;
+
         for ( ; _head+1 != _tail; ++_head )
         { /* check pair ordering */
             if (_less(*(_head+1),  *_head))
@@ -400,6 +402,8 @@
         typedef containers::
             iterator_traits<iter_type> iter_base ;
 
+        if (_head == _tend) return;
+
     /*------- tiny-list threshold, push to insertion sort */
         typename iter_base::
             diff_type static constexpr _LONG = 16;
@@ -509,6 +513,8 @@
         pred_type _less   // comparison predicate
         )
     {
+        if (_head == _tend) return;
+
         iter_type  _hh, _tt, _mm;
         _hh = _head + 0;
         _tt = _tend - 1;
@@ -539,7 +545,7 @@
         /* reduce partition around pivot element */
             iter_type _ll = _hh + 1;
             iter_type _rr = _tt - 1;
-            for ( ; _ll < _rr; )
+            for ( ; _ll  <= _rr; )
             {
                 for(;_less(*_ll, *_mm);) ++_ll;
                 for(;_less(*_mm, *_rr);) --_rr;
@@ -563,9 +569,9 @@
 
           //if (_mm == _kk) break ;
 
-            if (_kk <  _rr) _tt = _rr;
+            if (_kk <= _rr) _tt = _rr;
             else
-            if (_kk >  _ll) _hh = _ll;
+            if (_kk >= _ll) _hh = _ll;
             else
             {
                 _hh =  _rr+1; _tt = _ll-1;
