@@ -326,7 +326,14 @@
         if (_addr == nullptr)
             return self_type::allocate(_new_count);
 
-    /*------------------ deal with genuine reallocations  */
+    /*------------------ deal with genuine de-allocations */
+        if (_new_count == +0)
+        {
+            self_type::deallocate(_addr, _old_count);
+            return   nullptr;
+        }
+
+    /*------------------ deal with genuine re-allocations */
         char_type *_nptr;
         if (_old_count <= this->_item_size)
         {
