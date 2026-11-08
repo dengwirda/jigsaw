@@ -867,7 +867,7 @@
     {
         real_type static const _HINC =
             std::pow(std::numeric_limits
-                <real_type>::epsilon(), +0.75) ;
+                <real_type>::epsilon(), +0.50) ;
 
     /*------------------------------------- cell indexing */
         auto _ppos = &_node->pval(0);
@@ -1017,7 +1017,7 @@
     {
         real_type static const _HINC =
             std::pow(std::numeric_limits
-                <real_type>::epsilon(), +0.75) ;
+                <real_type>::epsilon(), +0.50) ;
 
     /*------------------------------------- cell indexing */
         auto _ppos = &_node->pval(0);
