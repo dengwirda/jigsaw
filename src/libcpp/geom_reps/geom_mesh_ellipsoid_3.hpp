@@ -1382,55 +1382,29 @@
         )
     {
     /*--------------------------- great-ellipse projector */
-        real_type _zero[3] ;
-        _zero[0] = (real_type) +.0 ;
-        _zero[1] = (real_type) +.0 ;
-        _zero[2] = (real_type) +.0 ;
+        real_type _xx = 
+            _psrc[0] / this->_radA ;
+        real_type _yy = 
+            _psrc[1] / this->_radB ;
+        real_type _zz = 
+            _psrc[2] / this->_radC ;
 
-        _pprj[0] =_psrc[0] ;
-        _pprj[1] =_psrc[1] ;
-        _pprj[2] =_psrc[2] ;
+        real_type _sc = _xx * _xx
+                      + _yy * _yy
+                      + _zz * _zz  ;
 
-        real_type _ttaa, _ttbb ;
-        if (line_surf(
-                _zero, _psrc, _ttaa, _ttbb) )
-        {
-        real_type _pmid[3] = {
-        _psrc[0] * (real_type) +.5 +
-        _zero[0] * (real_type) +.5 ,
-        _psrc[1] * (real_type) +.5 +
-        _zero[1] * (real_type) +.5 ,
-        _psrc[2] * (real_type) +.5 +
-        _zero[2] * (real_type) +.5
-            } ;
-        real_type _pdel[3] = {
-        _psrc[0] * (real_type) +.5 -
-        _zero[0] * (real_type) +.5 ,
-        _psrc[1] * (real_type) +.5 -
-        _zero[1] * (real_type) +.5 ,
-        _psrc[2] * (real_type) +.5 -
-        _zero[2] * (real_type) +.5
-            } ;
+        _pprj[0] = _psrc[0] ;
+        _pprj[1] = _psrc[1] ;
+        _pprj[2] = _psrc[2] ;
 
-        if (_ttaa > (real_type) -1.)
+        if (_sc > (real_type) +0.)
         {
-        _pprj[0] =
-        _pmid[0] + _ttaa*_pdel[0] ;
-        _pprj[1] =
-        _pmid[1] + _ttaa*_pdel[1] ;
-        _pprj[2] =
-        _pmid[2] + _ttaa*_pdel[2] ;
-        }
-        else
-        if (_ttbb > (real_type) -1.)
-        {
-        _pprj[0] =
-        _pmid[0] + _ttbb*_pdel[0] ;
-        _pprj[1] =
-        _pmid[1] + _ttbb*_pdel[1] ;
-        _pprj[2] =
-        _pmid[2] + _ttbb*_pdel[2] ;
-        }
+            _sc = (real_type) +1. 
+                / std::sqrt( _sc ) ;
+
+            _pprj[0] *= _sc ;
+            _pprj[1] *= _sc ;
+            _pprj[2] *= _sc ;
         }
     }
 
