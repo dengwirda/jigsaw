@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 26 Feb., 2025
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -73,7 +73,7 @@
                 iptr_type ,
                 allocator    >      geom_type ;
 
-    typedef geom_base_3d     <
+    typedef geom_base_2d     <
                 real_type ,
                 iptr_type    >      base_type ;
 

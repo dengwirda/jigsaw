@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 26 Feb., 2025
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -2246,7 +2246,7 @@
     --------------------------------------------------------
      */
 
-    __normal_call bool_type is_inside (
+    __normal_call iptr_type is_inside (
         real_type *_ppos
         )
     {
@@ -2261,7 +2261,9 @@
         return ( _xx * _xx
                + _yy * _yy
                + _zz * _zz
-              <= (real_type) +1. ) ;
+              <= (real_type) +1. ) ?
+                 (iptr_type) +0 : 
+                 (iptr_type) -1 ;
     }
 
     /*
