@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Feb., 2021
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -385,6 +385,8 @@
 
         _dest.open_point(_nrow);
 
+        if (_nrow == 0) return ;
+
     /*----------------------------------------- read data */
         std::string _line ;
         while (std::getline(_ffid, _line))
@@ -453,6 +455,8 @@
         }
 
         _dest.open_seeds(_nrow);
+
+        if (_nrow == 0) return ;
 
     /*----------------------------------------- read data */
         std::string _line ;
@@ -523,7 +527,9 @@
             push_tail("Invalid COORD!");
         }
 
-        _dest.open_coord(_idim, _nrow) ;
+        _dest.open_coord(_idim , _nrow);
+
+        if (_nrow == 0) return ;
 
     /*----------------------------------------- read data */
         std::string _line ;
@@ -576,6 +582,8 @@
         }
 
         _dest.open_power(_nrow , _npwr);
+
+        if (_nrow == 0) return ;
 
     /*----------------------------------------- read data */
         std::string _line ;
@@ -642,7 +650,9 @@
             push_tail("Invalid VALUE!");
         }
 
-        _dest.open_value (_nrow, _nval);
+        _dest.open_value(_nrow , _nval);
+
+        if (_nrow == 0) return ;
 
     /*----------------------------------------- read data */
         std::string _line ;
@@ -709,7 +719,9 @@
             push_tail("Invalid SLOPE!");
         }
 
-        _dest.open_slope (_nrow, _nval);
+        _dest.open_slope(_nrow , _nval);
+
+        if (_nrow == 0) return ;
 
     /*----------------------------------------- read data */
         std::string _line ;
@@ -776,6 +788,8 @@
 
         _dest.open_edge2(_nrow);
 
+        if (_nrow == 0) return ;
+
     /*----------------------------------------- read data */
         std::string _line ;
         while (std::getline(_ffid, _line))
@@ -839,6 +853,8 @@
         }
 
         _dest.open_tria3(_nrow);
+
+        if (_nrow == 0) return ;
 
     /*----------------------------------------- read data */
         std::string _line ;
@@ -906,6 +922,8 @@
         }
 
         _dest.open_quad4(_nrow);
+
+        if (_nrow == 0) return ;
 
     /*----------------------------------------- read data */
         std::string _line ;
@@ -977,6 +995,8 @@
 
         _dest.open_tria4(_nrow);
 
+        if (_nrow == 0) return ;
+
     /*----------------------------------------- read data */
         std::string _line ;
         while (std::getline(_ffid, _line))
@@ -1046,6 +1066,8 @@
         }
 
         _dest.open_hexa8(_nrow);
+
+        if (_nrow == 0) return ;
 
     /*----------------------------------------- read data */
         std::string _line ;
@@ -1129,6 +1151,8 @@
 
         _dest.open_wedg6(_nrow);
 
+        if (_nrow == 0) return ;
+
     /*----------------------------------------- read data */
         std::string _line ;
         while (std::getline(_ffid, _line))
@@ -1205,6 +1229,8 @@
 
         _dest.open_pyra5(_nrow);
 
+        if (_nrow == 0) return ;
+
     /*----------------------------------------- read data */
         std::string _line ;
         while (std::getline(_ffid, _line))
@@ -1277,6 +1303,8 @@
         }
 
         _dest.open_bound(_nrow);
+
+        if (_nrow == 0) return ;
 
     /*----------------------------------------- read data */
         std::string _line ;
