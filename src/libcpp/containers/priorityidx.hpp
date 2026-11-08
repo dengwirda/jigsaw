@@ -43,9 +43,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 15 Jun., 2022
+ * Last updated: 08 Nov., 2026
  *
- * Copyright 2013-2022
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -380,7 +380,7 @@
     }
 
 /*-------------------------------------------- _set alloc */
-    __inline_call size_type set_alloc (
+    __inline_call void_type set_alloc (
         size_type _asiz
         )
     { this->_heap.set_alloc( _asiz) ;
@@ -493,7 +493,8 @@
     {
     /*---------------------------- _pop root, cache temp. */
         data_type  _temp ;
-        _pop( +0,  _temp);
+        iptr_type  _kpos ;
+        _pop_root (_kpos , _temp) ;
     }
     __inline_call void_type _pop_root (
         iptr_type &_kpos ,
@@ -608,8 +609,8 @@
 
     /*------------------------ copy position into mapping */
         this->_keys[_kpos] =
-            (iptr_type)
-            _ipos - this->_heap.head()  ;
+            (iptr_type)(
+            _ipos - this->_heap.head()) ;
     }
 
     __inline_call void_type update ( // move

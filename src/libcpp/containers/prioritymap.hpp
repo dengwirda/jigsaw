@@ -43,9 +43,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 30 Mar., 2022
+ * Last updated: 08 Nov., 2026
  *
- * Copyright 2013-2022
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -371,7 +371,7 @@
     }
 
 /*-------------------------------------------- _set alloc */
-    __inline_call size_type set_alloc (
+    __inline_call void_type set_alloc (
         size_type _asiz
         )
     { this->_heap.set_alloc( _asiz) ;
@@ -474,7 +474,7 @@
     {
     /*---------------------------- _pop root, cache temp. */
         data_type  _temp ;
-        _pop( +0,  _temp);
+        _pop_root (_temp);
     }
     __inline_call void_type _pop_root (
         data_type &_data

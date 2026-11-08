@@ -43,9 +43,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 08 Nov., 2026
  *
- * Copyright 2013-2017
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -405,7 +405,8 @@
         _data = std::move (
             *(this->_heap.head() + _hpos));
     /*--------- push "hole" at HPOS into updated position */
-        if (this->_heap.count() > 1)
+        if (this->_heap.head() + _hpos !=
+            this->_heap.tail() )
         {
     /*---------- find new position for "hole" at HPOS */
         _write_it _ipos = push_lower (
