@@ -450,6 +450,9 @@
         this->_eset.clear(_alloc) ;
         this->_epol.clear()  ;
 
+        this->_etwo.clear(_alloc) ;
+        this->_e2nd.clear()  ;
+
         this->_tset.clear(_alloc) ;
         this->_tpol.clear()  ;
     }
