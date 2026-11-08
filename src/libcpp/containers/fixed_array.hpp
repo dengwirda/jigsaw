@@ -41,9 +41,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 08 Nov., 2026
  *
- * Copyright 2013-2017
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -238,9 +238,9 @@
     __inline_call _write_it hend (
         )
     { /* return iterator at head - 1 */
-        size_type _off = 1;
+        size_type  _off = 1;
         self_type *_obj = (self_type *)this ;
-        return _write_it(this->_data + _off, _obj);
+        return _write_it(this->_data - _off, _obj);
     }
 
     __inline_call _write_it tend (
