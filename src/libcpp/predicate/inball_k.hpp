@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Nov., 2026
+     * Last updated: 09 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -208,8 +208,9 @@
         + _cli * (_adxbdy - _bdxady) ;
 
         _OK =
-          _d33.lo() >= (REAL_TYPE)0.
-        ||_d33.up() <= (REAL_TYPE)0. ;
+          _d33.lo() > (REAL_TYPE)0.
+        ||_d33.up() < (REAL_TYPE)0.
+        ||_d33.lo() == _d33.up() ;
 
         return ( _d33.mid() ) ;
     }
@@ -461,8 +462,9 @@
         + _cli * (_adxbdy - _bdxady) ;
 
         _OK =
-          _d33.lo() >= (REAL_TYPE)0.
-        ||_d33.up() <= (REAL_TYPE)0. ;
+          _d33.lo() > (REAL_TYPE)0.
+        ||_d33.up() < (REAL_TYPE)0.
+        ||_d33.lo() == _d33.up() ;
 
         return ( _d33.mid() ) ;
     }
@@ -865,8 +867,9 @@
         + _bli * _cda - _ali * _bcd ;
 
         _OK =
-          _d44.lo() >= (REAL_TYPE)0.
-        ||_d44.up() <= (REAL_TYPE)0.;
+          _d44.lo() > (REAL_TYPE)0.
+        ||_d44.up() < (REAL_TYPE)0.
+        ||_d44.lo() == _d44.up();
 
         return ( _d44.mid() ) ;
     }
@@ -1373,8 +1376,9 @@
         + _bli * _cda - _ali * _bcd ;
 
         _OK =
-          _d44.lo() >= (REAL_TYPE)0.
-        ||_d44.up() <= (REAL_TYPE)0.;
+          _d44.lo() > (REAL_TYPE)0.
+        ||_d44.up() < (REAL_TYPE)0.
+        ||_d44.lo() == _d44.up();
 
         return ( _d44.mid() ) ;
     }
@@ -2001,30 +2005,34 @@
         )
     {
     /*--------------- inball4d predicate, "bound" version */
-        ia_flt    _afx, _afy, _afz ,
+        ia_flt    _afx, _afy, _afz,
                   _afq, _ali,
-                  _bfx, _bfy, _bfz ,
+                  _bfx, _bfy, _bfz,
                   _bfq, _bli,
-                  _cfx, _cfy, _cfz ,
+                  _cfx, _cfy, _cfz,
                   _cfq, _cli,
-                  _dfx, _dfy, _dfz ,
+                  _dfx, _dfy, _dfz,
                   _dfq, _dli,
-                  _efx, _efy, _efz ,
+                  _efx, _efy, _efz,
                   _efq, _eli;
-        
-        ia_flt    _afxbfy, _bfxafy ,
-                  _afxcfy, _cfxafy ,
-                  _bfxcfy, _cfxbfy ,
-                  _cfxdfy, _dfxcfy ,
-                  _dfxafy, _afxdfy ,
-                  _bfxdfy, _dfxbfy ;
-
-        ia_flt    _ab_, _bc_, _cd_, _da_,
-                  _ac_, _bd_;
-
-
-        ia_flt    _abc, _bcd, _cda, _dab;
-
+        ia_flt    _afxbfy, _bfxafy,
+                  _afxcfy, _cfxafy,
+                  _afxdfy, _dfxafy,
+                  _afxefy, _efxafy,
+                  _bfxcfy, _cfxbfy,
+                  _bfxdfy, _dfxbfy,
+                  _bfxefy, _efxbfy,
+                  _cfxdfy, _dfxcfy,
+                  _cfxefy, _efxcfy,
+                  _dfxefy, _efxdfy;
+        ia_flt    _ab_, _ac_, _ad_, _ae_,
+                  _bc_, _bd_, _be_, _cd_,
+                  _ce_, _de_;
+        ia_flt    _abc, _abd, _abe, _acd,
+                  _ace, _ade, _bcd, _bce,
+                  _bde, _cde;
+        ia_flt    _abcd, _abce, _abde, _acde,
+                  _bcde;
 
         ia_flt    _d55;
 
@@ -2070,71 +2078,445 @@
         _eli = sqr (_efx) + sqr (_efy)
              + sqr (_efz) + sqr (_efq) ;
 
+        _afxbfy = _afx * _bfy ;           // 2 x 2 minors
+        _bfxafy = _bfx * _afy ;
+        _ab_ = _afxbfy - _bfxafy ;
 
-        /*
-        _aexbey = _aex * _bey ;           // 2 x 2 minors
-        _bexaey = _bex * _aey ;
-        _ab_ = _aexbey - _bexaey ;
+        _afxcfy = _afx * _cfy ;
+        _cfxafy = _cfx * _afy ;
+        _ac_ = _afxcfy - _cfxafy ;
 
-        _bexcey = _bex * _cey;
-        _cexbey = _cex * _bey;
-        _bc_ = _bexcey - _cexbey ;
+        _afxdfy = _afx * _dfy ;
+        _dfxafy = _dfx * _afy ;
+        _ad_ = _afxdfy - _dfxafy ;
 
-        _cexdey = _cex * _dey;
-        _dexcey = _dex * _cey;
-        _cd_ = _cexdey - _dexcey ;
+        _afxefy = _afx * _efy ;
+        _efxafy = _efx * _afy ;
+        _ae_ = _afxefy - _efxafy ;
 
-        _dexaey = _dex * _aey;
-        _aexdey = _aex * _dey;
-        _da_ = _dexaey - _aexdey ;
+        _bfxcfy = _bfx * _cfy ;
+        _cfxbfy = _cfx * _bfy ;
+        _bc_ = _bfxcfy - _cfxbfy ;
 
-        _aexcey = _aex * _cey;
-        _cexaey = _cex * _aey;
-        _ac_ = _aexcey - _cexaey ;
+        _bfxdfy = _bfx * _dfy ;
+        _dfxbfy = _dfx * _bfy ;
+        _bd_ = _bfxdfy - _dfxbfy ;
 
-        _bexdey = _bex * _dey;
-        _dexbey = _dex * _bey;
-        _bd_ = _bexdey - _dexbey ;
+        _bfxefy = _bfx * _efy ;
+        _efxbfy = _efx * _bfy ;
+        _be_ = _bfxefy - _efxbfy ;
 
+        _cfxdfy = _cfx * _dfy ;
+        _dfxcfy = _dfx * _cfy ;
+        _cd_ = _cfxdfy - _dfxcfy ;
 
+        _cfxefy = _cfx * _efy ;
+        _efxcfy = _efx * _cfy ;
+        _ce_ = _cfxefy - _efxcfy ;
+
+        _dfxefy = _dfx * _efy ;
+        _efxdfy = _efx * _dfy ;
+        _de_ = _dfxefy - _efxdfy ;
 
         _abc =                            // 3 x 3 minors
-          _aez * _bc_ - _bez * _ac_
-        + _cez * _ab_ ;
+          _afz * _bc_ - _bfz * _ac_
+        + _cfz * _ab_ ;
+
+        _abd =
+          _afz * _bd_ - _bfz * _ad_
+        + _dfz * _ab_ ;
+
+        _abe =
+          _afz * _be_ - _bfz * _ae_
+        + _efz * _ab_ ;
+
+        _acd =
+          _afz * _cd_ - _cfz * _ad_
+        + _dfz * _ac_ ;
+
+        _ace =
+          _afz * _ce_ - _cfz * _ae_
+        + _efz * _ac_ ;
+
+        _ade =
+          _afz * _de_ - _dfz * _ae_
+        + _efz * _ad_ ;
 
         _bcd =
-          _bez * _cd_ - _cez * _bd_
-        + _dez * _bc_ ;
+          _bfz * _cd_ - _cfz * _bd_
+        + _dfz * _bc_ ;
 
-        _cda =
-          _cez * _da_ + _dez * _ac_
-        + _aez * _cd_ ;
+        _bce =
+          _bfz * _ce_ - _cfz * _be_
+        + _efz * _bc_ ;
 
-        _dab =
-          _dez * _ab_ + _aez * _bd_
-        + _bez * _da_ ;
+        _bde =
+          _bfz * _de_ - _dfz * _be_
+        + _efz * _bd_ ;
 
+        _cde =
+          _cfz * _de_ - _dfz * _ce_
+        + _efz * _cd_ ;
 
+        _abcd =                           // 4 x 4 minors
+          _dfq * _abc - _cfq * _abd
+        + _bfq * _acd - _afq * _bcd ;
 
-        _d44 =                            // 5 x 5 result
-          _eli * _abcd
-        + _dli * _abce 
-        - _cli * _deab
-        + _bli * _cdea 
-        - _ali * _bcde ;
-        */
+        _abce =
+          _efq * _abc - _cfq * _abe
+        + _bfq * _ace - _afq * _bce ;
 
+        _abde =
+          _efq * _abd - _dfq * _abe
+        + _bfq * _ade - _afq * _bde ;
+
+        _acde =
+          _efq * _acd - _dfq * _ace
+        + _cfq * _ade - _afq * _cde ;
+
+        _bcde =
+          _efq * _bcd - _dfq * _bce
+        + _cfq * _bde - _bfq * _cde ;
+
+        _d55 =                            // 5 x 5 result
+          _eli * _abcd - _dli * _abce
+        + _cli * _abde - _bli * _acde
+        + _ali * _bcde ;
+
+    /*-------------------- strict sign, or point interval */
         _OK =
-          _d55.lo() >= (REAL_TYPE)0.
-        ||_d55.up() <= (REAL_TYPE)0.;
+          _d55.lo() > (REAL_TYPE)0.
+        ||_d55.up() < (REAL_TYPE)0.
+        ||_d55.lo() == _d55.up() ;
 
         return ( _d55.mid() ) ;
     }
 
+    __normal_call REAL_TYPE inball4d_f (
+      __const_ptr(REAL_TYPE) _pa ,
+      __const_ptr(REAL_TYPE) _pb ,
+      __const_ptr(REAL_TYPE) _pc ,
+      __const_ptr(REAL_TYPE) _pd ,
+      __const_ptr(REAL_TYPE) _pe ,
+      __const_ptr(REAL_TYPE) _pf ,
+        bool_type &_OK
+        )
+    {
+    /*--------------- inball4d predicate, "float" version */
+        REAL_TYPE static const _ER =
+        + 25. * std::pow(mp::_epsilon, 1) ;
 
+        REAL_TYPE _afx, _afy, _afz,
+                  _afq, _ali,
+                  _bfx, _bfy, _bfz,
+                  _bfq, _bli,
+                  _cfx, _cfy, _cfz,
+                  _cfq, _cli,
+                  _dfx, _dfy, _dfz,
+                  _dfq, _dli,
+                  _efx, _efy, _efz,
+                  _efq, _eli;
+        REAL_TYPE _afxbfy, _bfxafy,
+                  _afxcfy, _cfxafy,
+                  _afxdfy, _dfxafy,
+                  _afxefy, _efxafy,
+                  _bfxcfy, _cfxbfy,
+                  _bfxdfy, _dfxbfy,
+                  _bfxefy, _efxbfy,
+                  _cfxdfy, _dfxcfy,
+                  _cfxefy, _efxcfy,
+                  _dfxefy, _efxdfy;
+        REAL_TYPE _ab_, _ac_, _ad_, _ae_,
+                  _bc_, _bd_, _be_, _cd_,
+                  _ce_, _de_;
+        REAL_TYPE _abc, _abd, _abe, _acd,
+                  _ace, _ade, _bcd, _bce,
+                  _bde, _cde;
+        REAL_TYPE _abcd, _abce, _abde, _acde,
+                  _bcde;
 
+        REAL_TYPE _AFZ, _BFZ, _CFZ, _DFZ,
+                  _EFZ;
+        REAL_TYPE _AFQ, _BFQ, _CFQ, _DFQ,
+                  _EFQ;
+        REAL_TYPE _AFXBFY, _BFXAFY,
+                  _AFXCFY, _CFXAFY,
+                  _AFXDFY, _DFXAFY,
+                  _AFXEFY, _EFXAFY,
+                  _BFXCFY, _CFXBFY,
+                  _BFXDFY, _DFXBFY,
+                  _BFXEFY, _EFXBFY,
+                  _CFXDFY, _DFXCFY,
+                  _CFXEFY, _EFXCFY,
+                  _DFXEFY, _EFXDFY;
+        REAL_TYPE _AB_, _AC_, _AD_, _AE_,
+                  _BC_, _BD_, _BE_, _CD_,
+                  _CE_, _DE_;
+        REAL_TYPE _ABC, _ABD, _ABE, _ACD,
+                  _ACE, _ADE, _BCD, _BCE,
+                  _BDE, _CDE;
+        REAL_TYPE _ABCD, _ABCE, _ABDE, _ACDE,
+                  _BCDE;
 
+        REAL_TYPE _d55, _FT;
 
+        _afx = _pa [0] - _pf [0] ;   // coord. diff.
+        _afy = _pa [1] - _pf [1] ;
+        _afz = _pa [2] - _pf [2] ;
+        _afq = _pa [3] - _pf [3] ;
+
+        _AFZ = std::abs (_afz) ;
+        _AFQ = std::abs (_afq) ;
+
+        _bfx = _pb [0] - _pf [0] ;
+        _bfy = _pb [1] - _pf [1] ;
+        _bfz = _pb [2] - _pf [2] ;
+        _bfq = _pb [3] - _pf [3] ;
+
+        _BFZ = std::abs (_bfz) ;
+        _BFQ = std::abs (_bfq) ;
+
+        _cfx = _pc [0] - _pf [0] ;
+        _cfy = _pc [1] - _pf [1] ;
+        _cfz = _pc [2] - _pf [2] ;
+        _cfq = _pc [3] - _pf [3] ;
+
+        _CFZ = std::abs (_cfz) ;
+        _CFQ = std::abs (_cfq) ;
+
+        _dfx = _pd [0] - _pf [0] ;
+        _dfy = _pd [1] - _pf [1] ;
+        _dfz = _pd [2] - _pf [2] ;
+        _dfq = _pd [3] - _pf [3] ;
+
+        _DFZ = std::abs (_dfz) ;
+        _DFQ = std::abs (_dfq) ;
+
+        _efx = _pe [0] - _pf [0] ;
+        _efy = _pe [1] - _pf [1] ;
+        _efz = _pe [2] - _pf [2] ;
+        _efq = _pe [3] - _pf [3] ;
+
+        _EFZ = std::abs (_efz) ;
+        _EFQ = std::abs (_efq) ;
+
+        _ali = _afx * _afx + _afy * _afy  // lifted terms
+             + _afz * _afz + _afq * _afq ;
+
+        _bli = _bfx * _bfx + _bfy * _bfy
+             + _bfz * _bfz + _bfq * _bfq ;
+
+        _cli = _cfx * _cfx + _cfy * _cfy
+             + _cfz * _cfz + _cfq * _cfq ;
+
+        _dli = _dfx * _dfx + _dfy * _dfy
+             + _dfz * _dfz + _dfq * _dfq ;
+
+        _eli = _efx * _efx + _efy * _efy
+             + _efz * _efz + _efq * _efq ;
+
+        _afxbfy = _afx * _bfy ;           // 2 x 2 minors
+        _bfxafy = _bfx * _afy ;
+        _ab_ = _afxbfy - _bfxafy ;
+
+        _AFXBFY = std::abs (_afxbfy) ;
+        _BFXAFY = std::abs (_bfxafy) ;
+        _AB_ = _AFXBFY + _BFXAFY ;
+
+        _afxcfy = _afx * _cfy ;
+        _cfxafy = _cfx * _afy ;
+        _ac_ = _afxcfy - _cfxafy ;
+
+        _AFXCFY = std::abs (_afxcfy) ;
+        _CFXAFY = std::abs (_cfxafy) ;
+        _AC_ = _AFXCFY + _CFXAFY ;
+
+        _afxdfy = _afx * _dfy ;
+        _dfxafy = _dfx * _afy ;
+        _ad_ = _afxdfy - _dfxafy ;
+
+        _AFXDFY = std::abs (_afxdfy) ;
+        _DFXAFY = std::abs (_dfxafy) ;
+        _AD_ = _AFXDFY + _DFXAFY ;
+
+        _afxefy = _afx * _efy ;
+        _efxafy = _efx * _afy ;
+        _ae_ = _afxefy - _efxafy ;
+
+        _AFXEFY = std::abs (_afxefy) ;
+        _EFXAFY = std::abs (_efxafy) ;
+        _AE_ = _AFXEFY + _EFXAFY ;
+
+        _bfxcfy = _bfx * _cfy ;
+        _cfxbfy = _cfx * _bfy ;
+        _bc_ = _bfxcfy - _cfxbfy ;
+
+        _BFXCFY = std::abs (_bfxcfy) ;
+        _CFXBFY = std::abs (_cfxbfy) ;
+        _BC_ = _BFXCFY + _CFXBFY ;
+
+        _bfxdfy = _bfx * _dfy ;
+        _dfxbfy = _dfx * _bfy ;
+        _bd_ = _bfxdfy - _dfxbfy ;
+
+        _BFXDFY = std::abs (_bfxdfy) ;
+        _DFXBFY = std::abs (_dfxbfy) ;
+        _BD_ = _BFXDFY + _DFXBFY ;
+
+        _bfxefy = _bfx * _efy ;
+        _efxbfy = _efx * _bfy ;
+        _be_ = _bfxefy - _efxbfy ;
+
+        _BFXEFY = std::abs (_bfxefy) ;
+        _EFXBFY = std::abs (_efxbfy) ;
+        _BE_ = _BFXEFY + _EFXBFY ;
+
+        _cfxdfy = _cfx * _dfy ;
+        _dfxcfy = _dfx * _cfy ;
+        _cd_ = _cfxdfy - _dfxcfy ;
+
+        _CFXDFY = std::abs (_cfxdfy) ;
+        _DFXCFY = std::abs (_dfxcfy) ;
+        _CD_ = _CFXDFY + _DFXCFY ;
+
+        _cfxefy = _cfx * _efy ;
+        _efxcfy = _efx * _cfy ;
+        _ce_ = _cfxefy - _efxcfy ;
+
+        _CFXEFY = std::abs (_cfxefy) ;
+        _EFXCFY = std::abs (_efxcfy) ;
+        _CE_ = _CFXEFY + _EFXCFY ;
+
+        _dfxefy = _dfx * _efy ;
+        _efxdfy = _efx * _dfy ;
+        _de_ = _dfxefy - _efxdfy ;
+
+        _DFXEFY = std::abs (_dfxefy) ;
+        _EFXDFY = std::abs (_efxdfy) ;
+        _DE_ = _DFXEFY + _EFXDFY ;
+
+        _abc =                            // 3 x 3 minors
+          _afz * _bc_ - _bfz * _ac_
+        + _cfz * _ab_ ;
+        _ABC =
+          _AFZ * _BC_ + _BFZ * _AC_
+        + _CFZ * _AB_ ;
+
+        _abd =
+          _afz * _bd_ - _bfz * _ad_
+        + _dfz * _ab_ ;
+        _ABD =
+          _AFZ * _BD_ + _BFZ * _AD_
+        + _DFZ * _AB_ ;
+
+        _abe =
+          _afz * _be_ - _bfz * _ae_
+        + _efz * _ab_ ;
+        _ABE =
+          _AFZ * _BE_ + _BFZ * _AE_
+        + _EFZ * _AB_ ;
+
+        _acd =
+          _afz * _cd_ - _cfz * _ad_
+        + _dfz * _ac_ ;
+        _ACD =
+          _AFZ * _CD_ + _CFZ * _AD_
+        + _DFZ * _AC_ ;
+
+        _ace =
+          _afz * _ce_ - _cfz * _ae_
+        + _efz * _ac_ ;
+        _ACE =
+          _AFZ * _CE_ + _CFZ * _AE_
+        + _EFZ * _AC_ ;
+
+        _ade =
+          _afz * _de_ - _dfz * _ae_
+        + _efz * _ad_ ;
+        _ADE =
+          _AFZ * _DE_ + _DFZ * _AE_
+        + _EFZ * _AD_ ;
+
+        _bcd =
+          _bfz * _cd_ - _cfz * _bd_
+        + _dfz * _bc_ ;
+        _BCD =
+          _BFZ * _CD_ + _CFZ * _BD_
+        + _DFZ * _BC_ ;
+
+        _bce =
+          _bfz * _ce_ - _cfz * _be_
+        + _efz * _bc_ ;
+        _BCE =
+          _BFZ * _CE_ + _CFZ * _BE_
+        + _EFZ * _BC_ ;
+
+        _bde =
+          _bfz * _de_ - _dfz * _be_
+        + _efz * _bd_ ;
+        _BDE =
+          _BFZ * _DE_ + _DFZ * _BE_
+        + _EFZ * _BD_ ;
+
+        _cde =
+          _cfz * _de_ - _dfz * _ce_
+        + _efz * _cd_ ;
+        _CDE =
+          _CFZ * _DE_ + _DFZ * _CE_
+        + _EFZ * _CD_ ;
+
+        _abcd =                           // 4 x 4 minors
+          _dfq * _abc - _cfq * _abd
+        + _bfq * _acd - _afq * _bcd ;
+        _ABCD =
+          _DFQ * _ABC + _CFQ * _ABD
+        + _BFQ * _ACD + _AFQ * _BCD ;
+
+        _abce =
+          _efq * _abc - _cfq * _abe
+        + _bfq * _ace - _afq * _bce ;
+        _ABCE =
+          _EFQ * _ABC + _CFQ * _ABE
+        + _BFQ * _ACE + _AFQ * _BCE ;
+
+        _abde =
+          _efq * _abd - _dfq * _abe
+        + _bfq * _ade - _afq * _bde ;
+        _ABDE =
+          _EFQ * _ABD + _DFQ * _ABE
+        + _BFQ * _ADE + _AFQ * _BDE ;
+
+        _acde =
+          _efq * _acd - _dfq * _ace
+        + _cfq * _ade - _afq * _cde ;
+        _ACDE =
+          _EFQ * _ACD + _DFQ * _ACE
+        + _CFQ * _ADE + _AFQ * _CDE ;
+
+        _bcde =
+          _efq * _bcd - _dfq * _bce
+        + _cfq * _bde - _bfq * _cde ;
+        _BCDE =
+          _EFQ * _BCD + _DFQ * _BCE
+        + _CFQ * _BDE + _BFQ * _CDE ;
+
+        _FT  =                            // roundoff tol
+          _eli * _ABCD + _dli * _ABCE
+        + _cli * _ABDE + _bli * _ACDE
+        + _ali * _BCDE ;
+
+        _FT *= _ER ;
+
+        _d55 =                            // 5 x 5 result
+          _eli * _abcd - _dli * _abce
+        + _cli * _abde - _bli * _acde
+        + _ali * _bcde ;
+
+        _OK =
+          _d55 > _FT || _d55 < -_FT ;
+
+        return ( _d55 ) ;
+    }
 
     /*
     --------------------------------------------------------
@@ -2575,5 +2957,549 @@
         delete _d6full ; return _d66 ;
     }
 
+    __normal_call REAL_TYPE inball4w_i (
+      __const_ptr(REAL_TYPE) _pa ,
+      __const_ptr(REAL_TYPE) _pb ,
+      __const_ptr(REAL_TYPE) _pc ,
+      __const_ptr(REAL_TYPE) _pd ,
+      __const_ptr(REAL_TYPE) _pe ,
+      __const_ptr(REAL_TYPE) _pf ,
+        bool_type &_OK
+        )
+    {
+    /*--------------- inball4w predicate, "bound" version */
+        ia_flt    _afx, _afy, _afz,
+                  _afq, _afw, _ali,
+                  _bfx, _bfy, _bfz,
+                  _bfq, _bfw, _bli,
+                  _cfx, _cfy, _cfz,
+                  _cfq, _cfw, _cli,
+                  _dfx, _dfy, _dfz,
+                  _dfq, _dfw, _dli,
+                  _efx, _efy, _efz,
+                  _efq, _efw, _eli;
+        ia_flt    _afxbfy, _bfxafy,
+                  _afxcfy, _cfxafy,
+                  _afxdfy, _dfxafy,
+                  _afxefy, _efxafy,
+                  _bfxcfy, _cfxbfy,
+                  _bfxdfy, _dfxbfy,
+                  _bfxefy, _efxbfy,
+                  _cfxdfy, _dfxcfy,
+                  _cfxefy, _efxcfy,
+                  _dfxefy, _efxdfy;
+        ia_flt    _ab_, _ac_, _ad_, _ae_,
+                  _bc_, _bd_, _be_, _cd_,
+                  _ce_, _de_;
+        ia_flt    _abc, _abd, _abe, _acd,
+                  _ace, _ade, _bcd, _bce,
+                  _bde, _cde;
+        ia_flt    _abcd, _abce, _abde, _acde,
+                  _bcde;
 
+        ia_flt    _d55;
+
+        ia_rnd    _rnd;                   // up rounding!
+
+        _afx.from_sub(_pa[0], _pf[0]) ;   // coord. diff.
+        _afy.from_sub(_pa[1], _pf[1]) ;
+        _afz.from_sub(_pa[2], _pf[2]) ;
+        _afq.from_sub(_pa[3], _pf[3]) ;
+        _afw.from_sub(_pa[4], _pf[4]) ;
+
+        _bfx.from_sub(_pb[0], _pf[0]) ;
+        _bfy.from_sub(_pb[1], _pf[1]) ;
+        _bfz.from_sub(_pb[2], _pf[2]) ;
+        _bfq.from_sub(_pb[3], _pf[3]) ;
+        _bfw.from_sub(_pb[4], _pf[4]) ;
+
+        _cfx.from_sub(_pc[0], _pf[0]) ;
+        _cfy.from_sub(_pc[1], _pf[1]) ;
+        _cfz.from_sub(_pc[2], _pf[2]) ;
+        _cfq.from_sub(_pc[3], _pf[3]) ;
+        _cfw.from_sub(_pc[4], _pf[4]) ;
+
+        _dfx.from_sub(_pd[0], _pf[0]) ;
+        _dfy.from_sub(_pd[1], _pf[1]) ;
+        _dfz.from_sub(_pd[2], _pf[2]) ;
+        _dfq.from_sub(_pd[3], _pf[3]) ;
+        _dfw.from_sub(_pd[4], _pf[4]) ;
+
+        _efx.from_sub(_pe[0], _pf[0]) ;
+        _efy.from_sub(_pe[1], _pf[1]) ;
+        _efz.from_sub(_pe[2], _pf[2]) ;
+        _efq.from_sub(_pe[3], _pf[3]) ;
+        _efw.from_sub(_pe[4], _pf[4]) ;
+
+        _ali = sqr (_afx) + sqr (_afy)    // lifted terms
+             + sqr (_afz) + sqr (_afq) - _afw ;
+
+        _bli = sqr (_bfx) + sqr (_bfy)
+             + sqr (_bfz) + sqr (_bfq) - _bfw ;
+
+        _cli = sqr (_cfx) + sqr (_cfy)
+             + sqr (_cfz) + sqr (_cfq) - _cfw ;
+
+        _dli = sqr (_dfx) + sqr (_dfy)
+             + sqr (_dfz) + sqr (_dfq) - _dfw ;
+
+        _eli = sqr (_efx) + sqr (_efy)
+             + sqr (_efz) + sqr (_efq) - _efw ;
+
+        _afxbfy = _afx * _bfy ;           // 2 x 2 minors
+        _bfxafy = _bfx * _afy ;
+        _ab_ = _afxbfy - _bfxafy ;
+
+        _afxcfy = _afx * _cfy ;
+        _cfxafy = _cfx * _afy ;
+        _ac_ = _afxcfy - _cfxafy ;
+
+        _afxdfy = _afx * _dfy ;
+        _dfxafy = _dfx * _afy ;
+        _ad_ = _afxdfy - _dfxafy ;
+
+        _afxefy = _afx * _efy ;
+        _efxafy = _efx * _afy ;
+        _ae_ = _afxefy - _efxafy ;
+
+        _bfxcfy = _bfx * _cfy ;
+        _cfxbfy = _cfx * _bfy ;
+        _bc_ = _bfxcfy - _cfxbfy ;
+
+        _bfxdfy = _bfx * _dfy ;
+        _dfxbfy = _dfx * _bfy ;
+        _bd_ = _bfxdfy - _dfxbfy ;
+
+        _bfxefy = _bfx * _efy ;
+        _efxbfy = _efx * _bfy ;
+        _be_ = _bfxefy - _efxbfy ;
+
+        _cfxdfy = _cfx * _dfy ;
+        _dfxcfy = _dfx * _cfy ;
+        _cd_ = _cfxdfy - _dfxcfy ;
+
+        _cfxefy = _cfx * _efy ;
+        _efxcfy = _efx * _cfy ;
+        _ce_ = _cfxefy - _efxcfy ;
+
+        _dfxefy = _dfx * _efy ;
+        _efxdfy = _efx * _dfy ;
+        _de_ = _dfxefy - _efxdfy ;
+
+        _abc =                            // 3 x 3 minors
+          _afz * _bc_ - _bfz * _ac_
+        + _cfz * _ab_ ;
+
+        _abd =
+          _afz * _bd_ - _bfz * _ad_
+        + _dfz * _ab_ ;
+
+        _abe =
+          _afz * _be_ - _bfz * _ae_
+        + _efz * _ab_ ;
+
+        _acd =
+          _afz * _cd_ - _cfz * _ad_
+        + _dfz * _ac_ ;
+
+        _ace =
+          _afz * _ce_ - _cfz * _ae_
+        + _efz * _ac_ ;
+
+        _ade =
+          _afz * _de_ - _dfz * _ae_
+        + _efz * _ad_ ;
+
+        _bcd =
+          _bfz * _cd_ - _cfz * _bd_
+        + _dfz * _bc_ ;
+
+        _bce =
+          _bfz * _ce_ - _cfz * _be_
+        + _efz * _bc_ ;
+
+        _bde =
+          _bfz * _de_ - _dfz * _be_
+        + _efz * _bd_ ;
+
+        _cde =
+          _cfz * _de_ - _dfz * _ce_
+        + _efz * _cd_ ;
+
+        _abcd =                           // 4 x 4 minors
+          _dfq * _abc - _cfq * _abd
+        + _bfq * _acd - _afq * _bcd ;
+
+        _abce =
+          _efq * _abc - _cfq * _abe
+        + _bfq * _ace - _afq * _bce ;
+
+        _abde =
+          _efq * _abd - _dfq * _abe
+        + _bfq * _ade - _afq * _bde ;
+
+        _acde =
+          _efq * _acd - _dfq * _ace
+        + _cfq * _ade - _afq * _cde ;
+
+        _bcde =
+          _efq * _bcd - _dfq * _bce
+        + _cfq * _bde - _bfq * _cde ;
+
+        _d55 =                            // 5 x 5 result
+          _eli * _abcd - _dli * _abce
+        + _cli * _abde - _bli * _acde
+        + _ali * _bcde ;
+
+    /*-------------------- strict sign, or point interval */
+        _OK =
+          _d55.lo() > (REAL_TYPE)0.
+        ||_d55.up() < (REAL_TYPE)0.
+        ||_d55.lo() == _d55.up() ;
+
+        return ( _d55.mid() ) ;
+    }
+
+    __normal_call REAL_TYPE inball4w_f (
+      __const_ptr(REAL_TYPE) _pa ,
+      __const_ptr(REAL_TYPE) _pb ,
+      __const_ptr(REAL_TYPE) _pc ,
+      __const_ptr(REAL_TYPE) _pd ,
+      __const_ptr(REAL_TYPE) _pe ,
+      __const_ptr(REAL_TYPE) _pf ,
+        bool_type &_OK
+        )
+    {
+    /*--------------- inball4w predicate, "float" version */
+        REAL_TYPE static const _ER =
+        + 26. * std::pow(mp::_epsilon, 1) ;
+
+        REAL_TYPE _afx, _afy, _afz,
+                  _afq, _afw, _ali,
+                  _bfx, _bfy, _bfz,
+                  _bfq, _bfw, _bli,
+                  _cfx, _cfy, _cfz,
+                  _cfq, _cfw, _cli,
+                  _dfx, _dfy, _dfz,
+                  _dfq, _dfw, _dli,
+                  _efx, _efy, _efz,
+                  _efq, _efw, _eli;
+        REAL_TYPE _afxbfy, _bfxafy,
+                  _afxcfy, _cfxafy,
+                  _afxdfy, _dfxafy,
+                  _afxefy, _efxafy,
+                  _bfxcfy, _cfxbfy,
+                  _bfxdfy, _dfxbfy,
+                  _bfxefy, _efxbfy,
+                  _cfxdfy, _dfxcfy,
+                  _cfxefy, _efxcfy,
+                  _dfxefy, _efxdfy;
+        REAL_TYPE _ab_, _ac_, _ad_, _ae_,
+                  _bc_, _bd_, _be_, _cd_,
+                  _ce_, _de_;
+        REAL_TYPE _abc, _abd, _abe, _acd,
+                  _ace, _ade, _bcd, _bce,
+                  _bde, _cde;
+        REAL_TYPE _abcd, _abce, _abde, _acde,
+                  _bcde;
+
+        REAL_TYPE _AFZ, _BFZ, _CFZ, _DFZ,
+                  _EFZ;
+        REAL_TYPE _AFQ, _BFQ, _CFQ, _DFQ,
+                  _EFQ;
+        REAL_TYPE _ALI, _BLI, _CLI, _DLI,
+                  _ELI;
+        REAL_TYPE _AFXBFY, _BFXAFY,
+                  _AFXCFY, _CFXAFY,
+                  _AFXDFY, _DFXAFY,
+                  _AFXEFY, _EFXAFY,
+                  _BFXCFY, _CFXBFY,
+                  _BFXDFY, _DFXBFY,
+                  _BFXEFY, _EFXBFY,
+                  _CFXDFY, _DFXCFY,
+                  _CFXEFY, _EFXCFY,
+                  _DFXEFY, _EFXDFY;
+        REAL_TYPE _AB_, _AC_, _AD_, _AE_,
+                  _BC_, _BD_, _BE_, _CD_,
+                  _CE_, _DE_;
+        REAL_TYPE _ABC, _ABD, _ABE, _ACD,
+                  _ACE, _ADE, _BCD, _BCE,
+                  _BDE, _CDE;
+        REAL_TYPE _ABCD, _ABCE, _ABDE, _ACDE,
+                  _BCDE;
+
+        REAL_TYPE _d55, _FT;
+
+        _afx = _pa [0] - _pf [0] ;        // coord. diff.
+        _afy = _pa [1] - _pf [1] ;
+        _afz = _pa [2] - _pf [2] ;
+        _afq = _pa [3] - _pf [3] ;
+        _afw = _pa [4] - _pf [4] ;
+
+        _AFZ = std::abs (_afz) ;
+        _AFQ = std::abs (_afq) ;
+
+        _bfx = _pb [0] - _pf [0] ;
+        _bfy = _pb [1] - _pf [1] ;
+        _bfz = _pb [2] - _pf [2] ;
+        _bfq = _pb [3] - _pf [3] ;
+        _bfw = _pb [4] - _pf [4] ;
+
+        _BFZ = std::abs (_bfz) ;
+        _BFQ = std::abs (_bfq) ;
+
+        _cfx = _pc [0] - _pf [0] ;
+        _cfy = _pc [1] - _pf [1] ;
+        _cfz = _pc [2] - _pf [2] ;
+        _cfq = _pc [3] - _pf [3] ;
+        _cfw = _pc [4] - _pf [4] ;
+
+        _CFZ = std::abs (_cfz) ;
+        _CFQ = std::abs (_cfq) ;
+
+        _dfx = _pd [0] - _pf [0] ;
+        _dfy = _pd [1] - _pf [1] ;
+        _dfz = _pd [2] - _pf [2] ;
+        _dfq = _pd [3] - _pf [3] ;
+        _dfw = _pd [4] - _pf [4] ;
+
+        _DFZ = std::abs (_dfz) ;
+        _DFQ = std::abs (_dfq) ;
+
+        _efx = _pe [0] - _pf [0] ;
+        _efy = _pe [1] - _pf [1] ;
+        _efz = _pe [2] - _pf [2] ;
+        _efq = _pe [3] - _pf [3] ;
+        _efw = _pe [4] - _pf [4] ;
+
+        _EFZ = std::abs (_efz) ;
+        _EFQ = std::abs (_efq) ;
+
+        _ali = _afx * _afx + _afy * _afy  // lifted terms
+             + _afz * _afz + _afq * _afq ;
+        _ALI = _ali + std::abs (_afw) ;
+        _ali-= _afw ;
+
+        _bli = _bfx * _bfx + _bfy * _bfy
+             + _bfz * _bfz + _bfq * _bfq ;
+        _BLI = _bli + std::abs (_bfw) ;
+        _bli-= _bfw ;
+
+        _cli = _cfx * _cfx + _cfy * _cfy
+             + _cfz * _cfz + _cfq * _cfq ;
+        _CLI = _cli + std::abs (_cfw) ;
+        _cli-= _cfw ;
+
+        _dli = _dfx * _dfx + _dfy * _dfy
+             + _dfz * _dfz + _dfq * _dfq ;
+        _DLI = _dli + std::abs (_dfw) ;
+        _dli-= _dfw ;
+
+        _eli = _efx * _efx + _efy * _efy
+             + _efz * _efz + _efq * _efq ;
+        _ELI = _eli + std::abs (_efw) ;
+        _eli-= _efw ;
+
+        _afxbfy = _afx * _bfy ;           // 2 x 2 minors
+        _bfxafy = _bfx * _afy ;
+        _ab_ = _afxbfy - _bfxafy ;
+
+        _AFXBFY = std::abs (_afxbfy) ;
+        _BFXAFY = std::abs (_bfxafy) ;
+        _AB_ = _AFXBFY + _BFXAFY ;
+
+        _afxcfy = _afx * _cfy ;
+        _cfxafy = _cfx * _afy ;
+        _ac_ = _afxcfy - _cfxafy ;
+
+        _AFXCFY = std::abs (_afxcfy) ;
+        _CFXAFY = std::abs (_cfxafy) ;
+        _AC_ = _AFXCFY + _CFXAFY ;
+
+        _afxdfy = _afx * _dfy ;
+        _dfxafy = _dfx * _afy ;
+        _ad_ = _afxdfy - _dfxafy ;
+
+        _AFXDFY = std::abs (_afxdfy) ;
+        _DFXAFY = std::abs (_dfxafy) ;
+        _AD_ = _AFXDFY + _DFXAFY ;
+
+        _afxefy = _afx * _efy ;
+        _efxafy = _efx * _afy ;
+        _ae_ = _afxefy - _efxafy ;
+
+        _AFXEFY = std::abs (_afxefy) ;
+        _EFXAFY = std::abs (_efxafy) ;
+        _AE_ = _AFXEFY + _EFXAFY ;
+
+        _bfxcfy = _bfx * _cfy ;
+        _cfxbfy = _cfx * _bfy ;
+        _bc_ = _bfxcfy - _cfxbfy ;
+
+        _BFXCFY = std::abs (_bfxcfy) ;
+        _CFXBFY = std::abs (_cfxbfy) ;
+        _BC_ = _BFXCFY + _CFXBFY ;
+
+        _bfxdfy = _bfx * _dfy ;
+        _dfxbfy = _dfx * _bfy ;
+        _bd_ = _bfxdfy - _dfxbfy ;
+
+        _BFXDFY = std::abs (_bfxdfy) ;
+        _DFXBFY = std::abs (_dfxbfy) ;
+        _BD_ = _BFXDFY + _DFXBFY ;
+
+        _bfxefy = _bfx * _efy ;
+        _efxbfy = _efx * _bfy ;
+        _be_ = _bfxefy - _efxbfy ;
+
+        _BFXEFY = std::abs (_bfxefy) ;
+        _EFXBFY = std::abs (_efxbfy) ;
+        _BE_ = _BFXEFY + _EFXBFY ;
+
+        _cfxdfy = _cfx * _dfy ;
+        _dfxcfy = _dfx * _cfy ;
+        _cd_ = _cfxdfy - _dfxcfy ;
+
+        _CFXDFY = std::abs (_cfxdfy) ;
+        _DFXCFY = std::abs (_dfxcfy) ;
+        _CD_ = _CFXDFY + _DFXCFY ;
+
+        _cfxefy = _cfx * _efy ;
+        _efxcfy = _efx * _cfy ;
+        _ce_ = _cfxefy - _efxcfy ;
+
+        _CFXEFY = std::abs (_cfxefy) ;
+        _EFXCFY = std::abs (_efxcfy) ;
+        _CE_ = _CFXEFY + _EFXCFY ;
+
+        _dfxefy = _dfx * _efy ;
+        _efxdfy = _efx * _dfy ;
+        _de_ = _dfxefy - _efxdfy ;
+
+        _DFXEFY = std::abs (_dfxefy) ;
+        _EFXDFY = std::abs (_efxdfy) ;
+        _DE_ = _DFXEFY + _EFXDFY ;
+
+        _abc =                            // 3 x 3 minors
+          _afz * _bc_ - _bfz * _ac_
+        + _cfz * _ab_ ;
+        _ABC =
+          _AFZ * _BC_ + _BFZ * _AC_
+        + _CFZ * _AB_ ;
+
+        _abd =
+          _afz * _bd_ - _bfz * _ad_
+        + _dfz * _ab_ ;
+        _ABD =
+          _AFZ * _BD_ + _BFZ * _AD_
+        + _DFZ * _AB_ ;
+
+        _abe =
+          _afz * _be_ - _bfz * _ae_
+        + _efz * _ab_ ;
+        _ABE =
+          _AFZ * _BE_ + _BFZ * _AE_
+        + _EFZ * _AB_ ;
+
+        _acd =
+          _afz * _cd_ - _cfz * _ad_
+        + _dfz * _ac_ ;
+        _ACD =
+          _AFZ * _CD_ + _CFZ * _AD_
+        + _DFZ * _AC_ ;
+
+        _ace =
+          _afz * _ce_ - _cfz * _ae_
+        + _efz * _ac_ ;
+        _ACE =
+          _AFZ * _CE_ + _CFZ * _AE_
+        + _EFZ * _AC_ ;
+
+        _ade =
+          _afz * _de_ - _dfz * _ae_
+        + _efz * _ad_ ;
+        _ADE =
+          _AFZ * _DE_ + _DFZ * _AE_
+        + _EFZ * _AD_ ;
+
+        _bcd =
+          _bfz * _cd_ - _cfz * _bd_
+        + _dfz * _bc_ ;
+        _BCD =
+          _BFZ * _CD_ + _CFZ * _BD_
+        + _DFZ * _BC_ ;
+
+        _bce =
+          _bfz * _ce_ - _cfz * _be_
+        + _efz * _bc_ ;
+        _BCE =
+          _BFZ * _CE_ + _CFZ * _BE_
+        + _EFZ * _BC_ ;
+
+        _bde =
+          _bfz * _de_ - _dfz * _be_
+        + _efz * _bd_ ;
+        _BDE =
+          _BFZ * _DE_ + _DFZ * _BE_
+        + _EFZ * _BD_ ;
+
+        _cde =
+          _cfz * _de_ - _dfz * _ce_
+        + _efz * _cd_ ;
+        _CDE =
+          _CFZ * _DE_ + _DFZ * _CE_
+        + _EFZ * _CD_ ;
+
+        _abcd =                           // 4 x 4 minors
+          _dfq * _abc - _cfq * _abd
+        + _bfq * _acd - _afq * _bcd ;
+        _ABCD =
+          _DFQ * _ABC + _CFQ * _ABD
+        + _BFQ * _ACD + _AFQ * _BCD ;
+
+        _abce =
+          _efq * _abc - _cfq * _abe
+        + _bfq * _ace - _afq * _bce ;
+        _ABCE =
+          _EFQ * _ABC + _CFQ * _ABE
+        + _BFQ * _ACE + _AFQ * _BCE ;
+
+        _abde =
+          _efq * _abd - _dfq * _abe
+        + _bfq * _ade - _afq * _bde ;
+        _ABDE =
+          _EFQ * _ABD + _DFQ * _ABE
+        + _BFQ * _ADE + _AFQ * _BDE ;
+
+        _acde =
+          _efq * _acd - _dfq * _ace
+        + _cfq * _ade - _afq * _cde ;
+        _ACDE =
+          _EFQ * _ACD + _DFQ * _ACE
+        + _CFQ * _ADE + _AFQ * _CDE ;
+
+        _bcde =
+          _efq * _bcd - _dfq * _bce
+        + _cfq * _bde - _bfq * _cde ;
+        _BCDE =
+          _EFQ * _BCD + _DFQ * _BCE
+        + _CFQ * _BDE + _BFQ * _CDE ;
+
+        _FT  =                            // roundoff tol
+          _ELI * _ABCD + _DLI * _ABCE
+        + _CLI * _ABDE + _BLI * _ACDE
+        + _ALI * _BCDE ;
+
+        _FT *= _ER ;
+
+        _d55 =                            // 5 x 5 result
+          _eli * _abcd - _dli * _abce
+        + _cli * _abde - _bli * _acde
+        + _ali * _bcde ;
+
+        _OK =
+          _d55 > _FT || _d55 < -_FT ;
+
+        return ( _d55 ) ;
+    }
 

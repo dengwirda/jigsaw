@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Apr., 2020
+     * Last updated: 09 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -127,8 +127,9 @@
              + (_aby * (_acy + _bcy)) ;
 
         _OK  =
-           _sgn.lo() >= (REAL_TYPE)0.
-        || _sgn.up() <= (REAL_TYPE)0. ;
+           _sgn.lo() > (REAL_TYPE)0.
+        || _sgn.up() < (REAL_TYPE)0.
+        || _sgn.lo() == _sgn.up() ;
 
         return ( _sgn.mid () ) ;
     }
@@ -264,8 +265,9 @@
         _sgn-=  _abw ;
 
         _OK  =
-           _sgn.lo() >= (REAL_TYPE)0.
-        || _sgn.up() <= (REAL_TYPE)0. ;
+           _sgn.lo() > (REAL_TYPE)0.
+        || _sgn.up() < (REAL_TYPE)0.
+        || _sgn.lo() == _sgn.up() ;
 
         return ( _sgn.mid () ) ;
     }
@@ -413,8 +415,9 @@
              + (_abz * (_acz + _bcz)) ;
 
         _OK  =
-           _sgn.lo() >= (REAL_TYPE)0.
-        || _sgn.up() <= (REAL_TYPE)0. ;
+           _sgn.lo() > (REAL_TYPE)0.
+        || _sgn.up() < (REAL_TYPE)0.
+        || _sgn.lo() == _sgn.up() ;
 
         return ( _sgn.mid () ) ;
     }
@@ -569,8 +572,9 @@
         _sgn-=  _abw ;
 
         _OK  =
-           _sgn.lo() >= (REAL_TYPE)0.
-        || _sgn.up() <= (REAL_TYPE)0. ;
+           _sgn.lo() > (REAL_TYPE)0.
+        || _sgn.up() < (REAL_TYPE)0.
+        || _sgn.lo() == _sgn.up() ;
 
         return ( _sgn.mid () ) ;
     }
@@ -732,8 +736,9 @@
              + (_abq * (_acq + _bcq)) ;
 
         _OK  =
-           _sgn.lo() >= (REAL_TYPE)0.
-        || _sgn.up() <= (REAL_TYPE)0. ;
+           _sgn.lo() > (REAL_TYPE)0.
+        || _sgn.up() < (REAL_TYPE)0.
+        || _sgn.lo() == _sgn.up() ;
 
         return ( _sgn.mid () ) ;
     }
@@ -903,8 +908,9 @@
         _sgn-=  _abw ;
 
         _OK  =
-           _sgn.lo() >= (REAL_TYPE)0.
-        || _sgn.up() <= (REAL_TYPE)0. ;
+           _sgn.lo() > (REAL_TYPE)0.
+        || _sgn.up() < (REAL_TYPE)0.
+        || _sgn.lo() == _sgn.up() ;
 
         return ( _sgn.mid () ) ;
     }

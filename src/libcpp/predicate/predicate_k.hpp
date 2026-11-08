@@ -60,7 +60,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Nov., 2026
+     * Last updated: 09 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -724,7 +724,6 @@
         REAL_TYPE _rr;
         bool_type _OK;
 
-        /*
     #   ifdef USE_KERNEL_FLTPOINT
         _nn_calls[INBALL4D_f] += +1;
 
@@ -745,7 +744,6 @@
 
         if (_OK) return _rr ;
     #   endif
-        */
 
         _nn_calls[INBALL4D_e] += +1;
 
@@ -767,7 +765,7 @@
       __const_ptr(REAL_TYPE) _pf
         )
     {
-    /*------------ inball3w predicate, "filtered" version */
+    /*------------ inball4w predicate, "filtered" version */
         if (_pa [ 4] == _pb [ 4] &&
             _pb [ 4] == _pc [ 4] &&
             _pc [ 4] == _pd [ 4] &&
@@ -783,11 +781,10 @@
         REAL_TYPE _rr;      // given weights, full kernel
         bool_type _OK;
 
-        /*
     #   ifdef USE_KERNEL_FLTPOINT
         _nn_calls[INBALL4W_f] += +1;
 
-        _rr = inball4w_f(               // "float" kernal
+        _rr = inball4w_f(               // "float" kernel
             _pa, _pb, _pc, _pd, _pe, _pf, _OK
             ) ;
 
@@ -796,7 +793,7 @@
     #   endif
 
     #   ifdef USE_KERNEL_INTERVAL
-        _nn_calls[INBALL4D_i] += +1;
+        _nn_calls[INBALL4W_i] += +1;
 
         _rr = inball4w_i(               // "bound" kernel
             _pa, _pb, _pc, _pd, _pe, _pf, _OK
@@ -804,7 +801,6 @@
 
         if (_OK) return _rr ;
     #   endif
-        */
 
         _nn_calls[INBALL4W_e] += +1;
 

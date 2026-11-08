@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Apr., 2020
+     * Last updated: 09 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -127,8 +127,9 @@
         _sgn = _acxbcy - _acybcx ;        // 2 x 2 result
 
         _OK  =
-           _sgn.lo() >= (REAL_TYPE)0.
-        || _sgn.up() <= (REAL_TYPE)0. ;
+           _sgn.lo() > (REAL_TYPE)0.
+        || _sgn.up() < (REAL_TYPE)0.
+        || _sgn.lo() == _sgn.up() ;
 
         return ( _sgn.mid() ) ;
     }
@@ -313,8 +314,9 @@
         + _cdz * (_adxbdy - _bdxady);
 
         _OK  =
-          _sgn.lo() >= (REAL_TYPE)0.
-        ||_sgn.up() <= (REAL_TYPE)0.;
+          _sgn.lo() > (REAL_TYPE)0.
+        ||_sgn.up() < (REAL_TYPE)0.
+        ||_sgn.lo() == _sgn.up();
 
         return ( _sgn.mid() ) ;
     }
@@ -674,8 +676,9 @@
         + _beq * _cda - _aeq * _bcd ;
 
         _OK =
-          _sgn.lo() >= (REAL_TYPE)0.
-        ||_sgn.up() <= (REAL_TYPE)0.;
+          _sgn.lo() > (REAL_TYPE)0.
+        ||_sgn.up() < (REAL_TYPE)0.
+        ||_sgn.lo() == _sgn.up();
 
         return ( _sgn.mid() ) ;
     }
