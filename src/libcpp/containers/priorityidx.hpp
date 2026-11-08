@@ -383,7 +383,11 @@
     __inline_call void_type set_alloc (
         size_type _asiz
         )
-    { this->_heap.set_alloc( _asiz) ;
+    {
+        while (this->_heap.count() > _asiz)
+            _pop(this->_heap.tail()->_kidx);
+
+        this->_heap.set_alloc( _asiz) ;
     }
 
 /*------------------------------------- (const) iterators */
