@@ -199,6 +199,22 @@
         clear() ;
     }
 
+    __inline_call _pool_alloc (
+        self_type const&_src
+        )                               = delete ;
+    __inline_call _pool_alloc (
+        self_type &&    _src
+        )                               = delete ;
+
+    __inline_call
+        self_type & operator= (
+        self_type const&_src
+        )                               = delete ;
+    __inline_call
+        self_type & operator= (
+        self_type &&    _src
+        )                               = delete ;
+
     /*
     --------------------------------------------------------
      * CLEAR: de-alloc. and free the allocator.
