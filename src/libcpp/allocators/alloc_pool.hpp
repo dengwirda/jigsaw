@@ -45,9 +45,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 May, 2017
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -181,6 +181,11 @@
     /*--------------- construct to force alloc on request */
         this->_item_size =
             std::max(_size, (size_type)sizeof(char*)) ;
+
+        size_type const _algn = alignof(char*) ;
+        this->_item_size =
+            (this->_item_size + _algn - 1) / _algn * _algn ;
+
         this->_slab_size =
             (size_type)pool_size /  this->_item_size;
         this->_slab_size =
