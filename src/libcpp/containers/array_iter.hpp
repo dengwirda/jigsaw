@@ -9,7 +9,7 @@
  * to consist of a single block, as returned by malloc,
  * etc. Provides O(1) random access, amortarised
  * O(log(n)) incremental insertion, etc. This is a
- * striped-down implementation -- offering only
+ * stripped-down implementation -- offering only
  * "efficient" operations (no insert, delete, etc).
  *
 ------------------------------------------------------------
@@ -45,9 +45,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 08 Nov., 2026
  *
- * Copyright 2013-2017
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -174,16 +174,16 @@
 
     __inline_call iter_type operator + (
         size_type _off
-        )
+        ) const
     { /*-------------------- add offset */
-        iter_type _tmp(*(iter_type*)this);
+        iter_type _tmp(*(iter_type const*)this);
         return _tmp += _off;
     }
     __inline_call iter_type operator - (
         size_type _off
-        )
+        ) const
     { /*-------------------- sub offset */
-        iter_type _tmp(*(iter_type*)this);
+        iter_type _tmp(*(iter_type const*)this);
         return _tmp -= _off;
     }
 
@@ -271,9 +271,10 @@
     public  :
 
     __inline_call const_array_iterator (
-        data_type *_psrc = nullptr,
+        data_type const*_psrc = nullptr,
         container *_osrc = nullptr
-        ) : base_type(_psrc, _osrc) {}
+        ) : base_type(
+            const_cast<data_type*>(_psrc), _osrc) {}
 
     __inline_call~const_array_iterator()= default ;
 

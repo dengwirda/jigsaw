@@ -47,9 +47,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 Jul., 2019
+ * Last updated: 08 Nov., 2026
  *
- * Copyright 2013-2019
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -185,16 +185,16 @@
 
     __inline_call iter_type operator + (
         size_type _val
-        )
+        ) const
     { /*-------------------- add offset */
-        iter_type _tmp(*(iter_type*)this);
+        iter_type _tmp(*(iter_type const*)this);
         return _tmp += _val;
     }
     __inline_call iter_type operator - (
         size_type _val
-        )
+        ) const
     { /*-------------------- sub offset */
-        iter_type _tmp(*(iter_type*)this);
+        iter_type _tmp(*(iter_type const*)this);
         return _tmp -= _val;
     }
 
