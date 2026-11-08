@@ -43,9 +43,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 21 Dec., 2018
+ * Last updated: 08 Nov., 2026
  *
- * Copyright 2013-2018
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -114,8 +114,10 @@
     __cont::base_iterator_kind
         )
     { /* push the sequence onto list */
+        _write_it _prev = tend() ;
         for ( ; _head != _tend; ++_head)
-            push_tail(*_head) ;
+            _prev = insert_next(
+                         _prev,  *_head) ;
     }
 
     __inline_call void_type copy_list (
@@ -397,6 +399,7 @@
         }
         else
         { /* insert in middle of list */
+            _next_item = _prev_item->next();
             item_type *_this_item =
             self_type::allocate(1);
             self_type::construct(
@@ -424,6 +427,7 @@
         }
         else
         { /* insert in middle of list */
+            _next_item = _prev_item->next();
             item_type *_this_item =
             self_type::allocate(1);
             self_type::construct(_this_item,
@@ -452,6 +456,7 @@
         }
         else
         { /* insert in middle of list */
+            _next_item = _prev_item->next();
             item_type *_this_item =
             self_type::allocate(1);
             self_type::construct(_this_item,
@@ -478,7 +483,6 @@
         item_type
        *_this_item = _this_iter. item() ,
        *_prev_item = _prev_iter. item() ,
-       *_prev_next = _prev_item->next() ,
        *_next_item = _this_item->next() ;
 
         if (_prev_item == nullptr)
@@ -491,7 +495,7 @@
         else
         {/* re-link item neighbours in list mid  */
             __assert (
-                _prev_next  == _this_item &&
+                _prev_item->next() == _this_item &&
             "list.erase: _bad iterator!" ) ;
             _prev_item->next()
                         = _next_item ;
