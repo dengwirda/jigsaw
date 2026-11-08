@@ -1400,7 +1400,7 @@
         if (_sc > (real_type) +0.)
         {
             _sc = (real_type) +1. 
-                / std::sqrt( _sc ) ;
+                /  std::sqrt (_sc) ;
 
             _pprj[0] *= _sc ;
             _pprj[1] *= _sc ;
