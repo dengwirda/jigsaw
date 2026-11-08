@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 Dec, 2024
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -66,6 +66,9 @@
         )
     {
         auto constexpr VALUEBLOCK = VALUECHUNK / 4 ;
+        auto constexpr VALUEDIGIT = std::numeric_limits<
+            typename list_type::
+                     data_type>::max_digits10 ;
 
     /*--------------------- save msh_t REALS data to file */
         auto _next = +0, _roll = +0 ;
@@ -81,11 +84,11 @@
     /*--------------------- (apparently) faster to unroll */
             PRINTCHARS(snprintf(&_fbuf[_next] ,
                 PRINTCHUNK-_next,
-            "%.9g\n%.9g\n%.9g\n%.9g\n" ,
-            *(_iter + 0) + _xoff,
-            *(_iter + 1) + _xoff,
-            *(_iter + 2) + _xoff,
-            *(_iter + 3) + _xoff) , VALUEBLOCK)
+            "%.*g\n%.*g\n%.*g\n%.*g\n" ,
+            VALUEDIGIT, *(_iter + 0) + _xoff,
+            VALUEDIGIT, *(_iter + 1) + _xoff,
+            VALUEDIGIT, *(_iter + 2) + _xoff,
+            VALUEDIGIT, *(_iter + 3) + _xoff) , VALUEBLOCK)
         }
 
         for (auto _iter  = _this,
@@ -95,8 +98,8 @@
         {
     /*--------------------- trailing non-mod(4) remainder */
             PRINTCHARS(snprintf(&_fbuf[_next] ,
-                PRINTCHUNK-_next, "%.9g\n",
-            *(_iter + 0) + _xoff) , VALUECHUNK)
+                PRINTCHUNK-_next, "%.*g\n",
+            VALUEDIGIT, *(_iter + 0) + _xoff) , VALUECHUNK)
         }
 
         {

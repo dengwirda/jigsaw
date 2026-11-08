@@ -59,7 +59,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 Jun., 2022
+     * Last updated: 07 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -117,7 +117,12 @@
     __inline_call void push (
         real_type  _xx
         )
-    {   this->_xdat[this->_xlen++] = _xx ;
+    {   
+        assert ( this->_xlen >= 0 && 
+                 this->_xlen < this->_size &&
+            "expansion: insufficient alloc.") ;
+
+        this->_xdat[this->_xlen++] = _xx ;
     }
 
 /*------------------------------ query the expansion size */
@@ -139,7 +144,8 @@
         indx_type  _ii
         )
     {
-        assert ( _ii < this->_size &&
+        assert ( _ii >= 0 && 
+                 _ii < this->_size &&
             "expansion: index out of bounds") ;
 
         return ( this->_xdat[_ii] ) ;
@@ -149,7 +155,8 @@
         indx_type  _ii
         ) const
     {
-        assert ( _ii<= this->_size &&
+        assert ( _ii >= 0 && 
+                 _ii < this->_size &&
             "expansion: index out of bounds") ;
 
         return ( this->_xdat[_ii] ) ;
@@ -312,12 +319,12 @@
         if((_fx > _ex) == (_fx > -_ex))
         {
             _qq = _ex;
-            _ex = _ee[++_ei];
+            if (++_ei < _ee._xlen) _ex = _ee[_ei];
         }
         else
         {
             _qq = _fx;
-            _fx = _ff[++_fi];
+            if (++_fi < _ff._xlen) _fx = _ff[_fi];
         }
 
         if((_ei < _ee._xlen) && (_fi < _ff._xlen))
@@ -327,14 +334,14 @@
                 one_one_add_fast(
                     _ex, _qq, _qn, _hx);
                 _qq = _qn;
-                _ex = _ee[++_ei];
+                if (++_ei < _ee._xlen) _ex = _ee[_ei];
             }
             else
             {
                 one_one_add_fast(
                     _fx, _qq, _qn, _hx);
                 _qq = _qn;
-                _fx = _ff[++_fi];
+                if (++_fi < _ff._xlen) _fx = _ff[_fi];
             }
             if (_hx != +0.0) _hh.push (_hx) ;
 
@@ -346,14 +353,14 @@
                 one_one_add_full(
                     _qq, _ex, _qn, _hx);
                 _qq = _qn;
-                _ex = _ee[++_ei] ;
+                if (++_ei < _ee._xlen) _ex = _ee[_ei];
             }
             else
             {
                 one_one_add_full(
                     _qq, _fx, _qn, _hx);
                 _qq = _qn;
-                _fx = _ff[++_fi] ;
+                if (++_fi < _ff._xlen) _fx = _ff[_fi];
             }
             if (_hx != +0.0) _hh.push (_hx) ;
             }
@@ -363,7 +370,8 @@
         {
             one_one_add_full(_qq, _ex, _qn, _hx);
             _qq = _qn;
-            _ex = _ee[++_ei];
+            _ei+= 1;
+            if (_ei < _ee._xlen) _ex = _ee[_ei];
             if (_hx != +0.0) _hh.push (_hx) ;
         }
 
@@ -371,7 +379,8 @@
         {
             one_one_add_full(_qq, _fx, _qn, _hx);
             _qq = _qn;
-            _fx = _ff[++_fi];
+            _fi+= 1;
+            if (_fi < _ff._xlen) _fx = _ff[_fi];
             if (_hx != +0.0) _hh.push (_hx) ;
         }
 
@@ -488,12 +497,12 @@
         if((_fx > _ex) == (_fx > -_ex))
         {
             _qq = _ex;
-            _ex = _ee[++_ei];
+            if (++_ei < _ee._xlen) _ex = _ee[_ei];
         }
         else
         {
             _qq = _fx;
-            _fx =-_ff[++_fi];
+            if (++_fi < _ff._xlen) _fx =-_ff[_fi];
         }
 
         if((_ei < _ee._xlen) && (_fi < _ff._xlen))
@@ -503,14 +512,14 @@
                 one_one_add_fast(
                     _ex, _qq, _qn, _hx);
                 _qq = _qn;
-                _ex = _ee[++_ei];
+                if (++_ei < _ee._xlen) _ex = _ee[_ei];
             }
             else
             {
                 one_one_add_fast(
                     _fx, _qq, _qn, _hx);
                 _qq = _qn;
-                _fx =-_ff[++_fi];
+                if (++_fi < _ff._xlen) _fx =-_ff[_fi];
             }
             if (_hx != +0.0) _hh.push (_hx) ;
 
@@ -522,14 +531,14 @@
                 one_one_add_full(
                     _qq, _ex, _qn, _hx);
                 _qq = _qn;
-                _ex = _ee[++_ei] ;
+                if (++_ei < _ee._xlen) _ex = _ee[_ei];
             }
             else
             {
                 one_one_add_full(
                     _qq, _fx, _qn, _hx);
                 _qq = _qn;
-                _fx =-_ff[++_fi] ;
+                if (++_fi < _ff._xlen) _fx =-_ff[_fi];
             }
             if (_hx != +0.0) _hh.push (_hx) ;
             }
@@ -539,7 +548,8 @@
         {
             one_one_add_full(_qq, _ex, _qn, _hx);
             _qq = _qn;
-            _ex = _ee[++_ei];
+            _ei+= 1;
+            if (_ei < _ee._xlen) _ex = _ee[_ei];
             if (_hx != +0.0) _hh.push (_hx) ;
         }
 
@@ -547,7 +557,8 @@
         {
             one_one_add_full(_qq, _fx, _qn, _hx);
             _qq = _qn;
-            _fx =-_ff[++_fi];
+            _fi+= 1;
+            if (_fi < _ff._xlen) _fx =-_ff[_fi];
             if (_hx != +0.0) _hh.push (_hx) ;
         }
 

@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 Apr., 2021
+     * Last updated: 06 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -298,13 +298,23 @@
             _ipos = _get_node () ;
         }
         else
-        if (( (iptr_type)
-        this->_nset.count()) > _iask)
+        if (( (iptr_type)this->_nset.count() ) > _iask)
         {
 
         if (node(_iask)->mark() < 0 )
-    /*---------------------------- have within old alloc. */
-            _ipos =   _iask ;
+        {
+    /*---------------------------- remove hint if in free */
+            for (size_t _i = 0; 
+                        _i < this->_npop.count(); ++_i)
+                if (this->_npop[_i] == _iask)
+                {
+                    this->_npop[_i] = 
+                        this->_npop[this->_npop.count()-1] ;
+                    this->_npop._pop_tail();
+                    break;
+                }
+            _ipos = _iask;
+        }
         else
     /*---------------------------- fallback to new alloc. */
             _ipos = _get_node () ;
@@ -313,16 +323,12 @@
         else
         {
     /*---------------------------- have within new alloc. */
-            _ipos =   _iask ;
-
             node_type _null ;
             _null.mark() =-1;
-
-            auto _kind =
-            containers::loose_alloc ;
-
             _nset.set_count (
-            _iask + 1, _kind, _null);
+                _iask + 1, containers::loose_alloc, _null) ;
+
+            _ipos = _iask;
         }
 
         this->node(_ipos)->mark() = 0 ;
@@ -371,13 +377,23 @@
             _ipos = _get_tria () ;
         }
         else
-        if (( (iptr_type)
-        this->_tset.count()) > _iask)
+        if (( (iptr_type)this->_tset.count() ) > _iask)
         {
 
         if (tria(_iask)->mark() < 0 )
-    /*---------------------------- have within old alloc. */
-            _ipos =   _iask ;
+        {
+    /*---------------------------- remove hint if in free */
+            for (size_t _i = 0; 
+                        _i < this->_tpop.count(); ++_i)
+                if (this->_tpop[_i] == _iask)
+                {
+                    this->_tpop[_i] = 
+                        this->_tpop[this->_tpop.count()-1] ;
+                    this->_tpop._pop_tail();
+                    break;
+                }
+            _ipos = _iask;
+        }
         else
     /*---------------------------- fallback to new alloc. */
             _ipos = _get_tria () ;
@@ -386,16 +402,12 @@
         else
         {
     /*---------------------------- have within new alloc. */
-            _ipos =   _iask ;
-
             tria_type _null ;
             _null.mark() =-1;
-
-            auto _kind =
-            containers::loose_alloc ;
-
             _tset.set_count (
-            _iask + 1, _kind, _null);
+                _iask + 1, containers::loose_alloc, _null) ;
+
+            _ipos = _iask;
         }
 
         this->tria(_ipos)->mark() = 0 ;
@@ -562,14 +574,13 @@
         )
     {
     /*-------------------------------- de-alloc. existing */
-        this->_nset.clear() ;
-        this->_tset.clear() ;
+        this->clear() ;
 
     /*-------------------------------- scale initial tria */
         real_type static constexpr _scal =
             (real_type)tria_pred::geom_dims ;
 
-        real_type _pmid[real_dims] = {.0};
+        real_type _pmid[real_dims] ;
         real_type _pdel = (real_type)+.0 ;
         for (auto _idim = tria_pred::geom_dims + 0 ;
                   _idim-- != + 0 ; )
@@ -671,7 +682,7 @@
     {
         this->_work.clear();
     /*------------------------------- find enclosing tria */
-        if (walk_mesh_node(_ppos, _elem, _hint))
+        if (walk_tria_near(_ppos, _elem, _hint))
         {
     /*---------------------------------- bfs about cavity */
         typename tria_pred::
@@ -789,8 +800,11 @@
         return ( false ) ;
     }
 
-
-
+    /*
+    --------------------------------------------------------
+     * UPDATE: re-evaluate criteria about a point.
+    --------------------------------------------------------
+     */
 
     __inline_call bool_type update (
       __const_ptr(real_type) _ppos,

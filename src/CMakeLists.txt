@@ -57,6 +57,11 @@ if (DEFINED GCXX_LIKE)
 endif ()
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set (CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}" CACHE PATH
+       "Install path prefix." FORCE)
+endif ()
+
+if (CMAKE_INSTALL_PREFIX STREQUAL PROJECT_SOURCE_DIR)
   set (INSTALL_LOCAL TRUE)
   message (STATUS "Installing locally")
 else ()
@@ -193,6 +198,7 @@ set_target_properties (jigsaw-lib PROPERTIES OUTPUT_NAME jigsaw)
 if (DEFINED INSTALL_LOCAL)
   install (TARGETS jigsaw-lib DESTINATION "${PROJECT_SOURCE_DIR}/lib")
 else ()
-  install (DIRECTORY inc/ DESTINATION include FILES_MATCHING PATTERN "*.h")
+  install (DIRECTORY "${PROJECT_SOURCE_DIR}/inc/"
+           DESTINATION include FILES_MATCHING PATTERN "*.h")
   install (TARGETS jigsaw-lib DESTINATION lib)
 endif ()

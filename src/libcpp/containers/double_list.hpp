@@ -43,9 +43,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 08 Nov., 2026
  *
- * Copyright 2013-2017
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -754,7 +754,7 @@
         _data = __move (
             data_type, this->_tptr->_data);
     /*-- delegate to _pop impl.*/
-        self_type::_pop_head () ;
+        self_type::_pop_tail () ;
     }
 
 /*-------------------------- insert data (_def construct) */

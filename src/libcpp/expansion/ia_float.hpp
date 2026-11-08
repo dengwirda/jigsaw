@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Apr., 2020
+     * Last updated: 07 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -275,7 +275,7 @@
 
     __inline_call ia_flt  operator - (
         ) const
-    {   return   ia_flt(-lo(), -up());
+    {   return   ia_flt(-up(), -lo());
     }
 
     __inline_call ia_flt& operator+= (      // via double
@@ -350,20 +350,29 @@
     __inline_call real_type mid (
         ) const
     {
-        real_type _mm = lo() + up() ;
+        real_type constexpr _hh =
+           ((real_type)+0.5) * 
+        std::numeric_limits<real_type>::max() ;
+        real_type constexpr _ll =
+           ((real_type)+0.5) *
+        std::numeric_limits<real_type>::min() ;
 
-        if (!std::isfinite(_mm))
-        {
-            _mm  =
-           (lo() / (real_type)+2.)+
-           (up() / (real_type)+2.);
-        }
-        else
-        {
-            _mm /= (real_type)+2. ;
-        }
+        real_type _al = std::abs(lo());
+        real_type _au = std::abs(up());
+        
+        real_type two = (real_type)2.0;
 
-        return _mm ;
+        if (_al <= _hh && _au <= _hh)
+            return (lo() + up()) / two;
+
+        if (_al < _ll)
+            return lo() + (up()  / two) ;
+
+        if (_au < _ll)
+            return up() + (lo()  / two) ;
+ 
+        return ( lo() / two + 
+                 up() / two ) ;
     }
 
     __inline_call real_type rad (
@@ -530,7 +539,7 @@
             REAL_TYPE _u1, _u2;
             _u1 = mul_up(_aa.lo(), _bb.lo());
             _u2 = mul_up(_aa.up(), _bb.up());
-            _up = std::min(_u1, _u2);
+            _up = std::max(_u1, _u2);
         }
         else                            // mix * -ve
         {

@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 Jul., 2019
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2019
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -70,6 +70,8 @@
         pred_type _less    // comparison predicate
         )
     {
+        if (_head == _tail) return ( true ) ;
+
         for ( ; _head+1 != _tail; ++_head )
         { /* check pair ordering */
             if (_less(*(_head+1),  *_head))
@@ -249,7 +251,7 @@
              >
     __normal_call void_type ssort (
         iter_type _head,  // head of sequence to sort
-        iter_type _tend,  // head of sequence to sort
+        iter_type _tend,  // last of sequence to sort
         pred_type _less   // comparison predicate
         )
     {
@@ -354,14 +356,15 @@
         pred_type const&_less
         )
     {
-        //typename containers::
-        //    iterator_traits<iter_type>::
-        //diff_type static constexpr _LONG = 256;
+        typename containers::
+            iterator_traits<iter_type>::
+        diff_type static constexpr _LONG = 512;
+        bool_type static constexpr _FIVE = false;
 
         iter_type _imid =
             _head + (_tail - _head) / 2 ;
 
-        if (false) //(_tail - _head >= _LONG)
+        if (_FIVE && _tail - _head + 1 >= _LONG)
         {
     /*-------------- median-of-5 choice for pivot element */
             typename containers::
@@ -374,9 +377,14 @@
             iter_type _pos3 =
                 _head + _step * 3 ;
 
-            sort_3(_head, _pos1, _imid, _less);
-            sort_3(_imid, _pos3, _tail, _less);
-            sort_3(_pos1, _imid, _pos3, _less);
+            sort_2(_head, _pos1, _less);
+            sort_2(_pos3, _tail, _less);
+            sort_2(_imid, _tail, _less);
+            sort_2(_imid, _pos3, _less);
+            sort_2(_pos1, _tail, _less);
+            sort_2(_head, _pos3, _less);
+            sort_2(_pos1, _pos3, _less);
+            sort_2(_pos1, _imid, _less);
         }
         else
         {
@@ -392,13 +400,15 @@
         typename  pred_type
              >
     __normal_call void_type qsort (  // unrolled quick sort
-        iter_type _head,
+        iter_type _head,  // head of sequence to sort
         iter_type _tend,  // last of sequence to sort
         pred_type _less   // comparison predicate
         )
     {
         typedef containers::
             iterator_traits<iter_type> iter_base ;
+
+        if (_head == _tend) return;
 
     /*------- tiny-list threshold, push to insertion sort */
         typename iter_base::
@@ -503,35 +513,25 @@
         typename  pred_type
              >
     __normal_call void_type qsift (  // quick select
-        iter_type _head,
+        iter_type _head,  // head of sequence to parition
         iter_type _kk,    // pos. in sequence to find
         iter_type _tend,  // last of sequence to parition
         pred_type _less   // comparison predicate
         )
     {
+        if (_head == _tend) return;
+
         iter_type  _hh, _tt, _mm;
         _hh = _head + 0;
         _tt = _tend - 1;
 
         do {
-        /* deal with "spec.-case" tiny partition */
-            if (_tt - _hh + 1 <= 1)
-                break ;
-
-            if (_tt - _hh + 1 == 2)
-            {
-                if (_less(*_tt, *_hh))
-                std::swap(*_hh, *_tt);
-                break ;
-            }
-
-            /*
+        /* use explicit small sorts for tiny partitions */
             if (_tt - _hh + 1 <= 4)
             {
-                isort ( _hh, _tt, _less);
+                isort ( _hh, _tt + 1, _less);
                 break ;
             }
-            */
 
         /* find pivot item for current partition */
             _mm = pivot(_hh, _tt, _less);
@@ -539,7 +539,7 @@
         /* reduce partition around pivot element */
             iter_type _ll = _hh + 1;
             iter_type _rr = _tt - 1;
-            for ( ; _ll < _rr; )
+            for ( ; _ll  <= _rr; )
             {
                 for(;_less(*_ll, *_mm);) ++_ll;
                 for(;_less(*_mm, *_rr);) --_rr;
@@ -561,11 +561,9 @@
                 }
             }
 
-          //if (_mm == _kk) break ;
-
-            if (_kk <  _rr) _tt = _rr;
+            if (_kk <= _rr) _tt = _rr;
             else
-            if (_kk >  _ll) _hh = _ll;
+            if (_kk >= _ll) _hh = _ll;
             else
             {
                 _hh =  _rr+1; _tt = _ll-1;

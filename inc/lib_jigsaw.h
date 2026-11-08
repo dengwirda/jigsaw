@@ -14,11 +14,11 @@
      * JIGSAW: Interface to the JIGSAW meshing library.
     --------------------------------------------------------
      *
-     * JIGSAW release 1.1.0.x
+     * JIGSAW release 1.1.1.x
      *
-     * Last updated: 20 Oct., 2024
+     * Last updated: 09 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda

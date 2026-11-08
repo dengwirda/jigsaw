@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 Oct., 2024
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -174,8 +174,10 @@
         real_type _zrat =
             _ppos[2] / this->_radC ;
 
-        _zrat = std::min(+1.,_zrat);
-        _zrat = std::max(-1.,_zrat);
+        _zrat = std::min(
+            (real_type) +1., _zrat);
+        _zrat = std::max(
+            (real_type) -1., _zrat);
 
         _apos[0]= std::atan2(_ymul,
                              _xmul);
@@ -749,8 +751,8 @@
        (float)     _ppos[1] ,
        (float)     _ppos[2] } ;
 
-        real_type _hOUT =
-    +std::numeric_limits<real_type>::infinity() ;
+        real_type _hOUT = std::
+            numeric_limits<real_type>::infinity() ;
 
         if (hint_okay(_hint))
         {
@@ -760,6 +762,11 @@
                     _hint)  )
             {
             _hint =  this->null_hint();
+            }
+            else
+            {
+            geometry::
+            copy_node_3d(_QPOS, _QTMP);
             }
         }
         else

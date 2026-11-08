@@ -42,9 +42,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 Sept., 2018
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -252,9 +252,10 @@
     __static_call
     __inline_call void_type construct (
         data_type  * _xptr,
-        data_part const&... _part
+        data_part &&... _part
         )
-    {   new(_xptr)data_type(_part...) ;
+    {   new(_xptr)data_type(
+            std::forward<data_part>(_part)...) ;
     }
 
     } ;
@@ -399,9 +400,10 @@
     __static_call
     __inline_call void_type construct (
         data_type  * _xptr,
-        data_part const&... _part
+        data_part &&... _part
         )
-    {   new(_xptr)data_type(_part...) ;
+    {   new(_xptr)data_type(
+            std::forward<data_part>(_part)...) ;
     }
 
     } ;

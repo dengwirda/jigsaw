@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 26 Feb., 2025
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -1228,8 +1228,24 @@
         _rmax[2] = std::max(
         (float)_apos[2], (float)_bpos[2]) ;
 
+    /*- bound the arc on the unit sphere, then scale axes */
+        real_type _anrm[3] = {
+        _apos[0] / this->_radA,
+        _apos[1] / this->_radB,
+        _apos[2] / this->_radC } ;
+
+        real_type _bnrm[3] = {
+        _bpos[0] / this->_radA,
+        _bpos[1] / this->_radB,
+        _bpos[2] / this->_radC } ;
+
         real_type _rlen =
-        geometry::length_3d(_apos, _bpos) ;
+        geometry::length_3d(_anrm, _bnrm) ;
+
+        real_type _rwid[3] = {
+        _rlen * this->_radA,
+        _rlen * this->_radB,
+        _rlen * this->_radC } ;
 
         real_type  _rmid[3] = {
         _apos[0] * (real_type)+.5 +
@@ -1241,18 +1257,18 @@
             } ;
 
         _rmin[0] = std::min(
-        _rmin[0], (float)(_rmid[0]-_rlen));
+        _rmin[0], (float)(_rmid[0]-_rwid[0]));
         _rmin[1] = std::min(
-        _rmin[1], (float)(_rmid[1]-_rlen));
+        _rmin[1], (float)(_rmid[1]-_rwid[1]));
         _rmin[2] = std::min(
-        _rmin[2], (float)(_rmid[2]-_rlen));
+        _rmin[2], (float)(_rmid[2]-_rwid[2]));
 
         _rmax[0] = std::max(
-        _rmax[0], (float)(_rmid[0]+_rlen));
+        _rmax[0], (float)(_rmid[0]+_rwid[0]));
         _rmax[1] = std::max(
-        _rmax[1], (float)(_rmid[1]+_rlen));
+        _rmax[1], (float)(_rmid[1]+_rwid[1]));
         _rmax[2] = std::max(
-        _rmax[2], (float)(_rmid[2]+_rlen));
+        _rmax[2], (float)(_rmid[2]+_rwid[2]));
 
         _rmin[0] = _rmin[0]-(float)_rTOL;
         _rmin[1] = _rmin[1]-(float)_rTOL;
@@ -1366,55 +1382,29 @@
         )
     {
     /*--------------------------- great-ellipse projector */
-        real_type _zero[3] ;
-        _zero[0] = (real_type) +.0 ;
-        _zero[1] = (real_type) +.0 ;
-        _zero[2] = (real_type) +.0 ;
+        real_type _xx = 
+            _psrc[0] / this->_radA ;
+        real_type _yy = 
+            _psrc[1] / this->_radB ;
+        real_type _zz = 
+            _psrc[2] / this->_radC ;
 
-        _pprj[0] =_psrc[0] ;
-        _pprj[1] =_psrc[1] ;
-        _pprj[2] =_psrc[2] ;
+        real_type _sc = _xx * _xx
+                      + _yy * _yy
+                      + _zz * _zz  ;
 
-        real_type _ttaa, _ttbb ;
-        if (line_surf(
-                _zero, _psrc, _ttaa, _ttbb) )
-        {
-        real_type _pmid[3] = {
-        _psrc[0] * (real_type) +.5 +
-        _zero[0] * (real_type) +.5 ,
-        _psrc[1] * (real_type) +.5 +
-        _zero[1] * (real_type) +.5 ,
-        _psrc[2] * (real_type) +.5 +
-        _zero[2] * (real_type) +.5
-            } ;
-        real_type _pdel[3] = {
-        _psrc[0] * (real_type) +.5 -
-        _zero[0] * (real_type) +.5 ,
-        _psrc[1] * (real_type) +.5 -
-        _zero[1] * (real_type) +.5 ,
-        _psrc[2] * (real_type) +.5 -
-        _zero[2] * (real_type) +.5
-            } ;
+        _pprj[0] = _psrc[0] ;
+        _pprj[1] = _psrc[1] ;
+        _pprj[2] = _psrc[2] ;
 
-        if (_ttaa > (real_type) -1.)
+        if (_sc > (real_type) +0.)
         {
-        _pprj[0] =
-        _pmid[0] + _ttaa*_pdel[0] ;
-        _pprj[1] =
-        _pmid[1] + _ttaa*_pdel[1] ;
-        _pprj[2] =
-        _pmid[2] + _ttaa*_pdel[2] ;
-        }
-        else
-        if (_ttbb > (real_type) -1.)
-        {
-        _pprj[0] =
-        _pmid[0] + _ttbb*_pdel[0] ;
-        _pprj[1] =
-        _pmid[1] + _ttbb*_pdel[1] ;
-        _pprj[2] =
-        _pmid[2] + _ttbb*_pdel[2] ;
-        }
+            _sc = (real_type) +1. 
+                /  std::sqrt (_sc) ;
+
+            _pprj[0] *= _sc ;
+            _pprj[1] *= _sc ;
+            _pprj[2] *= _sc ;
         }
     }
 
@@ -2192,7 +2182,7 @@
         hits_func &_hfun
         )
     {
-        bool_type _find = true  ;
+        bool_type _find = false ;
 
     /*------------------ calc. initial dir. to surf.-ball */
         real_type _proj[3], _vdir[3] ;
@@ -2232,6 +2222,7 @@
             iptr_type _itag = +0;
             char_type _topo[2] = {2};
 
+            _find = true ;
             _hfun( _proj ,
             _hits, _feat , _topo, _itag) ;
         }
@@ -2246,7 +2237,7 @@
     --------------------------------------------------------
      */
 
-    __normal_call bool_type is_inside (
+    __normal_call iptr_type is_inside (
         real_type *_ppos
         )
     {
@@ -2261,7 +2252,9 @@
         return ( _xx * _xx
                + _yy * _yy
                + _zz * _zz
-              <= (real_type) +1. ) ;
+              <= (real_type) +1. ) ?
+                 (iptr_type) +0  : 
+                 (iptr_type) -1  ;
     }
 
     /*

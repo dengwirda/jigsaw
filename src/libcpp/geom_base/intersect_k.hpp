@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Feb., 2024
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -60,6 +60,36 @@
     hits_type edge_hits = +2 ;
     hits_type face_hits = +3 ;
     hits_type tria_hits = +4 ;
+
+    /*
+    --------------------------------------------------------
+     * pairwise sign helpers.
+     * Review refactor: reuse these strict comparisons below.
+     * Both helpers return false when either operand is zero.
+    --------------------------------------------------------
+     */
+
+    template <
+    typename      data_type
+             >
+    __inline_call bool is_same_sign (
+        data_type _s1,
+        data_type _s2
+        )
+    {   return ( _s1 > 0.0 && _s2 > 0.0 ) || 
+               ( _s1 < 0.0 && _s2 < 0.0 ) ;
+    }
+
+    template <
+    typename      data_type
+             >
+    __inline_call bool is_diff_sign (
+        data_type _s1,
+        data_type _s2
+        )
+    {   return ( _s1 > 0.0 && _s2 < 0.0 ) || 
+               ( _s1 < 0.0 && _s2 > 0.0 ) ;
+    }
 
     /*
     --------------------------------------------------------
@@ -517,23 +547,34 @@
     __write_ptr  (real_type) _qb
         )
     {
-        size_t _ni = +0;
+        size_t _ni = 0;
+        real_type _qt[3];
+        auto assessor = [&]()
+        {
+            if (_ni == 0)
+            {
+                copy_node_3d(_qa, _qt);
+                _ni =  1;
+            }
+            else 
+            if (_qt[0] != _qa[0] ||
+                _qt[1] != _qa[1] ||
+                _qt[2] != _qa[2] )
+            {
+                copy_node_3d(_qb, _qt);
+                _ni =  2;
+            }
+        };
 
-        if (line_flat_3d (
-            _pp, _nv,
-            _pa, _pb,
-           (_ni == +0) ? _qa : _qb))
-            _ni += +1  ;
-        if (line_flat_3d (
-            _pp, _nv,
-            _pb, _pc,
-           (_ni == +0) ? _qa : _qb))
-            _ni += +1  ;
-        if (line_flat_3d (
-            _pp, _nv,
-            _pc, _pa,
-           (_ni == +0) ? _qa : _qb))
-            _ni += +1  ;
+        if (line_flat_3d(_pp, _nv, _pa, _pb, _qt)) 
+            assessor() ;
+        if (line_flat_3d(_pp, _nv, _pb, _pc, _qt)) 
+            assessor() ;
+        if (line_flat_3d(_pp, _nv, _pc, _pa, _qt)) 
+            assessor() ;
+
+        // single-point cut collapses
+        if (_ni == 1) copy_node_3d(_qb, _qa);
 
         return ( _ni ) ;
     }
@@ -579,6 +620,14 @@
                   hits_type &_ht
         )
     {
+        if (_pa[0] == _pb[0] &&
+            _pa[1] == _pb[1])
+        {
+            copy_node_2d(_qq, _pa);
+            _ht = node_hits;
+            return true;
+        }
+
         real_type _vv[2], _tt;
         _vv[0] = _pb[0] - _pa[0] ;
         _vv[1] = _pb[1] - _pa[1] ;
@@ -663,6 +712,15 @@
                   hits_type &_ht
         )
     {
+        if (_pa[0] == _pb[0] &&
+            _pa[1] == _pb[1] &&
+            _pa[2] == _pb[2])
+        {
+            copy_node_3d(_qq, _pa);
+            _ht = node_hits;
+            return true;
+        }
+
         real_type _vv[3], _tt;
         _vv[0] = _pb[0] - _pa[0] ;
         _vv[1] = _pb[1] - _pa[1] ;
@@ -772,8 +830,10 @@
 
     /*----------------------- projector for low-dim. face */
     #   define __projface2d(_pi, _pj)       \
+        do {                            \
+        hits_type _kh = null_hits;      \
         if (proj_line_2d (              \
-            _pp , _pi, _pj, _qt, _ht) ) \
+            _pp , _pi, _pj, _qt, _kh) ) \
         {                               \
             real_type _dd =             \
         geometry::lensqr_2d(_pp, _qt) ; \
@@ -783,9 +843,11 @@
                 _qq[0] =  _qt[0] ;      \
                 _qq[1] =  _qt[1] ;      \
                                         \
+                _ht = _kh ;             \
                 _dm = _dd ;             \
             }                           \
-        }
+        } \
+        } while (false)
 
         {
     /*----------------------- test node-tria intersection */
@@ -819,9 +881,12 @@
                 (double*)_PA ,
                 (double*)_PP )   ;
 
-            if (_s1 * _s2 < +0.0 ||
-                _s2 * _s3 < +0.0 ||
-                _s3 * _s1 < +0.0 )
+            if ( (_s1 == 0. && 
+                  _s2 == 0. && 
+                  _s3 == 0. ) ||
+                is_diff_sign(_s1, _s2) ||
+                is_diff_sign(_s2, _s3) ||
+                is_diff_sign(_s3, _s1) )
             {
 
             real_type _dm = +std::
@@ -877,8 +942,10 @@
 
     /*----------------------- projector for low-dim. face */
     #   define __projface3d(_pi, _pj)       \
+        do {                            \
+        hits_type _kh = null_hits;      \
         if (proj_line_3d (              \
-            _pp , _pi, _pj, _qt, _ht) ) \
+            _pp , _pi, _pj, _qt, _kh) ) \
         {                               \
             real_type _dd =             \
         geometry::lensqr_3d(_pp, _qt) ; \
@@ -889,15 +956,34 @@
                 _qq[1] =  _qt[1] ;      \
                 _qq[2] =  _qt[2] ;      \
                                         \
+                _ht = _kh ;             \
                 _dm = _dd ;             \
             }                           \
-        }
+        } \
+        } while (false)
 
     /*----------------------- test node-tria intersection */
         double _s1[3], _s2[3], _s3[3];
 
         real_type _nv[3];
         tria_norm_3d(_pa, _pb, _pc, _nv);
+
+        // collapsed triangle: no normal
+        if (_nv[0] == 0. && _nv[1] == 0. && 
+            _nv[2] == 0. )
+        {
+            real_type _dm = 
+                std::numeric_limits
+                    <real_type>::infinity();
+
+            real_type _qt[3];
+            _ht = null_hits;
+            __projface3d(_pa, _pb);
+            __projface3d(_pb, _pc);
+            __projface3d(_pc, _pa);
+
+            return ( true ) ;
+        }
 
         real_type _pt[3];
         proj_flat_3d(_pp, _pa, _nv, _pt);
@@ -1003,16 +1089,20 @@
 
         {
     /*----------------------- test node-tria intersection */
+            int _ax = 0;
+            if (std::abs(_nv[1]) > 
+                std::abs(_nv[_ax]) ) 
+                _ax = 1;
+            if (std::abs(_nv[2]) > 
+                std::abs(_nv[_ax]) ) 
+                _ax = 2;
+
+            // best-conditioned projector
+            int _pr = 2 - _ax; // yz, xz, xy
             if (
-            _s1[0] * _s2[0] < +0.0 ||
-            _s2[0] * _s3[0] < +0.0 ||
-            _s3[0] * _s1[0] < +0.0 ||
-            _s1[1] * _s2[1] < +0.0 ||
-            _s2[1] * _s3[1] < +0.0 ||
-            _s3[1] * _s1[1] < +0.0 ||
-            _s1[2] * _s2[2] < +0.0 ||
-            _s2[2] * _s3[2] < +0.0 ||
-            _s3[2] * _s1[2] < +0.0 )
+            is_diff_sign(_s1[_pr], _s2[_pr]) ||
+            is_diff_sign(_s2[_pr], _s3[_pr]) ||
+            is_diff_sign(_s3[_pr], _s1[_pr]) )
             {
 
             real_type _dm = +std::
@@ -1059,8 +1149,10 @@
 
     /*----------------------- projector for low-dim. face */
     #   define __projface3d(_pi, _pj, _pk)  \
+        do {                            \
+        hits_type _kh = null_hits;      \
         if (proj_tria_3d (              \
-            _pp , _pi, _pj, _pk, _qt, _ht)) \
+            _pp , _pi, _pj, _pk, _qt, _kh)) \
         {                               \
             real_type _dd =             \
         geometry::lensqr_3d(_pp, _qt) ; \
@@ -1071,9 +1163,11 @@
                 _qq[1] =  _qt[1] ;      \
                 _qq[2] =  _qt[2] ;      \
                                         \
+                _ht = _kh ;             \
                 _dm = _dd ;             \
             }                           \
-        }
+        } \
+        } while (false)
 
         {
     /*----------------------- test node-tria intersection */
@@ -1120,12 +1214,16 @@
                 (double*)_PC ,
                 (double*)_PP )   ;
 
-            if (_s1 * _s2 < +0.0 ||
-                _s2 * _s3 < +0.0 ||
-                _s3 * _s1 < +0.0 ||
-                _s1 * _s4 < +0.0 ||
-                _s2 * _s4 < +0.0 ||
-                _s3 * _s4 < +0.0 )
+            if ( (_s1 == 0. && 
+                  _s2 == 0. && 
+                  _s3 == 0. && 
+                  _s4 == 0. ) ||
+                is_diff_sign(_s1, _s2) ||
+                is_diff_sign(_s2, _s3) ||
+                is_diff_sign(_s3, _s1) ||
+                is_diff_sign(_s1, _s4) ||
+                is_diff_sign(_s2, _s4) ||
+                is_diff_sign(_s3, _s4) )
             {
 
             real_type _dm = +std::
@@ -1314,7 +1412,7 @@
                 (double*)_PA ,
                 (double*)_PP )   ;
 
-            if (_sa*_sb > +0.0)
+            if (is_same_sign(_sa, _sb))
             {
     /*----------------------- have node-line intersection */
             copy_node_2d(_qq, _pp) ;
@@ -1455,7 +1553,7 @@
                 (double*)_PA ,
                 (double*)_PP )   ;
 
-            if (_sa*_sb > +0.0)
+            if (is_same_sign(_sa, _sb))
             {
     /*----------------------- have node-line intersection */
             copy_node_3d(_qq, _pp) ;
@@ -1566,7 +1664,7 @@
             if (_bind)
             {
     /*----------------------- no intersections: null hits */
-            if (_sa * _sb < +0.0 )
+            if (is_diff_sign(_sa, _sb))
             return null_hits;
             }
 
@@ -1585,7 +1683,7 @@
             if (_bind)
             {
     /*----------------------- no intersections: null hits */
-            if (_sc * _sd < +0.0 )
+            if (is_diff_sign(_sc, _sd))
             return null_hits;
             }
 
@@ -1865,9 +1963,9 @@
                 (double*)_PP )   ;
 
     /*----------------------- test intersection hierarchy */
-            if (_s1*_s2<0.0 ||
-                _s1*_s3<0.0 ||
-                _s2*_s3<0.0 )
+            if (is_diff_sign(_s1, _s2) ||
+                is_diff_sign(_s1, _s3) ||
+                is_diff_sign(_s2, _s3) )
             {
     /*----------------------- no intersections: null hits */
             return null_hits ;
@@ -2035,9 +2133,9 @@
                 (double*)_T1 ,
                 (double*)_TP )  ;
 
-            if (_s1[0]*_s2[0] < +0.0 ||
-                _s2[0]*_s3[0] < +0.0 ||
-                _s3[0]*_s1[0] < +0.0 )
+            if (is_diff_sign(_s1[0], _s2[0]) ||
+                is_diff_sign(_s2[0], _s3[0]) ||
+                is_diff_sign(_s3[0], _s1[0]) )
             {
     /*----------------------- no intersections: null hits */
             return null_hits ;
@@ -2067,9 +2165,9 @@
                 (double*)_T1 ,
                 (double*)_TP )  ;
 
-            if (_s1[1]*_s2[1] < +0.0 ||
-                _s2[1]*_s3[1] < +0.0 ||
-                _s3[1]*_s1[1] < +0.0 )
+            if (is_diff_sign(_s1[1], _s2[1]) ||
+                is_diff_sign(_s2[1], _s3[1]) ||
+                is_diff_sign(_s3[1], _s1[1]) )
             {
     /*----------------------- no intersections: null hits */
             return null_hits ;
@@ -2099,9 +2197,9 @@
                 (double*)_T1 ,
                 (double*)_TP )  ;
 
-            if (_s1[2]*_s2[2] < +0.0 ||
-                _s2[2]*_s3[2] < +0.0 ||
-                _s3[2]*_s1[2] < +0.0 )
+            if (is_diff_sign(_s1[2], _s2[2]) ||
+                is_diff_sign(_s2[2], _s3[2]) ||
+                is_diff_sign(_s3[2], _s1[2]) )
             {
     /*----------------------- no intersections: null hits */
             return null_hits ;
@@ -2134,7 +2232,7 @@
     /*----------------------- have node-node intersection */
             copy_node_3d(_qq, _pp) ;
 
-            return edge_hits ;
+            return node_hits ;
             }
             else
             if (_z2 && _z3 )
@@ -2286,7 +2384,7 @@
             if (_bind)
             {
     /*----------------------- no intersections: null hits */
-            if (_sa*_sb < 0.0)
+            if (is_diff_sign(_sa, _sb))
             return null_hits ;
             }
 
@@ -2315,13 +2413,13 @@
             if (_bind)
             {
     /*----------------------- no intersections: null hits */
-            if (_s1*_s2 < 0.0)
+            if (is_diff_sign(_s1, _s2))
             return null_hits ;
 
-            if (_s2*_s3 < 0.0)
+            if (is_diff_sign(_s2, _s3))
             return null_hits ;
 
-            if (_s3*_s1 < 0.0)
+            if (is_diff_sign(_s3, _s1))
             return null_hits ;
             }
 
@@ -2364,6 +2462,7 @@
             {
     /*----------------------- have line-edge intersection */
             double _WS = _s2 + _s3 ;
+            if (_WS == +0.) return null_hits ;
             double _W1 = _s2 / _WS ;
             double _W2 = _s3 / _WS ;
 
@@ -2390,6 +2489,7 @@
             {
     /*----------------------- have line-edge intersection */
             double _WS = _s1 + _s3 ;
+            if (_WS == +0.) return null_hits ;
             double _W2 = _s3 / _WS ;
             double _W3 = _s1 / _WS ;
 
@@ -2416,6 +2516,7 @@
             {
     /*----------------------- have line-edge intersection */
             double _WS = _s1 + _s2 ;
+            if (_WS == +0.) return null_hits ;
             double _W3 = _s1 / _WS ;
             double _W1 = _s2 / _WS ;
 
@@ -2441,6 +2542,7 @@
             {
     /*----------------------- have line-face intersection */
             double _WS = _s1 + _s2 + _s3 ;
+            if (_WS == +0.) return null_hits ;
             double _W1 = _s2 / _WS ;
             double _W2 = _s3 / _WS ;
             double _W3 = _s1 / _WS ;

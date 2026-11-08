@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 Jun., 2022
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -237,7 +237,7 @@
 
         }
         }
-        else
+
         if (_hfun._kind ==
              jmsh_kind::ellipsoid_mesh)
         {

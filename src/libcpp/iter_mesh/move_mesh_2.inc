@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 Jul., 2025
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda,
      * Marc Tunnell
      * d.engwirda@gmail.com
@@ -334,7 +334,7 @@
         real_list &_hval ,  // cached node spacing array
         iter_opts &_opts ,  // user options
         node_iter  _node ,  // iterator to node to iter.
-        real_type  _last ,  // lagged line direction
+        real_type &_last ,  // lagged line direction
         iptr_type &_move ,  // > 0 if move successful
         conn_list &_conn ,  // list of adj. cells
         fp32_list &_dold ,  // list of old adj. costs

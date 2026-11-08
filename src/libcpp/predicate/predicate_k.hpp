@@ -60,7 +60,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 May., 2024
+     * Last updated: 09 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -74,6 +74,8 @@
 
 #   ifndef __PREDICATE_K__
 #   define __PREDICATE_K__
+
+#   include <atomic>
 
 #   define USE_KERNEL_FLTPOINT
 #   define USE_KERNEL_INTERVAL
@@ -103,7 +105,7 @@
     INBALL4W_f, INBALL4W_i, INBALL4W_e ,
     LASTKERNEL } ;
 
-    size_t _nn_calls[LASTKERNEL] = {0} ;
+    std::atomic<size_t> _nn_calls[LASTKERNEL] = {} ;
 
 #   include "orient_k.hpp"
 #   include "bisect_k.hpp"
@@ -688,7 +690,7 @@
     #   endif
 
     #   ifdef USE_KERNEL_INTERVAL
-        _nn_calls[INBALL3D_i] += +1;
+        _nn_calls[INBALL3W_i] += +1;
 
         _rr = inball3w_i(               // "bound" kernel
             _pa, _pb, _pc, _pd, _pe, _OK
@@ -722,7 +724,6 @@
         REAL_TYPE _rr;
         bool_type _OK;
 
-        /*
     #   ifdef USE_KERNEL_FLTPOINT
         _nn_calls[INBALL4D_f] += +1;
 
@@ -743,7 +744,6 @@
 
         if (_OK) return _rr ;
     #   endif
-        */
 
         _nn_calls[INBALL4D_e] += +1;
 
@@ -765,7 +765,7 @@
       __const_ptr(REAL_TYPE) _pf
         )
     {
-    /*------------ inball3w predicate, "filtered" version */
+    /*------------ inball4w predicate, "filtered" version */
         if (_pa [ 4] == _pb [ 4] &&
             _pb [ 4] == _pc [ 4] &&
             _pc [ 4] == _pd [ 4] &&
@@ -781,11 +781,10 @@
         REAL_TYPE _rr;      // given weights, full kernel
         bool_type _OK;
 
-        /*
     #   ifdef USE_KERNEL_FLTPOINT
         _nn_calls[INBALL4W_f] += +1;
 
-        _rr = inball4w_f(               // "float" kernal
+        _rr = inball4w_f(               // "float" kernel
             _pa, _pb, _pc, _pd, _pe, _pf, _OK
             ) ;
 
@@ -794,7 +793,7 @@
     #   endif
 
     #   ifdef USE_KERNEL_INTERVAL
-        _nn_calls[INBALL4D_i] += +1;
+        _nn_calls[INBALL4W_i] += +1;
 
         _rr = inball4w_i(               // "bound" kernel
             _pa, _pb, _pc, _pd, _pe, _pf, _OK
@@ -802,7 +801,6 @@
 
         if (_OK) return _rr ;
     #   endif
-        */
 
         _nn_calls[INBALL4W_e] += +1;
 

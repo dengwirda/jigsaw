@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 Aug., 2021
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -227,7 +227,7 @@
                 ++_tpos  )
         {
             iptr_type _npos;
-            for (_npos = +3; _npos-- != +0; )
+            for (_npos = +4; _npos-- != +0; )
             {
                 iptr_type _node =
                     _mesh._tria.

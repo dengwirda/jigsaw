@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 Dec, 2024
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -1263,7 +1263,7 @@
             _mmsh._quad4._data[_fout].      \
                 _node[2] = _nmap[_iter->node(2)] ;  \
             _mmsh._quad4._data[_fout].      \
-                _node[2] = _nmap[_iter->node(2)] ;  \
+                _node[3] = _nmap[_iter->node(3)] ;  \
                                     \
             _mmsh._quad4.           \
             _data[_fout]._itag = _iter->itag() ;    \

@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Aug., 2025
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -325,8 +325,7 @@
 
         _ladj = (real_type) +0.0 ;
 
-        real_type _wsum =
-       +std::numeric_limits<real_type>::epsilon();
+        real_type _wsum = (real_type)+0.0 ;
 
         iptr_type _cnum = +0  ;
 
@@ -355,6 +354,7 @@
 
         if (_cnum > +0)
         {
+            if (_wsum > (real_type)+0.0)
             for (auto _idim =
             pred_type::geom_dims ; _idim-- != 0; )
             {
@@ -744,8 +744,7 @@
 
         _ladj = (real_type) +0.0 ;
 
-        real_type _wsum =
-       +std::numeric_limits<real_type>::epsilon();
+        real_type _wsum = (real_type)+0.0 ;
 
         iptr_type _cnum = +0  ;
 
@@ -774,6 +773,7 @@
 
         if (_cnum > +0)
         {
+            if (_wsum > (real_type)+0.0)
             for (auto _idim =
             pred_type::geom_dims ; _idim-- != 0; )
             {
@@ -867,7 +867,7 @@
     {
         real_type static const _HINC =
             std::pow(std::numeric_limits
-                <real_type>::epsilon(), +0.75) ;
+                <real_type>::epsilon(), +0.50) ;
 
     /*------------------------------------- cell indexing */
         auto _ppos = &_node->pval(0);
@@ -883,6 +883,7 @@
                           _bmin[_idim] ;
 
         real_type _hdel = _HINC*_binc;
+        if (_hdel == (real_type)+0.) continue;
         real_type _dsup , _dsdn ;
         {
     /*------------------ centred finite-diff. for dQ / dx */
@@ -1016,7 +1017,7 @@
     {
         real_type static const _HINC =
             std::pow(std::numeric_limits
-                <real_type>::epsilon(), +0.75) ;
+                <real_type>::epsilon(), +0.50) ;
 
     /*------------------------------------- cell indexing */
         auto _ppos = &_node->pval(0);
@@ -1032,6 +1033,7 @@
                           _bmin[_idim] ;
 
         real_type _hdel = _HINC*_binc;
+        if (_hdel == (real_type)+0.) continue;
         real_type _dsup , _dsdn ;
         {
     /*------------------ centred finite-diff. for dQ / dx */
@@ -1120,12 +1122,15 @@
         float     _qmin =
        +std::numeric_limits<float    >::infinity();
 
-        real_type _bmin[_last] = {
-       +std::numeric_limits<real_type>::infinity()
-            } ;
-        real_type _bmax[_last] = {
-       -std::numeric_limits<real_type>::infinity()
-            } ;
+        real_type _bmin[_last], _bmax[_last] ;
+        for (auto _idim  =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+            _bmin[_idim] =
+           +std::numeric_limits<real_type>::infinity();
+            _bmax[_idim] =
+           -std::numeric_limits<real_type>::infinity();
+        }
 
         iptr_type _cnum  = + 0 ;
         for (auto _next  = _conn.head() ,

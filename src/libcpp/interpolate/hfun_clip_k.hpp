@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Oct., 2024
+     * Last updated: 06 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -161,13 +161,15 @@
         polyroots(_at, _bt, _ct, _tt) )
         {
     /*-------------------------- test flow along boundary */
-        return EIKONAL_edge_2d (
+        bool_type _o1 = EIKONAL_edge_2d (
                 _p1, _h1, _g1,
-                _p3, _h3, _g3)
+                _p3, _h3, _g3) ;
 
-            || EIKONAL_edge_2d (
+        bool_type _o2 = EIKONAL_edge_2d (
                 _p2, _h2, _g2,
                 _p3, _h3, _g3) ;
+
+        return  ( _o1 || _o2 ) ;
         }
         else
         {
@@ -267,13 +269,15 @@
         polyroots(_at, _bt, _ct, _tt) )
         {
     /*-------------------------- test flow along boundary */
-        return EIKONAL_edge_3d (
+        bool_type _o1 = EIKONAL_edge_3d (
                 _p1, _h1, _g1,
-                _p3, _h3, _g3)
+                _p3, _h3, _g3) ;
 
-            || EIKONAL_edge_3d (
+        bool_type _o2 = EIKONAL_edge_3d (
                 _p2, _h2, _g2,
                 _p3, _h3, _g3) ;
+
+        return  ( _o1 || _o2 ) ;
         }
         else
         {
@@ -395,7 +399,7 @@
                             _p2, _h2, _g2,
                             _p4, _hn, _g4)  )
         {
-            _uu = (real_type)0.;
+            _uu = (real_type).5;
             _vv = (real_type).5;
         }
                         
@@ -403,8 +407,8 @@
                             _p3, _h3, _g3,
                             _p4, _hn, _g4)  )
         {
-            _uu = (real_type).5;
-            _vv = (real_type)0.;
+            _uu = (real_type)0.;
+            _vv = (real_type).5;
         }
                   
         if (EIKONAL_tria_3d(_p3, _h3, _g3,
@@ -412,7 +416,7 @@
                             _p4, _hn, _g4)  )
         {
             _uu = (real_type).5;
-            _vv = (real_type).5;   
+            _vv = (real_type)0.;   
         }
         
         for (auto _iter = 8; _iter-- != +0; )
@@ -437,7 +441,7 @@
         
     /*---------------------- local line-search relaxation */
         bool _up = false;
-        for (auto _line = 4; _line-- != +0; )
+        for (auto _line = 8; _line-- != +0; )
         {
         real_type _tt = +1. ;
         real_type _un = _uu - _ss * _du ;
@@ -480,12 +484,14 @@
             _ha * _um + _hb * _vm + _h3
                 + _gg * std::sqrt(_dm)) ;
             
-        if (_hm < _hn || _ss <= 0.)
+        if (_hm < _hn)
         {
     /*---------------------- move on to new better optima */
             _uu = _um; _vv = _vm; _hn = _hm; 
             _up = true; break ;
         }
+        else 
+        if (_ss <= 0.)  break ; // retain candidate at stall
         else { _ss *= (real_type).5; }
         }       
     /*---------------------- done if stuck or on boundary */

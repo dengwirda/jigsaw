@@ -45,9 +45,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 May, 2017
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -181,6 +181,11 @@
     /*--------------- construct to force alloc on request */
         this->_item_size =
             std::max(_size, (size_type)sizeof(char*)) ;
+
+        size_type const _algn = alignof(char*) ;
+        this->_item_size =
+            (this->_item_size + _algn - 1) / _algn * _algn ;
+
         this->_slab_size =
             (size_type)pool_size /  this->_item_size;
         this->_slab_size =
@@ -193,6 +198,22 @@
     /*--------------- _free items while base alloc. valid */
         clear() ;
     }
+
+    __inline_call _pool_alloc (
+        self_type const&_src
+        )                               = delete ;
+    __inline_call _pool_alloc (
+        self_type &&    _src
+        )                               = delete ;
+
+    __inline_call
+        self_type & operator= (
+        self_type const&_src
+        )                               = delete ;
+    __inline_call
+        self_type & operator= (
+        self_type &&    _src
+        )                               = delete ;
 
     /*
     --------------------------------------------------------
@@ -321,7 +342,14 @@
         if (_addr == nullptr)
             return self_type::allocate(_new_count);
 
-    /*------------------ deal with genuine reallocations  */
+    /*------------------ deal with genuine de-allocations */
+        if (_new_count == +0)
+        {
+            self_type::deallocate(_addr, _old_count);
+            return   nullptr;
+        }
+
+    /*------------------ deal with genuine re-allocations */
         char_type *_nptr;
         if (_old_count <= this->_item_size)
         {

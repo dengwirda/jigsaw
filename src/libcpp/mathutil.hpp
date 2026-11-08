@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 Mar., 2021
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -94,10 +94,30 @@
             {
                 _real =  true ;
 
-                _aa *=(real_type)+2. ;
+                if (_xm <= std::
+            numeric_limits<real_type>::min())
+                {
+                _xx[0] = (real_type)+0.;
+                _xx[1] = (real_type)+0.;
+                }
+                else  // use Vieta's product
+                if (std::abs(_xx[0]) >= 
+                    std::abs(_xx[1]) )
+                {
+                real_type _qq = 
+                    _xx[0] / (real_type)+2. ;
 
-                _xx[0] /= _aa ;
-                _xx[1] /= _aa ;
+                _xx[0] = +_qq / _aa  ;
+                _xx[1] = +_cc / _qq  ;
+                }
+                else
+                {
+                real_type _qq = 
+                    _xx[1] / (real_type)+2. ;
+
+                _xx[0] = +_cc / _qq  ;
+                _xx[1] = +_qq / _aa  ;
+                }
             }
             else
             if (std::abs(_bb) >
@@ -158,8 +178,10 @@
         real_type _zrat =
             _ppos[2] / _rrad [2] ;
 
-        _zrat = std::min(+1.,_zrat);
-        _zrat = std::max(-1.,_zrat);
+        _zrat = std::min(
+            (real_type) +1., _zrat);
+        _zrat = std::max(
+            (real_type) -1., _zrat);
 
         _apos[0]= std::atan2(_ymul,
                              _xmul);

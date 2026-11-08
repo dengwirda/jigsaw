@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 Sept., 2021
+     * Last updated: 06 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -204,11 +204,11 @@
         real_type  _jpwr =
        _mesh.node(_jnod[2]).pval (_last) ;
 
-        _ilen -=   _ipwr ;
-        _jlen -=   _jpwr ;
-
         real_type  _btol =
        (real_type)+.5 * _LTOL * (_ilen + _jlen) ;
+
+        _ilen -=   _ipwr ;
+        _jlen -=   _jpwr ;
 
         real_type  _idel =
             _ilen - _jbal [_last] ;

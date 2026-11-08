@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 Oct., 2024
+     * Last updated: 07 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -726,6 +726,11 @@
                     _hint)  )
             {
             _hint =  this->null_hint();
+            }
+            else
+            {
+            geometry::
+            copy_node_3d(_QPOS, _QTMP);
             }
         }
         else

@@ -35,9 +35,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 20 Apr., 2023
+ * Last updated: 07 Nov., 2026
  *
- * Copyright 2013-2023
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -985,18 +985,18 @@
         {
             real_type _dloc =
             _bmin[_idim] - _ppos[_idim];
-            _dist +=  _dloc ;
+            _dist +=  _dloc * _dloc ;
         }
         else
         if (_ppos[_idim] > _bmax[_idim])
         {
             real_type _dloc =
             _ppos[_idim] - _bmax[_idim];
-            _dist +=  _dloc ;
+            _dist +=  _dloc * _dloc ;
         }
         }
 
-        return ( _dist * _dist ) ;
+        return ( _dist ) ;
     }
 
 /*-------- search collection via recursive aabb traversal */
@@ -1157,6 +1157,10 @@
                            &_jnod->_pmax[ 0]) ;
 
                 _nnpq.push(_ndat)  ;
+            }
+            else
+            {
+                break ;         // heap ensures none less
             }
 
             }

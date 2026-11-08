@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Jul., 2021
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -78,7 +78,7 @@
             enum_data            _kind ;
             std:: size_t         _ndim ;
 
-            real_type            _rrad[3] = {1.} ;
+            real_type            _rrad[3] = {1., 1., 1.} ;
 
             containers::
                 array<real_type> _vpwr ;
@@ -469,9 +469,13 @@
         {
             save_point () ;           // lon-lat to R^3
             save_power () ;           // match to point
+
+            if (this->
+               _kind== jmsh_kind::ellipsoid_mesh)
+                this->_init->_ndim = +3 ;
   
-            this->                    // pts now in R^3
-           _init->_kind = jmsh_kind::euclidean_mesh ;
+            this->_init->             // pts now in R^3
+               _kind = jmsh_kind::euclidean_mesh ;
         }
         } ;
 
@@ -669,7 +673,7 @@
                 = jmsh_kind::euclidean_mesh ;
             _init._ndim = + 3;
 
-            real_type _rrad[3] = { 1. } ;
+            real_type _rrad[3] = { 1., 1., 1. } ;
 
             if (_imsh._radii._size == 3 )
             {

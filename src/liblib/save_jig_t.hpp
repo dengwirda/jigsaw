@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 26 Jul., 2025
+     * Last updated: 08 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -81,6 +81,9 @@
 
             if (_file.is_open())
             {
+                _file << std::setprecision(std::
+                    numeric_limits<real_t>::max_digits10) ;
+
                 _file << "# " << _name << ".jig"
                       << "; created by " ;
                 _file << __JGSWVSTR "\n" ;
@@ -97,14 +100,15 @@
                     _jcfg->_geom_seed << "\n" ;
 
                 _file << "GEOM_FEAT = " <<
-                    _jcfg->_geom_feat << "\n" ;
+                   (_jcfg->_geom_feat ? "TRUE" : "FALSE")
+                         << "\n" ;
 
                 _file << "GEOM_ETA1 = " <<
                     _jcfg->_geom_eta1 << "\n" ;
                 _file << "GEOM_ETA2 = " <<
                     _jcfg->_geom_eta2 << "\n" ;
 
-                _file << "INIT_NEAR = " <<
+                _file << "INIT-NEAR = " <<
                     _jcfg->_init_near << "\n" ;
 
         /*--------------------------------- HFUN keywords */
@@ -119,9 +123,9 @@
                       << "ABSOLUTE\n" ;
 
                 _file << "HFUN_HMIN = " <<
-                    _jcfg->_hfun_hmax << "\n" ;
-                _file << "HFUN_HMAX = " <<
                     _jcfg->_hfun_hmin << "\n" ;
+                _file << "HFUN_HMAX = " <<
+                    _jcfg->_hfun_hmax << "\n" ;
 
         /*--------------------------------- BNDS keywords */
                 if (_jcfg->_bnds_kern ==
@@ -160,15 +164,19 @@
                     _jcfg->_mesh_siz3 << "\n" ;
 
                 _file << "MESH_ORPH = " <<
-                    _jcfg->_mesh_orph << "\n" ;
+                   (_jcfg->_mesh_orph ? "TRUE" : "FALSE")
+                         << "\n" ;
 
                 _file << "MESH_LOCK = " <<
-                    _jcfg->_mesh_lock << "\n" ;
+                   (_jcfg->_mesh_lock ? "TRUE" : "FALSE")
+                         << "\n" ;
 
                 _file << "MESH_TOP1 = " <<
-                    _jcfg->_mesh_top1 << "\n" ;
+                   (_jcfg->_mesh_top1 ? "TRUE" : "FALSE")
+                         << "\n" ;
                 _file << "MESH_TOP2 = " <<
-                    _jcfg->_mesh_top2 << "\n" ;
+                   (_jcfg->_mesh_top2 ? "TRUE" : "FALSE")
+                         << "\n" ;
 
                 _file << "MESH_RAD2 = " <<
                     _jcfg->_mesh_rad2 << "\n" ;
@@ -239,13 +247,17 @@
                     _jcfg->_optm_wmax << "\n" ;
 
                 _file << "OPTM_TRIA = " <<
-                    _jcfg->_optm_tria << "\n" ;
+                   (_jcfg->_optm_tria ? "TRUE" : "FALSE")
+                         << "\n" ;
                 _file << "OPTM_DUAL = " <<
-                    _jcfg->_optm_dual << "\n" ;
+                   (_jcfg->_optm_dual ? "TRUE" : "FALSE")
+                         << "\n" ;
                 _file << "OPTM_DIV_ = " <<
-                    _jcfg->_optm_div_ << "\n" ;
+                   (_jcfg->_optm_div_ ? "TRUE" : "FALSE")
+                         << "\n" ;
                 _file << "OPTM_ZIP_ = " <<
-                    _jcfg->_optm_zip_ << "\n" ;
+                   (_jcfg->_optm_zip_ ? "TRUE" : "FALSE")
+                         << "\n" ;
             }
             else
             {

@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Feb., 2021
+     * Last updated: 06 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -148,6 +148,9 @@
         jigsaw_free_vert2(&_mesh->_vert2);
         jigsaw_free_vert3(&_mesh->_vert3);
         jigsaw_free_reals(&_mesh->_power);
+
+        jigsaw_free_vert2(&_mesh->_seed2);
+        jigsaw_free_vert3(&_mesh->_seed3);
 
         jigsaw_free_reals(&_mesh->_radii);
 

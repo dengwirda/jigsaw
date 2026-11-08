@@ -769,7 +769,6 @@
         item_type
        *_this_item = _this_iter. item() ,
        *_prev_item = _prev_iter. item() ,
-       *_prev_next = _prev_item->next() ,
        *_next_item = _this_item->next() ;
 
         if (_prev_item == nullptr)
@@ -784,7 +783,7 @@
         else
         {/* re-link item neighbours in list mid  */
             __assert (
-                _prev_next  == _this_item &&
+                _prev_item->next() == _this_item &&
             "list.erase: _bad iterator!" ) ;
             _prev_item->next()
                         = _next_item ;
