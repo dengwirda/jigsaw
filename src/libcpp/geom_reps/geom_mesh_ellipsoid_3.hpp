@@ -1228,8 +1228,24 @@
         _rmax[2] = std::max(
         (float)_apos[2], (float)_bpos[2]) ;
 
+    /*- bound the arc on the unit sphere, then scale axes */
+        real_type _anrm[3] = {
+        _apos[0] / this->_radA,
+        _apos[1] / this->_radB,
+        _apos[2] / this->_radC } ;
+
+        real_type _bnrm[3] = {
+        _bpos[0] / this->_radA,
+        _bpos[1] / this->_radB,
+        _bpos[2] / this->_radC } ;
+
         real_type _rlen =
-        geometry::length_3d(_apos, _bpos) ;
+        geometry::length_3d(_anrm, _bnrm) ;
+
+        real_type _rwid[3] = {
+        _rlen * this->_radA,
+        _rlen * this->_radB,
+        _rlen * this->_radC } ;
 
         real_type  _rmid[3] = {
         _apos[0] * (real_type)+.5 +
@@ -1241,18 +1257,18 @@
             } ;
 
         _rmin[0] = std::min(
-        _rmin[0], (float)(_rmid[0]-_rlen));
+        _rmin[0], (float)(_rmid[0]-_rwid[0]));
         _rmin[1] = std::min(
-        _rmin[1], (float)(_rmid[1]-_rlen));
+        _rmin[1], (float)(_rmid[1]-_rwid[1]));
         _rmin[2] = std::min(
-        _rmin[2], (float)(_rmid[2]-_rlen));
+        _rmin[2], (float)(_rmid[2]-_rwid[2]));
 
         _rmax[0] = std::max(
-        _rmax[0], (float)(_rmid[0]+_rlen));
+        _rmax[0], (float)(_rmid[0]+_rwid[0]));
         _rmax[1] = std::max(
-        _rmax[1], (float)(_rmid[1]+_rlen));
+        _rmax[1], (float)(_rmid[1]+_rwid[1]));
         _rmax[2] = std::max(
-        _rmax[2], (float)(_rmid[2]+_rlen));
+        _rmax[2], (float)(_rmid[2]+_rwid[2]));
 
         _rmin[0] = _rmin[0]-(float)_rTOL;
         _rmin[1] = _rmin[1]-(float)_rTOL;
@@ -2192,7 +2208,7 @@
         hits_func &_hfun
         )
     {
-        bool_type _find = true  ;
+        bool_type _find = false ;
 
     /*------------------ calc. initial dir. to surf.-ball */
         real_type _proj[3], _vdir[3] ;
@@ -2232,6 +2248,7 @@
             iptr_type _itag = +0;
             char_type _topo[2] = {2};
 
+            _find = true ;
             _hfun( _proj ,
             _hits, _feat , _topo, _itag) ;
         }
@@ -2262,8 +2279,8 @@
                + _yy * _yy
                + _zz * _zz
               <= (real_type) +1. ) ?
-                 (iptr_type) +0 : 
-                 (iptr_type) -1 ;
+                 (iptr_type) +0  : 
+                 (iptr_type) -1  ;
     }
 
     /*
