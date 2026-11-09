@@ -79,18 +79,29 @@
         dest_type        &&_dest
         )
     {
-        if (_msht._flags == JIGSAW_EUCLIDEAN_MESH)
-            this->_kind = 
-                jmsh_kind::euclidean_mesh;
-        if (_msht._flags == JIGSAW_ELLIPSOID_MESH)
-            this->_kind = 
-                jmsh_kind::ellipsoid_mesh;
-        if (_msht._flags == JIGSAW_EUCLIDEAN_GRID)
-            this->_kind = 
-                jmsh_kind::euclidean_grid;
-        if (_msht._flags == JIGSAW_ELLIPSOID_GRID)
-            this->_kind = 
-                jmsh_kind::ellipsoid_grid;
+        switch (_msht._flags)
+        {
+        case JIGSAW_EUCLIDEAN_MESH:
+            this->_kind = jmsh_kind::euclidean_mesh;
+            break;
+
+        case JIGSAW_ELLIPSOID_MESH:
+            this->_kind = jmsh_kind::ellipsoid_mesh;
+            break;
+
+        case JIGSAW_EUCLIDEAN_GRID:
+            this->_kind = jmsh_kind::euclidean_grid;
+            break;
+
+        case JIGSAW_ELLIPSOID_GRID:
+            this->_kind = jmsh_kind::ellipsoid_grid;
+            break;
+
+        default:
+            this->_errs.push_tail(
+                "Unsupported mesh kind");
+            return;
+        }
 
         if (_msht._xgrid._size > 0) this->_ndim =  +1;
         if (_msht._ygrid._size > 0) this->_ndim =  +2;
