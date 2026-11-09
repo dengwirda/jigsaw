@@ -350,8 +350,8 @@
         }
     /*-------------------------------- open COORD section */
         __normal_call void_type open_coord (
-            std:: size_t _idim,
-            std:: size_t _nrow
+            std:: size_t _nrow,
+            std:: size_t _idim
             )
         {
             if (_idim == +1)

@@ -393,7 +393,7 @@
             push_tail("Invalid COORD!");
         }
 
-        _dest.open_coord(_idim , _nrow);
+        _dest.open_coord(_nrow , _idim);
 
         if (_nrow == 0) return ;
 

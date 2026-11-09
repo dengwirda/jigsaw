@@ -172,8 +172,8 @@
         std::int32_t  /*_kind*/
         ) { }
     __normal_call void_type open_coord (
-        std:: size_t  /*_idim*/,
-        std:: size_t  /*_ndim*/
+        std:: size_t  /*_ndim*/,
+        std:: size_t  /*_idim*/
         ) { }
     __normal_call void_type push_coord (
         std:: size_t  /*_idim*/,
