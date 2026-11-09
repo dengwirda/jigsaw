@@ -99,8 +99,18 @@
 
         default:
             this->_errs.push_tail(
-                "Unsupported mesh kind");
+                "Unsupported msh kind") ;
             return;
+        }
+
+        if (std::max({_msht._vert2._size,
+                      _msht._vert3._size}) > 0 &&
+            std::max({_msht._xgrid._size,
+                      _msht._ygrid._size,
+                      _msht._zgrid._size}) > 0 )
+        {
+            _errs.push_tail(
+                "POINT/COORD mismatch") ;
         }
 
         if (_msht._xgrid._size > 0) this->_ndim =  +1;
@@ -331,6 +341,16 @@
             ) ;
         }
 
+        if (_msht._power._size  >  +0 &&
+            _msht._power._size != 
+            _msht._vert2._size &&
+            _msht._power._size != 
+            _msht._vert3._size  )
+        {
+            _errs.push_tail(
+                "POWER/POINT mismatch") ;
+        }
+
         _dest.open_value( _msht._value._size, 1);
         for (auto _ipos = (size_t) +0 ;
                   _ipos!= _msht._value._size ; 
@@ -341,6 +361,20 @@
             ) ;
         }
 
+        if (_msht._value._size  >  +1 &&
+            _msht._value._size != 
+            _msht._vert2._size &&
+            _msht._value._size != 
+            _msht._vert3._size &&
+            _msht._value._size !=
+        std::max<size_t>(+1u, _msht._xgrid._size) *
+        std::max<size_t>(+1u, _msht._ygrid._size) *
+        std::max<size_t>(+1u, _msht._zgrid._size) )
+        {
+            _errs.push_tail(
+                "VALUE/POINT mismatch") ;
+        }
+
         _dest.open_slope( _msht._slope._size, 1);
         for (auto _ipos = (size_t) +0 ;
                   _ipos!= _msht._slope._size ; 
@@ -349,6 +383,20 @@
             _dest.push_slope( _ipos, 
                 &_msht._slope._data[_ipos]
             ) ;
+        }
+
+        if (_msht._slope._size  >  +1 &&
+            _msht._slope._size != 
+            _msht._vert2._size &&
+            _msht._slope._size != 
+            _msht._vert3._size &&
+            _msht._slope._size !=
+        std::max<size_t>(+1u, _msht._xgrid._size) *
+        std::max<size_t>(+1u, _msht._ygrid._size) *
+        std::max<size_t>(+1u, _msht._zgrid._size) )
+        {
+            _errs.push_tail(
+                "SLOPE/POINT mismatch") ;
         }
 
         _dest.open_bound( _msht._bound._size);
