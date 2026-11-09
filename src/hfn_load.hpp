@@ -553,7 +553,7 @@
             msh_reader_txt _read ;
             std::ifstream _file ;
             _file. open(
-            _jcfg._init_file, std::ifstream::in) ;
+            _jcfg._hfun_file, std::ifstream::in) ;
 
             if (_file.is_open() )
             {
