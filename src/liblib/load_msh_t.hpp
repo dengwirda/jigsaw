@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Feb., 2021
+     * Last updated: 09 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -58,15 +58,14 @@
 
 #   ifdef  __lib_jigsaw
 
-#   include  "../msh_read.hpp"
+#   include  "../parser/msh_read.hpp"
 
     indx_t jigsaw_load_msh_t (              // load msh_t
         char *_fchr,
         jigsaw_msh_t *_jmsh
         )
     {
-        class msht_reader:
-            public jmsh_reader_base
+        class msht_reader: public jmsh_reader_base
         {
         public  :
             jigsaw_msh_t        *_jmsh ;
@@ -625,7 +624,7 @@
 
         try
         {
-            jmsh_reader   _read ;
+            msh_reader_txt _read ;
             std::ifstream _file ;
 
             std::string _fstr(_fchr) ;

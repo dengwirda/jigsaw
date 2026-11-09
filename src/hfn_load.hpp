@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 Feb., 2025
+     * Last updated: 09 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -47,28 +47,18 @@
 
 #   pragma once
 
-#   include "msh_read.hpp"
+#   include "parser/msh_read.hpp"
 
 #   ifndef __HFN_LOAD__
 #   define __HFN_LOAD__
 
     /*
     --------------------------------------------------------
-     * HFUN-FROM-JMSH: read *.JMSH file into HFUN data.
+     * HFUN-READER: local reader for h(x) data.
     --------------------------------------------------------
      */
 
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type hfun_from_jmsh (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        hfun_data &_hfun
-        )
-    {
-        class hfun_reader:
-            public jmsh_reader_base
+    class hfun_reader: public jmsh_reader_base
         {
         public  :
             hfun_data           *_hfun ;
@@ -540,19 +530,34 @@
         }
         } ;
 
+    /*
+    --------------------------------------------------------
+     * READ-HFUN: read HFUN input file.
+    --------------------------------------------------------
+     */
+
+    template <
+    typename      jlog_data
+             >
+    __normal_call iptr_type read_hfun (
+        jcfg_data &_jcfg ,
+        jlog_data &_jlog ,
+        hfun_data &_hfun
+        )
+    {
     /*---------------------------------- parse HFUN. file */
         iptr_type _errv  = __no_error ;
 
         try
         {
-            jmsh_reader   _jmsh ;
+            msh_reader_txt _read ;
             std::ifstream _file ;
             _file. open(
-            _jcfg._hfun_file, std::ifstream::in) ;
+            _jcfg._init_file, std::ifstream::in) ;
 
             if (_file.is_open() )
             {
-                _jmsh.read_file (
+                _read.read_file (
                 _file, hfun_reader(&_hfun));
             }
             else
@@ -565,9 +570,9 @@
             _file.close ();
 
             for (auto _iter  =
-                      _jmsh._errs.head();
+                      _read._errs.head();
                       _iter !=
-                      _jmsh._errs.tend();
+                      _read._errs.tend();
                     ++_iter  )
             {
                 _jlog.push(
@@ -586,508 +591,6 @@
 
     /*
     --------------------------------------------------------
-     * HFUN-FROM-MSHT: read MSH_t data into HFUN data.
-    --------------------------------------------------------
-     */
-
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type hfun_from_msht (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        hfun_data &_hfun ,
-        jigsaw_msh_t const&_hmsh
-        )
-    {
-        iptr_type _errv  = __no_error ;
-
-        try
-        {
-
-        __unreferenced (_jlog) ;
-        __unreferenced (_jcfg) ;
-
-        if (_hmsh._flags ==
-                JIGSAW_EUCLIDEAN_MESH )
-        {
-            if (_hmsh._vert2._size > 0)
-            {
-    /*--------------------------------- euclidean-mesh-2d */
-            _hfun._kind
-                = jmsh_kind::euclidean_mesh ;
-            _hfun._ndim = +2;
-
-            if (_hmsh._vert2._size !=
-                _hmsh._value._size )
-            return __invalid_argument ;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._vert2._size ;
-                    ++_ipos )
-            {
-                typename
-                hfun_data::euclidean_mesh_2d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _hmsh.
-                _vert2._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _hmsh.
-                _vert2._data[_ipos]._ppos[1];
-
-                _hfun._euclidean_mesh_2d.
-                _mesh.push_node(_ndat, false) ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._tria3._size ;
-                    ++_ipos )
-            {
-                typename
-                hfun_data::euclidean_mesh_2d
-                    ::tri3_type _tdat ;
-                _tdat.node(0) = _hmsh.
-                _tria3._data[_ipos]._node[0];
-                _tdat.node(1) = _hmsh.
-                _tria3._data[_ipos]._node[1];
-                _tdat.node(2) = _hmsh.
-                _tria3._data[_ipos]._node[2];
-
-                _hfun._euclidean_mesh_2d.
-                _mesh.push_tri3(_tdat, false) ;
-            }
-
-            _hfun._euclidean_mesh_2d._hval.
-                set_count(_hmsh._value._size) ;
-
-            _hfun._euclidean_mesh_2d._dhdx.
-                set_count(_hmsh._slope._size) ;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._value._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_mesh_2d.
-                    _hval[_ipos] =
-                    _hmsh._value._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._slope._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_mesh_2d.
-                    _dhdx[_ipos] =
-                    _hmsh._slope._data[_ipos] ;
-            }
-
-            }
-            else
-            if (_hmsh._vert3._size > 0)
-            {
-    /*--------------------------------- euclidean-mesh-3d */
-            _hfun._kind
-                = jmsh_kind::euclidean_mesh ;
-            _hfun._ndim = +3;
-
-            if (_hmsh._vert3._size !=
-                _hmsh._value._size )
-            return __invalid_argument ;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._vert3._size ;
-                    ++_ipos )
-            {
-                typename
-                hfun_data::euclidean_mesh_3d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _hmsh.
-                _vert3._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _hmsh.
-                _vert3._data[_ipos]._ppos[1];
-                _ndat.pval(2) = _hmsh.
-                _vert3._data[_ipos]._ppos[2];
-
-                _hfun._euclidean_mesh_3d.
-                _mesh.push_node(_ndat, false) ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._tria4._size ;
-                    ++_ipos )
-            {
-                typename
-                hfun_data::euclidean_mesh_3d
-                    ::tri4_type _tdat ;
-                _tdat.node(0) = _hmsh.
-                _tria4._data[_ipos]._node[0];
-                _tdat.node(1) = _hmsh.
-                _tria4._data[_ipos]._node[1];
-                _tdat.node(2) = _hmsh.
-                _tria4._data[_ipos]._node[2];
-                _tdat.node(3) = _hmsh.
-                _tria4._data[_ipos]._node[3];
-
-                _hfun._euclidean_mesh_3d.
-                _mesh.push_tri4(_tdat, false) ;
-            }
-
-            _hfun._euclidean_mesh_3d._hval.
-                set_count(_hmsh._value._size) ;
-
-            _hfun._euclidean_mesh_3d._dhdx.
-                set_count(_hmsh._slope._size) ;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._value._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_mesh_3d.
-                    _hval[_ipos] =
-                    _hmsh._value._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._slope._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_mesh_3d.
-                    _dhdx[_ipos] =
-                    _hmsh._slope._data[_ipos] ;
-            }
-
-            }
-        }
-        else
-        if (_hmsh._flags ==
-                JIGSAW_ELLIPSOID_MESH )
-        {
-    /*--------------------------------- ellipsoid-mesh-3d */
-            _hfun._kind
-                = jmsh_kind::ellipsoid_mesh ;
-            _hfun._ndim = +2;
-
-            if (_hmsh._vert2._size !=
-                _hmsh._value._size )
-            return __invalid_argument ;
-
-            if (_hmsh._radii._size==+3)
-            {
-            _hfun._ellipsoid_mesh_3d.
-                _radA = _hmsh._radii._data[0] ;
-            _hfun._ellipsoid_mesh_3d.
-                _radB = _hmsh._radii._data[1] ;
-            _hfun._ellipsoid_mesh_3d.
-                _radC = _hmsh._radii._data[2] ;
-            }
-            else
-            if (_hmsh._radii._size==+1)
-            {
-            _hfun._ellipsoid_mesh_3d.
-                _radA = _hmsh._radii._data[0] ;
-            _hfun._ellipsoid_mesh_3d.
-                _radB = _hmsh._radii._data[0] ;
-            _hfun._ellipsoid_mesh_3d.
-                _radC = _hmsh._radii._data[0] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._vert2._size ;
-                    ++_ipos )
-            {
-                typename
-                hfun_data::ellipsoid_mesh_3d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _hmsh.
-                _vert2._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _hmsh.
-                _vert2._data[_ipos]._ppos[1];
-                _ndat.pval(2) = + 0.0 ;
-
-                _hfun._ellipsoid_mesh_3d.
-                _mesh.push_node(_ndat, false) ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._tria3._size ;
-                    ++_ipos )
-            {
-                typename
-                hfun_data::ellipsoid_mesh_3d
-                    ::tri3_type _tdat ;
-                _tdat.node(0) = _hmsh.
-                _tria3._data[_ipos]._node[0];
-                _tdat.node(1) = _hmsh.
-                _tria3._data[_ipos]._node[1];
-                _tdat.node(2) = _hmsh.
-                _tria3._data[_ipos]._node[2];
-
-                _hfun._ellipsoid_mesh_3d.
-                _mesh.push_tri3(_tdat, false) ;
-            }
-
-            _hfun._ellipsoid_mesh_3d._hval.
-                set_count(_hmsh._value._size) ;
-
-            _hfun._ellipsoid_mesh_3d._dhdx.
-                set_count(_hmsh._slope._size) ;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._value._size ;
-                    ++_ipos )
-            {
-                _hfun._ellipsoid_mesh_3d.
-                    _hval[_ipos] =
-                    _hmsh._value._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._slope._size ;
-                    ++_ipos )
-            {
-                _hfun._ellipsoid_mesh_3d.
-                    _dhdx[_ipos] =
-                    _hmsh._slope._data[_ipos] ;
-            }
-
-        }
-        else
-        if (_hmsh._flags ==
-                JIGSAW_EUCLIDEAN_GRID )
-        {
-            if (_hmsh._zgrid._size== 0)
-            {
-    /*--------------------------------- euclidean-grid-2d */
-            _hfun._kind
-                = jmsh_kind::euclidean_grid ;
-            _hfun._ndim = +2;
-
-            _hfun._euclidean_grid_2d._xpos.
-                set_count(_hmsh._xgrid._size) ;
-            _hfun._euclidean_grid_2d._ypos.
-                set_count(_hmsh._ygrid._size) ;
-
-            _hfun._euclidean_grid_2d._hmat.
-                set_count(_hmsh._value._size) ;
-
-            _hfun._euclidean_grid_2d._dhdx.
-                set_count(_hmsh._slope._size) ;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._xgrid._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_grid_2d.
-                    _xpos[_ipos] =
-                    _hmsh._xgrid._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._ygrid._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_grid_2d.
-                    _ypos[_ipos] =
-                    _hmsh._ygrid._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._value._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_grid_2d.
-                    _hmat[_ipos] =
-                    _hmsh._value._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._slope._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_grid_2d.
-                    _dhdx[_ipos] =
-                    _hmsh._slope._data[_ipos] ;
-            }
-
-            }
-            else
-            if (_hmsh._zgrid._size!= 0)
-            {
-    /*--------------------------------- euclidean-grid-3d */
-            _hfun._kind
-                = jmsh_kind::euclidean_grid ;
-            _hfun._ndim = +3;
-
-            _hfun._euclidean_grid_3d._xpos.
-                set_count(_hmsh._xgrid._size) ;
-            _hfun._euclidean_grid_3d._ypos.
-                set_count(_hmsh._ygrid._size) ;
-            _hfun._euclidean_grid_3d._zpos.
-                set_count(_hmsh._zgrid._size) ;
-
-            _hfun._euclidean_grid_3d._hmat.
-                set_count(_hmsh._value._size) ;
-
-            _hfun._euclidean_grid_3d._dhdx.
-                set_count(_hmsh._slope._size) ;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._xgrid._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_grid_3d.
-                    _xpos[_ipos] =
-                    _hmsh._xgrid._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._ygrid._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_grid_3d.
-                    _ypos[_ipos] =
-                    _hmsh._ygrid._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._zgrid._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_grid_3d.
-                    _zpos[_ipos] =
-                    _hmsh._zgrid._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._value._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_grid_3d.
-                    _hmat[_ipos] =
-                    _hmsh._value._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._slope._size ;
-                    ++_ipos )
-            {
-                _hfun._euclidean_grid_3d.
-                    _dhdx[_ipos] =
-                    _hmsh._slope._data[_ipos] ;
-            }
-
-            }
-        }
-        else
-        if (_hmsh._flags ==
-                JIGSAW_ELLIPSOID_GRID )
-        {
-            if (_hmsh._zgrid._size== 0)
-            {
-    /*--------------------------------- ellipsoid-grid-3d */
-            _hfun._kind
-                = jmsh_kind::ellipsoid_grid ;
-            _hfun._ndim = +2;
-
-            if (_hmsh._radii._size==+3)
-            {
-            _hfun._ellipsoid_grid_3d.
-                _radA = _hmsh._radii._data[0] ;
-            _hfun._ellipsoid_grid_3d.
-                _radB = _hmsh._radii._data[1] ;
-            _hfun._ellipsoid_grid_3d.
-                _radC = _hmsh._radii._data[2] ;
-            }
-            else
-            if (_hmsh._radii._size==+1)
-            {
-            _hfun._ellipsoid_grid_3d.
-                _radA = _hmsh._radii._data[0] ;
-            _hfun._ellipsoid_grid_3d.
-                _radB = _hmsh._radii._data[0] ;
-            _hfun._ellipsoid_grid_3d.
-                _radC = _hmsh._radii._data[0] ;
-            }
-
-            _hfun._ellipsoid_grid_3d._xpos.
-                set_count(_hmsh._xgrid._size) ;
-            _hfun._ellipsoid_grid_3d._ypos.
-                set_count(_hmsh._ygrid._size) ;
-
-            _hfun._ellipsoid_grid_3d._hmat.
-                set_count(_hmsh._value._size) ;
-
-            _hfun._ellipsoid_grid_3d._dhdx.
-                set_count(_hmsh._slope._size) ;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._xgrid._size ;
-                    ++_ipos )
-            {
-                _hfun._ellipsoid_grid_3d.
-                    _xpos[_ipos] =
-                    _hmsh._xgrid._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._ygrid._size ;
-                    ++_ipos )
-            {
-                _hfun._ellipsoid_grid_3d.
-                    _ypos[_ipos] =
-                    _hmsh._ygrid._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._value._size ;
-                    ++_ipos )
-            {
-                _hfun._ellipsoid_grid_3d.
-                    _hmat[_ipos] =
-                    _hmsh._value._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _hmsh._slope._size ;
-                    ++_ipos )
-            {
-                _hfun._ellipsoid_grid_3d.
-                    _dhdx[_ipos] =
-                    _hmsh._slope._data[_ipos] ;
-            }
-
-            }
-        }
-
-        }
-        catch (...)
-        {
-            _errv = __unknown_error ;
-        }
-
-        return (  _errv ) ;
-    }
-
-    /*
-    --------------------------------------------------------
-     * READ-HFUN: read HFUN input file.
-    --------------------------------------------------------
-     */
-
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type read_hfun (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        hfun_data &_hfun
-        )
-    {
-        return hfun_from_jmsh (
-                _jcfg, _jlog, _hfun ) ;
-    }
-
-    /*
-    --------------------------------------------------------
      * COPY-HFUN: copy HFUN input data.
     --------------------------------------------------------
      */
@@ -1102,8 +605,46 @@
         jigsaw_msh_t const&_hmsh
         )
     {
-        return hfun_from_msht (
-           _jcfg, _jlog, _hfun, _hmsh);
+    /*---------------------------------- parse HFUN. data */
+        iptr_type _errv  = __no_error ;
+
+        try
+        {
+            __unreferenced (_jlog) ;
+            __unreferenced (_jcfg) ;
+
+            msh_reader_api  _read  ;
+            if ( true )
+            {
+                _read.read_data (
+                _hmsh, hfun_reader(&_hfun));
+            }
+            else
+            {
+                _jlog.push(
+            "**parse error: struct is null!\n" ) ;
+
+                _errv = __invalid_argument ;
+            }
+
+            for (auto _iter  =
+                      _read._errs.head();
+                      _iter !=
+                      _read._errs.tend();
+                    ++_iter  )
+            {
+                _jlog.push(
+            "**parse error: " + * _iter + "\n" ) ;
+
+                _errv = __invalid_argument ;
+            }
+        }
+        catch (...)
+        {
+            _errv = __unknown_error ;
+        }
+
+        return (  _errv ) ;
     }
 
     /*

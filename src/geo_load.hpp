@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 Jul., 2021
+     * Last updated: 09 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -47,28 +47,18 @@
 
 #   pragma once
 
-#   include "msh_read.hpp"
+#   include "parser/msh_read.hpp"
 
 #   ifndef __GEO_LOAD__
 #   define __GEO_LOAD__
 
     /*
     --------------------------------------------------------
-     * GEOM-FROM-JMSH: read *.JMSH file into GEOM data.
+     * GEOM-READER: local reader for geom data.
     --------------------------------------------------------
      */
 
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type geom_from_jmsh (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        geom_data &_geom
-        )
-    {
-        class geom_reader:
-            public jmsh_reader_base
+    class geom_reader: public jmsh_reader_base
         {
         public  :
             geom_data           *_geom ;
@@ -365,19 +355,34 @@
         }
         } ;
 
+    /*
+    --------------------------------------------------------
+     * READ-GEOM: read geometry input file.
+    --------------------------------------------------------
+     */
+
+    template <
+    typename      jlog_data
+             >
+    __normal_call iptr_type read_geom (
+        jcfg_data &_jcfg ,
+        jlog_data &_jlog ,
+        geom_data &_geom
+        )
+    {
     /*---------------------------------- parse GEOM. file */
         iptr_type _errv  = __no_error ;
 
         try
         {
-            jmsh_reader   _jmsh ;
+            msh_reader_txt _read ;
             std::ifstream _file ;
             _file. open(
             _jcfg._geom_file, std::ifstream::in) ;
 
             if (_file.is_open() )
             {
-                _jmsh.read_file (
+                _read.read_file (
                 _file, geom_reader(&_geom));
             }
             else
@@ -390,9 +395,9 @@
             _file.close ();
 
             for (auto _iter  =
-                      _jmsh._errs.head();
+                      _read._errs.head();
                       _iter !=
-                      _jmsh._errs.tend();
+                      _read._errs.tend();
                     ++_iter  )
             {
                 _jlog.push(
@@ -411,342 +416,6 @@
 
     /*
     --------------------------------------------------------
-     * GEOM-FROM-MSHT: read MSH_t data into GEOM data.
-    --------------------------------------------------------
-     */
-
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type geom_from_msht (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        geom_data &_geom ,
-        jigsaw_msh_t const&_gmsh
-        )
-    {
-        iptr_type _errv  = __no_error ;
-
-        try
-        {
-
-        __unreferenced (_jlog) ;
-        __unreferenced (_jcfg) ;
-
-        if (_gmsh._flags ==
-                JIGSAW_EUCLIDEAN_MESH )
-        {
-            if (_gmsh._vert2._size > 0)
-            {
-    /*--------------------------------- euclidean-mesh-2d */
-            _geom._kind
-                = jmsh_kind::euclidean_mesh ;
-            _geom._ndim = +2;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._vert2._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::euclidean_mesh_2d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _gmsh.
-                    _vert2._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _gmsh.
-                    _vert2._data[_ipos]._ppos[1];
-                _ndat.itag () = _gmsh.
-                    _vert2._data[_ipos]._itag ;
-
-                _geom._euclidean_mesh_2d.
-                _tria.push_node(_ndat , false) ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._seed2._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::euclidean_mesh_2d
-                    ::seed_type _sdat ;
-                _sdat.pval(0) = _gmsh.
-                    _seed2._data[_ipos]._ppos[0];
-                _sdat.pval(1) = _gmsh.
-                    _seed2._data[_ipos]._ppos[1];
-                _sdat.itag () = _gmsh.
-                    _seed2._data[_ipos]._itag ;
-
-                _sdat.mark () = +   0 ;
-                _sdat.self () = +   1 ;
-
-                _geom._euclidean_mesh_2d.
-                      _seed.push_tail(_sdat);
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._edge2._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::euclidean_mesh_2d
-                    ::edge_type _edat ;
-                _edat.node(0) = _gmsh.
-                    _edge2._data[_ipos]._node[0];
-                _edat.node(1) = _gmsh.
-                    _edge2._data[_ipos]._node[1];
-                _edat.itag () = _gmsh.
-                    _edge2._data[_ipos]._itag ;
-
-                _geom._euclidean_mesh_2d.
-                _tria.push_edge(_edat , false) ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._bound._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::euclidean_mesh_2d
-                    ::part_data _pdat ;
-                _pdat.itag () = _gmsh.
-                    _bound._data[_ipos]._itag ;
-                _pdat.indx () = _gmsh.
-                    _bound._data[_ipos]._indx ;
-                _pdat.kind () = _gmsh.
-                    _bound._data[_ipos]._kind ;
-
-                _geom._euclidean_mesh_2d.
-                      _part.push(_pdat) ;
-            }
-
-            }
-            else
-            if (_gmsh._vert3._size > 0)
-            {
-    /*--------------------------------- euclidean-mesh-3d */
-            _geom._kind
-                = jmsh_kind::euclidean_mesh ;
-            _geom._ndim = +3;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._vert3._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::euclidean_mesh_3d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _gmsh.
-                    _vert3._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _gmsh.
-                    _vert3._data[_ipos]._ppos[1];
-                _ndat.pval(2) = _gmsh.
-                    _vert3._data[_ipos]._ppos[2];
-                _ndat.itag () = _gmsh.
-                    _vert3._data[_ipos]._itag ;
-
-                _geom._euclidean_mesh_3d.
-                _tria.push_node(_ndat , false) ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._seed3._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::euclidean_mesh_3d
-                    ::seed_type _sdat ;
-                _sdat.pval(0) = _gmsh.
-                    _seed3._data[_ipos]._ppos[0];
-                _sdat.pval(1) = _gmsh.
-                    _seed3._data[_ipos]._ppos[1];
-                _sdat.pval(2) = _gmsh.
-                    _seed3._data[_ipos]._ppos[2];
-                _sdat.itag () = _gmsh.
-                    _seed3._data[_ipos]._itag ;
-
-                _sdat.mark () = +   0 ;
-                _sdat.self () = +   1 ;
-
-                _geom._euclidean_mesh_3d.
-                      _seed.push_tail(_sdat);
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._edge2._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::euclidean_mesh_3d
-                    ::edge_type _edat ;
-                _edat.node(0) = _gmsh.
-                    _edge2._data[_ipos]._node[0];
-                _edat.node(1) = _gmsh.
-                    _edge2._data[_ipos]._node[1];
-                _edat.itag () = _gmsh.
-                    _edge2._data[_ipos]._itag ;
-
-                _geom._euclidean_mesh_3d.
-                _tria.push_edge(_edat , false) ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._tria3._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::euclidean_mesh_3d
-                    ::tri3_type _tdat ;
-                _tdat.node(0) = _gmsh.
-                    _tria3._data[_ipos]._node[0];
-                _tdat.node(1) = _gmsh.
-                    _tria3._data[_ipos]._node[1];
-                _tdat.node(2) = _gmsh.
-                    _tria3._data[_ipos]._node[2];
-                _tdat.itag () = _gmsh.
-                    _tria3._data[_ipos]._itag ;
-
-                _geom._euclidean_mesh_3d.
-                _tria.push_tri3(_tdat , false) ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._bound._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::euclidean_mesh_3d
-                    ::part_data _pdat ;
-                _pdat.itag () = _gmsh.
-                    _bound._data[_ipos]._itag ;
-                _pdat.indx () = _gmsh.
-                    _bound._data[_ipos]._indx ;
-                _pdat.kind () = _gmsh.
-                    _bound._data[_ipos]._kind ;
-
-                _geom._euclidean_mesh_3d.
-                      _part.push(_pdat) ;
-            }
-
-            }
-        }
-        else
-        if (_gmsh._flags ==
-                JIGSAW_ELLIPSOID_MESH )
-        {
-    /*--------------------------------- ellipsoid-mesh-3d */
-            _geom._kind
-                = jmsh_kind::ellipsoid_mesh ;
-            _geom._ndim = +2;
-
-            if (_gmsh._radii._size==+3)
-            {
-            _geom._ellipsoid_mesh_3d.
-                _radA = _gmsh._radii._data[0] ;
-            _geom._ellipsoid_mesh_3d.
-                _radB = _gmsh._radii._data[1] ;
-            _geom._ellipsoid_mesh_3d.
-                _radC = _gmsh._radii._data[2] ;
-            }
-            else
-            if (_gmsh._radii._size==+1)
-            {
-            _geom._ellipsoid_mesh_3d.
-                _radA = _gmsh._radii._data[0] ;
-            _geom._ellipsoid_mesh_3d.
-                _radB = _gmsh._radii._data[0] ;
-            _geom._ellipsoid_mesh_3d.
-                _radC = _gmsh._radii._data[0] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._vert2._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::ellipsoid_mesh_3d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _gmsh.
-                    _vert2._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _gmsh.
-                    _vert2._data[_ipos]._ppos[1];
-                _ndat.pval(2) = + 0.0 ;
-                _ndat.itag () = _gmsh.
-                    _vert2._data[_ipos]._itag ;
-
-                _geom._ellipsoid_mesh_3d.
-                _mesh.push_node(_ndat , false) ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._seed2._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::ellipsoid_mesh_3d
-                    ::seed_type _sdat ;
-                _sdat.pval(0) = _gmsh.
-                    _seed2._data[_ipos]._ppos[0];
-                _sdat.pval(1) = _gmsh.
-                    _seed2._data[_ipos]._ppos[1];
-                _sdat.pval(2) = + 0.0 ;
-                _sdat.itag () = _gmsh.
-                    _seed2._data[_ipos]._itag ;
-
-                _sdat.mark () = +   0 ;
-                _sdat.self () = +   1 ;
-
-                _geom._ellipsoid_mesh_3d.
-                      _seed.push_tail(_sdat);
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _gmsh._edge2._size ;
-                    ++_ipos )
-            {
-                typename
-                geom_data::ellipsoid_mesh_3d
-                    ::edge_type _edat ;
-                _edat.node(0) = _gmsh.
-                    _edge2._data[_ipos]._node[0];
-                _edat.node(1) = _gmsh.
-                    _edge2._data[_ipos]._node[1];
-                _edat.itag () = _gmsh.
-                    _edge2._data[_ipos]._itag ;
-
-                _geom._ellipsoid_mesh_3d.
-                _mesh.push_edge(_edat , false) ;
-            }
-        }
-
-        }
-        catch (...)
-        {
-            _errv = __unknown_error ;
-        }
-
-        return (  _errv ) ;
-    }
-
-    /*
-    --------------------------------------------------------
-     * READ-GEOM: read geometry input file.
-    --------------------------------------------------------
-     */
-
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type read_geom (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        geom_data &_geom
-        )
-    {
-        return geom_from_jmsh (
-                _jcfg, _jlog, _geom ) ;
-    }
-
-    /*
-    --------------------------------------------------------
      * COPY-GEOM: read geometry input data.
     --------------------------------------------------------
      */
@@ -761,8 +430,46 @@
         jigsaw_msh_t const&_gmsh
         )
     {
-        return geom_from_msht (
-           _jcfg, _jlog, _geom, _gmsh);
+    /*---------------------------------- parse GEOM. data */
+        iptr_type _errv  = __no_error ;
+
+        try
+        {
+            __unreferenced (_jlog) ;
+            __unreferenced (_jcfg) ;
+
+            msh_reader_api  _read  ;
+            if ( true )
+            {
+                _read.read_data (
+                _gmsh, geom_reader(&_geom));
+            }
+            else
+            {
+                _jlog.push(
+            "**parse error: struct is null!\n" ) ;
+
+                _errv = __invalid_argument ;
+            }
+
+            for (auto _iter  =
+                      _read._errs.head();
+                      _iter !=
+                      _read._errs.tend();
+                    ++_iter  )
+            {
+                _jlog.push(
+            "**parse error: " + * _iter + "\n" ) ;
+
+                _errv = __invalid_argument ;
+            }
+        }
+        catch (...)
+        {
+            _errv = __unknown_error ;
+        }
+
+        return (  _errv ) ;
     }
 
     /*
