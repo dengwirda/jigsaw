@@ -151,8 +151,35 @@
                 "Can't open " + _file +
                     " for read.: " + std::to_string(_retv));
 
-        if ((_retv = nc_get_att(_ncid,
-                _vtag, _name.c_str (), (void *) _vals)))
+        if constexpr (std::is_same_v<data_type, double>)
+        {
+            _retv = nc_get_att_double(
+                _ncid, _vtag, _name.c_str(), _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, float>)
+        {
+            _retv = nc_get_att_float(
+                _ncid, _vtag, _name.c_str(), _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, long>)
+        {
+            _retv = nc_get_att_long(
+                _ncid, _vtag, _name.c_str(), _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, int>)
+        {
+            _retv = nc_get_att_int(
+                _ncid, _vtag, _name.c_str(), _vals);
+        }
+        else
+        {
+            static_assert(std::is_same_v<data_type, void>,
+                "ncutil::get_att: type not supported");
+        }
+        if (_retv != 0)
         {
             nc_close(_ncid) ;
             throw std::invalid_argument(
