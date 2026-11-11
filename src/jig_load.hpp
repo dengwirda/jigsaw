@@ -47,7 +47,7 @@
 
 #   pragma once
 
-#   include "jig_read.hpp"
+#   include "parser/jig_read.hpp"
 
 #   ifndef __JIG_LOAD__
 #   define __JIG_LOAD__

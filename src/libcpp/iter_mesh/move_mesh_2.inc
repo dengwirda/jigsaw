@@ -232,10 +232,10 @@
         {
     /*---------------- push update along search direction */
             real_type _scal = _SCAL;
-            real_type _zeta = _opts._optm_zeta *
+            real_type _zeta = _opts.zeta() *
                 std::min ((real_type)1.,_scal) ;
 
-            real_type _beta = _opts._optm_beta ;
+            real_type _beta = _opts.beta() ;
 
             for (auto _idim  =
             pred_type::geom_dims; _idim-- != +0; )
@@ -412,11 +412,11 @@
         {
             real_type _wmov;
             real_type _scal = _SCAL;
-            real_type _zeta = _opts._optm_zeta *
+            real_type _zeta = _opts.zeta() *
                 (real_type)3./4. *
             std::min((real_type)1.,_scal) ;
 
-            real_type _beta = _opts._optm_beta ;
+            real_type _beta = _opts.beta() ;
 
     /*---------------- momentum-type bias for search dir. */
             _step =

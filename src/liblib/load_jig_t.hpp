@@ -58,7 +58,7 @@
 
 #   ifdef  __lib_jigsaw
 
-#   include  "../jig_read.hpp"
+#   include  "../parser/jig_read.hpp"
 
     indx_t jigsaw_load_jig_t (              // load jig_t
         char *_fchr,

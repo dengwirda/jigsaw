@@ -106,12 +106,6 @@
 #       define JIGSAW_KERN_AREA_LEN  +410
 #       define JIGSAW_KERN_SKEW_COS  +411
 
-    /*
-    --------------------------------------------------------
-     * bit indices for MESH_RULE refinement options.
-    --------------------------------------------------------
-     */
-
 #       define JIGSAW_MESH_RULE_SINK  +3
 #       define JIGSAW_MESH_RULE_OFFH  +4
 #       define JIGSAW_MESH_RULE_OFFC  +5
