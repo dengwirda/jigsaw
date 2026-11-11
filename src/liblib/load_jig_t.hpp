@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 26 Jul., 2025
+     * Last updated: 11 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -107,6 +107,20 @@
         {
             this->
            _jjig->_geom_feat = _feat;
+        }
+        __normal_call void_type push_geom_phi1 (
+            double        _phi1
+            )
+        {
+            this->
+           _jjig->_mesh_phi1 = _phi1;
+        }
+        __normal_call void_type push_geom_phi2 (
+            double        _phi2
+            )
+        {
+            this->
+           _jjig->_mesh_phi2 = _phi2;
         }
         __normal_call void_type push_geom_eta1 (
             double        _eta1
@@ -186,6 +200,13 @@
         {
             this->
            _jjig->_mesh_iter = _iter;
+        }
+        __normal_call void_type push_mesh_rule (
+            std::int32_t  _rule
+            )
+        {
+            this->
+           _jjig->_mesh_rule = _rule;
         }
         __normal_call void_type push_mesh_siz1 (
             double        _siz1

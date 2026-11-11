@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Nov., 2026
+     * Last updated: 11 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -538,13 +538,6 @@
             __unreferenced(_jlog) ;
 
     /*------------------------------------- MISC keywords */
-            _jcfg._verbosity =
-                         _jjig._verbosity ;
-            _jcfg._mesh_opts.
-                verb() = _jjig._verbosity ;
-            _jcfg._iter_opts.
-                verb() = _jjig._verbosity ;
-
             if (_jjig._numthread <= 0 )
         #   ifdef  __use_openmp
                 _jjig._numthread =
@@ -553,12 +546,14 @@
                 _jjig._numthread = +1 ;
         #   endif//__use_openmp
 
+            _jcfg._verbosity = _jjig._verbosity ;
             _jcfg._numthread =
                          _jjig._numthread ;
-            _jcfg._mesh_opts.
-                nprt() = _jjig._numthread ;
-            _jcfg._iter_opts.
-                nprt() = _jjig._numthread ;
+
+            static_cast<jigsaw_jig_t&>(
+                _jcfg._mesh_opts) = _jjig ;
+            static_cast<jigsaw_jig_t&>(
+                _jcfg._iter_opts) = _jjig ;
 
     /*------------------------------------- BNDS keywords */
             if (_jjig._bnds_kern ==
@@ -572,20 +567,6 @@
                 jcfg_data::bnds_pred::bnd_dual ;
             else
             _errv = __invalid_useropts ;
-
-    /*------------------------------------- GEOM keywords */
-            _jcfg._mesh_opts.
-                seed() = _jjig._geom_seed ;
-            _jcfg._mesh_opts.
-                feat() = _jjig._geom_feat ;
-            _jcfg._mesh_opts.
-                eta1() = _jjig._geom_eta1 ;
-            _jcfg._mesh_opts.
-                eta2() = _jjig._geom_eta2 ;
-
-    /*------------------------------------- INIT keywords */
-            _jcfg._mesh_opts.
-                near() = _jjig._init_near ;
 
     /*------------------------------------- HFUN keywords */
             if (_jjig._hfun_scal ==
@@ -623,50 +604,6 @@
             else
             _errv = __invalid_useropts ;
 
-            _jcfg._mesh_opts.
-                dims() = _jjig._mesh_dims ;
-            _jcfg._mesh_opts.
-                iter() = _jjig._mesh_iter ;
-
-            _jcfg._mesh_opts.
-                siz1() = _jjig._mesh_siz1 ;
-            _jcfg._mesh_opts.
-                siz2() = _jjig._mesh_siz2 ;
-            _jcfg._mesh_opts.
-                siz3() = _jjig._mesh_siz3 ;
-
-            _jcfg._mesh_opts.
-                orph() = _jjig._mesh_orph ;
-
-            _jcfg._mesh_opts.
-                lock() = _jjig._mesh_lock ;
-
-            _jcfg._mesh_opts.
-                top1() = _jjig._mesh_top1 ;
-            _jcfg._mesh_opts.
-                top2() = _jjig._mesh_top2 ;
-
-            _jcfg._mesh_opts.
-                rad2() = _jjig._mesh_rad2 ;
-            _jcfg._mesh_opts.
-                rad3() = _jjig._mesh_rad3 ;
-            _jcfg._mesh_opts.
-                off2() = _jjig._mesh_off2 ;
-            _jcfg._mesh_opts.
-                off3() = _jjig._mesh_off3 ;
-            _jcfg._mesh_opts.
-                snk2() = _jjig._mesh_snk2 ;
-            _jcfg._mesh_opts.
-                snk3() = _jjig._mesh_snk3 ;
-
-            _jcfg._mesh_opts.
-                eps1() = _jjig._mesh_eps1 ;
-            _jcfg._mesh_opts.
-                eps2() = _jjig._mesh_eps2 ;
-
-            _jcfg._mesh_opts.
-                vol3() = _jjig._mesh_vol3 ;
-
     /*------------------------------------- ITER keywords */
             if (_jjig._optm_kern ==
                     JIGSAW_KERN_ODT_DQDX)
@@ -696,33 +633,6 @@
                 jcfg_data::iter_cost::skew_cos ;
             else
             _errv = __invalid_useropts ;
-
-            _jcfg._iter_opts.
-                iter() = _jjig._optm_iter ;
-
-            _jcfg._iter_opts.
-                beta() = _jjig._optm_beta ;
-            _jcfg._iter_opts.
-                zeta() = _jjig._optm_zeta ;
-
-            _jcfg._iter_opts.
-                qtol() = _jjig._optm_qtol ;
-            _jcfg._iter_opts.
-                qlim() = _jjig._optm_qlim ;
-
-            _jcfg._iter_opts.
-                wmin() = _jjig._optm_wmin ;
-            _jcfg._iter_opts.
-                wmax() = _jjig._optm_wmax ;
-
-            _jcfg._iter_opts.
-                tria() = _jjig._optm_tria ;
-            _jcfg._iter_opts.
-                dual() = _jjig._optm_dual ;
-            _jcfg._iter_opts.
-                div_() = _jjig._optm_div_ ;
-            _jcfg._iter_opts.
-                zip_() = _jjig._optm_zip_ ;
 
         }
         catch (...)
@@ -1087,6 +997,8 @@
 
         _jlog.push("  MESH-ITER = " +
             __pushIVAL(_jcfg._mesh_opts.iter()));
+        _jlog.push("  MESH-RULE = " +
+            __pushIVAL(_jcfg._mesh_opts.rule()));
         _jlog.push("  MESH-DIMS = " +
             __pushIVAL(_jcfg._mesh_opts.dims()));
 

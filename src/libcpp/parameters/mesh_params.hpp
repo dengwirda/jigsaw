@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 Apr., 2024
+     * Last updated: 11 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -64,7 +64,7 @@
     typename R ,
     typename I
              >
-    class mesh_params
+    class mesh_params : public jigsaw_jig_t
         {
         public  :
 
@@ -75,60 +75,19 @@
 
         enum node_kind {        // "off-centre" descriptors
         null_kind = +0 ,
-        fail_kind ,
-        circ_kind ,             // "circ"-type refinement
-        sink_kind ,             // "sink"-type off-centre
-        offH_kind ,             // "size"-type off-centre
-        offC_kind ,             // "circ"-type off-centre
-        offE_kind ,             // "err."-type off-centre
-        offT_kind ,             // "topo"-type off-centre
+        fail_kind = +1 ,
+        circ_kind = +2 ,        // "circ"-type refinement
+        sink_kind = JIGSAW_MESH_RULE_SINK ,
+                                // "sink"-type off-centre
+        offH_kind = JIGSAW_MESH_RULE_OFFH ,
+                                // "size"-type off-centre
+        offC_kind = JIGSAW_MESH_RULE_OFFC ,
+                                // "circ"-type off-centre
+        offE_kind = JIGSAW_MESH_RULE_OFFE ,
+                                // "err."-type off-centre
+        offT_kind = JIGSAW_MESH_RULE_OFFT ,
+                                // "topo"-type off-centre
         last_kind }    ;
-
-        iptr_type   _verb ;     // logfile output verbosity
-        iptr_type   _nprt ;     // no. threads
-
-        iptr_type   _seed ;     // no. init. "seed" nodes
-
-        real_type   _phi1 ;     // 1-"hard" angle tolerance
-        real_type   _phi2 ;     // 2-"hard" angle tolerance
-
-        real_type   _eta1 ;     // 1-"soft" angle tolerance
-        real_type   _eta2 ;     // 2-"soft" angle tolerance
-
-        bool_type   _feat ;     // true for feature calc.
-
-        real_type   _near ;     // "zip" tolerance for IC's
-
-        iptr_type   _dims ;     // topo. dimensions to mesh
-
-        iptr_type   _iter ;     // max. num. refine iter.
-
-        iptr_type   _rule ;     // rule for cell refinement
-
-        real_type   _siz1 ;     // 1-dim. element size mul.
-        real_type   _siz2 ;     // 2-dim. element size mul.
-        real_type   _siz3 ;     // 3-dim. element size mul.
-
-        real_type   _eps1 ;     // 1-dim. 1-hausdorff error
-        real_type   _eps2 ;     // 2-dim. 2-hausdorff error
-
-        real_type   _rad2 ;     // 2-dim. radius-edge ratio
-        real_type   _rad3 ;     // 3-dim. radius-edge ratio
-
-        real_type   _off2 ;     // 2-off. radius-edge ratio
-        real_type   _off3 ;     // 3-off. radius-edge ratio
-
-        real_type   _snk2 ;     // 2-dim. sink "safe" ratio
-        real_type   _snk3 ;     // 3-dim. sink "safe" ratio
-
-        real_type   _vol3 ;     // volume-length ratio
-
-        bool_type   _orph ;     // allow "orphaned" facets
-
-        bool_type   _lock ;     // stop subface refinement
-
-        bool_type   _top1 ;     // impose 1-"manifold-ness"
-        bool_type   _top2 ;     // impose 2-"manifold-ness"
 
         public  :
 
@@ -136,13 +95,11 @@
         __inline_call iptr_type init_rule (
             )
         {
-            iptr_type _rule = +0 ;
-            __setbit( _rule, offH_kind) ;
-            __setbit( _rule, offC_kind) ;
-            __setbit( _rule, offT_kind) ;
-            __setbit( _rule, sink_kind) ;
-
-            return _rule ;
+            return (iptr_type)(
+                (1 << JIGSAW_MESH_RULE_OFFH) |
+                (1 << JIGSAW_MESH_RULE_OFFC) |
+                (1 << JIGSAW_MESH_RULE_OFFT) |
+                (1 << JIGSAW_MESH_RULE_SINK)) ;
         }
 
         public  :
@@ -151,341 +108,269 @@
         __inline_call mesh_params  (
             )
         {   // load default values
-            jigsaw_jig_t _jjig ;
-            jigsaw_null_jig_t( &_jjig ) ;
-
-            this->_verb =
-            iptr_type(_jjig._verbosity) ;
-            this->_nprt =
-            iptr_type(_jjig._numthread) ;
-
-            this->_seed =
-            iptr_type(_jjig._geom_seed) ;
-
-            this->_phi1 = real_type(60) ;
-            this->_phi2 = real_type(60) ;
-
-            this->_eta1 =
-            real_type(_jjig._geom_eta1) ;
-            this->_eta2 =
-            real_type(_jjig._geom_eta2) ;
-
-            this->_feat =
-            bool_type(_jjig._geom_feat) ;
-
-            this->_near =
-            real_type(_jjig._init_near) ;
-
-            this->_dims =
-            iptr_type(_jjig._mesh_dims) ;
-            this->_iter =
-            iptr_type(_jjig._mesh_iter) ;
-
-            this->_rule =
-            iptr_type(init_rule()) ;
-
-            this->_siz1 =
-            real_type(_jjig._mesh_siz1) ;
-            this->_siz2 =
-            real_type(_jjig._mesh_siz2) ;
-            this->_siz3 =
-            real_type(_jjig._mesh_siz3) ;
-
-            this->_eps1 =
-            real_type(_jjig._mesh_eps1) ;
-            this->_eps2 =
-            real_type(_jjig._mesh_eps2) ;
-
-            this->_rad2 =
-            real_type(_jjig._mesh_rad2) ;
-            this->_rad3 =
-            real_type(_jjig._mesh_rad3) ;
-
-            this->_off2 =
-            real_type(_jjig._mesh_off2) ;
-            this->_off3 =
-            real_type(_jjig._mesh_off3) ;
-
-            this->_snk2 =
-            real_type(_jjig._mesh_snk2) ;
-            this->_snk3 =
-            real_type(_jjig._mesh_snk3) ;
-
-            this->_vol3 =
-            real_type(_jjig._mesh_vol3) ;
-
-            this->_orph = 
-            bool_type(_jjig._mesh_orph) ;
-
-            this->_lock = 
-            bool_type(_jjig._mesh_lock) ;
-
-            this->_top1 =
-            bool_type(_jjig._mesh_top1) ;
-            this->_top2 =
-            bool_type(_jjig._mesh_top2) ;
+            jigsaw_null_jig_t(this) ;
         }
 
     /*------------------------------------ "write" access */
         __inline_call iptr_type      & verb (
             )
-        {   return  this->_verb ;
+        {   return  this->_verbosity ;
         }
         __inline_call iptr_type      & nprt (
             )
-        {   return  this->_nprt ;
+        {   return  this->_numthread ;
         }
 
         __inline_call iptr_type      & rule (
             )
-        {   return  this->_rule ;
+        {   return  this->_mesh_rule ;
         }
 
         __inline_call iptr_type      & iter (
             )
-        {   return  this->_iter ;
+        {   return  this->_mesh_iter ;
         }
 
         __inline_call iptr_type      & seed (
             )
-        {   return  this->_seed ;
+        {   return  this->_geom_seed ;
         }
 
         __inline_call real_type      & phi1 (
             )
-        {   return  this->_phi1 ;
+        {   return  this->_mesh_phi1 ;
         }
         __inline_call real_type      & phi2 (
             )
-        {   return  this->_phi2 ;
+        {   return  this->_mesh_phi2 ;
         }
 
         __inline_call real_type      & eta1 (
             )
-        {   return  this->_eta1 ;
+        {   return  this->_geom_eta1 ;
         }
         __inline_call real_type      & eta2 (
             )
-        {   return  this->_eta2 ;
+        {   return  this->_geom_eta2 ;
         }
 
-        __inline_call bool_type      & feat (
+        __inline_call iptr_type      & feat (
             )
-        {   return  this->_feat ;
+        {   return  this->_geom_feat ;
         }
 
         __inline_call real_type      & near (
             )
-        {   return  this->_near ;
+        {   return  this->_init_near ;
         }
 
         __inline_call iptr_type      & dims (
             )
-        {   return  this->_dims ;
+        {   return  this->_mesh_dims ;
         }
 
         __inline_call real_type      & siz1 (
             )
-        {   return  this->_siz1 ;
+        {   return  this->_mesh_siz1 ;
         }
         __inline_call real_type      & siz2 (
             )
-        {   return  this->_siz2 ;
+        {   return  this->_mesh_siz2 ;
         }
         __inline_call real_type      & siz3 (
             )
-        {   return  this->_siz3 ;
+        {   return  this->_mesh_siz3 ;
         }
 
         __inline_call real_type      & eps1 (
             )
-        {   return  this->_eps1 ;
+        {   return  this->_mesh_eps1 ;
         }
         __inline_call real_type      & eps2 (
             )
-        {   return  this->_eps2 ;
+        {   return  this->_mesh_eps2 ;
         }
 
         __inline_call real_type      & rad2 (
             )
-        {   return  this->_rad2 ;
+        {   return  this->_mesh_rad2 ;
         }
         __inline_call real_type      & rad3 (
             )
-        {   return  this->_rad3 ;
+        {   return  this->_mesh_rad3 ;
         }
 
         __inline_call real_type      & off2 (
             )
-        {   return  this->_off2 ;
+        {   return  this->_mesh_off2 ;
         }
         __inline_call real_type      & off3 (
             )
-        {   return  this->_off3 ;
+        {   return  this->_mesh_off3 ;
         }
 
         __inline_call real_type      & snk2 (
             )
-        {   return  this->_snk2 ;
+        {   return  this->_mesh_snk2 ;
         }
         __inline_call real_type      & snk3 (
             )
-        {   return  this->_snk3 ;
+        {   return  this->_mesh_snk3 ;
         }
 
         __inline_call real_type      & vol3 (
             )
-        {   return  this->_vol3 ;
+        {   return  this->_mesh_vol3 ;
         }
 
-        __inline_call bool_type      & orph (
+        __inline_call iptr_type      & orph (
             )
-        {   return  this->_orph ;
+        {   return  this->_mesh_orph ;
         }
 
-        __inline_call bool_type      & lock (
+        __inline_call iptr_type      & lock (
             )
-        {   return  this->_lock ;
+        {   return  this->_mesh_lock ;
         }
 
-        __inline_call bool_type      & top1 (
+        __inline_call iptr_type      & top1 (
             )
-        {   return  this->_top1 ;
+        {   return  this->_mesh_top1 ;
         }
-        __inline_call bool_type      & top2 (
+        __inline_call iptr_type      & top2 (
             )
-        {   return  this->_top2 ;
+        {   return  this->_mesh_top2 ;
         }
 
     /*------------------------------------ "const" access */
         __inline_call iptr_type const& verb (
             ) const
-        {   return  this->_verb ;
+        {   return  this->_verbosity ;
         }
         __inline_call iptr_type const& nprt (
             ) const
-        {   return  this->_nprt ;
+        {   return  this->_numthread ;
         }
 
         __inline_call iptr_type const& rule (
             ) const
-        {   return  this->_rule ;
+        {   return  this->_mesh_rule ;
         }
 
         __inline_call iptr_type const& iter (
             ) const
-        {   return  this->_iter ;
+        {   return  this->_mesh_iter ;
         }
 
         __inline_call iptr_type const& seed (
             ) const
-        {   return  this->_seed ;
+        {   return  this->_geom_seed ;
         }
 
         __inline_call real_type const& phi1 (
             ) const
-        {   return  this->_phi1 ;
+        {   return  this->_mesh_phi1 ;
         }
         __inline_call real_type const& phi2 (
             ) const
-        {   return  this->_phi2 ;
+        {   return  this->_mesh_phi2 ;
         }
 
         __inline_call real_type const& eta1 (
             ) const
-        {   return  this->_eta1 ;
+        {   return  this->_geom_eta1 ;
         }
         __inline_call real_type const& eta2 (
             ) const
-        {   return  this->_eta2 ;
+        {   return  this->_geom_eta2 ;
         }
 
-        __inline_call bool_type const& feat (
+        __inline_call iptr_type const& feat (
             ) const
-        {   return  this->_feat ;
+        {   return  this->_geom_feat ;
         }
 
         __inline_call real_type const& near (
             ) const
-        {   return  this->_near ;
+        {   return  this->_init_near ;
         }
 
         __inline_call iptr_type const& dims (
             ) const
-        {   return  this->_dims ;
+        {   return  this->_mesh_dims ;
         }
 
         __inline_call real_type const& siz1 (
             ) const
-        {   return  this->_siz1 ;
+        {   return  this->_mesh_siz1 ;
         }
         __inline_call real_type const& siz2 (
             ) const
-        {   return  this->_siz2 ;
+        {   return  this->_mesh_siz2 ;
         }
         __inline_call real_type const& siz3 (
             ) const
-        {   return  this->_siz3 ;
+        {   return  this->_mesh_siz3 ;
         }
 
         __inline_call real_type const& eps1 (
             ) const
-        {   return  this->_eps1 ;
+        {   return  this->_mesh_eps1 ;
         }
         __inline_call real_type const& eps2 (
             ) const
-        {   return  this->_eps2 ;
+        {   return  this->_mesh_eps2 ;
         }
 
         __inline_call real_type const& rad2 (
             ) const
-        {   return  this->_rad2 ;
+        {   return  this->_mesh_rad2 ;
         }
         __inline_call real_type const& rad3 (
             ) const
-        {   return  this->_rad3 ;
+        {   return  this->_mesh_rad3 ;
         }
 
         __inline_call real_type const& off2 (
             ) const
-        {   return  this->_off2 ;
+        {   return  this->_mesh_off2 ;
         }
         __inline_call real_type const& off3 (
             ) const
-        {   return  this->_off3 ;
+        {   return  this->_mesh_off3 ;
         }
 
         __inline_call real_type const& snk2 (
             ) const
-        {   return  this->_snk2 ;
+        {   return  this->_mesh_snk2 ;
         }
         __inline_call real_type const& snk3 (
             ) const
-        {   return  this->_snk3 ;
+        {   return  this->_mesh_snk3 ;
         }
 
         __inline_call real_type const& vol3 (
             ) const
-        {   return  this->_vol3 ;
+        {   return  this->_mesh_vol3 ;
         }
 
-        __inline_call bool_type const& orph (
+        __inline_call iptr_type const& orph (
             ) const
-        {   return  this->_orph ;
+        {   return  this->_mesh_orph ;
         }
 
-        __inline_call bool_type const& lock (
+        __inline_call iptr_type const& lock (
             ) const
-        {   return  this->_lock ;
+        {   return  this->_mesh_lock ;
         }
 
-        __inline_call bool_type const& top1 (
+        __inline_call iptr_type const& top1 (
             ) const
-        {   return  this->_top1 ;
+        {   return  this->_mesh_top1 ;
         }
-        __inline_call bool_type const& top2 (
+        __inline_call iptr_type const& top2 (
             ) const
-        {   return  this->_top2 ;
+        {   return  this->_mesh_top2 ;
         }
 
         } ;

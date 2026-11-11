@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 26 Jul., 2025
+     * Last updated: 11 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -85,6 +85,9 @@
         _jcfg->_geom_eta1 = (real_t) +45.0 ;
         _jcfg->_geom_eta2 = (real_t) +45.0 ;
 
+        _jcfg->_mesh_phi1 = (real_t) +60.0 ;
+        _jcfg->_mesh_phi2 = (real_t) +60.0 ;
+
     /*------------------------------------- INIT keywords */
         _jcfg->_init_near = (real_t) +1.E-8;
 
@@ -98,6 +101,12 @@
         _jcfg->_mesh_dims = (indx_t) +2 ;
         _jcfg->_mesh_iter = (indx_t)
             std::numeric_limits< indx_t >::max() ;
+
+        _jcfg->_mesh_rule = (indx_t)(
+            (1 << JIGSAW_MESH_RULE_OFFH) |
+            (1 << JIGSAW_MESH_RULE_OFFC) |
+            (1 << JIGSAW_MESH_RULE_OFFT) |
+            (1 << JIGSAW_MESH_RULE_SINK)) ;
 
         _jcfg->_mesh_orph = (indx_t) +1 ;
 

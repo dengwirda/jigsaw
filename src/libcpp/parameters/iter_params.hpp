@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 Jul., 2025
+     * Last updated: 11 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -64,7 +64,7 @@
     typename R ,
     typename I
              >
-    class iter_params
+    class iter_params : public jigsaw_jig_t
         {
         public  :
 
@@ -73,183 +73,131 @@
 
         typedef iter_params<R, I>       self_type ;
 
-        iptr_type   _verb ;     // logfile output verbosity
-        iptr_type   _nprt ;     // no. threads
-
-        iptr_type   _iter ;     // no. iterations
-
-        real_type   _beta ;     // QHM momentum coeff.
-        real_type   _zeta ;     // QHM momentum coeff.
-
-        real_type   _qtol ;     // convergence tolerance
-        real_type   _qlim ;     // fallback score threshold
-
-        real_type   _wmin ;     // up/lo limits on weights
-        real_type   _wmax ;
-
-        bool_type   _zip_ ;     // do cell merge operations
-        bool_type   _div_ ;     // do cell split operations
-        bool_type   _tria ;     // mesh cell optimisation
-        bool_type   _dual ;     // dual cell optimisation
-
         public  :
 
     /*-------------------------- construct default param. */
         __inline_call iter_params (
             )
         {   // load default values
-            jigsaw_jig_t _jjig ;
-            jigsaw_null_jig_t( &_jjig ) ;
-
-            this->_verb =
-            iptr_type(_jjig._verbosity) ;
-            this->_nprt =
-            iptr_type(_jjig._numthread) ;
-
-            this->_iter =
-            iptr_type(_jjig._optm_iter) ;
-
-            this->_beta =
-            real_type(_jjig._optm_beta) ;
-            this->_zeta =
-            real_type(_jjig._optm_zeta) ;
-
-            this->_qtol =
-            real_type(_jjig._optm_qtol) ;
-            this->_qlim =
-            real_type(_jjig._optm_qlim) ;
-
-            this->_wmin =
-            real_type(_jjig._optm_wmin) ;
-            this->_wmax =
-            real_type(_jjig._optm_wmax) ;
-
-            this->_zip_ =
-            bool_type(_jjig._optm_zip_) ;
-            this->_div_ =
-            bool_type(_jjig._optm_div_) ;
-            this->_tria =
-            bool_type(_jjig._optm_tria) ;
-            this->_dual =
-            bool_type(_jjig._optm_dual) ;
+            jigsaw_null_jig_t(this) ;
         }
 
     /*------------------------------------ "write" access */
         __inline_call iptr_type      & verb (
             )
-        {   return  this->_verb ;
+        {   return  this->_verbosity ;
         }
         __inline_call iptr_type      & nprt (
             )
-        {   return  this->_nprt ;
+        {   return  this->_numthread ;
         }
 
         __inline_call iptr_type      & iter (
             )
-        {   return  this->_iter ;
+        {   return  this->_optm_iter ;
         }
 
         __inline_call real_type      & beta (
             )
-        {   return  this->_beta ;
+        {   return  this->_optm_beta ;
         }
         __inline_call real_type      & zeta (
             )
-        {   return  this->_zeta ;
+        {   return  this->_optm_zeta ;
         }
 
         __inline_call real_type      & qtol (
             )
-        {   return  this->_qtol ;
+        {   return  this->_optm_qtol ;
         }
         __inline_call real_type      & qlim (
             )
-        {   return  this->_qlim ;
+        {   return  this->_optm_qlim ;
         }
 
         __inline_call real_type      & wmin (
             )
-        {   return  this->_wmin ;
+        {   return  this->_optm_wmin ;
         }
         __inline_call real_type      & wmax (
             )
-        {   return  this->_wmax ;
+        {   return  this->_optm_wmax ;
         }
 
-        __inline_call bool_type      & zip_ (
+        __inline_call iptr_type      & zip_ (
             )
-        {   return  this->_zip_ ;
+        {   return  this->_optm_zip_ ;
         }
-        __inline_call bool_type      & div_ (
+        __inline_call iptr_type      & div_ (
             )
-        {   return  this->_div_ ;
+        {   return  this->_optm_div_ ;
         }
-        __inline_call bool_type      & tria (
+        __inline_call iptr_type      & tria (
             )
-        {   return  this->_tria ;
+        {   return  this->_optm_tria ;
         }
-        __inline_call bool_type      & dual (
+        __inline_call iptr_type      & dual (
             )
-        {   return  this->_dual ;
+        {   return  this->_optm_dual ;
         }
 
     /*------------------------------------ "const" access */
         __inline_call iptr_type const& verb (
             ) const
-        {   return  this->_verb ;
+        {   return  this->_verbosity ;
         }
         __inline_call iptr_type const& nprt (
             ) const
-        {   return  this->_nprt ;
+        {   return  this->_numthread ;
         }
 
         __inline_call iptr_type const& iter (
             ) const
-        {   return  this->_iter ;
+        {   return  this->_optm_iter ;
         }
 
         __inline_call real_type const& beta (
             ) const
-        {   return  this->_beta ;
+        {   return  this->_optm_beta ;
         }
         __inline_call real_type const& zeta (
             ) const
-        {   return  this->_zeta ;
+        {   return  this->_optm_zeta ;
         }
 
         __inline_call real_type const& qtol (
             ) const
-        {   return  this->_qtol ;
+        {   return  this->_optm_qtol ;
         }
         __inline_call real_type const& qlim (
             ) const
-        {   return  this->_qlim ;
+        {   return  this->_optm_qlim ;
         }
 
         __inline_call real_type const& wmin (
             ) const
-        {   return  this->_wmin ;
+        {   return  this->_optm_wmin ;
         }
         __inline_call real_type const& wmax (
             ) const
-        {   return  this->_wmax ;
+        {   return  this->_optm_wmax ;
         }
 
-        __inline_call bool_type const& zip_ (
+        __inline_call iptr_type const& zip_ (
             ) const
-        {   return  this->_zip_ ;
+        {   return  this->_optm_zip_ ;
         }
-        __inline_call bool_type const& div_ (
+        __inline_call iptr_type const& div_ (
             ) const
-        {   return  this->_div_ ;
+        {   return  this->_optm_div_ ;
         }
-        __inline_call bool_type const& tria (
+        __inline_call iptr_type const& tria (
             ) const
-        {   return  this->_tria ;
+        {   return  this->_optm_tria ;
         }
-        __inline_call bool_type const& dual (
+        __inline_call iptr_type const& dual (
             ) const
-        {   return  this->_dual ;
+        {   return  this->_optm_dual ;
         }
 
         } ;
