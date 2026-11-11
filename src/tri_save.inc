@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 Dec, 2024
+     * Last updated: 12 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -574,6 +574,15 @@
                 return __file_not_created;
             }
 
+            if ((_retv = nc_close(_ncid)))
+            {
+                return __unknown_error;
+            }
+
+            int _ndim = (int)_rdel._ndim ;
+            ncutil::put_att(
+                _jcfg._tria_file, "NDIMS", NC_INT, _ndim);
+
             if (_rdel._ndim == +2 &&
                 _rdel._kind ==
                 jmsh_kind::euclidean_mesh)
@@ -1027,6 +1036,4 @@
 
         return ( _errv ) ;
     }
-
-
 

@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Nov., 2026
+     * Last updated: 12 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -702,11 +702,15 @@
                 _jcfg._hfun_file, _path, _name, _fext) ;
 
             int _retv, _ncid;
-            if ((_retv = nc_create(
-                    _jcfg._hfun_file.c_str(),
-                        NC_CLOBBER|NC_NETCDF4, &_ncid)))
+            if((_retv = nc_open(
+                _jcfg._hfun_file.c_str(), NC_WRITE, &_ncid)))
             {
-                return __file_not_created;
+                return __file_not_located;
+            }
+
+            if ((_retv = nc_close(_ncid)))
+            {
+                return __unknown_error;
             }
 
             __unreferenced (_jcfg) ;
@@ -1062,6 +1066,3 @@
 
         return ( _errv ) ;
     }
-
-
-

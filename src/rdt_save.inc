@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 Dec, 2024
+     * Last updated: 12 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -740,22 +740,31 @@
 
             int _retv, _ncid;
             if ((_retv = nc_create(
-                    _jcfg._tria_file.c_str(),
+                    _jcfg._mesh_file.c_str(),
                         NC_CLOBBER|NC_NETCDF4, &_ncid)))
             {
                 return __file_not_created;
             }
+
+            if ((_retv = nc_close(_ncid)))
+            {
+                return __unknown_error;
+            }
+
+            int _ndim = (int)_rdel._ndim ;
+            ncutil::put_att(
+                _jcfg._mesh_file, "NDIMS", NC_INT, _ndim);
 
             if (_rdel._ndim == +2 &&
                 _rdel._kind ==
                 jmsh_kind::euclidean_mesh)
             {
             /*-------------------------- save 2-dim. mesh */
-                ncutil::put_str(_jcfg._tria_file,
+                ncutil::put_str(_jcfg._mesh_file,
                     "title",
                     _name + "; created by " + __JGSWVSTR);
 
-                ncutil::put_str(_jcfg._tria_file,
+                ncutil::put_str(_jcfg._mesh_file,
                     "MSHID", "EUCLIDEAN-MESH" ) ;
 
             /*------------ index mapping for active nodes */
@@ -842,11 +851,11 @@
                 jmsh_kind::euclidean_mesh)
             {
             /*-------------------------- save 3-dim. mesh */
-                ncutil::put_str(_jcfg._tria_file,
+                ncutil::put_str(_jcfg._mesh_file,
                     "title",
                     _name + "; created by " + __JGSWVSTR);
 
-                ncutil::put_str(_jcfg._tria_file,
+                ncutil::put_str(_jcfg._mesh_file,
                     "MSHID", "EUCLIDEAN-MESH" ) ;
 
             /*------------ index mapping for active nodes */
@@ -1413,6 +1422,3 @@
 
         return ( _errv ) ;
     }
-
-
-

@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 Nov., 2026
+     * Last updated: 12 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -624,35 +624,13 @@
 
         try
         {
-            msh_reader_txt _read ;
-            std::ifstream _file ;
+            containers::array<std::string> _errs ;
+            _errv = read_msh_file(
+                std::string(_fchr), 
+                msht_reader(_jmsh), _errs) ;
 
-            std::string _fstr(_fchr) ;
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
-            file_part(_fstr,
-                _path, _name, _fext) ;
-
-            _file.open(
-                _fstr, std::ifstream:: in) ;
-
-            if (_file.is_open() )
-            {
-                _read.read_file (
-                _file, msht_reader(_jmsh)) ;
-            }
-            else
-            {
-                _errv = __file_not_located ;
-            }
-
-            _file.close ();
-
-            if(!_read._errs.empty())
-            {
+            if (!_errs.empty() && _errv == __no_error)
                 _errv = __invalid_argument ;
-            }
         }
         catch (...)
         {
@@ -666,6 +644,4 @@
 #   endif//__lib_jigsaw
 
 #   endif
-
-
 

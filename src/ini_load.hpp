@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 Nov., 2026
+     * Last updated: 12 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -489,35 +489,26 @@
 
         try
         {
-            msh_reader_txt _read ;
-            std::ifstream _file ;
-            _file. open(
-            _jcfg._init_file, std::ifstream::in) ;
+            containers::array<std::string> _errs ;
+            _errv = read_msh_file(
+               _jcfg._init_file, 
+                init_reader(&_init), _errs);
 
-            if (_file.is_open() )
-            {
-                _read.read_file (
-                _file, init_reader(&_init));
-            }
-            else
+            if (_errv == __file_not_located)
             {
                 _jlog.push(
             "**parse error: file not found!\n" ) ;
-
-                _errv = __file_not_located ;
             }
-            _file.close ();
 
-            for (auto _iter  =
-                      _read._errs.head();
-                      _iter !=
-                      _read._errs.tend();
+            for (auto _iter  = _errs.head();
+                      _iter != _errs.tend();
                     ++_iter  )
             {
                 _jlog.push(
             "**parse error: " + * _iter + "\n" ) ;
 
-                _errv = __invalid_argument ;
+                if (_errv == __no_error)
+                    _errv = __invalid_argument ;
             }
         }
         catch (...)
@@ -1017,6 +1008,4 @@
 
 
 #   endif   //__INI_LOAD__
-
-
 

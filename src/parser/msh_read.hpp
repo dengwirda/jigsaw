@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 Nov., 2026
+     * Last updated: 12 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -185,6 +185,69 @@
 #   include "msh_read_txt.hpp"
 #   include "msh_read_api.hpp"
 #   include "msh_read_nc_.hpp"
+
+    template <
+        typename  dest_type
+             >
+    __normal_call iptr_type read_msh_file (
+        std::string const&_file,
+        dest_type &&_dest,
+        containers::array<std::string> &_errs
+        )
+    {
+        std::string _path, _name, _fext ;
+        file_part(_file, _path, _name, _fext) ;
+        std::transform(_fext.begin() , 
+                       _fext.  end() ,
+                       _fext.begin() , 
+        [](unsigned char c){ return
+          (unsigned char)::tolower(c); } ) ;
+
+        if (_fext == "msh")
+        {
+            auto _kind = std::ifstream::in;
+            std::ifstream _input(_file, _kind) ;
+            if (!_input.is_open())
+                return __file_not_located ;
+
+            msh_reader_txt _read ;
+            _read.read_file(_input, _dest);
+            for (auto _iter = _read._errs.head() ;
+                      _iter!= _read._errs.tend() ; 
+                    ++_iter )
+                _errs.push_tail(*_iter) ;
+        }
+        else
+        if (_fext == "nc")
+        {
+            auto _kind = std::ifstream::in |
+                         std::ifstream::binary ;
+            std::ifstream _input(_file, _kind) ;
+            if (!_input.is_open())
+                return __file_not_located ;
+
+#       ifdef __use_netcdf
+            msh_reader_nc_ _read ;
+            _read.read_file( _file, _dest);
+            for (auto _iter = _read._errs.head() ;
+                      _iter!= _read._errs.tend() ; 
+                    ++_iter )
+                _errs.push_tail(*_iter) ;
+#       else
+            _errs.push_tail(
+                "NetCDF support is not available") ;
+            return __netcdf_not_available ;
+#       endif
+        }
+        else
+        {
+            _errs.push_tail(
+                "Unsupported file type: " + _fext) ;
+        }
+
+        return _errs.empty() ? __no_error 
+                             : __invalid_argument;
+    }
 
 #   endif   //__MSH_READ__
 
