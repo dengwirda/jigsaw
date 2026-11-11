@@ -48,6 +48,7 @@
 #   include <string>
 #   include <stdexcept>
 #   include <initializer_list>
+#   include <type_traits>
 
 #   include "netcdf.h"
 
@@ -391,7 +392,31 @@
                     _name + " : " + std::to_string(_retv));
         }
 
-        if ((_retv = nc_get_var(_ncid, _vtag, (void *) _vals)))
+        if constexpr (std::is_same_v<data_type, double>)
+        {
+            _retv = nc_get_var_double(_ncid, _vtag, _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, float>)
+        {
+            _retv = nc_get_var_float(_ncid, _vtag, _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, long>)
+        {
+            _retv = nc_get_var_long(_ncid, _vtag, _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, int>)
+        {
+            _retv = nc_get_var_int(_ncid, _vtag, _vals);
+        }
+        else
+        {
+            static_assert(std::is_same_v<data_type, void>,
+                "ncutil::get_var: type not supported");
+        }
+        if (_retv != 0)
         {
             nc_close(_ncid) ;
             throw std::invalid_argument(
@@ -667,6 +692,5 @@
     }
 
 #   endif   //__NCUTIL__
-
 
 
