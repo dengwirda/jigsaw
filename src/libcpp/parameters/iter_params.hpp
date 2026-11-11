@@ -60,18 +60,12 @@
     --------------------------------------------------------
      */
 
-    template <
-    typename R ,
-    typename I
-             >
     class iter_params : public jigsaw_jig_t
         {
         public  :
 
-        typedef R                       real_type ;
-        typedef I                       iptr_type ;
-
-        typedef iter_params<R, I>       self_type ;
+        typedef  real_t         real_type ;
+        typedef  indx_t         iptr_type ;
 
         public  :
 
@@ -205,6 +199,3 @@
     }
 
 #   endif   //__ITER_PARAMS__
-
-
-

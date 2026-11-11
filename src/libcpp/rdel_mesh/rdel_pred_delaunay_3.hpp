@@ -118,9 +118,7 @@
     typedef typename
             mesh_type::iptr_type        iptr_type ;
 
-    typedef mesh::mesh_params  <
-                real_type ,
-                iptr_type      >        rdel_opts ;
+    typedef mesh::mesh_params           rdel_opts ;
 
     typedef mesh::rdel_pred_base_3      <
                 geom_type ,
@@ -338,6 +336,5 @@
     }
 
 #   endif   //__RDEL_PRED_DELAUNAY_3__
-
 
 

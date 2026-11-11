@@ -128,9 +128,7 @@
                 geom_type,
                 mesh_type           >   rdel_pred ;
 
-    typedef mesh::mesh_params       <
-                real_type,
-                iptr_type           >   rdel_opts ;
+    typedef mesh::mesh_params           rdel_opts ;
 
     /*
     --------------------------------------------------------
@@ -971,6 +969,5 @@
     }
 
 #   endif   //__RDEL_MAKE_2__
-
 
 

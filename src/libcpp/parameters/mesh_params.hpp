@@ -60,18 +60,12 @@
     --------------------------------------------------------
      */
 
-    template <
-    typename R ,
-    typename I
-             >
     class mesh_params : public jigsaw_jig_t
         {
         public  :
 
-        typedef  R                      real_type ;
-        typedef  I                      iptr_type ;
-
-        typedef mesh::mesh_params<R, I> self_type ;
+        typedef  real_t         real_type ;
+        typedef  indx_t         iptr_type ;
 
         enum node_kind {        // "off-centre" descriptors
         null_kind = +0 ,
@@ -88,19 +82,6 @@
         offT_kind = JIGSAW_MESH_RULE_OFFT ,
                                 // "topo"-type off-centre
         last_kind }    ;
-
-        public  :
-
-        __static_call
-        __inline_call iptr_type init_rule (
-            )
-        {
-            return (iptr_type)(
-                (1 << JIGSAW_MESH_RULE_OFFH) |
-                (1 << JIGSAW_MESH_RULE_OFFC) |
-                (1 << JIGSAW_MESH_RULE_OFFT) |
-                (1 << JIGSAW_MESH_RULE_SINK)) ;
-        }
 
         public  :
 
@@ -378,6 +359,4 @@
     }
 
 #   endif   // __MESH_PARAMS__
-
-
 
