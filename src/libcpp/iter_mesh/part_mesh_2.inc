@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 Dec., 2022
+     * Last updated: 12 Nov., 2026
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2026
      * Marc Tunnell,
      * Darren Engwirda
      * d.engwirda@gmail.com
@@ -54,7 +54,7 @@
         mesh_type &_mesh,   // full mesh obj.
         part_sets &_part,   // partition data-structure
         iptr_type  _nprt,   // number of partitions to make
-        iptr_list  _aset,   // list of active nodes
+        iptr_list &_aset,   // list of active nodes
         iptr_type  _isub,   // inner iteration marker
         real_type  _arot,
         iter_stat &_tcpu    // CPU timers/info
