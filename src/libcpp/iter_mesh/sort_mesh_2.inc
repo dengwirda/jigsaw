@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 Dec., 2022
+     * Last updated: 12 Nov., 2026
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2026
      * Darren Engwirda,
      * Marc Tunnell
      * d.engwirda@gmail.com
@@ -334,7 +334,10 @@
 
                     float _cval =
                         (float)_qbar[_ipos]/_nadj -
-                        (float)_qmin[_ipos] ;
+                        (float)_qmin[_ipos] +
+                    0.25f * std::max<float>(+0.0f , 
+                        (float)_QLIM -
+                        (float)_qmin[_ipos]) ;
 
                     _sset.push_tail (
                         cost_pair(_ipos , _cval)) ;
