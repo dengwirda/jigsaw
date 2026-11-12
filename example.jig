@@ -111,6 +111,20 @@
 #   GEOM_ETA2 = 60
 
 
+#   ---> GEOM_PHI1 - {default=60deg} 1-dim. sharp-feature
+#       angle, to be "protected" during mesh refinement.
+#
+
+#   GEOM_PHI1 = 60
+
+
+#   ---> GEOM_PHI2 - {default=60deg} 2-dim. sharp-feature
+#       angle, to be "protected" during mesh refinement.
+#
+
+#   GEOM_PHI2 = 60
+
+
 #
 #   OPTIONAL fields (HFUN):
 #   ----------------------

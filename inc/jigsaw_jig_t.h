@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 Jul., 2025
+     * Last updated: 11 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda
@@ -120,6 +120,24 @@
      */
 
         real_t                  _geom_eta2 ;
+
+    /*
+    --------------------------------------------------------
+     * GEOM_PHI1 - {default = 60deg} 1-dim. sharp-feature
+     * angle, to be "protected" during mesh refinement.
+    --------------------------------------------------------
+     */
+
+        real_t                  _mesh_phi1 ;
+
+    /*
+    --------------------------------------------------------
+     * GEOM_PHI2 - {default = 60deg} 2-dim. sharp-feature
+     * angle, to be "protected" during mesh refinement.
+    --------------------------------------------------------
+     */
+
+        real_t                  _mesh_phi2 ;
 
     /*
     --------------------------------------------------------
@@ -208,6 +226,17 @@
      */
 
         indx_t                  _mesh_iter ;
+
+    /*
+    --------------------------------------------------------
+     * MESH_RULE - bitmask selecting which refinement
+     * rules are utilised, with e.g. the status of the bit
+     * RULE[MESH_RULE_OFFH] selecting mesh-size adaptive
+     * off-centres, see jigsaw_const.h for options.
+    --------------------------------------------------------
+     */
+
+        indx_t                  _mesh_rule ;
 
     /*
     --------------------------------------------------------

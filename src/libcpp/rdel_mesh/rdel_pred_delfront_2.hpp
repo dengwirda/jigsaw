@@ -97,7 +97,7 @@
      * pp. 125-138
      * https://doi.org/10.1006/jcph.1993.1097
      *
-     * H. Erten, A. Üngör, (2009): "Quality Triangulations
+     * H. Erten, A. ï¿½ngï¿½r, (2009): "Quality Triangulations
      * with Locally Optimal Steiner Points", SIAM J. Sci.
      * Comp., 31, pp. 2103-2130,
      * https://doi.org/10.1137/080716748
@@ -135,9 +135,7 @@
     typedef typename
             mesh_type::iptr_type        iptr_type ;
 
-    typedef mesh::mesh_params  <
-                real_type ,
-                iptr_type      >        rdel_opts ;
+    typedef mesh::mesh_params           rdel_opts ;
 
     typedef mesh::rdel_pred_base_2      <
                 geom_type ,
@@ -645,6 +643,5 @@
     }
 
 #   endif   //__RDEL_PRED_DELFRONT_2__
-
 
 

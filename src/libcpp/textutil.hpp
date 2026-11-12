@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Jul., 2021
+     * Last updated: 12 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -46,6 +46,8 @@
      */
 
 #   pragma once
+
+#   include <cctype>
 
 #   ifndef __TEXTUTIL__
 #   define __TEXTUTIL__
@@ -83,22 +85,20 @@
         std::string const&_line
         )
     {
-        typename std::string::size_type _pos1 =
-            _line.find_first_not_of(" \n\r\t") ;
+        std::string::size_type _head = +0 ;
+        std::string::size_type _tail = _line.size() ;
 
-        typename std::string::size_type _pos2 =
-            _line. find_last_not_of(" \n\r\t") ;
+        while (_head < _tail &&
+            std::isspace(
+                (unsigned char)_line[_head + 0]))
+            ++ _head ;
 
-        if (_pos1 != std::string::npos &&
-            _pos2 != std::string::npos )
-        {
-            return _line.substr(
-                _pos1, _pos2-_pos1 + 1 );
-        }
-        else
-        {
-            return ( std::string() ) ;
-        }
+        while (_tail > _head &&
+            std::isspace(
+                (unsigned char)_line[_tail - 1]))
+            -- _tail ;
+
+        return _line.substr(_head, _tail - _head) ;
     }
 
     /*
@@ -248,6 +248,4 @@
 
 
 #   endif   //__TEXTUTIL__
-
-
 

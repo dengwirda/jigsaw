@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Nov., 2026
+     * Last updated: 12 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -47,28 +47,18 @@
 
 #   pragma once
 
-#   include "msh_read.hpp"
+#   include "parser/msh_read.hpp"
 
 #   ifndef __INI_LOAD__
 #   define __INI_LOAD__
 
     /*
     --------------------------------------------------------
-     * INIT-FROM-JMSH: read *.JMSH file into INIT data.
+     * INIT-READER: local reader for init data.
     --------------------------------------------------------
      */
 
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type init_from_jmsh (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        mesh_data &_init
-        )
-    {
-        class init_reader:
-            public jmsh_reader_base
+    class init_reader: public jmsh_reader_base
         {
         public  :
             mesh_data           *_init ;
@@ -479,413 +469,6 @@
         }
         } ;
 
-    /*---------------------------------- parse INIT. file */
-        iptr_type _errv  = __no_error ;
-
-        try
-        {
-            jmsh_reader   _jmsh ;
-            std::ifstream _file ;
-            _file. open(
-            _jcfg._init_file, std::ifstream::in) ;
-
-            if (_file.is_open() )
-            {
-                _jmsh.read_file (
-                _file, init_reader(&_init));
-            }
-            else
-            {
-                _jlog.push(
-            "**parse error: file not found!\n" ) ;
-
-                _errv = __file_not_located ;
-            }
-            _file.close ();
-
-            for (auto _iter  =
-                      _jmsh._errs.head();
-                      _iter !=
-                      _jmsh._errs.tend();
-                    ++_iter  )
-            {
-                _jlog.push(
-            "**parse error: " + * _iter + "\n" ) ;
-
-                _errv = __invalid_argument ;
-            }
-        }
-        catch (...)
-        {
-            _errv = __unknown_error ;
-        }
-
-        return (  _errv ) ;
-    }
-
-    /*
-    --------------------------------------------------------
-     * INIT-FROM-MSHT: read MSH_t data into INIT data.
-    --------------------------------------------------------
-     */
-
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type init_from_msht (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        mesh_data &_init ,
-        jigsaw_msh_t const&_imsh
-        )
-    {
-        iptr_type _errv  = __no_error ;
-
-        try
-        {
-
-        __unreferenced (_jlog) ;
-        __unreferenced (_jcfg) ;
-
-        if (_imsh._vert2._size > 0 &&
-            _imsh._flags ==
-                JIGSAW_EUCLIDEAN_MESH )
-        {
-    /*--------------------------------- euclidean-mesh-2d */
-            _init._kind
-                = jmsh_kind::euclidean_mesh ;
-            _init._ndim = +2;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._vert2._size ;
-                    ++_ipos )
-            {
-                typename
-                mesh_data::euclidean_mesh_2d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _imsh.
-                    _vert2._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _imsh.
-                    _vert2._data[_ipos]._ppos[1];
-                _ndat.itag () = _imsh.
-                    _vert2._data[_ipos]._itag ;
-
-                _ndat.pval(2) =
-                        (real_type) +0. ;
-
-                _ndat.fdim () =     +0  ;
-
-                if (_ndat.itag () < +0)
-                    _ndat.feat () =
-                        mesh::user_feat ;
-                else
-                    _ndat.feat () =
-                        mesh::null_feat ;
-
-                _init._euclidean_mesh_2d.
-                    _mesh.push_node(_ndat,false);
-            }
-
-            if (_imsh._power._size != +0 &&
-                _imsh._power._size !=
-                _imsh._vert2._size  )
-                return __invalid_argument ;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._power._size ;
-                    ++_ipos )
-            {
-                _init._euclidean_mesh_2d.
-                    _mesh.node(_ipos).pval(2) =
-                        _imsh._power._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._edge2._size ;
-                    ++_ipos )
-            {
-                typename
-                mesh_data::euclidean_mesh_2d
-                    ::edge_type _edat ;
-                _edat.node(0) = _imsh.
-                    _edge2._data[_ipos]._node[0];
-                _edat.node(1) = _imsh.
-                    _edge2._data[_ipos]._node[1];
-                _edat.itag () = _imsh.
-                    _edge2._data[_ipos]._itag ;
-
-                _init._euclidean_mesh_2d.
-                    _mesh.push_edge(_edat,false);
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._tria3._size ;
-                    ++_ipos )
-            {
-                typename
-                mesh_data::euclidean_mesh_2d
-                    ::tri3_type _tdat ;
-                _tdat.node(0) = _imsh.
-                    _tria3._data[_ipos]._node[0];
-                _tdat.node(1) = _imsh.
-                    _tria3._data[_ipos]._node[1];
-                _tdat.node(2) = _imsh.
-                    _tria3._data[_ipos]._node[2];
-                _tdat.itag () = _imsh.
-                    _tria3._data[_ipos]._itag ;
-
-                _init._euclidean_mesh_2d.
-                    _mesh.push_tri3(_tdat,false);
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._quad4._size ;
-                    ++_ipos )
-            {
-                typename
-                mesh_data::euclidean_mesh_2d
-                    ::quad_type _qdat ;
-                _qdat.node(0) = _imsh.
-                    _quad4._data[_ipos]._node[0];
-                _qdat.node(1) = _imsh.
-                    _quad4._data[_ipos]._node[1];
-                _qdat.node(2) = _imsh.
-                    _quad4._data[_ipos]._node[2];
-                _qdat.node(3) = _imsh.
-                    _quad4._data[_ipos]._node[3];
-                _qdat.itag () = _imsh.
-                    _quad4._data[_ipos]._itag ;
-
-                _init._euclidean_mesh_2d.
-                    _mesh.push_quad(_qdat,false);
-            }
-
-        }
-        else
-        if (_imsh._flags ==
-                JIGSAW_ELLIPSOID_MESH ||
-           (_imsh._vert3._size > 0 &&
-            _imsh._flags ==
-                JIGSAW_EUCLIDEAN_MESH ) )
-        {
-    /*--------------------------------- euclidean-mesh-3d */
-            _init._kind
-                = jmsh_kind::euclidean_mesh ;
-            _init._ndim = + 3;
-
-            real_type _rrad[3] = { 1., 1., 1. } ;
-
-            if (_imsh._radii._size == 3 )
-            {
-                _rrad[0] = _imsh._radii._data[0];
-                _rrad[1] = _imsh._radii._data[1];
-                _rrad[2] = _imsh._radii._data[2];
-            }
-            else
-            if (_imsh._radii._size == 1 )
-            {
-                _rrad[0] = _imsh._radii._data[0];
-                _rrad[1] = _imsh._radii._data[0];
-                _rrad[2] = _imsh._radii._data[0];
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._vert3._size ;
-                    ++_ipos )   // from euclidean...
-            {
-                typename
-                mesh_data::euclidean_mesh_3d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _imsh.
-                    _vert3._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _imsh.
-                    _vert3._data[_ipos]._ppos[1];
-                _ndat.pval(2) = _imsh.
-                    _vert3._data[_ipos]._ppos[2];
-                _ndat.itag () = _imsh.
-                    _vert3._data[_ipos]._itag ;
-
-                _ndat.pval(3) =
-                        (real_type) +0. ;
-
-                _ndat.fdim () =     +0  ;
-
-                if (_ndat.itag () < +0)
-                    _ndat.feat () =
-                        mesh::user_feat ;
-                else
-                    _ndat.feat () =
-                        mesh::null_feat ;
-
-                _init._euclidean_mesh_3d.
-                    _mesh.push_node(_ndat,false);
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._vert2._size ;
-                    ++_ipos )   // from ellipsoid...
-            {
-                typename
-                mesh_data::euclidean_mesh_3d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _imsh.
-                    _vert2._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _imsh.
-                    _vert2._data[_ipos]._ppos[1];
-                _ndat.itag () = _imsh.
-                    _vert2._data[_ipos]._itag ;
-
-                _ndat.pval(3) =
-                        (real_type) +0. ;
-
-                _ndat.fdim () =     +0  ;
-
-                real_type _apos[2];
-                real_type _ppos[3];
-
-                _apos[0] = _ndat. pval (0) ;
-                _apos[1] = _ndat. pval (1) ;
-
-                math::toR3(
-                    _rrad, _apos, _ppos) ;
-
-                _ndat. pval(0) = _ppos [0] ;
-                _ndat. pval(1) = _ppos [1] ;
-                _ndat. pval(2) = _ppos [2] ;
-
-                if (_ndat.itag () < +0)
-                    _ndat.feat () =
-                        mesh::user_feat ;
-                else
-                    _ndat.feat () =
-                        mesh::null_feat ;
-
-                _init._euclidean_mesh_3d.
-                    _mesh.push_node(_ndat,false);
-            }
-
-            if (_imsh._power._size != +0 &&
-                _imsh._power._size !=
-                _imsh._vert3._size &&
-                _imsh._power._size !=
-                _imsh._vert2._size  )
-                return __invalid_argument ;
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._power._size ;
-                    ++_ipos )
-            {
-                _init._euclidean_mesh_3d.
-                    _mesh.node(_ipos).pval(3) =
-                        _imsh._power._data[_ipos] ;
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._edge2._size ;
-                    ++_ipos )
-            {
-                typename
-                mesh_data::euclidean_mesh_3d
-                    ::edge_type _edat ;
-                _edat.node(0) = _imsh.
-                    _edge2._data[_ipos]._node[0];
-                _edat.node(1) = _imsh.
-                    _edge2._data[_ipos]._node[1];
-                _edat.itag () = _imsh.
-                    _edge2._data[_ipos]._itag ;
-
-                _init._euclidean_mesh_3d.
-                    _mesh.push_edge(_edat,false);
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._tria3._size ;
-                    ++_ipos )
-            {
-                typename
-                mesh_data::euclidean_mesh_3d
-                    ::tri3_type _tdat ;
-                _tdat.node(0) = _imsh.
-                    _tria3._data[_ipos]._node[0];
-                _tdat.node(1) = _imsh.
-                    _tria3._data[_ipos]._node[1];
-                _tdat.node(2) = _imsh.
-                    _tria3._data[_ipos]._node[2];
-                _tdat.itag () = _imsh.
-                    _tria3._data[_ipos]._itag ;
-
-                _init._euclidean_mesh_3d.
-                    _mesh.push_tri3(_tdat,false);
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._quad4._size ;
-                    ++_ipos )
-            {
-                typename
-                mesh_data::euclidean_mesh_3d
-                    ::quad_type _qdat ;
-                _qdat.node(0) = _imsh.
-                    _quad4._data[_ipos]._node[0];
-                _qdat.node(1) = _imsh.
-                    _quad4._data[_ipos]._node[1];
-                _qdat.node(2) = _imsh.
-                    _quad4._data[_ipos]._node[2];
-                _qdat.node(3) = _imsh.
-                    _quad4._data[_ipos]._node[3];
-                _qdat.itag () = _imsh.
-                    _quad4._data[_ipos]._itag ;
-
-                _init._euclidean_mesh_3d.
-                    _mesh.push_quad(_qdat,false);
-            }
-
-            for (auto _ipos = (size_t) +0 ;
-                _ipos != _imsh._tria4._size ;
-                    ++_ipos )
-            {
-                typename
-                mesh_data::euclidean_mesh_3d
-                    ::tri4_type _tdat ;
-                _tdat.node(0) = _imsh.
-                    _tria4._data[_ipos]._node[0];
-                _tdat.node(1) = _imsh.
-                    _tria4._data[_ipos]._node[1];
-                _tdat.node(2) = _imsh.
-                    _tria4._data[_ipos]._node[2];
-                _tdat.node(3) = _imsh.
-                    _tria4._data[_ipos]._node[3];
-                _tdat.itag () = _imsh.
-                    _tria4._data[_ipos]._itag ;
-
-                _init._euclidean_mesh_3d.
-                    _mesh.push_tri4(_tdat,false);
-            }
-        }
-        else
-        if (_imsh._flags ==
-                JIGSAW_EUCLIDEAN_GRID)
-        {
-            _errv =
-                 __invalid_argument ;
-        }
-        else
-        if (_imsh._flags ==
-                JIGSAW_ELLIPSOID_GRID)
-        {
-            _errv =
-                 __invalid_argument ;
-        }
-
-        }
-        catch (...)
-        {
-            _errv = __unknown_error ;
-        }
-
-        return (  _errv ) ;
-    }
-
     /*
     --------------------------------------------------------
      * READ-INIT: read init. distribution file.
@@ -901,8 +484,39 @@
         mesh_data &_init
         )
     {
-        return init_from_jmsh (
-                _jcfg, _jlog, _init ) ;
+    /*---------------------------------- parse INIT. file */
+        iptr_type _errv  = __no_error ;
+
+        try
+        {
+            containers::array<std::string> _errs ;
+            _errv = read_msh_file(
+               _jcfg._init_file, 
+                init_reader(&_init), _errs);
+
+            if (_errv == __file_not_located)
+            {
+                _jlog.push(
+            "**parse error: file not found!\n" ) ;
+            }
+
+            for (auto _iter  = _errs.head();
+                      _iter != _errs.tend();
+                    ++_iter  )
+            {
+                _jlog.push(
+            "**parse error: " + * _iter + "\n" ) ;
+
+                if (_errv == __no_error)
+                    _errv = __invalid_argument ;
+            }
+        }
+        catch (...)
+        {
+            _errv = __unknown_error ;
+        }
+
+        return (  _errv ) ;
     }
 
     /*
@@ -921,8 +535,46 @@
         jigsaw_msh_t const&_imsh
         )
     {
-        return init_from_msht (
-           _jcfg, _jlog, _init, _imsh);
+    /*---------------------------------- parse INIT. data */
+        iptr_type _errv  = __no_error ;
+
+        try
+        {
+            __unreferenced (_jlog) ;
+            __unreferenced (_jcfg) ;
+
+            msh_reader_api  _read  ;
+            if ( true )
+            {
+                _read.read_data (
+                _imsh, init_reader(&_init));
+            }
+            else
+            {
+                _jlog.push(
+            "**parse error: struct is null!\n" ) ;
+
+                _errv = __invalid_argument ;
+            }
+
+            for (auto _iter  =
+                      _read._errs.head();
+                      _iter !=
+                      _read._errs.tend();
+                    ++_iter  )
+            {
+                _jlog.push(
+            "**parse error: " + * _iter + "\n" ) ;
+
+                _errv = __invalid_argument ;
+            }
+        }
+        catch (...)
+        {
+            _errv = __unknown_error ;
+        }
+
+        return (  _errv ) ;
     }
 
     /*
@@ -1356,6 +1008,4 @@
 
 
 #   endif   //__INI_LOAD__
-
-
 

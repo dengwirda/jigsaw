@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Nov., 2026
+     * Last updated: 11 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -103,6 +103,11 @@
                    (_jcfg->_geom_feat ? "TRUE" : "FALSE")
                          << "\n" ;
 
+                _file << "GEOM_PHI1 = " <<
+                    _jcfg->_mesh_phi1 << "\n" ;
+                _file << "GEOM_PHI2 = " <<
+                    _jcfg->_mesh_phi2 << "\n" ;
+
                 _file << "GEOM_ETA1 = " <<
                     _jcfg->_geom_eta1 << "\n" ;
                 _file << "GEOM_ETA2 = " <<
@@ -155,6 +160,9 @@
 
                 _file << "MESH_ITER = " <<
                     _jcfg->_mesh_iter << "\n" ;
+
+                _file << "MESH_RULE = " <<
+                    _jcfg->_mesh_rule << "\n" ;
 
                 _file << "MESH_SIZ1 = " <<
                     _jcfg->_mesh_siz1 << "\n" ;

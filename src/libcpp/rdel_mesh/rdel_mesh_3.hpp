@@ -188,9 +188,7 @@
     typedef typename
             mesh_type::tria_data        tria_data ;
 
-    typedef mesh::mesh_params       <
-                real_type,
-                iptr_type           >   rdel_opts ;
+    typedef mesh::mesh_params           rdel_opts ;
 
     typedef containers::array       <
                 real_type           >   real_list ;
@@ -1920,6 +1918,5 @@
     }
 
 #   endif   //__RDEL_MESH_3__
-
 
 

@@ -111,9 +111,7 @@
     class   cell_kind{} ;           // dummies for overload
     class   dual_kind{} ;
 
-    typedef mesh::iter_params  <
-            real_type ,
-            iptr_type          >        iter_opts ;
+    typedef mesh::iter_params           iter_opts ;
 
     typedef mesh::iter_timers           iter_stat ;
 
@@ -875,6 +873,5 @@
     }
 
 #   endif   //__ITER_MESH_2__
-
 
 

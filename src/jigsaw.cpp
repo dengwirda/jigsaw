@@ -430,15 +430,11 @@
             (real_type) +0.00E+00 ;
 
     /*------------------------------- "low-level" config. */
-        typedef mesh::mesh_params <
-                real_type ,
-                iptr_type >      mesh_opts ;
+        typedef mesh::mesh_params      mesh_opts ;
 
         mesh_opts               _mesh_opts ;
 
-        typedef mesh::iter_params <
-                real_type ,
-                iptr_type >      iter_opts ;
+        typedef mesh::iter_params      iter_opts ;
 
         iter_opts               _iter_opts ;
 
@@ -928,6 +924,5 @@
     #   include "tripod.hpp"
 
     #   include "marche.hpp"
-
 
 

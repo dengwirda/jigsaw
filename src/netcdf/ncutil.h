@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 May, 2022
+     * Last updated: 12 Nov., 2026
      *
-     * Copyright 2022--
+     * Copyright 2022-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -48,6 +48,7 @@
 #   include <string>
 #   include <stdexcept>
 #   include <initializer_list>
+#   include <type_traits>
 
 #   include "netcdf.h"
 
@@ -134,7 +135,7 @@
      */
 
     template <
-    typename      data_type
+        typename  data_type
              >
     __inline_call void get_att (
         std::string const&_file,  // name of file
@@ -150,8 +151,35 @@
                 "Can't open " + _file +
                     " for read.: " + std::to_string(_retv));
 
-        if ((_retv = nc_get_att(_ncid,
-                _vtag, _name.c_str (), (void *) _vals)))
+        if constexpr (std::is_same_v<data_type, double>)
+        {
+            _retv = nc_get_att_double(
+                _ncid, _vtag, _name.c_str(), _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, float>)
+        {
+            _retv = nc_get_att_float(
+                _ncid, _vtag, _name.c_str(), _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, long>)
+        {
+            _retv = nc_get_att_long(
+                _ncid, _vtag, _name.c_str(), _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, int>)
+        {
+            _retv = nc_get_att_int(
+                _ncid, _vtag, _name.c_str(), _vals);
+        }
+        else
+        {
+            static_assert(std::is_same_v<data_type, void>,
+                "ncutil::get_att: type not supported");
+        }
+        if (_retv != 0)
         {
             nc_close(_ncid) ;
             throw std::invalid_argument(
@@ -206,7 +234,7 @@
     }
 
     template <
-    typename      data_type
+        typename  data_type
              >
     __inline_call void put_att (
         std::string const&_file,  // name of file
@@ -269,7 +297,7 @@
     }
 
     template <
-    typename      data_type
+        typename  data_type
              >
     __inline_call void put_att (
         std::string const&_file,  // name of file
@@ -368,7 +396,7 @@
     }
 
     template <
-    typename      data_type
+        typename  data_type
              >
     __inline_call void get_var (
         std::string const&_file,  // name of file
@@ -391,7 +419,31 @@
                     _name + " : " + std::to_string(_retv));
         }
 
-        if ((_retv = nc_get_var(_ncid, _vtag, (void *) _vals)))
+        if constexpr (std::is_same_v<data_type, double>)
+        {
+            _retv = nc_get_var_double(_ncid, _vtag, _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, float>)
+        {
+            _retv = nc_get_var_float(_ncid, _vtag, _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, long>)
+        {
+            _retv = nc_get_var_long(_ncid, _vtag, _vals);
+        }
+        else 
+        if constexpr (std::is_same_v<data_type, int>)
+        {
+            _retv = nc_get_var_int(_ncid, _vtag, _vals);
+        }
+        else
+        {
+            static_assert(std::is_same_v<data_type, void>,
+                "ncutil::get_var: type not supported");
+        }
+        if (_retv != 0)
         {
             nc_close(_ncid) ;
             throw std::invalid_argument(
@@ -405,8 +457,163 @@
                     _file + " close: " + std::to_string(_retv));
     }
 
+    __inline_call bool has_var (
+        std::string const&_file,  // name of file
+        std::string const&_name   // name of variable
+        )
+    {
+        int _retv, _ncid, _vtag;
+
+        if ((_retv = nc_open(_file.c_str(), NC_NOWRITE, &_ncid)))
+            throw std::invalid_argument(
+                "Can't open " + _file +
+                    " for read.: " + std::to_string(_retv));
+
+        _retv = nc_inq_varid(_ncid, _name.c_str(), &_vtag);
+
+        int _cerr = nc_close(_ncid);
+        if (_cerr)
+            throw std::invalid_argument(
+                "Error handling " +
+                    _file + " close: " + std::to_string(_cerr));
+        if (_retv == NC_ENOTVAR)
+            return false;
+        if (_retv)
+            throw std::invalid_argument(
+                "Error checking variable " +
+                    _name + ": " + std::to_string(_retv));
+
+        return true;
+    }
+
+    __inline_call bool has_att (
+        std::string const&_file,  // name of file
+        std::string const&_name,  // name of variable
+        int _vtag = NC_GLOBAL
+        )
+    {
+        int _retv, _ncid, _atag;
+
+        if ((_retv = nc_open(_file.c_str(), NC_NOWRITE, &_ncid)))
+            throw std::invalid_argument(
+                "Can't open " + _file +
+                    " for read.: " + std::to_string(_retv));
+
+        _retv = nc_inq_attid(
+            _ncid, _vtag, _name.c_str(), &_atag);
+
+        int _cerr = nc_close(_ncid);
+        if (_cerr)
+            throw std::invalid_argument(
+                "Error handling " +
+                    _file + " close: " + std::to_string(_cerr));
+        if (_retv == NC_ENOTATT)
+            return false;
+        if (_retv)
+            throw std::invalid_argument(
+                "Error checking attribute " +
+                    _name + ": " + std::to_string(_retv));
+
+        return true;
+    }
+
+    __inline_call void get_att_len (
+        std::string const&_file,  // name of file
+        std::string const&_name,  // name of variable
+        size_t &_alen,  // length assigned to att
+        int _vtag = NC_GLOBAL
+        )
+    {
+        int _retv, _ncid;
+
+        if ((_retv = nc_open(_file.c_str(), NC_NOWRITE, &_ncid)))
+            throw std::invalid_argument(
+                "Can't open " + _file +
+                    " for read.: " + std::to_string(_retv));
+
+        if ((_retv = nc_inq_attlen(
+                _ncid, _vtag, _name.c_str(), &_alen)))
+        {
+            nc_close(_ncid);
+            throw std::invalid_argument(
+                "Error getting attribute " +
+                    _name + ": " + std::to_string(_retv));
+        }
+
+        if ((_retv = nc_close(_ncid)))
+            throw std::invalid_argument(
+                "Error handling " +
+                    _file + " close: " + std::to_string(_retv));
+    }
+
+    __inline_call void get_var_len (
+        std::string const&_file,  // name of file
+        std::string const&_name,  // name of variable
+        int &_ndim,  // number of dims in variable
+        size_t *_vlen,  // array of lengths
+        size_t  _vmax   // max size of vlen
+        )
+    {
+        int _retv, _ncid, _vtag;
+
+        if ((_retv = nc_open(_file.c_str(), NC_NOWRITE, &_ncid)))
+            throw std::invalid_argument(
+                "Can't open " + _file +
+                    " for read.: " + std::to_string(_retv));
+
+        if ((_retv = nc_inq_varid(
+                _ncid, _name.c_str(), &_vtag)))
+        {
+            nc_close(_ncid);
+            throw std::invalid_argument(
+                "Error getting variable " +
+                    _name + ": " + std::to_string(_retv));
+        }
+
+        if ((_retv = nc_inq_varndims(_ncid, _vtag, &_ndim)))
+        {
+            nc_close(_ncid);
+            throw std::invalid_argument(
+                "Error getting variable dimensions " +
+                    _name + ": " + std::to_string(_retv));
+        }
+
+        if (_ndim < 0 || (size_t)_ndim > _vmax)
+        {
+            nc_close(_ncid);
+            throw std::invalid_argument(
+                "Too many dimensions for variable " + _name);
+        }
+
+        int _dtag[NC_MAX_VAR_DIMS];
+        if ((_retv = nc_inq_vardimid(_ncid, _vtag, _dtag)))
+        {
+            nc_close(_ncid);
+            throw std::invalid_argument(
+                "Error getting variable dimensions " +
+                    _name + ": " + std::to_string(_retv));
+        }
+
+        for (int _idim = 0; _idim < _ndim; ++_idim)
+        {
+            if ((_retv = nc_inq_dimlen(
+                    _ncid, _dtag[_idim], &_vlen[_idim])))
+            {
+                nc_close(_ncid);
+                throw std::invalid_argument(
+                    "Error getting variable dimensions " +
+                        _name + ": " + std::to_string(_retv));
+            }
+        }
+
+        if ((_retv = nc_close(_ncid)))
+            throw std::invalid_argument(
+                "Error handling " +
+                    _file + " close: " + std::to_string(_retv));
+    }
+
     template <
-    typename      data_type
+        typename  data_type
              >
     __inline_call void put_var (
         std::string const&_file,  // name of file
@@ -512,6 +719,5 @@
     }
 
 #   endif   //__NCUTIL__
-
 
 

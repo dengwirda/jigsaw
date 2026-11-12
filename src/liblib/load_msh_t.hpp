@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Feb., 2021
+     * Last updated: 12 Nov., 2026
      *
-     * Copyright 2013-2021
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -58,15 +58,14 @@
 
 #   ifdef  __lib_jigsaw
 
-#   include  "../msh_read.hpp"
+#   include  "../parser/msh_read.hpp"
 
     indx_t jigsaw_load_msh_t (              // load msh_t
         char *_fchr,
         jigsaw_msh_t *_jmsh
         )
     {
-        class msht_reader:
-            public jmsh_reader_base
+        class msht_reader: public jmsh_reader_base
         {
         public  :
             jigsaw_msh_t        *_jmsh ;
@@ -351,8 +350,8 @@
         }
     /*-------------------------------- open COORD section */
         __normal_call void_type open_coord (
-            std:: size_t _idim,
-            std:: size_t _nrow
+            std:: size_t _nrow,
+            std:: size_t _idim
             )
         {
             if (_idim == +1)
@@ -625,35 +624,13 @@
 
         try
         {
-            jmsh_reader   _read ;
-            std::ifstream _file ;
+            containers::array<std::string> _errs ;
+            _errv = read_msh_file(
+                std::string(_fchr), 
+                msht_reader(_jmsh), _errs) ;
 
-            std::string _fstr(_fchr) ;
-            std::string _path ;
-            std::string _name ;
-            std::string _fext ;
-            file_part(_fstr,
-                _path, _name, _fext) ;
-
-            _file.open(
-                _fstr, std::ifstream:: in) ;
-
-            if (_file.is_open() )
-            {
-                _read.read_file (
-                _file, msht_reader(_jmsh)) ;
-            }
-            else
-            {
-                _errv = __file_not_located ;
-            }
-
-            _file.close ();
-
-            if(!_read._errs.empty())
-            {
+            if (!_errs.empty() && _errv == __no_error)
                 _errv = __invalid_argument ;
-            }
         }
         catch (...)
         {
@@ -667,6 +644,4 @@
 #   endif//__lib_jigsaw
 
 #   endif
-
-
 
