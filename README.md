@@ -26,7 +26,7 @@ This package provides the underlying `c++` source for `JIGSAW`; defining a basic
       ├── lib -- JIGSAW's lib binaries live here
       ├── geo -- geometry definitions and input data
       ├── out -- default folder for JIGSAW output
-      └── uni -- unit tests and libjigsaw example programs
+      └── tests -- unit tests and libjigsaw example programs
 
 ### `Getting Started`
 
@@ -55,16 +55,16 @@ A repository of additional surface models generated using `JIGSAW` can be found 
 
 ### `libJIGSAW Scripts`
 
-A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/uni/">`../jigsaw/uni/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/inc/">`../jigsaw/inc/`</a>. 
+A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/tests/">`../jigsaw/tests/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/inc/">`../jigsaw/inc/`</a>. 
 
 The unit-tests can be built using the <a href="https://cmake.org/">`cmake`</a> utility:
 
-    Navigate to the ../jigsaw/uni/ directory.
+    Navigate to the ../jigsaw/tests/ directory.
     mkdir build && cd build
     cmake .. -DCMAKE_BUILD_TYPE=BUILD_MODE
     cmake --build . --config BUILD_MODE --target install EXTRAS
     
-This process will build the unit-tests as a set of executables in <a href="../master/uni/">`../jigsaw/uni/`</a>. `BUILD_MODE` is a compiler configuration flag (either `Release` or `Debug`). `EXTRAS` can be used to pass additional compile-time arguments.
+This process will build the unit-tests as a set of executables in <a href="../master/tests/">`../jigsaw/tests/`</a>. `BUILD_MODE` is a compiler configuration flag (either `Release` or `Debug`). `EXTRAS` can be used to pass additional compile-time arguments.
 
 ### `Contributors`
 

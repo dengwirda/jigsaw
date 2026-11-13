@@ -80,19 +80,19 @@ jobs:
       
       - name: Configure tests for jigsaw
         run: |
-          mkdir ${{github.workspace}}/uni/build
-          cd ${{github.workspace}}/uni/build
+          mkdir ${{github.workspace}}/tests/build
+          cd ${{github.workspace}}/tests/build
           cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       - name: Build tests for jigsaw
         run: |
-          cd ${{github.workspace}}/uni/build
+          cd ${{github.workspace}}/tests/build
           cmake --build . --config ${{env.BUILD_TYPE}} --target install
       
       - name: Prep. tests for jigsaw
         if: startsWith(matrix.config.os, 'windows')
         run: |
-          cd ${{github.workspace}}/uni
+          cd ${{github.workspace}}/tests
           cp ../lib/jigsaw.dll .
 
       - name: Tests for cmd-jigsaw
@@ -107,8 +107,8 @@ jobs:
   
       - name: Tests for lib-jigsaw
         run: |
-          cd ${{github.workspace}}/uni
+          cd ${{github.workspace}}/tests
           ./test_all
       
       - name: Clean tests for jigsaw
-        run: rm -r ${{github.workspace}}/uni/build
+        run: rm -r ${{github.workspace}}/tests/build
