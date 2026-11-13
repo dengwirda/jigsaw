@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 Jul., 2025
+     * Last updated: 13 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -495,7 +495,7 @@
             __putFILE(push_init_file, _stok) ;
                 }
             else
-            if (_stok[0] == "INIT-NEAR")
+            if (_stok[0] == "INIT_NEAR")
                 {
             __putREAL(push_init_near, _stok) ;
                 }

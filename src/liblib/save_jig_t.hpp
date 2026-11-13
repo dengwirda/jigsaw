@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Nov., 2026
+     * Last updated: 13 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -113,7 +113,7 @@
                 _file << "GEOM_ETA2 = " <<
                     _jcfg->_geom_eta2 << "\n" ;
 
-                _file << "INIT-NEAR = " <<
+                _file << "INIT_NEAR = " <<
                     _jcfg->_init_near << "\n" ;
 
         /*--------------------------------- HFUN keywords */
