@@ -33,7 +33,7 @@ jobs:
           }
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
     
       - name: Print environment
         run: |
