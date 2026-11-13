@@ -5,42 +5,46 @@ on:
   pull_request:
   push:
 
-env:
-  BUILD_TYPE: Debug
-
 jobs:
   build:
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
+    timeout-minutes: 15
+
     strategy:
       fail-fast: false
       matrix:
+        build_type: [Debug, Release]
         config:
-        - {
-            name: "Windows Latest MSVC", artifact: "Windows-MSVC.tar.xz",
-            os: windows-latest,
-            cc: "cl", cxx: "cl"
-          }
-        - {
-            name: "Ubuntu Latest GCC", artifact: "Linux.tar.xz",
-            os: ubuntu-latest,
-            cc: "gcc", cxx: "g++"
-          }
-        - {
-            name: "macOS Latest Clang", artifact: "macOS.tar.xz",
-            os: macos-latest,
-            cc: "clang", cxx: "clang++"
-          }
+        - name: "Windows Latest MSVC"
+          artifact: "Windows-MSVC.tar.xz"
+          os: windows-latest
+          cc: "cl"
+          cxx: "cl"
+
+        - name: "Ubuntu Latest GCC"
+          artifact: "Linux.tar.xz"
+          os: ubuntu-latest
+          cc: "gcc"
+          cxx: "g++"
+
+        - name: "macOS Latest Clang"
+          artifact: "macOS.tar.xz"
+          os: macos-latest
+          cc: "clang"
+          cxx: "clang++"
 
     steps:
       - uses: actions/checkout@v7
     
       - name: Print environment
+        timeout-minutes: 1
         run: |
           echo github.event.action: ${{ github.event.action }}
           echo github.event_name: ${{ github.event_name }}
           
       - name: Install dependencies on win
+        timeout-minutes: 5
         if: startsWith(matrix.config.os, 'windows')
         run: |
           choco install ninja cmake
@@ -48,6 +52,7 @@ jobs:
           cmake --version
           
       - name: Install dependencies on unx
+        timeout-minutes: 5
         if: startsWith(matrix.config.name, 'ubuntu')
         run: |
           sudo apt-get update
@@ -57,6 +62,7 @@ jobs:
           g++ --version
           
       - name: Install dependencies on osx
+        timeout-minutes: 5
         if: startsWith(matrix.config.os, 'macos')
         run: |
           brew install ninja cmake llvm libomp
@@ -65,39 +71,46 @@ jobs:
           clang++ --version
     
       - name: Configure jigsaw
+        timeout-minutes: 1
         run: |
-          mkdir ${{github.workspace}}/build
-          cd ${{github.workspace}}/build
-          cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          mkdir ${{ github.workspace }}/build
+          cd ${{ github.workspace }}/build
+          cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
       - name: Build jigsaw
+        timeout-minutes: 10
         run: |
-          cd ${{github.workspace}}/build
-          cmake --build . --config ${{env.BUILD_TYPE}} --target install
+          cd ${{ github.workspace }}/build
+          cmake --build . --config ${{ matrix.build_type }} --target install
         
       - name: Clean jigsaw
-        run: rm -r ${{github.workspace}}/build
+        timeout-minutes: 1
+        run: rm -r ${{ github.workspace }}/build
       
       - name: Configure tests for jigsaw
+        timeout-minutes: 1
         run: |
-          mkdir ${{github.workspace}}/tests/build
-          cd ${{github.workspace}}/tests/build
-          cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          mkdir ${{ github.workspace }}/tests/build
+          cd ${{ github.workspace }}/tests/build
+          cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
       - name: Build tests for jigsaw
+        timeout-minutes: 5
         run: |
-          cd ${{github.workspace}}/tests/build
-          cmake --build . --config ${{env.BUILD_TYPE}} --target install
-      
+          cd ${{ github.workspace }}/tests/build
+          cmake --build . --config ${{ matrix.build_type }} --target install
+
       - name: Prep. tests for jigsaw
+        timeout-minutes: 1
         if: startsWith(matrix.config.os, 'windows')
         run: |
-          cd ${{github.workspace}}/tests
+          cd ${{ github.workspace }}/tests
           cp ../lib/jigsaw.dll .
 
       - name: Tests for cmd-jigsaw
+        timeout-minutes: 5
         run: |
-          cd ${{github.workspace}}
+          cd ${{ github.workspace }}
           ./bin/jigsaw example.jig
           ./bin/jigsaw geo/airfoil.jig
           ./bin/jigsaw geo/bunny.jig
@@ -106,9 +119,11 @@ jobs:
           ./bin/jigsaw geo/lakes.jig
   
       - name: Tests for lib-jigsaw
+        timeout-minutes: 5
         run: |
-          cd ${{github.workspace}}/tests
+          cd ${{ github.workspace }}/tests
           ./test_all
       
       - name: Clean tests for jigsaw
-        run: rm -r ${{github.workspace}}/tests/build
+        timeout-minutes: 1
+        run: rm -r ${{ github.workspace }}/tests/build
