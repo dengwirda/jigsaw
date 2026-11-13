@@ -60,7 +60,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 Nov., 2026
+     * Last updated: 14 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -78,7 +78,7 @@
 #   include <atomic>
 
 #   define USE_KERNEL_FLTPOINT
-#   define USE_KERNEL_INTERVAL
+//  define USE_KERNEL_INTERVAL
 
     namespace geompred {
 
