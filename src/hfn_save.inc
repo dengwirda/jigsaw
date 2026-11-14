@@ -713,6 +713,10 @@
                 return __unknown_error;
             }
 
+            ncutil::put_str(
+                _jcfg._hfun_file, "title",
+                    _name + "; created by " + __JGSWVSTR) ;
+
             __unreferenced (_jcfg) ;
             __unreferenced (_jlog) ;
 
@@ -720,10 +724,6 @@
                 _ffun._kind ==
                 jmsh_kind::euclidean_mesh)
             {
-                ncutil::put_str(_jcfg._hfun_file,
-                    "TITLE" ,
-                _name + "; created by " + __JGSWVSTR);
-
                 if (_ffun._euclidean_mesh_2d.
                         _hval.count() > +0)
                 {
@@ -739,10 +739,6 @@
                 _ffun._kind ==
                 jmsh_kind::euclidean_mesh)
             {
-                ncutil::put_str(_jcfg._hfun_file,
-                    "TITLE" ,
-                _name + "; created by " + __JGSWVSTR);
-
                 if (_ffun._euclidean_mesh_3d.
                         _hval.count() > +0)
                 {
@@ -758,10 +754,6 @@
                 _ffun._kind ==
                 jmsh_kind::ellipsoid_mesh)
             {
-                ncutil::put_str(_jcfg._hfun_file,
-                    "TITLE" ,
-                _name + "; created by " + __JGSWVSTR);
-
                 if (_ffun._ellipsoid_mesh_3d.
                         _hval.count() > +0)
                 {
@@ -777,10 +769,6 @@
                 _ffun._kind ==
                 jmsh_kind::euclidean_grid)
             {
-                ncutil::put_str(_jcfg._hfun_file,
-                    "TITLE" ,
-                _name + "; created by " + __JGSWVSTR);
-
                 if (_ffun._euclidean_grid_2d.
                         _hmat.count() > +0)
                 {
@@ -796,10 +784,6 @@
                 _ffun._kind ==
                 jmsh_kind::euclidean_grid)
             {
-                ncutil::put_str(_jcfg._hfun_file,
-                    "TITLE" ,
-                _name + "; created by " + __JGSWVSTR);
-
                 if (_ffun._euclidean_grid_3d.
                         _hmat.count() > +0)
                 {
@@ -815,10 +799,6 @@
                 _ffun._kind ==
                 jmsh_kind::ellipsoid_grid)
             {
-                ncutil::put_str(_jcfg._hfun_file,
-                    "TITLE" ,
-                _name + "; created by " + __JGSWVSTR);
-
                 if (_ffun._ellipsoid_grid_3d.
                         _hmat.count() > +0)
                 {
