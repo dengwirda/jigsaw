@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Nov., 2026
+     * Last updated: 21 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda,
@@ -61,49 +61,7 @@
         typename  node_iter
              >
     __static_call
-    __inline_call void_type move_node (
-        geom_type &_geom ,  // geometry object
-        mesh_type &_mesh ,  // mesh object
-        hfun_type &_hfun ,  // spacing object
-        real_list &_hval ,  // cached node spacing array
-        iter_opts &_opts ,  // user options
-        node_iter  _node ,  // iterator to node to iter.
-        real_type *_last ,  // lagged line direction
-        kern_kind  _kern ,  // optim. kernel selector
-        iptr_type &_move ,  // > 0 if move successful
-        conn_list &_conn ,  // list of adj. cells
-        fp32_list &_qold ,  // list of old adj. costs
-        fp32_list &_qnew ,  // list of new adj. costs
-        real_type  _QMIN ,  // minimum adj. old costs
-        real_type  _QLIM ,  // cell quality threshold
-        real_type  _QMOV ,
-        iter_stat &_tcpu    // CPU timers/info
-        )
-    {
-    /*---------------- try variational; fallback on dQ/dx */
-        move_kern( _geom, _mesh, _hfun,
-            _hval, _opts, _node, _last,
-            _kern, _move, _conn,
-            _qold, _qnew,
-            _QMIN, _QLIM, _QMOV, _tcpu) ;  // variational
-
-        if (_move >= +0 ) return ;
-
-        move_kern( _geom, _mesh, _hfun,
-            _hval, _opts, _node, _last,
-             dqdx_optimise,
-            _move, _conn,
-            _qold, _qnew,
-            _QMIN, _QLIM, _QMOV, _tcpu) ;  // local dQ/dx
-
-        if (_move >= +0 ) return ;
-    }
-
-    template <
-        typename  node_iter
-             >
-    __static_call
-    __normal_call void_type move_kern (
+    __normal_call void_type move_node (
         geom_type &_geom ,  // geometry object
         mesh_type &_mesh ,  // mesh object
         hfun_type &_hfun ,  // spacing object
@@ -141,6 +99,8 @@
 
         _move = (iptr_type)-1 ;
 
+        real_type _dqdx[geom_dims] =
+            {(real_type)+0.0} ;
         real_type _line[geom_dims] =
             {(real_type)+0.0} ;
         real_type _step[geom_dims] =
@@ -157,6 +117,7 @@
     //  endif//__use_timers
 
         real_type _ladj = (real_type) +0. ;
+        real_type _ltwo = (real_type) +0. ;
 
         if (_kern == _odt_optimise)
         {
@@ -175,17 +136,31 @@
                 _conn, _node,
                 _line, _ladj) ;
         }
-        else
-        if (_kern == dqdx_optimise)
+
+    /*--------------------------- blend the update vector */
+        real_type _qreg = (real_type)1./ 8. ;
+        real_type _lim0 = (real_type)15/16. ;
+
+        real_type _qgap = std::max(
+            (real_type)0., (_QLIM-_QMIN) / _qreg);
+
+        real_type _bias =   _lim0 * 
+            _qgap*_qgap  / (_qgap*_qgap  + _qreg);
+
+        if (_bias > (real_type)+0.)
         {
-            if (_QMIN<=_QLIM)
-            {
     /*--------------------------- d./dx Q^T update vector */
             dqdx_move_2 (
                 _mesh, _conn, _node, _qold,
-                _line, _ladj) ;
-            }
-            else { return ; }
+                _dqdx, _ltwo) ;
+        }
+
+        for (auto _idim =
+        pred_type::geom_dims; _idim-- != +0; )
+        {
+            _line[_idim] =
+                (1. - _bias) * _line[_idim] +
+                (0. + _bias) * _dqdx[_idim] ;
         }
 
     //  ifdef  __use_timers
@@ -261,7 +236,7 @@
                 _ppos[_idim] = _proj[_idim] ;
             }
 
-            real_type _XTOL = _xtol *   _scal;  // armijo
+            real_type _XTOL = _xtol *   _scal;
             real_type _XEPS = _xeps *
                 std::min ((real_type)1.,_scal) ;
 
@@ -270,8 +245,6 @@
 
             if (_lmov <= _XEPS * _lsqr) break;
 
-          //_move  = +1 ; return ;
-          
             _SCAL *= (real_type) 0.5 ;
 
     /*---------------- test quasi-monotonicity w.r.t. Q^T */
@@ -287,7 +260,7 @@
             if (_move >= +0) break ;
         }
 
-        if (_move <= +0)
+        if (_move <  +0)
         {
     /*---------------- swap with the saved coord. if fail */
             for (auto _idim  =
@@ -295,7 +268,18 @@
             {
                 _ppos[_idim] = _save[_idim] ;
 
-                _last[_idim]/= (real_type)4.;   // reset!
+                _last[_idim]/= (real_type)4.;  // on fail
+            }
+        }
+        else
+        if (_move == +0)
+        {
+            for (auto _idim  =
+            pred_type::geom_dims; _idim-- != +0; )
+            {
+                _ppos[_idim] = _save[_idim] ;
+
+                _last[_idim]/= (real_type)2.;  // on skip
             }
         }
         else
@@ -460,11 +444,18 @@
         }
 
     /*---------------- swap with the saved coord. if fail */
-        if (_move <= +0)
+        if (_move <  +0)
         {
             _node->pval(real_dims-1) = _save ;
 
             _last/= (real_type) 4. ;  // reset dir., fail
+        }
+        else
+        if (_move == +0)
+        {
+            _node->pval(real_dims-1) = _save ;
+
+            _last/= (real_type) 2. ;  // reset dir., skip
         }
         else
         {

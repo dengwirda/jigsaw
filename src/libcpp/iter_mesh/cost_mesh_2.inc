@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Apr., 2024
+     * Last updated: 21 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -80,8 +80,6 @@
        +std::numeric_limits<double>::infinity();
 
     /*--------------------- compute harmonic averages */
-        _good = std::pow(_good, +7./8.);
-
         double _msrc = (double)+0.;
         double _mdst = (double)+0.;
 
@@ -96,7 +94,7 @@
             std::min(_0src,  _cost ) ;
 
             _msrc += std::pow (
-           (double)(1. / _cost), 8 ) ;
+           (double)(1. / _cost), 4 ) ;
         }
         for (auto _iter  = _cdst.head(),
                   _tend  = _cdst.tend();
@@ -109,18 +107,18 @@
             std::min(_0dst,  _cost ) ;
             
             _mdst += std::pow (
-           (double)(1. / _cost), 8 ) ;
+           (double)(1. / _cost), 4 ) ;
         }
 
         _msrc  = std::pow(
-        _csrc.count() / _msrc, 1/8.) ;
+        _csrc.count() / _msrc, 1/4.) ;
         _mdst  = std::pow(
-        _cdst.count() / _mdst, 1/8.) ;
+        _cdst.count() / _mdst, 1/4.) ;
 
         _qtol /=
-        std::pow(_csrc.count(),1/8.) ;
+        std::pow(_csrc.count(),1/4.) ;
         _qtol /=
-        std::pow(_cdst.count(),1/8.) ;
+        std::pow(_cdst.count(),1/4.) ;
 
     /*---------------------------- test move = "okay" */
         if (_0dst >= _good)
