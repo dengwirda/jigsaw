@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Nov., 2026
+     * Last updated: 21 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -1112,10 +1112,6 @@
         iptr_type static constexpr
             _last = pred_type::geom_dims + 0 ;
 
-        real_type static const _HINC =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), .50) ;
-
         _ladj = (real_type) 0. ;
 
     /*------------------ calc. local characteristic scale */
@@ -1162,8 +1158,7 @@
         _ladj = std::sqrt (_ladj / _cnum) ;
 
     /*------------------ adj. gradients wrt. pos: dQ / dx */
-        float    _qlim = _qmin +
-            (float    ) +1.0E-002  ;
+        float     _qlim = _qmin + (float)+2.5E-002 ;
 
         real_type _DQDX[_last] = {
             (real_type) +0.0E+000} ;
@@ -1226,37 +1221,33 @@
         }
 
     /*------------------ 1st ord. Taylor-series step est. */
-        real_type _scal =
-        std::sqrt (pred_type::length_sq(_DQDX));
+        real_type _gsqr =
+            pred_type::length_sq(_DQDX);
 
-        if (_scal*_ladj <= _HINC)
+        real_type _qgap = std::max(
+            (real_type)0.0,
+            (_qbar - _qlow) / (real_type)2.);
+
+        real_type _scal = (real_type)0.;
+
+        if (_ladj > (real_type)0.0)
         {
-            for (auto _idim  =
-            pred_type::geom_dims; _idim-- != +0; )
-            {
-                _line[_idim] = (real_type)+0.;
-            }
+            real_type _reg1 = _qgap /
+               ((real_type)2.00 * _ladj) ;
+            real_type _reg2 =
+               ((real_type).001 / _ladj) ;
+
+            _reg1 = _reg1 * _reg1 ;
+            _reg2 = _reg2 * _reg2 ;
+
+            _scal = _qgap / (
+                _gsqr  + _reg1 + _reg2);
         }
-        else
+
+        for (auto _idim =
+            pred_type::geom_dims; _idim-- != +0; )
         {
-            for (auto _idim  =
-            pred_type::geom_dims; _idim-- != +0; )
-            {
-                _line[_idim] =
-                    _DQDX[_idim]/ _scal ;
-            }
-
-            _scal = (_qbar - _qlow) /
-            pred_type::innerprod(_line, _DQDX) ;
-
-            _scal = std::min(
-                _scal / (real_type)2. , _ladj) ;
-
-            for (auto _idim  =
-            pred_type::geom_dims; _idim-- != +0; )
-            {
-                _line[_idim] *= _scal ;
-            }
+            _line[_idim] = _scal * _DQDX[_idim];
         }
 
     }
