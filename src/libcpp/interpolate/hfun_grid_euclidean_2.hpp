@@ -168,14 +168,10 @@
             allocator >
         _sort((less_than(this->_hmat.head())));
 
-    /*-------------------- push nodes onto priority queue */
-        iptr_type _inum  = +0;
-        for (auto _iter  = this->_hmat.head() ;
-                  _iter != this->_hmat.tend() ;
-                ++_iter, ++_inum)
-        {
-            _sort.push(_inum, _inum ) ;
-        }
+    /*-------------------- seed nodes for cells != const. */
+        hfun_seed_grid(this->_hmat,
+            this->_xpos.count(), 
+            this->_ypos.count(), _sort) ;
 
     /*-------------------- compute h(x) via fast-marching */
         vals_type static _FTOL =
@@ -191,7 +187,7 @@
        (iptr_type)this->_xpos.count() - 1 ;
 
     #   define ISALIVE(__idx)           \
-           (_sort.keys(__idx) != _sort.null())
+           (_sort.contains(__idx))
 
     #   define UPDATED(__new, __old)    \
         std::abs(__new - __old) > _FTOL*std::abs(__new)
