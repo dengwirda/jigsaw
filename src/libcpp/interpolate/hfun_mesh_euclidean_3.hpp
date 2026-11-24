@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Nov., 2026
+     * Last updated: 24 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -330,8 +330,6 @@
              this->_mesh.
             connect_3(_base, POINT_tag, _conn) ;
 
-            vals_type _hnow  = _hval[_base];
-
             for (auto _next  = _conn.head();
                       _next != _conn.tend();
                     ++_next  )
@@ -350,29 +348,10 @@
                  auto _lnod = this->
                 _mesh. tri4( _cell).node(3);
 
-    /*-------------------- skip cells due to sorted order */
-                iptr_type _near = +0;
-                if (_inod != _base &&
-                    ISALIVE(_inod)) _near++;
-                if (_jnod != _base &&
-                    ISALIVE(_jnod)) _near++;
-                if (_knod != _base &&
-                    ISALIVE(_knod)) _near++;
-                if (_lnod != _base &&
-                    ISALIVE(_lnod)) _near++;
-                
-                if (_near == 0)     continue ;
-
-                vals_type _hmax = .0;
-                _hmax = this->_hval[_inod] ;
-                _hmax = std::max(
-                _hmax , this->_hval[_jnod]);
-                _hmax = std::max(
-                _hmax , this->_hval[_knod]);
-                _hmax = std::max(
-                _hmax , this->_hval[_lnod]);
-
-                if (_hmax <= _hnow) continue ;
+                int const _isrc =
+                    _base == _inod ? +0 :
+                    _base == _jnod ? +1 :
+                    _base == _knod ? +2 : +3 ;
 
     /*-------------------- solve for local |dh/dx| limits */
                 vals_type _iold =
@@ -405,7 +384,8 @@
                 _mesh. node( _knod).pval(0),
                    &this->
                 _mesh. node( _lnod).pval(0),
-                   _hnow,
+                   _isrc,
+                _iold, _jold, _kold, _lold ,
                 _inew, _jnew, _knew, _lnew ,
                     this->_dhdx[_inod],
                     this->_dhdx[_jnod],
@@ -436,7 +416,8 @@
                 _mesh. node( _knod).pval(0),
                    &this->
                 _mesh. node( _lnod).pval(0),
-                   _hnow,
+                   _isrc,
+                _iold, _jold, _kold, _lold ,
                 _inew, _jnew, _knew, _lnew ,
                     this->_dhdx[  +0 ],
                     this->_dhdx[  +0 ],

@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 Nov., 2026
+     * Last updated: 24 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -508,29 +508,10 @@
                 indx_from_subs(
                     _lpii, _lpjj, _lnod);
 
-    /*-------------------- skip cells due to sorted order */
-                iptr_type _near = +0;
-                if (_inod != _base &&
-                    ISALIVE(_inod)) _near++;
-                if (_jnod != _base &&
-                    ISALIVE(_jnod)) _near++;
-                if (_knod != _base &&
-                    ISALIVE(_knod)) _near++;
-                if (_lnod != _base &&
-                    ISALIVE(_lnod)) _near++;
-                
-                if (_near == 0)     continue ;
-
-                vals_type _hmax = .0;
-                _hmax = this->_hmat[_inod] ;
-                _hmax = std::max(
-                _hmax , this->_hmat[_jnod]);
-                _hmax = std::max(
-                _hmax , this->_hmat[_knod]);
-                _hmax = std::max(
-                _hmax , this->_hmat[_lnod]);
-
-                if (_hmax <= _hnow) continue ;
+                int const _isrc =
+                    _base == _inod ? +0 :
+                    _base == _jnod ? +1 :
+                    _base == _knod ? +2 : +3 ;
 
     /*-------------------- set-up cell vertex coordinates */
                 real_type  _IXYZ[3] ;
@@ -597,7 +578,9 @@
     /*-------------------- update adj. set, g = g(x) case */
                 if (eikonal_grid_3d (
                    _IXYZ , _JXYZ ,
-                   _KXYZ , _LXYZ , _hnow ,
+                   _KXYZ , _LXYZ , _isrc ,
+                   _iold , _jold ,
+                   _kold , _lold ,
                    _inew , _jnew ,
                    _knew , _lnew ,
                     this->_dhdx[_inod],
@@ -622,7 +605,8 @@
                 iptr_type _pair;
                 indx_from_subs(
                     _ipii, JEND, _pair) ;
-                REQUEUE (_inew, _iold, _pair)
+                if (_inew < this->_hmat[_pair])
+                REQUEUE (_inew, this->_hmat[_pair], _pair)
                 }
 
                 if (_jpjj==JBEG)
@@ -630,7 +614,8 @@
                 iptr_type _pair;
                 indx_from_subs(
                     _jpii, JEND, _pair) ;
-                REQUEUE (_jnew, _jold, _pair)
+                if (_jnew < this->_hmat[_pair])
+                REQUEUE (_jnew, this->_hmat[_pair], _pair)
                 }
 
                 if (_kpjj==JEND)
@@ -638,7 +623,8 @@
                 iptr_type _pair;
                 indx_from_subs(
                     _kpii, JBEG, _pair) ;
-                REQUEUE (_knew, _kold, _pair)
+                if (_knew < this->_hmat[_pair])
+                REQUEUE (_knew, this->_hmat[_pair], _pair)
                 }
 
                 if (_lpjj==JEND)
@@ -646,7 +632,8 @@
                 iptr_type _pair;
                 indx_from_subs(
                     _lpii, JBEG, _pair) ;
-                REQUEUE (_lnew, _lold, _pair)
+                if (_lnew < this->_hmat[_pair])
+                REQUEUE (_lnew, this->_hmat[_pair], _pair)
                 }
                 }
 
@@ -658,7 +645,9 @@
     /*-------------------- update adj. set, const. g case */
                 if (eikonal_grid_3d (
                    _IXYZ , _JXYZ ,
-                   _KXYZ , _LXYZ , _hnow ,
+                   _KXYZ , _LXYZ , _isrc ,
+                   _iold , _jold ,
+                   _kold , _lold ,
                    _inew , _jnew ,
                    _knew , _lnew ,
                     this->_dhdx[  +0 ],
@@ -683,7 +672,8 @@
                 iptr_type _pair;
                 indx_from_subs(
                     _ipii, JEND, _pair) ;
-                REQUEUE (_inew, _iold, _pair)
+                if (_inew < this->_hmat[_pair])
+                REQUEUE (_inew, this->_hmat[_pair], _pair)
                 }
 
                 if (_jpjj==JBEG)
@@ -691,7 +681,8 @@
                 iptr_type _pair;
                 indx_from_subs(
                     _jpii, JEND, _pair) ;
-                REQUEUE (_jnew, _jold, _pair)
+                if (_jnew < this->_hmat[_pair])
+                REQUEUE (_jnew, this->_hmat[_pair], _pair)
                 }
 
                 if (_kpjj==JEND)
@@ -699,7 +690,8 @@
                 iptr_type _pair;
                 indx_from_subs(
                     _kpii, JBEG, _pair) ;
-                REQUEUE (_knew, _kold, _pair)
+                if (_knew < this->_hmat[_pair])
+                REQUEUE (_knew, this->_hmat[_pair], _pair)
                 }
 
                 if (_lpjj==JEND)
@@ -707,7 +699,8 @@
                 iptr_type _pair;
                 indx_from_subs(
                     _lpii, JBEG, _pair) ;
-                REQUEUE (_lnew, _lold, _pair)
+                if (_lnew < this->_hmat[_pair])
+                REQUEUE (_lnew, this->_hmat[_pair], _pair)
                 }
                 }
 
