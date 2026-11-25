@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 Feb., 2025
+     * Last updated: 21 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -252,10 +252,6 @@
         iptr_type static constexpr
             _last = pred_type::geom_dims + 0 ;
 
-        real_type static const _WINC =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), .50) ;
-
         _step = (real_type) 0. ;
         _wadj = (real_type) 0. ;
 
@@ -300,7 +296,7 @@
         _wadj = _wadj / _cnum ;
 
     /*------------------ adj. gradients wrt. pos: dQ / dx */
-        float     _qlim = _qmin + (float)+1.0E-002 ;
+        float     _qlim = _qmin + (float)+2.5E-002 ;
 
         real_type _dmax =
        -std::numeric_limits<real_type>::infinity() ;
@@ -362,27 +358,24 @@
         }
 
     /*------------------ 1st ord. Taylor-series step est. */
-        real_type _scal = std::abs (_DQDW) ;
+        real_type _gsqr = _DQDW * _DQDW;
 
-        if (_scal*_wadj <= _WINC)
-        {
-            _step = (real_type) +0. ;
-        }
-        else
-        {
-            _step = (_qbar-_qlow) / _DQDW  ;
+        real_type _qgap = std::max(
+            (real_type)0.0,
+            (_qbar - _qlow) / (real_type)2.);
 
-            _step/= (real_type) +2. ;
-        }
+        if (_wadj > (real_type)0.0)
+        {
+            real_type _reg1 = _qgap /
+               ((real_type)2.00 * _wadj) ;
+            real_type _reg2 =
+               ((real_type).001 / _wadj) ;
 
-        if (_step > (real_type) +0. )
-        {
-            _step = std::min(_step,+_wadj) ;
-        }
-        else
-        if (_step < (real_type) +0. )
-        {
-            _step = std::max(_step,-_wadj) ;
+            _reg1 = _reg1 * _reg1 ;
+            _reg2 = _reg2 * _reg2 ;
+
+            _step = _qgap * _DQDW / (
+                _gsqr  + _reg1 + _reg2);
         }
 
     }

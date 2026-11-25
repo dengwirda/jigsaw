@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Nov., 2026
+     * Last updated: 21 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -148,7 +148,7 @@
 
         _jcfg->_optm_cost = JIGSAW_KERN_AREA_LEN ;
 
-        _jcfg->_optm_beta = (real_t) +0.4950 ;
+        _jcfg->_optm_beta = (real_t) +1. / 3.; // .33333...
         _jcfg->_optm_zeta = (real_t) +0.8250 ;
 
         _jcfg->_optm_qtol = (real_t) +1.E-04 ;
