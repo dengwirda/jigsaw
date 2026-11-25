@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 26 Feb., 2025
+     * Last updated: 25 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -938,7 +938,7 @@
             _fadj.set_count (0);
 
             this->_tria.connect_2(
-               &_epos->node (0), EDGE2_tag, _fadj) ;
+                _enum, EDGE2_tag, _fadj) ;
 
             edge_feat (
                &_epos->node (0),

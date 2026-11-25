@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 Aug., 2025
+     * Last updated: 22 Nov., 2026
      *
-     * Copyright 2013-2025
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -388,8 +388,7 @@
             return ;
 
     /*--------------------------------- get adjacent face */
-        _mesh.connect_2(&_eptr->node(0),
-            EDGE2_tag , _cset) ;
+        _mesh.connect_2(_edge, EDGE2_tag, _cset) ;
 
         if (_cset.count() != 2) return ;
 

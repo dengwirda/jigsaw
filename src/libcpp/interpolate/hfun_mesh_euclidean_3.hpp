@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 Nov., 2026
+     * Last updated: 25 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -281,11 +281,11 @@
         _sort((less_than(this->_hval.head())));
 
         typename
-            mesh_type::connector _conn;
+            mesh_type::connector _fset, _cset ;
 
     /*-------------------- seed nodes for cells != const. */
         hfun_seed_mesh<4>( this->_hval,
-            this->_mesh.node() , 
+            this->_mesh.node() ,
             this->_mesh.tri4() , _sort) ;
 
     /*-------------------- compute h(x) via fast-marching */
@@ -317,12 +317,13 @@
             iptr_type _base, _bidx ;
             _sort._pop_root( _bidx , _base);
 
-            _conn.set_count( +0) ;
+            _fset.set_count( +0) ;
+            _cset.set_count( +0) ;
              this->_mesh.
-            connect_3(_base, POINT_tag, _conn) ;
+            connect_3(_base, POINT_tag, _fset, _cset) ;
 
-            for (auto _next  = _conn.head();
-                      _next != _conn.tend();
+            for (auto _next  = _cset.head();
+                      _next != _cset.tend();
                     ++_next  )
             {
                 if (_next->_kind == TRIA4_tag)

@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 28 Apr., 2020
+     * Last updated: 25 Nov., 2026
      *
-     * Copyright 2013-2020
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -701,26 +701,31 @@
     --------------------------------------------------------
      * CONNECT-3: form this-to-3-cell adj. list.
     --------------------------------------------------------
+     * Clear the distinct face scratch and cell output
+     * lists before a fresh query.
+    --------------------------------------------------------
      */
 
     __inline_call void_type connect_3 (
         iptr_type const*_node ,
         char_type _kind ,
-        connector&_conn
+        connector&_fset ,
+        connector&_cset
         )
     {
         mesh::connect_3(
-       *this, _node, _kind, _conn, tria_cell()) ;
+       *this, _node, _kind, _fset, _cset, tria_cell()) ;
     }
 
     __inline_call void_type connect_3 (
         iptr_type _ipos ,
         char_type _kind ,
-        connector&_conn
+        connector&_fset ,
+        connector&_cset
         )
     {
         mesh::connect_3(
-       *this, _ipos, _kind, _conn, tria_cell()) ;
+       *this, _ipos, _kind, _fset, _cset, tria_cell()) ;
     }
 
     } ;

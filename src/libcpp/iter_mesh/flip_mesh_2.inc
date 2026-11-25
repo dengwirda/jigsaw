@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 Jun., 2022
+     * Last updated: 25 Nov., 2026
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -83,8 +83,10 @@
 
             _conn.set_count(0) ;
             _next.set_count(0) ;
-            _mesh.connect_2(
-               &_enod[0], EDGE2_tag, _conn) ;
+            iptr_type _epos = -1 ;
+            if (!_mesh.find_edge(_enod, _epos))
+                continue ;
+            _mesh.connect_2(_epos, EDGE2_tag, _conn) ;
 
             if (_conn.count() != +2) continue ;
 
@@ -92,7 +94,7 @@
                 _conn[1]._kind==TRIA3_tag )
             {
                 flip_t2t2( _geom, _mesh, _nmrk, _enod,
-                    _conn, _next, _flip,
+                    _epos, _conn, _next, _flip,
                     _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
@@ -100,7 +102,7 @@
             else
             {
             //  flip_t1q1( _geom, _mesh, _nmrk, _enod,
-            //      _conn, _next, _flip,
+            //      _epos, _conn, _next, _flip,
             //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
@@ -121,8 +123,10 @@
 
             _conn.set_count(0) ;
             _next.set_count(0) ;
-            _mesh.connect_2(
-               &_enod[0], EDGE2_tag, _conn) ;
+            iptr_type _epos = -1 ;
+            if (!_mesh.find_edge(_enod, _epos))
+                continue ;
+            _mesh.connect_2(_epos, EDGE2_tag, _conn) ;
 
             if (_conn.count() != +2) continue ;
 
@@ -130,7 +134,7 @@
                 _conn[1]._kind==TRIA3_tag )
             {
                 flip_t2t2( _geom, _mesh, _nmrk, _enod,
-                    _conn, _next, _flip,
+                    _epos, _conn, _next, _flip,
                     _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
@@ -138,7 +142,7 @@
             else
             {
             //  flip_t1q1( _geom, _mesh, _nmrk, _enod,
-            //      _conn, _next, _flip,
+            //      _epos, _conn, _next, _flip,
             //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
@@ -182,24 +186,26 @@
 
             _conn.set_count(0) ;
             _next.set_count(0) ;
-            _mesh.connect_2(
-               &_enod[0], EDGE2_tag, _conn) ;
+            iptr_type _epos = -1 ;
+            if (!_mesh.find_edge(_enod, _epos))
+                continue ;
+            _mesh.connect_2(_epos, EDGE2_tag, _conn) ;
 
             if (_conn.count() != +2) continue ;
 
             if (_conn[0]._kind==QUAD4_tag &&
                 _conn[1]._kind==QUAD4_tag )
             {
-            //  flip_q2q2( _geom, _mesh, _enod, _nmrk,
-            //      _conn, _next, _flip,
+            //  flip_q2q2( _geom, _mesh, _nmrk, _enod,
+            //      _epos, _conn, _next, _flip,
             //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
             }
             else
             {
-            //  flip_t1q1( _geom, _mesh, _enod, _nmrk,
-            //      _conn, _next, _flip,
+            //  flip_t1q1( _geom, _mesh, _nmrk, _enod,
+            //      _epos, _conn, _next, _flip,
             //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
@@ -220,24 +226,26 @@
 
             _conn.set_count(0) ;
             _next.set_count(0) ;
-            _mesh.connect_2(
-               &_enod[0], EDGE2_tag, _conn) ;
+            iptr_type _epos = -1 ;
+            if (!_mesh.find_edge(_enod, _epos))
+                continue ;
+            _mesh.connect_2(_epos, EDGE2_tag, _conn) ;
 
             if (_conn.count() != +2) continue ;
 
             if (_conn[0]._kind==QUAD4_tag &&
                 _conn[1]._kind==QUAD4_tag )
             {
-            //  flip_q2q2( _geom, _mesh, _enod, _nmrk,
-            //      _conn, _next, _flip,
+            //  flip_q2q2( _geom, _mesh, _nmrk, _enod,
+            //      _epos, _conn, _next, _flip,
             //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;
             }
             else
             {
-            //  flip_t1q1( _geom, _mesh, _enod, _nmrk,
-            //      _conn, _next, _flip,
+            //  flip_t1q1( _geom, _mesh, _nmrk, _enod,
+            //      _epos, _conn, _next, _flip,
             //      _qold, _qnew, _kind)  ;
 
                 if (_flip) return ;

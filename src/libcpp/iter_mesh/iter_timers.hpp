@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 Dec., 2022
+     * Last updated: 22 Nov., 2026
      *
-     * Copyright 2013-2022
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -65,6 +65,8 @@
         double      _iter_full = (double   )  +0. ;
 
         double      _init_iter = (double   )  +0. ;
+
+        double      _mesh_sign = (double   )  +0. ;
 
         double      _move_node = (double   )  +0. ;
         double      _init_node = (double   )  +0. ;

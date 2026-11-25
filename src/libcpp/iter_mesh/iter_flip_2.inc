@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 Nov., 2026
+     * Last updated: 25 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -308,6 +308,7 @@
         mesh_type &_mesh ,
         iptr_list &_nmrk ,
         iptr_type *_enod ,
+        iptr_type  _epos ,
         conn_list &_conn ,
         conn_list &_next ,
         bool_type &_flip ,
@@ -316,11 +317,6 @@
         flip_kind  _kind
         )
     {
-        iptr_type _epos =  -1 ;
-        _mesh.find_edge(_enod, _epos) ;
-
-        if (_epos==-1) return ;
-
          auto _eptr =
         _mesh. edge().head() + _epos;
 

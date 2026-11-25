@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 Nov., 2026
+     * Last updated: 22 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda,
@@ -314,10 +314,9 @@
             }
             else
             {
-                _conn.set_count(0) ;
-
+                _conn.set_count(0);
                 _mesh.connect_2(
-            &_edge->node(0), EDGE2_tag, _conn) ;
+                    _nnE2, EDGE2_tag, _conn) ;
 
                 if (_conn.count () != +2)
                 {
@@ -479,7 +478,16 @@
         init_mark(_mesh, _mark) ;
         init_bnds(_mesh, _mark) ;
 
+    #   ifdef  __use_timers
+        _ttic = _time.now();
+    #   endif
+
         flip_sign(_mesh);
+
+    #   ifdef __use_timers
+        _ttoc = _time.now();
+        _tcpu._mesh_sign += _tcpu.time_span(_ttic , _ttoc);
+    #   endif
 
     /*------------------------------ do optimisation loop */
         bool_type
@@ -769,6 +777,10 @@
     /*------------------------------ print method metrics */
             _dump.push("\n");
             _dump.push("**TIMING statistics...\n") ;
+
+            _dump.push("  MESH-SIGN: ");
+            _dump.push(std::to_string(_tcpu._mesh_sign));
+            _dump.push("\n\n");
 
             _dump.push("  MOVE-NODE: ");
             _dump.push(std::to_string(_tcpu._move_node));
