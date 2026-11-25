@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 Apr., 2020
+     * Last updated: 25 Nov., 2026
      *
      * Copyright 2020--
      * Darren Engwirda
@@ -57,6 +57,46 @@
      * HASH-COMPLEX-k hashes for k-cell complexes.
     --------------------------------------------------------
      */
+
+    template <size_t _size, typename iptr_type>
+    __inline_call uint32_t hash_cell (
+        iptr_type const*_node
+        )
+    {
+        uint32_t _copy[_size] ;
+        for (size_t _i = 0; _i < _size; ++_i)
+            _copy[_i] = _node[_i] ;
+        algorithms::isort(
+            _copy, _copy+_size, std::less<uint32_t>()) ;
+        return hash::hashword(_copy, _size, +137) ;
+    }
+
+    template < size_t _size,
+        typename  list_type,
+        typename  iptr_type>
+    __inline_call bool_type same_cell (
+        list_type *_list,
+        uint32_t   _ipos,
+        iptr_type const*_node
+        )
+    {
+        typename list_type::data_type::iptr_type const*
+            _vert = &_list->operator[](_ipos).node(0);
+
+        uint32_t _inod[_size], _jnod[_size] ;
+        for (size_t _ii = 0; _ii < _size; ++_ii)
+        {
+            _inod[_ii] = _vert[_ii] ;
+            _jnod[_ii] = _node[_ii] ;
+        }
+        algorithms::isort(
+            _inod, _inod+_size, std::less<uint32_t>()) ;
+        algorithms::isort(
+            _jnod, _jnod+_size, std::less<uint32_t>()) ;
+        for (size_t _ii = 0; _ii < _size; ++_ii)
+            if (_inod[_ii] != _jnod[_ii]) return false ;
+        return true ;
+    }
 
     template <
         typename  node_list
@@ -103,12 +143,15 @@
             _enod[1] = this->_eset->
                 operator[](_epos).node( 1) ;
 
-            algorithms::isort (
-                &_enod[0], &_enod[2] ,
-                    std::less<uint32_t >());
+            return eval_hash(&_enod[0]) ;
+        }
 
-            return hash::hashword (
-           (uint32_t *)&_enod[0], +2, +137);
+        template <typename iptr_type>
+        __inline_call uint32_t eval_hash (
+            iptr_type const*_node
+            ) const
+        {
+            return hash_cell<2>( _node) ;
         }
         } ;
 
@@ -137,12 +180,15 @@
             _tnod[2] = this->_tset->
                 operator[](_tpos).node( 2) ;
 
-            algorithms::isort (
-                &_tnod[0], &_tnod[3] ,
-                    std::less<uint32_t >());
+            return eval_hash(&_tnod[0]) ;
+        }
 
-            return hash::hashword (
-           (uint32_t *)&_tnod[0], +3, +137);
+        template <typename iptr_type>
+        __inline_call uint32_t eval_hash (
+            iptr_type const*_node
+            ) const
+        {
+            return hash_cell<3>( _node) ;
         }
         } ;
 
@@ -173,12 +219,15 @@
             _qnod[3] = this->_qset->
                 operator[](_qpos).node( 3) ;
 
-            algorithms::isort (
-                &_qnod[0], &_qnod[4] ,
-                    std::less<uint32_t >());
+            return eval_hash(&_qnod[0]) ;
+        }
 
-            return hash::hashword (
-           (uint32_t *)&_qnod[0], +4, +137);
+        template <typename iptr_type>
+        __inline_call uint32_t eval_hash (
+            iptr_type const*_node
+            ) const
+        {
+            return hash_cell<4>( _node) ;
         }
         } ;
 
@@ -209,12 +258,15 @@
             _tnod[3] = this->_tset->
                 operator[](_tpos).node( 3) ;
 
-            algorithms::isort (
-                &_tnod[0], &_tnod[4] ,
-                    std::less<uint32_t >());
+            return eval_hash(&_tnod[0]) ;
+        }
 
-            return hash::hashword (
-           (uint32_t *)&_tnod[0], +4, +137);
+        template <typename iptr_type>
+        __inline_call uint32_t eval_hash (
+            iptr_type const*_node
+            ) const
+        {
+            return hash_cell<4>( _node) ;
         }
         } ;
 
@@ -253,12 +305,15 @@
             _hnod[7] = this->_hset->
                 operator[](_hpos).node( 7) ;
 
-            algorithms::isort (
-                &_hnod[0], &_hnod[8] ,
-                    std::less<uint32_t >());
+            return eval_hash(&_hnod[0]) ;
+        }
 
-            return hash::hashword (
-           (uint32_t *)&_hnod[0], +8, +137);
+        template <typename iptr_type>
+        __inline_call uint32_t eval_hash (
+            iptr_type const*_node
+            ) const
+        {
+            return hash_cell<8>( _node) ;
         }
         } ;
 
@@ -293,12 +348,15 @@
             _wnod[5] = this->_wset->
                 operator[](_wpos).node( 5) ;
 
-            algorithms::isort (
-                &_wnod[0], &_wnod[6] ,
-                    std::less<uint32_t >());
+            return eval_hash(&_wnod[0]) ;
+        }
 
-            return hash::hashword (
-           (uint32_t *)&_wnod[0], +6, +137);
+        template <typename iptr_type>
+        __inline_call uint32_t eval_hash (
+            iptr_type const*_node
+            ) const
+        {
+            return hash_cell<6>( _node) ;
         }
         } ;
 
@@ -331,12 +389,15 @@
             _pnod[4] = this->_pset->
                 operator[](_ppos).node( 4) ;
 
-            algorithms::isort (
-                &_pnod[0], &_pnod[5] ,
-                    std::less<uint32_t >());
+            return eval_hash(&_pnod[0]) ;
+        }
 
-            return hash::hashword (
-           (uint32_t *)&_pnod[0], +5, +137);
+        template <typename iptr_type>
+        __inline_call uint32_t eval_hash (
+            iptr_type const*_node
+            ) const
+        {
+            return hash_cell<5>( _node) ;
         }
         } ;
 
@@ -388,28 +449,22 @@
             uint32_t  _jpos
             ) const
         {
-            uint32_t  _inod[2];
-            _inod[0] = this->_eset->
-                operator[](_ipos).node( 0) ;
-            _inod[1] = this->_eset->
-                operator[](_ipos).node( 1) ;
-
             uint32_t  _jnod[2];
             _jnod[0] = this->_eset->
                 operator[](_jpos).node( 0) ;
             _jnod[1] = this->_eset->
                 operator[](_jpos).node( 1) ;
 
-            algorithms::isort (
-                &_inod[0], &_inod[2],
-                    std::less<uint32_t >());
+            return eval_pred(_ipos, _jnod) ;
+        }
 
-            algorithms::isort (
-                &_jnod[0], &_jnod[2],
-                    std::less<uint32_t >());
-
-            return _inod[0] == _jnod[0] &&
-                   _inod[1] == _jnod[1]  ;
+        template <typename iptr_type>
+        __inline_call bool_type eval_pred (
+            uint32_t _ipos,
+            iptr_type const*_node
+            ) const
+        {
+            return same_cell<2>(this->_eset, _ipos, _node) ;
         }
         } ;
 
@@ -431,14 +486,6 @@
             uint32_t  _jpos
             ) const
         {
-            uint32_t  _inod[3];
-            _inod[0] = this->_tset->
-                operator[](_ipos).node( 0) ;
-            _inod[1] = this->_tset->
-                operator[](_ipos).node( 1) ;
-            _inod[2] = this->_tset->
-                operator[](_ipos).node( 2) ;
-
             uint32_t  _jnod[3];
             _jnod[0] = this->_tset->
                 operator[](_jpos).node( 0) ;
@@ -447,17 +494,16 @@
             _jnod[2] = this->_tset->
                 operator[](_jpos).node( 2) ;
 
-            algorithms::isort (
-                &_inod[0], &_inod[3],
-                    std::less<uint32_t >());
+            return eval_pred(_ipos, _jnod) ;
+        }
 
-            algorithms::isort (
-                &_jnod[0], &_jnod[3],
-                    std::less<uint32_t >());
-
-            return _inod[0] == _jnod[0] &&
-                   _inod[1] == _jnod[1] &&
-                   _inod[2] == _jnod[2]  ;
+        template <typename iptr_type>
+        __inline_call bool_type eval_pred (
+            uint32_t _ipos,
+            iptr_type const*_node
+            ) const
+        {
+            return same_cell<3>(this->_tset, _ipos, _node) ;
         }
         } ;
 
@@ -479,16 +525,6 @@
             uint32_t  _jpos
             ) const
         {
-            uint32_t  _inod[4];
-            _inod[0] = this->_qset->
-                operator[](_ipos).node( 0) ;
-            _inod[1] = this->_qset->
-                operator[](_ipos).node( 1) ;
-            _inod[2] = this->_qset->
-                operator[](_ipos).node( 2) ;
-            _inod[3] = this->_qset->
-                operator[](_ipos).node( 3) ;
-
             uint32_t  _jnod[4];
             _jnod[0] = this->_qset->
                 operator[](_jpos).node( 0) ;
@@ -499,18 +535,16 @@
             _jnod[3] = this->_qset->
                 operator[](_jpos).node( 3) ;
 
-            algorithms::isort (
-                &_inod[0], &_inod[4],
-                    std::less<uint32_t >());
+            return eval_pred(_ipos, _jnod) ;
+        }
 
-            algorithms::isort (
-                &_jnod[0], &_jnod[4],
-                    std::less<uint32_t >());
-
-            return _inod[0] == _jnod[0] &&
-                   _inod[1] == _jnod[1] &&
-                   _inod[2] == _jnod[2] &&
-                   _inod[3] == _jnod[3]  ;
+        template <typename iptr_type>
+        __inline_call bool_type eval_pred (
+            uint32_t _ipos,
+            iptr_type const*_node
+            ) const
+        {
+            return same_cell<4>(this->_qset, _ipos, _node) ;
         }
         } ;
 
@@ -532,16 +566,6 @@
             uint32_t  _jpos
             ) const
         {
-            uint32_t  _inod[4];
-            _inod[0] = this->_tset->
-                operator[](_ipos).node( 0) ;
-            _inod[1] = this->_tset->
-                operator[](_ipos).node( 1) ;
-            _inod[2] = this->_tset->
-                operator[](_ipos).node( 2) ;
-            _inod[3] = this->_tset->
-                operator[](_ipos).node( 3) ;
-
             uint32_t  _jnod[4];
             _jnod[0] = this->_tset->
                 operator[](_jpos).node( 0) ;
@@ -552,18 +576,16 @@
             _jnod[3] = this->_tset->
                 operator[](_jpos).node( 3) ;
 
-            algorithms::isort (
-                &_inod[0], &_inod[4],
-                    std::less<uint32_t >());
+            return eval_pred(_ipos, _jnod) ;
+        }
 
-            algorithms::isort (
-                &_jnod[0], &_jnod[4],
-                    std::less<uint32_t >());
-
-            return _inod[0] == _jnod[0] &&
-                   _inod[1] == _jnod[1] &&
-                   _inod[2] == _jnod[2] &&
-                   _inod[3] == _jnod[3]  ;
+        template <typename iptr_type>
+        __inline_call bool_type eval_pred (
+            uint32_t _ipos,
+            iptr_type const*_node
+            ) const
+        {
+            return same_cell<4>(this->_tset, _ipos, _node) ;
         }
         } ;
 
@@ -585,24 +607,6 @@
             uint32_t  _jpos
             ) const
         {
-            uint32_t  _inod[8];
-            _inod[0] = this->_hset->
-                operator[](_ipos).node( 0) ;
-            _inod[1] = this->_hset->
-                operator[](_ipos).node( 1) ;
-            _inod[2] = this->_hset->
-                operator[](_ipos).node( 2) ;
-            _inod[3] = this->_hset->
-                operator[](_ipos).node( 3) ;
-            _inod[4] = this->_hset->
-                operator[](_ipos).node( 4) ;
-            _inod[5] = this->_hset->
-                operator[](_ipos).node( 5) ;
-            _inod[6] = this->_hset->
-                operator[](_ipos).node( 6) ;
-            _inod[7] = this->_hset->
-                operator[](_ipos).node( 7) ;
-
             uint32_t  _jnod[8];
             _jnod[0] = this->_hset->
                 operator[](_jpos).node( 0) ;
@@ -621,22 +625,16 @@
             _jnod[7] = this->_hset->
                 operator[](_jpos).node( 7) ;
 
-            algorithms::isort (
-                &_inod[0], &_inod[8],
-                    std::less<uint32_t >());
+            return eval_pred(_ipos, _jnod) ;
+        }
 
-            algorithms::isort (
-                &_jnod[0], &_jnod[8],
-                    std::less<uint32_t >());
-
-            return _inod[0] == _jnod[0] &&
-                   _inod[1] == _jnod[1] &&
-                   _inod[2] == _jnod[2] &&
-                   _inod[3] == _jnod[3] &&
-                   _inod[4] == _jnod[4] &&
-                   _inod[5] == _jnod[5] &&
-                   _inod[6] == _jnod[6] &&
-                   _inod[7] == _jnod[7]  ;
+        template <typename iptr_type>
+        __inline_call bool_type eval_pred (
+            uint32_t _ipos,
+            iptr_type const*_node
+            ) const
+        {
+            return same_cell<8>(this->_hset, _ipos, _node) ;
         }
         } ;
 
@@ -658,20 +656,6 @@
             uint32_t  _jpos
             ) const
         {
-            uint32_t  _inod[6];
-            _inod[0] = this->_wset->
-                operator[](_ipos).node( 0) ;
-            _inod[1] = this->_wset->
-                operator[](_ipos).node( 1) ;
-            _inod[2] = this->_wset->
-                operator[](_ipos).node( 2) ;
-            _inod[3] = this->_wset->
-                operator[](_ipos).node( 3) ;
-            _inod[4] = this->_wset->
-                operator[](_ipos).node( 4) ;
-            _inod[5] = this->_wset->
-                operator[](_ipos).node( 5) ;
-
             uint32_t  _jnod[6];
             _jnod[0] = this->_wset->
                 operator[](_jpos).node( 0) ;
@@ -686,20 +670,16 @@
             _jnod[5] = this->_wset->
                 operator[](_jpos).node( 5) ;
 
-            algorithms::isort (
-                &_inod[0], &_inod[6],
-                    std::less<uint32_t >());
+            return eval_pred(_ipos, _jnod) ;
+        }
 
-            algorithms::isort (
-                &_jnod[0], &_jnod[6],
-                    std::less<uint32_t >());
-
-            return _inod[0] == _jnod[0] &&
-                   _inod[1] == _jnod[1] &&
-                   _inod[2] == _jnod[2] &&
-                   _inod[3] == _jnod[3] &&
-                   _inod[4] == _jnod[4] &&
-                   _inod[5] == _jnod[5]  ;
+        template <typename iptr_type>
+        __inline_call bool_type eval_pred (
+            uint32_t _ipos,
+            iptr_type const*_node
+            ) const
+        {
+            return same_cell<6>(this->_wset, _ipos, _node) ;
         }
         } ;
 
@@ -721,18 +701,6 @@
             uint32_t  _jpos
             ) const
         {
-            uint32_t  _inod[5];
-            _inod[0] = this->_pset->
-                operator[](_ipos).node( 0) ;
-            _inod[1] = this->_pset->
-                operator[](_ipos).node( 1) ;
-            _inod[2] = this->_pset->
-                operator[](_ipos).node( 2) ;
-            _inod[3] = this->_pset->
-                operator[](_ipos).node( 3) ;
-            _inod[4] = this->_pset->
-                operator[](_ipos).node( 4) ;
-
             uint32_t  _jnod[5];
             _jnod[0] = this->_pset->
                 operator[](_jpos).node( 0) ;
@@ -745,19 +713,16 @@
             _jnod[4] = this->_pset->
                 operator[](_jpos).node( 4) ;
 
-            algorithms::isort (
-                &_inod[0], &_inod[5],
-                    std::less<uint32_t >());
+            return eval_pred(_ipos, _jnod) ;
+        }
 
-            algorithms::isort (
-                &_jnod[0], &_jnod[5],
-                    std::less<uint32_t >());
-
-            return _inod[0] == _jnod[0] &&
-                   _inod[1] == _jnod[1] &&
-                   _inod[2] == _jnod[2] &&
-                   _inod[3] == _jnod[3] &&
-                   _inod[4] == _jnod[4]  ;
+        template <typename iptr_type>
+        __inline_call bool_type eval_pred (
+            uint32_t _ipos,
+            iptr_type const*_node
+            ) const
+        {
+            return same_cell<5>(this->_pset, _ipos, _node) ;
         }
         } ;
 

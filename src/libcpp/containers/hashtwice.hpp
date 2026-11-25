@@ -44,9 +44,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 28 Apr., 2020
+ * Last updated: 25 Nov., 2026
  *
- * Copyright 2013-2020
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -399,6 +399,56 @@
         this->_lsiz[_hash[1]] += +1 ;
         return base_type::push(_data,_hash[1]) ;
         }
+    }
+
+/*--------------------- scan two buckets using external key */
+    template <typename pred_func>
+    __normal_call bool_type find (
+        size_type _val0,
+        size_type _val1,
+        pred_func _test,
+        data_type&_same
+        )
+    {
+        if (this->_lptr.empty()) return false;
+
+    /*------------------------------- evaluate hash value */
+        item_type*_item;
+        size_type _hash[2] = {
+            _val0 & this->hash_mask(),
+            _val1 & this->hash_mask()
+        } ;
+
+    /*------------------------------- scan list from head */
+        _item = this->_lptr[_hash[0]];
+    /*------------------------------- check exact matches */
+        for ( ; _item != nullptr;
+                    _item = _item->_next)
+        {
+            if (_test(_item->_data))
+            {
+                _same =
+                    _item->_data; return true;
+            }
+        }
+
+    /*------------------------------- don't scan it twice */
+        if (_hash[0] == _hash[1])
+        return false ;
+    
+    /*------------------------------- scan list from head */
+        _item = this->_lptr[_hash[1]];
+    /*------------------------------- check exact matches */
+        for ( ; _item != nullptr;
+                    _item = _item->_next)
+        {
+            if (_test(_item->_data))
+            {
+                _same =
+                    _item->_data; return true;
+            }
+        }
+        return false ;
     }
 
 /*-------------------------- scan table for exact matches */

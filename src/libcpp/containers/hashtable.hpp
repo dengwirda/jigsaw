@@ -41,7 +41,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 07 Nov., 2026
+ * Last updated: 25 Nov., 2026
  *
  * Copyright 2013-2026
  * Darren Engwirda
@@ -337,6 +337,34 @@
 
     /*------------------------------- push data onto list */
         return base_type::push( _data,_hpos ) ;
+    }
+
+/*---------------------- scan a bucket using external key */
+    template <typename pred_func>
+    __normal_call bool_type find (
+        size_type _hval,
+        pred_func _test,
+        data_type&_same
+        )
+    {
+        if (this->_lptr.empty()) return false;
+
+    /*------------------------------- evaluate hash value */
+        _hval &= this->hash_mask() ;
+
+    /*------------------------------- scan list from head */
+        item_type *_item = this->_lptr[_hval];
+    /*------------------------------- check exact matches */
+        for ( ; _item != nullptr;
+                    _item = _item->_next)
+        {
+            if (_test(_item->_data))
+            {
+                _same =
+                    _item->_data; return true;
+            }
+        }
+        return false ;
     }
 
 /*-------------------------- scan table for exact matches */

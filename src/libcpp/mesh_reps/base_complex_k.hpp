@@ -2042,6 +2042,30 @@
 
     /*
     --------------------------------------------------------
+     * FIND-ELEMENT: helper for "find" routines.
+    --------------------------------------------------------
+     */
+
+    template < typename hmap_type,
+        typename  iptr_type>
+    __inline_call bool_type find_element (
+        hmap_type&_hmap,
+        iptr_type const*_node,
+        iptr_type&_cell
+        )
+    {
+        auto _pred = [&](iptr_type _indx)
+        {
+            return _hmap._pred.eval_pred(_indx, _node) ;
+        } ;
+
+        uint32_t _hash = _hmap._hash.eval_hash (_node) ;
+
+        return _hmap.find (_hash, _pred, _cell) ;
+    }
+
+    /*
+    --------------------------------------------------------
      * FIND-EDGE: return index of assoc. 1-edge.
     --------------------------------------------------------
      */
@@ -2055,35 +2079,7 @@
         IPTR_TYPE&_epos
         )
     {
-    /*-------------------------- find current 2-cell pos. */
-        IPTR_TYPE _ipos =
-       (IPTR_TYPE) _get_edge(_mesh);
-
-       _mesh.
-       _llE2[_ipos].node(0) = _node[0];
-       _mesh.
-       _llE2[_ipos].node(1) = _node[1];
-
-        typename
-        mesh_type::
-        edge_maps::_write_it _same ;
-        if (_mesh.
-            _mmE2.find(_ipos,_same))
-        {
-    /*------------------------------- found matching cell */
-            _put_edge(_mesh, _ipos);
-
-            _epos=*_same ;
-
-            return  true ;
-        }
-        else
-        {
-    /*------------------------------- couldn't find match */
-            _put_edge(_mesh, _ipos);
-
-            return false ;
-        }
+        return find_element(_mesh._mmE2, _node, _epos) ;
     }
 
     /*
@@ -2101,37 +2097,7 @@
         IPTR_TYPE&_tpos
         )
     {
-    /*-------------------------- find current 2-cell pos. */
-        IPTR_TYPE _ipos =
-       (IPTR_TYPE) _get_tri3(_mesh);
-
-       _mesh.
-       _llT3[_ipos].node(0) = _node[0];
-       _mesh.
-       _llT3[_ipos].node(1) = _node[1];
-       _mesh.
-       _llT3[_ipos].node(2) = _node[2];
-
-        typename
-        mesh_type::
-        tri3_maps::_write_it _same ;
-        if (_mesh.
-            _mmT3.find(_ipos,_same))
-        {
-    /*------------------------------- found matching cell */
-            _put_tri3(_mesh, _ipos);
-
-            _tpos=*_same ;
-
-            return  true ;
-        }
-        else
-        {
-    /*------------------------------- couldn't find match */
-            _put_tri3(_mesh, _ipos);
-
-            return false ;
-        }
+        return find_element(_mesh._mmT3, _node, _tpos) ;
     }
 
     /*
@@ -2149,39 +2115,7 @@
         IPTR_TYPE&_qpos
         )
     {
-    /*-------------------------- find current 2-cell pos. */
-        IPTR_TYPE _ipos =
-       (IPTR_TYPE) _get_quad(_mesh);
-
-       _mesh.
-       _llQ4[_ipos].node(0) = _node[0];
-       _mesh.
-       _llQ4[_ipos].node(1) = _node[1];
-       _mesh.
-       _llQ4[_ipos].node(2) = _node[2];
-       _mesh.
-       _llQ4[_ipos].node(3) = _node[3];
-
-        typename
-        mesh_type::
-        quad_maps::_write_it _same ;
-        if (_mesh.
-            _mmQ4.find(_ipos,_same))
-        {
-    /*------------------------------- found matching cell */
-            _put_quad(_mesh, _ipos);
-
-            _qpos=*_same ;
-
-            return  true ;
-        }
-        else
-        {
-    /*------------------------------- couldn't find match */
-            _put_quad(_mesh, _ipos);
-
-            return false ;
-        }
+        return find_element(_mesh._mmQ4, _node, _qpos) ;
     }
 
     /*
@@ -2199,39 +2133,7 @@
         IPTR_TYPE&_tpos
         )
     {
-    /*-------------------------- find current 3-cell pos. */
-        IPTR_TYPE _ipos =
-       (IPTR_TYPE) _get_tri4(_mesh);
-
-       _mesh.
-       _llT4[_ipos].node(0) = _node[0];
-       _mesh.
-       _llT4[_ipos].node(1) = _node[1];
-       _mesh.
-       _llT4[_ipos].node(2) = _node[2];
-       _mesh.
-       _llT4[_ipos].node(3) = _node[3];
-
-        typename
-        mesh_type::
-        tri4_maps::_write_it _same ;
-        if (_mesh.
-            _mmT4.find(_ipos,_same))
-        {
-    /*------------------------------- found matching cell */
-            _put_tri4(_mesh, _ipos);
-
-            _tpos=*_same ;
-
-            return  true ;
-        }
-        else
-        {
-    /*------------------------------- couldn't find match */
-            _put_tri4(_mesh, _ipos);
-
-            return false ;
-        }
+        return find_element(_mesh._mmT4, _node, _tpos) ;
     }
 
     /*
@@ -2249,47 +2151,7 @@
         IPTR_TYPE&_hpos
         )
     {
-    /*-------------------------- find current 3-cell pos. */
-        IPTR_TYPE _ipos =
-       (IPTR_TYPE) _get_hexa(_mesh);
-
-       _mesh.
-       _llH8[_ipos].node(0) = _node[0];
-       _mesh.
-       _llH8[_ipos].node(1) = _node[1];
-       _mesh.
-       _llH8[_ipos].node(2) = _node[2];
-       _mesh.
-       _llH8[_ipos].node(3) = _node[3];
-       _mesh.
-       _llH8[_ipos].node(4) = _node[4];
-       _mesh.
-       _llH8[_ipos].node(5) = _node[5];
-       _mesh.
-       _llH8[_ipos].node(6) = _node[6];
-       _mesh.
-       _llH8[_ipos].node(7) = _node[7];
-
-        typename
-        mesh_type::
-        hexa_maps::_write_it _same ;
-        if (_mesh.
-            _mmH8.find(_ipos,_same))
-        {
-    /*------------------------------- found matching cell */
-            _put_hexa(_mesh, _ipos);
-
-            _hpos=*_same ;
-
-            return  true ;
-        }
-        else
-        {
-    /*------------------------------- couldn't find match */
-            _put_hexa(_mesh, _ipos);
-
-            return false ;
-        }
+        return find_element(_mesh._mmH8, _node, _hpos) ;
     }
 
     /*
@@ -2307,43 +2169,7 @@
         IPTR_TYPE&_wpos
         )
     {
-    /*-------------------------- find current 3-cell pos. */
-        IPTR_TYPE _ipos =
-       (IPTR_TYPE) _get_wedg(_mesh);
-
-       _mesh.
-       _llW6[_ipos].node(0) = _node[0];
-       _mesh.
-       _llW6[_ipos].node(1) = _node[1];
-       _mesh.
-       _llW6[_ipos].node(2) = _node[2];
-       _mesh.
-       _llW6[_ipos].node(3) = _node[3];
-       _mesh.
-       _llW6[_ipos].node(4) = _node[4];
-       _mesh.
-       _llW6[_ipos].node(5) = _node[5];
-
-        typename
-        mesh_type::
-        wedg_maps::_write_it _same ;
-        if (_mesh.
-            _mmW6.find(_ipos,_same))
-        {
-    /*------------------------------- found matching cell */
-            _put_wedg(_mesh, _ipos);
-
-            _wpos=*_same ;
-
-            return  true ;
-        }
-        else
-        {
-    /*------------------------------- couldn't find match */
-            _put_wedg(_mesh, _ipos);
-
-            return false ;
-        }
+        return find_element(_mesh._mmW6, _node, _wpos) ;
     }
 
     /*
@@ -2361,41 +2187,7 @@
         IPTR_TYPE&_ppos
         )
     {
-    /*-------------------------- find current 3-cell pos. */
-        IPTR_TYPE _ipos =
-       (IPTR_TYPE) _get_pyra(_mesh);
-
-       _mesh.
-       _llP5[_ipos].node(0) = _node[0];
-       _mesh.
-       _llP5[_ipos].node(1) = _node[1];
-       _mesh.
-       _llP5[_ipos].node(2) = _node[2];
-       _mesh.
-       _llP5[_ipos].node(3) = _node[3];
-       _mesh.
-       _llP5[_ipos].node(4) = _node[4];
-
-        typename
-        mesh_type::
-        pyra_maps::_write_it _same ;
-        if (_mesh.
-            _mmP5.find(_ipos,_same))
-        {
-    /*------------------------------- found matching cell */
-            _put_pyra(_mesh, _ipos);
-
-            _ppos=*_same ;
-
-            return  true ;
-        }
-        else
-        {
-    /*------------------------------- couldn't find match */
-            _put_pyra(_mesh, _ipos);
-
-            return false ;
-        }
+        return find_element(_mesh._mmP5, _node, _ppos) ;
     }
 
     /*
