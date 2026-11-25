@@ -35,9 +35,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 30 Jun., 2019
+ * Last updated: 24 Nov., 2026
  *
- * Copyright 2013-2019
+ * Copyright 2013-2026
  * Darren Engwirda
  * d.engwirda@gmail.com
  * https://github.com/dengwirda/
@@ -61,6 +61,7 @@
 
 #   include "interpolate/hfun_base_k.hpp"
 #   include "interpolate/hfun_clip_k.hpp"
+#   include "interpolate/hfun_seed_k.hpp"
 
 #   include "interpolate/hfun_constant_value_k.hpp"
 

@@ -35,9 +35,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 Oct., 2024
+     * Last updated: 24 Nov., 2026
      *
-     * Copyright 2013-2024
+     * Copyright 2013-2026
      * Darren Engwirda
      * d.engwirda@gmail.com
      * https://github.com/dengwirda/
@@ -168,14 +168,10 @@
             allocator >
         _sort((less_than(this->_hmat.head())));
 
-    /*-------------------- push nodes onto priority queue */
-        iptr_type _inum  = +0;
-        for (auto _iter  = this->_hmat.head() ;
-                  _iter != this->_hmat.tend() ;
-                ++_iter, ++_inum)
-        {
-            _sort.push(_inum, _inum ) ;
-        }
+    /*-------------------- seed nodes for cells != const. */
+        hfun_seed_grid(this->_hmat,
+            this->_xpos.count(), 
+            this->_ypos.count(), _sort) ;
 
     /*-------------------- compute h(x) via fast-marching */
         vals_type static _FTOL =
@@ -191,7 +187,7 @@
        (iptr_type)this->_xpos.count() - 1 ;
 
     #   define ISALIVE(__idx)           \
-           (_sort.keys(__idx) != _sort.null())
+           (_sort.contains(__idx))
 
     #   define UPDATED(__new, __old)    \
         std::abs(__new - __old) > _FTOL*std::abs(__new)
@@ -217,8 +213,6 @@
             iptr_type  _ipos, _jpos ;
             subs_from_indx(
                 _base, _ipos, _jpos);
-
-            vals_type _hnow = _hmat[_base] ;
 
             for (auto _IPOS = _ipos - 1 ;
                       _IPOS < _ipos + 1 ;
@@ -259,29 +253,10 @@
                 indx_from_subs(
                     _lpii, _lpjj, _lnod);
 
-    /*-------------------- skip cells due to sorted order */
-                iptr_type _near = +0;
-                if (_inod != _base &&
-                    ISALIVE(_inod)) _near++;
-                if (_jnod != _base &&
-                    ISALIVE(_jnod)) _near++;
-                if (_knod != _base &&
-                    ISALIVE(_knod)) _near++;
-                if (_lnod != _base &&
-                    ISALIVE(_lnod)) _near++;
-                
-                if (_near == 0)     continue ;
-
-                vals_type _hmax = .0;
-                _hmax = this->_hmat[_inod] ;
-                _hmax = std::max(
-                _hmax , this->_hmat[_jnod]);
-                _hmax = std::max(
-                _hmax , this->_hmat[_knod]);
-                _hmax = std::max(
-                _hmax , this->_hmat[_lnod]);
-
-                if (_hmax <= _hnow) continue ;
+                int const _isrc = 
+                    _base == _inod ? +0 :
+                    _base == _jnod ? +1 : 
+                    _base == _knod ? +2 : +3 ;
 
     /*-------------------- set-up cell vertex coordinates */
                 real_type _IXYZ[2];
@@ -324,7 +299,9 @@
     /*-------------------- update adj. set, g = g(x) case */
                 if (eikonal_grid_2d (
                    _IXYZ , _JXYZ ,
-                   _KXYZ , _LXYZ , _hnow ,
+                   _KXYZ , _LXYZ , _isrc ,
+                   _iold , _jold ,
+                   _kold , _lold ,
                    _inew , _jnew ,
                    _knew , _lnew ,
                     this->_dhdx[_inod],
@@ -349,7 +326,9 @@
     /*-------------------- update adj. set, const. g case */
                 if (eikonal_grid_2d (
                    _IXYZ , _JXYZ ,
-                   _KXYZ , _LXYZ , _hnow ,
+                   _KXYZ , _LXYZ , _isrc ,
+                   _iold , _jold ,
+                   _kold , _lold ,
                    _inew , _jnew ,
                    _knew , _lnew ,
                     this->_dhdx[  +0 ],

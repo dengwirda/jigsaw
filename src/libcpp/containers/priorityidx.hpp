@@ -43,7 +43,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 08 Nov., 2026
+ * Last updated: 24 Nov., 2026
  *
  * Copyright 2013-2026
  * Darren Engwirda
@@ -341,7 +341,6 @@
         )                       = default ;
 
 /*------------------------------------- peek at heap root */
-
     __inline_call data_type const& root (
         ) const
     {   return this->_heap[  +0 ]._data ;
@@ -359,6 +358,15 @@
         size_type  _kpos   = +0
         ) const
     {   return this->_keys[_kpos] ;
+    }
+
+/*------------------------------------- key in heap query */
+    __inline_call bool_type contains (
+        size_type _kpos
+        ) const
+    {
+        return _kpos < this->_keys.count() &&
+            this->_keys[_kpos] != null() ;
     }
 
 /*-------------------------------------------- empty test */

@@ -35,7 +35,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 Nov., 2026
+     * Last updated: 24 Nov., 2026
      *
      * Copyright 2013-2026
      * Darren Engwirda
@@ -65,17 +65,18 @@
                   vals_type  _g2
         )
     {
-        vals_type _gg =
-            (_g1 + _g2) / (vals_type)2. ;
+        real_type _gg  = 
+      ((real_type)_g1 + _g2) / (real_type)2.;
 
     /*---------------------- form "limited" extrap. to P2 */
-        vals_type _hn = (vals_type) (
-            _h1 + _gg *  std::sqrt(
-        geometry::lensqr_2d(_p1, _p2))) ;
+        real_type _hn = (real_type)_h1 +
+            _gg * std::sqrt(
+        geometry::lensqr_2d(_p1, _p2)) ;
 
-        if (_hn < _h2)
+        vals_type _hm = (vals_type)_hn ;
+        if (_hm < _h2)
         {
-            _h2 = _hn; return  true ;
+            _h2 = _hm; return  true ;
         }
         else/*no clip*/return false ;
     }
@@ -93,19 +94,153 @@
                   vals_type  _g2
         )
     {
-        vals_type _gg =
-            (_g1 + _g2) / (vals_type)2. ;
+        real_type _gg  = 
+      ((real_type)_g1 + _g2) / (real_type)2.;
 
     /*---------------------- form "limited" extrap. to P2 */
-        vals_type _hn = (vals_type) (
-            _h1 + _gg *  std::sqrt(
-        geometry::lensqr_3d(_p1, _p2))) ;
+        real_type _hn = (real_type)_h1 +
+            _gg * std::sqrt(
+        geometry::lensqr_3d(_p1, _p2)) ;
 
-        if (_hn < _h2)
+        vals_type _hm = (vals_type)_hn ;
+        if (_hm < _h2)
         {
-            _h2 = _hn; return  true ;
+            _h2 = _hm; return  true ;
         }
         else/*no clip*/return false ;
+    }
+
+    template <
+        typename  real_type ,
+        typename  vals_type
+             >
+    __inline_call real_type EIKONAL_proj_2d (
+    __const_ptr  (real_type) _p1 ,
+                  vals_type  _h1 ,
+    __const_ptr  (real_type) _p2 ,
+                  vals_type  _h2 ,
+    __const_ptr  (real_type) _pk ,
+                  real_type  _gg ,
+                  real_type  _g1 ,
+                  real_type  _g2
+        )
+    {
+    /*---------------------- form "limited" extrap. to PK */
+        real_type const _zero = (real_type)0.;
+
+        real_type _edge[2];
+        real_type _src1[2], _src2[2];
+        geometry::vector_2d(_p1, _p2, _edge) ;
+        geometry::vector_2d(_p1, _pk, _src1) ;
+        geometry::vector_2d(_p2, _pk, _src2) ;
+
+        real_type _esqr = 
+            geometry::lensqr_2d(_edge) ;
+        real_type _1sqr = 
+            geometry::lensqr_2d(_src1) ;
+        real_type _2sqr = 
+            geometry::lensqr_2d(_src2) ;
+
+        real_type _1len = std::sqrt(_1sqr) ;
+        real_type _2len = std::sqrt(_2sqr) ;
+
+        real_type _hn = std::min( 
+       (real_type)_h1 + std::min(_gg, _g1) *_1len,
+       (real_type)_h2 + std::min(_gg, _g2) *_2len) ;
+
+        real_type _dh = 
+           (real_type)_h2 - (real_type)_h1 ;
+
+        real_type _mm = 
+            _gg * _gg * _esqr -  _dh * _dh ;
+        if (_mm > (real_type)+0.)
+        {
+            real_type _proj = 
+                geometry::dot_2d(_edge, _src1) ;
+
+            real_type _area = std::abs(
+                _edge[0] * _src1[1] - 
+                _edge[1] * _src1[0] ) ;
+
+            real_type _rm = std::sqrt(_mm) ;
+            real_type _te = 
+                _proj - _area * _dh / _rm  ;
+            if (_te > _zero && _te < _esqr)
+            {
+                real_type _dd = 
+                   (_dh * _proj + _area * _rm) ;
+                _hn = std::min( _hn, 
+                    (real_type) _h1 + _dd / _esqr) ;
+            }
+        }
+        return _hn ;
+    }
+
+    template <
+        typename  real_type ,
+        typename  vals_type
+             >
+    __inline_call real_type EIKONAL_proj_3d (
+    __const_ptr  (real_type) _p1 ,
+                  vals_type  _h1 ,
+    __const_ptr  (real_type) _p2 ,
+                  vals_type  _h2 ,
+    __const_ptr  (real_type) _pk ,
+                  real_type  _gg ,
+                  real_type  _g1 ,
+                  real_type  _g2
+        )
+    {
+    /*---------------------- form "limited" extrap. to P3 */
+        real_type const _zero = (real_type)0.;
+
+        real_type _edge[3];
+        real_type _src1[3], _src2[3];
+        geometry::vector_3d(_p1, _p2, _edge) ;
+        geometry::vector_3d(_p1, _pk, _src1) ;
+        geometry::vector_3d(_p2, _pk, _src2) ;
+
+        real_type _esqr = 
+            geometry::lensqr_3d(_edge) ;
+        real_type _1sqr = 
+            geometry::lensqr_3d(_src1) ;
+        real_type _2sqr = 
+            geometry::lensqr_3d(_src2) ;
+
+        real_type _1len = std::sqrt(_1sqr) ;
+        real_type _2len = std::sqrt(_2sqr) ;
+
+        real_type _hn = std::min( 
+       (real_type)_h1 + std::min(_gg, _g1) *_1len,
+       (real_type)_h2 + std::min(_gg, _g2) *_2len) ;
+
+        real_type _dh = 
+           (real_type)_h2 - (real_type)_h1 ;
+
+        real_type _mm = 
+            _gg * _gg * _esqr -  _dh * _dh ;
+        if (_mm > (real_type)+0.)
+        {
+            real_type _proj = 
+                geometry::dot_3d(_edge, _src1) ;
+
+            real_type _avec[3];
+            geometry::cross_3d(_edge, _src1, _avec);
+            real_type _area = std::sqrt(
+                geometry::lensqr_3d(_avec));
+
+            real_type _rm = std::sqrt(_mm) ;
+            real_type _te = 
+                _proj - _area * _dh / _rm  ;
+            if (_te > _zero && _te < _esqr)
+            {
+                real_type _dd = 
+                   (_dh * _proj + _area * _rm) ;
+                _hn = std::min( _hn, 
+                    (real_type) _h1 + _dd / _esqr) ;
+            }
+        }
+        return _hn ;
     }
 
     template <
@@ -124,96 +259,32 @@
                   vals_type  _g3
         )
     {
-        vals_type _gg =
-            (_g1+_g2+_g3)/(vals_type)3. ;
+        vals_type _h0 = std::min(_h1, _h2) ;
+        if(_h3 <= _h0) return false ;
 
-    /*---------------------- form "limited" extrap. to P3 */
-        real_type _d1[2];
-        real_type _d3[2];
-        geometry::
-            vector_2d (_p1, _p2, _d1) ;
-        geometry::
-            vector_2d (_p3, _p1, _d3) ;
-
-        vals_type _dh =_h2- _h1;
-
-        real_type _aa =
-        geometry::   dot_2d(_d1, _d3) ;
-        real_type _bb =
-        geometry::lensqr_2d(_d1) ;
-        real_type _cc =
-        geometry::lensqr_2d(_d3) ;
-
-        real_type _rr =
-            std::pow(_dh/_gg, +2);
-        real_type _at =
-            _bb * _bb - _rr * _bb;
-        real_type _bt =
-            +2. * _aa * (_bb-_rr);
-        real_type _ct =
-            _aa * _aa - _rr * _cc;
-
-        vals_type _hn =
-        std::numeric_limits<vals_type>::infinity() ;
-
-        real_type _tt[2] ;
-        if (!math::
-        polyroots(_at, _bt, _ct, _tt) )
+        real_type _gg  = 
+      ((real_type)_g1 + _g2 + _g3) / (real_type)3.;
+        
+        if (_gg <= (real_type)+0.)
         {
-    /*-------------------------- test flow along boundary */
-        bool_type _o1 = EIKONAL_edge_2d (
-                _p1, _h1, _g1,
-                _p3, _h3, _g3) ;
-
-        bool_type _o2 = EIKONAL_edge_2d (
-                _p2, _h2, _g2,
-                _p3, _h3, _g3) ;
-
-        return  ( _o1 || _o2 ) ;
+            _h3 = _h0; return  true ;
         }
-        else
+
+        real_type _G1 = 
+      ((real_type)_g1 + _g3 ) / (real_type)2.;
+        real_type _G2 = 
+      ((real_type)_g2 + _g3 ) / (real_type)2.;
+
+        vals_type _hm = 
+           (vals_type)EIKONAL_proj_2d (
+            _p1, _h1, _p2, _h2, _p3, 
+            _gg, _G1, _G2) ;
+
+        if (_hm < _h3)
         {
-    /*-------------------------- test flow about interior */
-        _tt[0] = std::min(
-            (real_type)+1.,_tt[0]) ;
-        _tt[0] = std::max(
-            (real_type)+0.,_tt[0]) ;
-
-        _tt[1] = std::min(
-            (real_type)+1.,_tt[1]) ;
-        _tt[1] = std::max(
-            (real_type)+0.,_tt[1]) ;
-
-        real_type _vp[2] = {
-        _d3[0] +  _tt[0] * _d1[0],
-        _d3[1] +  _tt[0] * _d1[1],
-            } ;
-        real_type _vm[2] = {
-        _d3[0] +  _tt[1] * _d1[0],
-        _d3[1] +  _tt[1] * _d1[1],
-            } ;
-
-        real_type _lp = std::sqrt(
-            geometry::lensqr_2d(_vp)) ;
-
-        vals_type _hp =(vals_type)(
-        _h1 + _tt[0]*_dh + _gg*_lp) ;
-
-        real_type _lm = std::sqrt(
-            geometry::lensqr_2d(_vm)) ;
-
-        vals_type _hm =(vals_type)(
-        _h1 + _tt[1]*_dh + _gg*_lm) ;
-
-        _hn = std::min(_hp, _hm) ;
-
-        if (_hn < _h3)
-        {
-            _h3 = _hn; return  true ;
+            _h3 = _hm; return  true ;
         }
         else/*no clip*/return false ;
-
-        }
     }
 
     template <
@@ -232,98 +303,32 @@
                   vals_type  _g3
         )
     {
-        vals_type _gg =
-            (_g1+_g2+_g3)/(vals_type)3. ;
+        vals_type _h0 = std::min(_h1, _h2) ;
+        if(_h3 <= _h0) return false ;
 
-    /*---------------------- form "limited" extrap. to P3 */
-        real_type _d1[3];
-        real_type _d3[3];
-        geometry::
-            vector_3d (_p1, _p2, _d1) ;
-        geometry::
-            vector_3d (_p3, _p1, _d3) ;
-
-        vals_type _dh =_h2- _h1;
-
-        real_type _aa =
-        geometry::   dot_3d(_d1, _d3) ;
-        real_type _bb =
-        geometry::lensqr_3d(_d1) ;
-        real_type _cc =
-        geometry::lensqr_3d(_d3) ;
-
-        real_type _rr =
-            std::pow(_dh/_gg, +2);
-        real_type _at =
-            _bb * _bb - _rr * _bb;
-        real_type _bt =
-            +2. * _aa * (_bb-_rr);
-        real_type _ct =
-            _aa * _aa - _rr * _cc;
-
-        vals_type _hn =
-        std::numeric_limits<vals_type>::infinity() ;
-
-        real_type _tt[2] ;
-        if (!math::
-        polyroots(_at, _bt, _ct, _tt) )
+        real_type _gg  = 
+      ((real_type)_g1 + _g2 + _g3) / (real_type)3.;
+        
+        if (_gg <= (real_type)+0.)
         {
-    /*-------------------------- test flow along boundary */
-        bool_type _o1 = EIKONAL_edge_3d (
-                _p1, _h1, _g1,
-                _p3, _h3, _g3) ;
-
-        bool_type _o2 = EIKONAL_edge_3d (
-                _p2, _h2, _g2,
-                _p3, _h3, _g3) ;
-
-        return  ( _o1 || _o2 ) ;
+            _h3 = _h0; return  true ;
         }
-        else
+
+        real_type _G1 = 
+      ((real_type)_g1 + _g3 ) / (real_type)2.;
+        real_type _G2 = 
+      ((real_type)_g2 + _g3 ) / (real_type)2.;
+
+        vals_type _hm = 
+           (vals_type)EIKONAL_proj_3d (
+            _p1, _h1, _p2, _h2, _p3, 
+            _gg, _G1, _G2) ;
+
+        if (_hm < _h3)
         {
-    /*-------------------------- test flow about interior */
-        _tt[0] = std::min(
-            (real_type)+1.,_tt[0]) ;
-        _tt[0] = std::max(
-            (real_type)+0.,_tt[0]) ;
-
-        _tt[1] = std::min(
-            (real_type)+1.,_tt[1]) ;
-        _tt[1] = std::max(
-            (real_type)+0.,_tt[1]) ;
-
-        real_type _vp[3] = {
-        _d3[0] +  _tt[0] * _d1[0],
-        _d3[1] +  _tt[0] * _d1[1],
-        _d3[2] +  _tt[0] * _d1[2],
-            } ;
-        real_type _vm[3] = {
-        _d3[0] +  _tt[1] * _d1[0],
-        _d3[1] +  _tt[1] * _d1[1],
-        _d3[2] +  _tt[1] * _d1[2],
-            } ;
-
-        real_type _lp = std::sqrt(
-            geometry::lensqr_3d(_vp)) ;
-
-        vals_type _hp =(vals_type)(
-        _h1 + _tt[0]*_dh + _gg*_lp) ;
-
-        real_type _lm = std::sqrt(
-            geometry::lensqr_3d(_vm)) ;
-
-        vals_type _hm =(vals_type)(
-        _h1 + _tt[1]*_dh + _gg*_lm) ;
-
-        _hn = std::min(_hp, _hm) ;
-
-        if (_hn < _h3)
-        {
-            _h3 = _hn; return  true ;
+            _h3 = _hm; return  true ;
         }
         else/*no clip*/return false ;
-
-        }
     }
 
     template <
@@ -345,164 +350,116 @@
                   vals_type  _g4
         )
     {
-        vals_type _gg =
-            (_g1+_g2+_g3+_g4)/(vals_type)4. ;
-
     /*---------------------- form "limited" extrap. to P4 */
-        real_type _pa[3]; 
-        real_type _pb[3]; 
-        real_type _pc[3];
-        geometry::
-            vector_3d (_p1, _p3, _pa) ;
-        geometry::
-            vector_3d (_p2, _p3, _pb) ;
-        geometry::
-            vector_3d (_p3, _p4, _pc) ;
-            
-        vals_type _ha =_h1- _h3;
-        vals_type _hb =_h2- _h3;
-            
-        real_type _aa = 
-        geometry::   dot_3d(_pa, _pa) ;
-        real_type _ab = 
-        geometry::   dot_3d(_pa, _pb) ;
-        real_type _ac = 
-        geometry::   dot_3d(_pa, _pc) ;
-        real_type _bb = 
-        geometry::   dot_3d(_pb, _pb) ;
-        real_type _bc = 
-        geometry::   dot_3d(_pb, _pc) ;
-        real_type _cc = 
-        geometry::   dot_3d(_pc, _pc) ;
+        vals_type _h0 = std::min({_h1, _h2, _h3}) ;
+        if(_h4 <= _h0) return false ;
+
+        real_type _gg  = 
+      ((real_type)_g1 + _g2 + _g3 + _g4 ) / (real_type)4. ;
         
-    /*---------------------- local gradient descent soln. */
-        vals_type _hm, _hn =
-        std::numeric_limits<vals_type>::infinity() ;
-        
-        real_type _ss = (real_type) .5;
-        real_type _uu = (real_type) 1. / 3. ;
-        real_type _vv = (real_type) 1. / 3. ;
-        real_type _ww = (real_type) 1. - _uu - _vv ;
- 
-    //  init. from best of base midpoint, and adj. faces
-        real_type _pi[3] = {
-        _p1[0]*_uu+_p2[0]*_vv+_p3[0]*_ww ,
-        _p1[1]*_uu+_p2[1]*_vv+_p3[1]*_ww ,
-        _p1[2]*_uu+_p2[2]*_vv+_p3[2]*_ww
-            }  ;
-        
-        _hn =  (vals_type) (
-            _h1*_uu + _h2*_vv + _h3*_ww + 
-        _gg * geometry::length_3d(_pi, _p4) ) ;
-        
-        if (EIKONAL_tria_3d(_p1, _h1, _g1,
-                            _p2, _h2, _g2,
-                            _p4, _hn, _g4)  )
+        if (_gg <= (real_type)+0.)
         {
-            _uu = (real_type).5;
-            _vv = (real_type).5;
+            _h4 = _h0; return  true ;
         }
-                        
-        if (EIKONAL_tria_3d(_p2, _h2, _g2,
-                            _p3, _h3, _g3,
-                            _p4, _hn, _g4)  )
+
+        __const_ptr(real_type) 
+                  _pj[3] ={_p1, _p2, _p3} ;
+        vals_type _hj[3] ={_h1, _h2, _h3} ;
+        vals_type _gj[3] ={_g1, _g2, _g3} ;
+        
+        real_type _ge[3] ;
+        for (int _ii = 0; _ii < 3; ++_ii)
+            _ge [_ii] = 
+          ((real_type)_gj[_ii]  + _g4) / (real_type)2.;
+
+        real_type _hn = _h4;
+        for (int _ii = 0; _ii < 3; ++_ii)
         {
-            _uu = (real_type)0.;
-            _vv = (real_type).5;
+            auto _i0 = (_ii + 0) % 3 ;
+            auto _G0 = _gj[_i0] ;
+            auto _i1 = (_ii + 1) % 3 ;
+            auto _G1 = _gj[_i1] ;
+
+            real_type _gk =
+          ((real_type)_G0 + _G1 + _g4) / (real_type)3.;
+
+            _gk = std::min(_gg, _gk) ;
+            _hn = std::min(_hn, EIKONAL_proj_3d(
+                _pj[_i0], _hj[_i0], 
+                _pj[_i1], _hj[_i1],
+                _p4, _gk, _ge[_i0], _ge[_i1])) ;
         }
-                  
-        if (EIKONAL_tria_3d(_p3, _h3, _g3,
-                            _p1, _h1, _g1,
-                            _p4, _hn, _g4)  )
+
+        real_type _e2[3], _e3[3], _e4[3], _norm[3] ;
+        geometry::vector_3d(_p1, _p2, _e2);
+        geometry::vector_3d(_p1, _p3, _e3);
+        geometry::vector_3d(_p1, _p4, _e4);
+        geometry:: cross_3d(_e2, _e3, _norm);
+
+        real_type _nsqr = geometry::lensqr_3d(_norm) ;
+        if (_nsqr > (real_type)0.)
         {
-            _uu = (real_type).5;
-            _vv = (real_type)0.;   
+            real_type _opp1[3], _opp2[3], _grad[3] ;
+            geometry::cross_3d(_e3, _norm, _opp1);
+            geometry::cross_3d(_norm, _e2, _opp2);
+
+            real_type _inv = (real_type)+1. / _nsqr  ;
+            real_type _dh1 = (real_type)_h2 - 
+                             (real_type)_h1 ;
+            real_type _dh2 = (real_type)_h3 - 
+                             (real_type)_h1 ;
+            for (int _ii = 0; _ii < 3; ++_ii)
+            {
+                _opp1[_ii]*= _inv ;
+                _opp2[_ii]*= _inv ;
+                _grad[_ii] = _dh1 * _opp1[_ii] +
+                             _dh2 * _opp2[_ii] ;
+            }
+
+            real_type _mm = 
+                _gg * _gg - geometry::lensqr_3d(_grad) ;
+            if (_mm > (real_type)0.)
+            {
+                real_type _dist = std::abs(
+                    geometry::dot_3d (_e4, _norm)) 
+                        / std::sqrt(_nsqr) ;
+
+                real_type _push = 
+                    _dist / std::sqrt(_mm) ;
+
+                real_type _es[3];
+                for (int _ii = 0; _ii < 3; ++_ii)
+                    _es [_ii] = 
+                        _e4[_ii] - _push * _grad [_ii] ;
+
+                real_type _uu = 
+                    geometry::dot_3d (_es, _opp1) ;
+                real_type _vv = 
+                    geometry::dot_3d (_es, _opp2) ;
+                real_type _ww = 
+                    (real_type)1. - _uu - _vv ;
+
+                if (_uu > (real_type)0. &&
+                    _vv > (real_type)0. &&
+                    _ww > (real_type)0. )
+                {
+                    real_type _offs [3] ;
+                    for (int _ii = 0; _ii < 3; ++_ii)
+                        _offs[_ii] = _uu * _e2[_ii] +
+                                     _vv * _e3[_ii] - 
+                                           _e4[_ii] ;
+
+                    _hn = std::min( _hn,
+                        _ww * _h1 + _uu * _h2 + _vv * _h3 + 
+                            _gg * geometry::length_3d(_offs)) ;
+                }
+            }
         }
-        
-        for (auto _iter = 8; _iter-- != +0; )
+
+        vals_type _hm = (vals_type) _hn ;
+        if (_hm < _h4)
         {
-    /*---------------------- analytical gradients + soln. */
-        real_type _dd = _aa * _uu * _uu + 
-                        _bb * _vv * _vv +
-                   2. * _ab * _uu * _vv +
-                   2. * _ac * _uu +
-                   2. * _bc * _vv + _cc ;
-                   
-        real_type _du =
-                   2. * _aa * _uu + 
-                   2. * _ab * _vv + 2. *_ac ;           
-        real_type _dv =
-                   2. * _bb * _vv + 
-                   2. * _ab * _uu + 2. *_bc ;
-        
-        _dd = std::sqrt(_dd);           
-        _du = _ha + .5* _gg * _du / _dd ;
-        _dv = _hb + .5* _gg * _dv / _dd ;
-        
-    /*---------------------- local line-search relaxation */
-        bool _up = false;
-        for (auto _line = 8; _line-- != +0; )
-        {
-        real_type _tt = +1. ;
-        real_type _un = _uu - _ss * _du ;
-        real_type _vn = _vv - _ss * _dv ;
-        
-    /*---------------------- keep [u,v] in base of tetra. */
-        if (1. - _un - _vn < 0.)
-            _tt = std::min(
-        _tt, (_uu + _vv - 1.) / (_du + _dv) / _ss) ;
-        
-        if (_un < 0.)
-            _tt = std::min(
-        _tt, (0. + _uu) / (_uu - _un));
-            
-        if (_un > 1.)
-            _tt = std::min(
-        _tt, (1. - _uu) / (_un - _uu));
-                
-        if (_vn < 0.)
-            _tt = std::min(
-        _tt, (0. + _vv) / (_vv - _vn));
-            
-        if (_vn > 1.)
-            _tt = std::min(
-        _tt, (1. - _vv) / (_vn - _vv));
-                
-        _ss = _ss * std::max(0., _tt) ;
-        
-    /*---------------------- eval. extrap. from new [u,v] */
-        real_type _um = _uu - _ss * _du ;
-        real_type _vm = _vv - _ss * _dv ;
-        
-        real_type _dm = _aa * _um * _um + 
-                        _bb * _vm * _vm +
-                   2. * _ab * _um * _vm +
-                   2. * _ac * _um +
-                   2. * _bc * _vm + _cc ;
-                
-        _hm = (vals_type)(
-            _ha * _um + _hb * _vm + _h3
-                + _gg * std::sqrt(_dm)) ;
-            
-        if (_hm < _hn)
-        {
-    /*---------------------- move on to new better optima */
-            _uu = _um; _vv = _vm; _hn = _hm; 
-            _up = true; break ;
-        }
-        else 
-        if (_ss <= 0.)  break ; // retain candidate at stall
-        else { _ss *= (real_type).5; }
-        }       
-    /*---------------------- done if stuck or on boundary */
-        if (!_up || _ss <= 0.) break ;
-    /*---------------------- update length for next outer */
-        _ss *= (real_type)+2.;
-        }
-    /*---------------------- update if extrap. does limit */
-        if (_hn < _h4)
-        {
-            _h4 = _hn; return  true;
+            _h4 = _hm; return  true;
         }
         else/*no clip*/return false;
     }
@@ -514,7 +471,9 @@
     __inline_call bool_type eikonal_edge_2d (
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type  _g1 ,
@@ -527,17 +486,17 @@
         if (_h1 >=(vals_type)+0. &&
             _h2 >=(vals_type)+0. )
         {            
-            if (_h2 > _hb)
+            if (_si != +1)
     /*--------------------------------- 1st node ordering */
                 if (EIKONAL_edge_2d  (
-                    _p1, _h1, _g1 ,
+                    _p1, _o1, _g1 ,
                     _p2, _h2, _g2 )  )
                     _clip =  true ;
 
-            if (_h1 > _hb)
+            if (_si != +0)
     /*--------------------------------- 2nd node ordering */
                 if (EIKONAL_edge_2d  (
-                    _p2, _h2, _g2 ,
+                    _p2, _o2, _g2 ,
                     _p1, _h1, _g1 )  )
                     _clip =  true ;
         }
@@ -552,7 +511,9 @@
     __inline_call bool_type eikonal_edge_3d (
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type  _g1 ,
@@ -564,18 +525,18 @@
 
         if (_h1 >=(vals_type)+0. &&
             _h2 >=(vals_type)+0. )
-        {
-            if (_h2 > _hb)
+        {            
+            if (_si != +1)
     /*--------------------------------- 1st node ordering */
                 if (EIKONAL_edge_3d  (
-                    _p1, _h1, _g1 ,
+                    _p1, _o1, _g1 ,
                     _p2, _h2, _g2 )  )
                     _clip =  true ;
 
-            if (_h1 > _hb)
+            if (_si != +0)
     /*--------------------------------- 2nd node ordering */
                 if (EIKONAL_edge_3d  (
-                    _p2, _h2, _g2 ,
+                    _p2, _o2, _g2 ,
                     _p1, _h1, _g1 )  )
                     _clip =  true ;
         }
@@ -591,7 +552,10 @@
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
+                  vals_type  _o3 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -603,31 +567,31 @@
     /*---------------------- limit h-values within TRIA-3 */
         bool_type _clip = false ;
 
-        if (_h1 >=(vals_type)+0. &&
-            _h2 >=(vals_type)+0. &&
-            _h3 >=(vals_type)+0. )
+        if (_o1 >=(vals_type)+0. &&
+            _o2 >=(vals_type)+0. &&
+            _o3 >=(vals_type)+0. )
         {
-            if (_h3 > _hb)
+            if (_si != +2)
     /*--------------------------------- 1st node ordering */
                 if (EIKONAL_tria_2d  (
-                    _p1, _h1, _g1 ,
-                    _p2, _h2, _g2 ,
+                    _p1, _o1, _g1 ,
+                    _p2, _o2, _g2 ,
                     _p3, _h3, _g3 )  )
                     _clip =  true ;
 
-            if (_h1 > _hb)
+            if (_si != +0)
     /*--------------------------------- 2nd node ordering */
                 if (EIKONAL_tria_2d  (
-                    _p2, _h2, _g2 ,
-                    _p3, _h3, _g3 ,
+                    _p2, _o2, _g2 ,
+                    _p3, _o3, _g3 ,
                     _p1, _h1, _g1 )  )
                     _clip =  true ;
 
-            if (_h2 > _hb)
+            if (_si != +1)
     /*--------------------------------- 3rd node ordering */
                 if (EIKONAL_tria_2d  (
-                    _p3, _h3, _g3 ,
-                    _p1, _h1, _g1 ,
+                    _p3, _o3, _g3 ,
+                    _p1, _o1, _g1 ,
                     _p2, _h2, _g2 )  )
                     _clip =  true ;
         }
@@ -643,7 +607,10 @@
     __const_ptr  (real_type) _p1 ,
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
+                  vals_type  _o3 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -655,31 +622,31 @@
     /*---------------------- limit h-values within TRIA-3 */
         bool_type _clip = false ;
 
-        if (_h1 >=(vals_type)+0. &&
-            _h2 >=(vals_type)+0. &&
-            _h3 >=(vals_type)+0. )
+        if (_o1 >=(vals_type)+0. &&
+            _o2 >=(vals_type)+0. &&
+            _o3 >=(vals_type)+0. )
         {
-            if (_h3 > _hb)
+            if (_si != +2)
     /*--------------------------------- 1st node ordering */
                 if (EIKONAL_tria_3d  (
-                    _p1, _h1, _g1 ,
-                    _p2, _h2, _g2 ,
+                    _p1, _o1, _g1 ,
+                    _p2, _o2, _g2 ,
                     _p3, _h3, _g3 )  )
                     _clip =  true ;
 
-            if (_h1 > _hb)
+            if (_si != +0)
     /*--------------------------------- 2nd node ordering */
                 if (EIKONAL_tria_3d  (
-                    _p2, _h2, _g2 ,
-                    _p3, _h3, _g3 ,
+                    _p2, _o2, _g2 ,
+                    _p3, _o3, _g3 ,
                     _p1, _h1, _g1 )  )
                     _clip =  true ;
 
-            if (_h2 > _hb)
+            if (_si != +1)
     /*--------------------------------- 3rd node ordering */
                 if (EIKONAL_tria_3d  (
-                    _p3, _h3, _g3 ,
-                    _p1, _h1, _g1 ,
+                    _p3, _o3, _g3 ,
+                    _p1, _o1, _g1 ,
                     _p2, _h2, _g2 )  )
                     _clip =  true ;
         }
@@ -696,7 +663,11 @@
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
-                  vals_type  _hb ,  // current anchor
+                  int        _si ,  // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
+                  vals_type  _o3 ,
+                  vals_type  _o4 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -710,44 +681,44 @@
     /*---------------------- limit h-values within TRIA-4 */
         bool_type _clip = false ;
 
-        if (_h1 >=(vals_type)+0. &&
-            _h2 >=(vals_type)+0. &&
-            _h3 >=(vals_type)+0. &&
-            _h4 >=(vals_type)+0. )
+        if (_o1 >=(vals_type)+0. &&
+            _o2 >=(vals_type)+0. &&
+            _o3 >=(vals_type)+0. &&
+            _o4 >=(vals_type)+0. )
         {
-            if (_h4 > _hb)
+            if (_si != +3)
     /*--------------------------------- 1st node ordering */
                 if (EIKONAL_tria_3d  (
-                    _p1, _h1, _g1 ,
-                    _p2, _h2, _g2 ,
-                    _p3, _h3, _g3 ,
+                    _p1, _o1, _g1 ,
+                    _p2, _o2, _g2 ,
+                    _p3, _o3, _g3 ,
                     _p4, _h4, _g4 )  )
                     _clip =  true ;
 
-            if (_h1 > _hb)
+            if (_si != +0)
     /*--------------------------------- 2nd node ordering */
                 if (EIKONAL_tria_3d  (
-                    _p2, _h2, _g2 ,
-                    _p3, _h3, _g3 ,
-                    _p4, _h4, _g4 ,
+                    _p2, _o2, _g2 ,
+                    _p3, _o3, _g3 ,
+                    _p4, _o4, _g4 ,
                     _p1, _h1, _g1 )  )
                     _clip =  true ;
 
-            if (_h2 > _hb)
+            if (_si != +1)
     /*--------------------------------- 3rd node ordering */
                 if (EIKONAL_tria_3d  (
-                    _p3, _h3, _g3 ,
-                    _p1, _h1, _g1 ,
-                    _p4, _h4, _g4 ,
+                    _p3, _o3, _g3 ,
+                    _p1, _o1, _g1 ,
+                    _p4, _o4, _g4 ,
                     _p2, _h2, _g2 )  )
                     _clip =  true ;
                     
-            if (_h3 > _hb)
+            if (_si != +2)
     /*--------------------------------- 4th node ordering */
                 if (EIKONAL_tria_3d  (
-                    _p1, _h1, _g1 ,
-                    _p2, _h2, _g2 ,
-                    _p4, _h4, _g4 ,
+                    _p1, _o1, _g1 ,
+                    _p2, _o2, _g2 ,
+                    _p4, _o4, _g4 ,
                     _p3, _h3, _g3 )  )
                     _clip =  true ;
         }
@@ -764,7 +735,11 @@
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
+                  vals_type  _o3 ,
+                  vals_type  _o4 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -789,13 +764,16 @@
             _okay =  true ;
     /*--------------------------------- 1st tria ordering */
             if (eikonal_tria_2d (
-                _p1, _p2, _p3 , _hb,
+                _p1, _p2, _p3 , _si - 0,
+                _o1, _o2, _o3 ,
                 _h1, _h2, _h3 ,
                 _g1, _g2, _g3 ) )
                 _clip =  true ;
 
             if (eikonal_tria_2d (
-                _p1, _p3, _p4 , _hb,
+                _p1, _p3, _p4 , 
+                _si == 1 ? -1 : _si - (_si > 1),
+                _o1, _o3, _o4 , 
                 _h1, _h3, _h4 ,
                 _g1, _g3, _g4 ) )
                 _clip =  true ;
@@ -811,13 +789,16 @@
             _okay =  true ;
     /*--------------------------------- 2nd tria ordering */
             if (eikonal_tria_2d (
-                _p1, _p2, _p4 , _hb,
+                _p1, _p2, _p4 , 
+                _si == 2 ? -1 : _si - (_si > 2),
+                _o1, _o2, _o4 ,
                 _h1, _h2, _h4 ,
                 _g1, _g2, _g4 ) )
                 _clip =  true ;
 
             if (eikonal_tria_2d (
-                _p2, _p3, _p4 , _hb,
+                _p2, _p3, _p4 , _si - 1,
+                _o2, _o3, _o4 ,
                 _h2, _h3, _h4 ,
                 _g2, _g3, _g4 ) )
                 _clip =  true ;
@@ -829,28 +810,36 @@
             if (_h1 >=(vals_type)+0. &&
                 _h2 >=(vals_type)+0. )
             if (eikonal_edge_2d (
-                _p1, _p2, _hb ,
+                _p1, _p2, 
+                _si == 0 ? 0 : _si == 1 ? 1 : -1,
+                _o1, _o2,
                 _h1, _h2, _g1 , _g2) )
                 _clip =  true ;
 
             if (_h2 >=(vals_type)+0. &&
                 _h3 >=(vals_type)+0. )
             if (eikonal_edge_2d (
-                _p2, _p3, _hb ,
+                _p2, _p3, 
+                _si == 1 ? 0 : _si == 2 ? 1 : -1,
+                _o2, _o3,
                 _h2, _h3, _g2 , _g3) )
                 _clip =  true ;
 
             if (_h3 >=(vals_type)+0. &&
                 _h4 >=(vals_type)+0. )
             if (eikonal_edge_2d (
-                _p3, _p4, _hb ,
+                _p3, _p4, 
+                _si == 2 ? 0 : _si == 3 ? 1 : -1,
+                _o3, _o4,
                 _h3, _h4, _g3 , _g4) )
                 _clip =  true ;
 
             if (_h4 >=(vals_type)+0. &&
                 _h1 >=(vals_type)+0. )
             if (eikonal_edge_2d (
-                _p4, _p1, _hb ,
+                _p4, _p1, 
+                _si == 3 ? 0 : _si == 0 ? 1 : -1,
+                _o4, _o1,
                 _h4, _h1, _g4 , _g1) )
                 _clip =  true ;
         }
@@ -867,7 +856,11 @@
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
+                  vals_type  _o3 ,
+                  vals_type  _o4 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -883,26 +876,32 @@
         {
     /*--------------------------------- 1st tria ordering */
             if (eikonal_tria_2d (
-                _p1, _p2, _p3 , _hb,
+                _p1, _p2, _p3 , _si - 0,
+                _o1, _o2, _o3 ,
                 _h1, _h2, _h3 ,
                 _g1, _g2, _g3 ) )
                 _clip =  true ;
 
             if (eikonal_tria_2d (
-                _p1, _p3, _p4 , _hb,
+                _p1, _p3, _p4 , 
+                _si == 1 ? -1 : _si - (_si > 1),
+                _o1, _o3, _o4 , 
                 _h1, _h3, _h4 ,
                 _g1, _g3, _g4 ) )
                 _clip =  true ;
         
     /*--------------------------------- 2nd tria ordering */
             if (eikonal_tria_2d (
-                _p1, _p2, _p4 , _hb,
+                _p1, _p2, _p4 , 
+                _si == 2 ? -1 : _si - (_si > 2),
+                _o1, _o2, _o4 ,
                 _h1, _h2, _h4 ,
                 _g1, _g2, _g4 ) )
                 _clip =  true ;
 
             if (eikonal_tria_2d (
-                _p2, _p3, _p4 , _hb,
+                _p2, _p3, _p4 , _si - 1,
+                _o2, _o3, _o4 ,
                 _h2, _h3, _h4 ,
                 _g2, _g3, _g4 ) )
                 _clip =  true ;
@@ -920,7 +919,11 @@
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
+                  vals_type  _o3 ,
+                  vals_type  _o4 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -948,13 +951,16 @@
             _okay =  true ;
     /*--------------------------------- 1st tria ordering */
             if (eikonal_tria_3d (
-                _p1, _p2, _p3 , _hb,
+                _p1, _p2, _p3 , _si - 0,
+                _o1, _o2, _o3 ,
                 _h1, _h2, _h3 ,
                 _g1, _g2, _g3 ) )
                 _clip =  true ;
 
             if (eikonal_tria_3d (
-                _p1, _p3, _p4 , _hb,
+                _p1, _p3, _p4 , 
+                _si == 1 ? -1 : _si - (_si > 1),
+                _o1, _o3, _o4 , 
                 _h1, _h3, _h4 ,
                 _g1, _g3, _g4 ) )
                 _clip =  true ;
@@ -973,13 +979,16 @@
             _okay =  true ;
     /*--------------------------------- 2nd tria ordering */
             if (eikonal_tria_3d (
-                _p1, _p2, _p4 , _hb,
+                _p1, _p2, _p4 , 
+                _si == 2 ? -1 : _si - (_si > 2),
+                _o1, _o2, _o4 ,
                 _h1, _h2, _h4 ,
                 _g1, _g2, _g4 ) )
                 _clip =  true ;
 
             if (eikonal_tria_3d (
-                _p2, _p3, _p4 , _hb,
+                _p2, _p3, _p4 , _si - 1,
+                _o2, _o3, _o4 ,
                 _h2, _h3, _h4 ,
                 _g2, _g3, _g4 ) )
                 _clip =  true ;
@@ -991,28 +1000,36 @@
             if (_h1 >=(vals_type)+0. &&
                 _h2 >=(vals_type)+0. )
             if (eikonal_edge_3d (
-                _p1, _p2, _hb ,
+                _p1, _p2, 
+                _si == 0 ? 0 : _si == 1 ? 1 : -1,
+                _o1, _o2,
                 _h1, _h2, _g1 , _g2) )
                 _clip =  true ;
 
             if (_h2 >=(vals_type)+0. &&
                 _h3 >=(vals_type)+0. )
             if (eikonal_edge_3d (
-                _p2, _p3, _hb ,
+                _p2, _p3, 
+                _si == 1 ? 0 : _si == 2 ? 1 : -1,
+                _o2, _o3,
                 _h2, _h3, _g2 , _g3) )
                 _clip =  true ;
 
             if (_h3 >=(vals_type)+0. &&
                 _h4 >=(vals_type)+0. )
             if (eikonal_edge_3d (
-                _p3, _p4, _hb ,
+                _p3, _p4, 
+                _si == 2 ? 0 : _si == 3 ? 1 : -1,
+                _o3, _o4,
                 _h3, _h4, _g3 , _g4) )
                 _clip =  true ;
 
             if (_h4 >=(vals_type)+0. &&
                 _h1 >=(vals_type)+0. )
             if (eikonal_edge_3d (
-                _p4, _p1, _hb ,
+                _p4, _p1, 
+                _si == 3 ? 0 : _si == 0 ? 1 : -1,
+                _o4, _o1,
                 _h4, _h1, _g4 , _g1) )
                 _clip =  true ;
         }
@@ -1029,7 +1046,11 @@
     __const_ptr  (real_type) _p2 ,
     __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
+                  vals_type  _o3 ,
+                  vals_type  _o4 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -1045,32 +1066,49 @@
         {
     /*--------------------------------- 1st tria ordering */
             if (eikonal_tria_3d (
-                _p1, _p2, _p3 , _hb,
+                _p1, _p2, _p3 , _si - 0,
+                _o1, _o2, _o3 ,
                 _h1, _h2, _h3 ,
                 _g1, _g2, _g3 ) )
                 _clip =  true ;
 
             if (eikonal_tria_3d (
-                _p1, _p3, _p4 , _hb,
+                _p1, _p3, _p4 , 
+                _si == 1 ? -1 : _si - (_si > 1),
+                _o1, _o3, _o4 , 
                 _h1, _h3, _h4 ,
                 _g1, _g3, _g4 ) )
                 _clip =  true ;
         
     /*--------------------------------- 2nd tria ordering */
             if (eikonal_tria_3d (
-                _p1, _p2, _p4 , _hb,
+                _p1, _p2, _p4 , 
+                _si == 2 ? -1 : _si - (_si > 2),
+                _o1, _o2, _o4 ,
                 _h1, _h2, _h4 ,
                 _g1, _g2, _g4 ) )
                 _clip =  true ;
 
             if (eikonal_tria_3d (
-                _p2, _p3, _p4 , _hb,
+                _p2, _p3, _p4 , _si - 1,
+                _o2, _o3, _o4 ,
                 _h2, _h3, _h4 ,
                 _g2, _g3, _g4 ) )
                 _clip =  true ;
         }
 
         return ( _clip ) ;
+    }
+
+    __inline_call int eikonal_subindex (
+        int _si, 
+        int _i1, int _i2, int _i3, int _i4, int _i5 = -1
+        )
+    {
+        return _si < 0 ?-1 :
+            _si == _i1 ? 0 : _si == _i2 ? 1 :
+            _si == _i3 ? 2 : _si == _i4 ? 3 :
+            _si == _i5 ? 4 : -1 ;
     }
 
     template <
@@ -1083,7 +1121,12 @@
     __const_ptr  (real_type) _p3 ,
     __const_ptr  (real_type) _p4 ,
     __const_ptr  (real_type) _p5 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
+                  vals_type  _o3 ,
+                  vals_type  _o4 ,
+                  vals_type  _o5 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -1101,26 +1144,34 @@
         {
     /*--------------------------------- 1st base ordering */
             if (eikonal_tria_3d (
-                _p1, _p2, _p3, _p5, _hb,
+                _p1, _p2, _p3, _p5,
+                eikonal_subindex(_si, 0, 1, 2, 4),
+                _o1, _o2, _o3, _o5,
                 _h1, _h2, _h3, _h5,
                 _g1, _g2, _g3, _g5) )
                 _clip =  true ;
 
             if (eikonal_tria_3d (
-                _p1, _p3, _p4, _p5, _hb,
+                _p1, _p3, _p4, _p5,
+                eikonal_subindex(_si, 0, 2, 3, 4),
+                _o1, _o3, _o4, _o5,
                 _h1, _h3, _h4, _h5,
                 _g1, _g3, _g4, _g5) )
                 _clip =  true ;
         
     /*--------------------------------- 2nd base ordering */
             if (eikonal_tria_3d (
-                _p1, _p2, _p4, _p5, _hb,
+                _p1, _p2, _p4, _p5,
+                eikonal_subindex(_si, 0, 1, 3, 4),
+                _o1, _o2, _o4, _o5,
                 _h1, _h2, _h4, _h5,
                 _g1, _g2, _g4, _g5) )
                 _clip =  true ;
 
             if (eikonal_tria_3d (
-                _p2, _p3, _p4, _p5, _hb,
+                _p2, _p3, _p4, _p5,
+                eikonal_subindex(_si, 1, 2, 3, 4),
+                _o2, _o3, _o4, _o5,
                 _h2, _h3, _h4, _h5,
                 _g2, _g3, _g4, _g5) )
                 _clip =  true ;
@@ -1140,7 +1191,13 @@
     __const_ptr  (real_type) _p4 ,
     __const_ptr  (real_type) _p5 ,
     __const_ptr  (real_type) _p6 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
+                  vals_type  _o3 ,
+                  vals_type  _o4 ,
+                  vals_type  _o5 ,
+                  vals_type  _o6 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -1171,18 +1228,20 @@
          _p5[2] + _p6[2] ) / _6r,
             } ;
             
-        vals_type constexpr _6v = (vals_type) +6. ;
-        vals_type _hc = (
-         _h1 + _h2 + _h3 + _h4 + _h5 + _h6) / _6v ;
-        vals_type _gc = (
-         _g1 + _g2 + _g3 + _g4 + _g5 + _g6) / _6v ;
+        vals_type _hc = (vals_type)((
+       (real_type)_o1 + _o2 + _o3 + _o4 + _o5 + _o6) / _6r);
+        vals_type _gc = (vals_type)((
+       (real_type)_g1 + _g2 + _g3 + _g4 + _g5 + _g6) / _6r);
          
-         for (auto _iter = 4; _iter-- != 0; )
+         for (auto _iter = 2; _iter-- != 0; )
         {
             bool_type _diff = false;
+            vals_type _oc = _hc;
     /*----------------------------- subcells about centre */
             if (eikonal_tria_3d (
-                _p1, _p2, _p3, _pc, _hb,
+                _p1, _p2, _p3, _pc,
+                eikonal_subindex(_si, 0, 1, 2, 6),
+                _o1, _o2, _o3, _oc,
                 _h1, _h2, _h3, _hc,
                 _g1, _g2, _g3, _gc) )
             {
@@ -1190,7 +1249,9 @@
             }
     
             if (eikonal_pyra_3d (
-                _p1, _p2, _p5, _p4, _pc, _hb,
+                _p1, _p2, _p5, _p4, _pc,
+                eikonal_subindex(_si, 0, 1, 4, 3, 6),
+                _o1, _o2, _o5, _o4, _oc,
                 _h1, _h2, _h5, _h4, _hc,
                 _g1, _g2, _g5, _g4, _gc) )
             {
@@ -1198,7 +1259,9 @@
             }
             
             if (eikonal_pyra_3d (
-                _p2, _p3, _p6, _p5, _pc, _hb,
+                _p2, _p3, _p6, _p5, _pc,
+                eikonal_subindex(_si, 1, 2, 5, 4, 6),
+                _o2, _o3, _o6, _o5, _oc,
                 _h2, _h3, _h6, _h5, _hc,
                 _g2, _g3, _g6, _g5, _gc) )
             {
@@ -1206,7 +1269,9 @@
             }
             
             if (eikonal_pyra_3d (
-                _p3, _p1, _p4, _p6, _pc, _hb,
+                _p3, _p1, _p4, _p6, _pc,
+                eikonal_subindex(_si, 2, 0, 3, 5, 6),
+                _o3, _o1, _o4, _o6, _oc,
                 _h3, _h1, _h4, _h6, _hc,
                 _g3, _g1, _g4, _g6, _gc) )
             {
@@ -1214,7 +1279,9 @@
             }
             
             if (eikonal_tria_3d (
-                _p6, _p5, _p4, _pc, _hb,
+                _p6, _p5, _p4, _pc,
+                eikonal_subindex(_si, 5, 4, 3, 6),
+                _o6, _o5, _o4, _oc,
                 _h6, _h5, _h4, _hc,
                 _g6, _g5, _g4, _gc) )
             {
@@ -1240,7 +1307,15 @@
     __const_ptr  (real_type) _p6 ,
     __const_ptr  (real_type) _p7 ,
     __const_ptr  (real_type) _p8 ,
-                  vals_type  _hb ,      // current anchor
+                  int        _si ,      // current source
+                  vals_type  _o1 ,
+                  vals_type  _o2 ,
+                  vals_type  _o3 ,
+                  vals_type  _o4 ,
+                  vals_type  _o5 ,
+                  vals_type  _o6 ,
+                  vals_type  _o7 ,
+                  vals_type  _o8 ,
                   vals_type& _h1 ,
                   vals_type& _h2 ,
                   vals_type& _h3 ,
@@ -1281,20 +1356,22 @@
          _p5[2] + _p6[2] + _p7[2] + _p8[2] ) / _8r,
             } ;
             
-        vals_type constexpr _8v = (vals_type)+8.;
-        vals_type _hc = (
-         _h1 + _h2 + _h3 + _h4 + _h5 + _h6 + _h7 + _h8
-            ) / _8v ;
-        vals_type _gc = (
-         _g1 + _g2 + _g3 + _g4 + _g5 + _g6 + _g7 + _g8
-            ) / _8v ;
+        vals_type _hc = (vals_type)((
+       (real_type)_o1 + _o2 + _o3 + _o4 + 
+                  _o5 + _o6 + _o7 + _o8 ) / _8r);
+        vals_type _gc = (vals_type)((
+       (real_type)_g1 + _g2 + _g3 + _g4 + 
+                  _g5 + _g6 + _g7 + _g8 ) / _8r);
         
-        for (auto _iter = 4; _iter-- != 0; )
+        for (auto _iter = 2; _iter-- != 0; )
         {
             bool_type _diff = false;
+            vals_type _oc = _hc;
     /*----------------------------- subcells about centre */
             if (eikonal_pyra_3d (
-                _p1, _p2, _p3, _p4, _pc, _hb,
+                _p1, _p2, _p3, _p4, _pc,
+                eikonal_subindex(_si, 0, 1, 2, 3, 8),
+                _o1, _o2, _o3, _o4, _oc,
                 _h1, _h2, _h3, _h4, _hc,
                 _g1, _g2, _g3, _g4, _gc) )
             {
@@ -1302,7 +1379,9 @@
             }
                 
             if (eikonal_pyra_3d (
-                _p1, _p2, _p6, _p5, _pc, _hb,
+                _p1, _p2, _p6, _p5, _pc,
+                eikonal_subindex(_si, 0, 1, 5, 4, 8),
+                _o1, _o2, _o6, _o5, _oc,
                 _h1, _h2, _h6, _h5, _hc,
                 _g1, _g2, _g6, _g5, _gc) )
             {
@@ -1310,7 +1389,9 @@
             }
                 
             if (eikonal_pyra_3d (
-                _p2, _p3, _p7, _p6, _pc, _hb,
+                _p2, _p3, _p7, _p6, _pc,
+                eikonal_subindex(_si, 1, 2, 6, 5, 8),
+                _o2, _o3, _o7, _o6, _oc,
                 _h2, _h3, _h7, _h6, _hc,
                 _g2, _g3, _g7, _g6, _gc) )
             {
@@ -1318,7 +1399,9 @@
             }
                 
             if (eikonal_pyra_3d (
-                _p3, _p4, _p8, _p7, _pc, _hb,
+                _p3, _p4, _p8, _p7, _pc,
+                eikonal_subindex(_si, 2, 3, 7, 6, 8),
+                _o3, _o4, _o8, _o7, _oc,
                 _h3, _h4, _h8, _h7, _hc,
                 _g3, _g4, _g8, _g7, _gc) )
             {
@@ -1326,7 +1409,9 @@
             }
             
             if (eikonal_pyra_3d (
-                _p4, _p1, _p5, _p8, _pc, _hb,
+                _p4, _p1, _p5, _p8, _pc,
+                eikonal_subindex(_si, 3, 0, 4, 7, 8),
+                _o4, _o1, _o5, _o8, _oc,
                 _h4, _h1, _h5, _h8, _hc,
                 _g4, _g1, _g5, _g8, _gc) )
             {
@@ -1334,7 +1419,9 @@
             }
             
             if (eikonal_pyra_3d (
-                _p8, _p7, _p6, _p5, _pc, _hb,
+                _p8, _p7, _p6, _p5, _pc,
+                eikonal_subindex(_si, 7, 6, 5, 4, 8),
+                _o8, _o7, _o6, _o5, _oc,
                 _h8, _h7, _h6, _h5, _hc,
                 _g8, _g7, _g6, _g5, _gc) )
             {

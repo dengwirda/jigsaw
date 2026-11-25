@@ -43,7 +43,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 08 Nov., 2026
+ * Last updated: 24 Nov., 2026
  *
  * Copyright 2013-2026
  * Darren Engwirda
@@ -350,6 +350,16 @@
         size_type  _hpos   = +0
         ) const
     {   return this->_heap[_hpos]._data ;
+    }
+
+/*------------------------------------- key in heap query */
+    __inline_call bool_type contains (
+        kptr_type _kptr
+        ) const
+    {
+        return _kptr < this->_keys.count() &&
+            this->_keys[_kptr] !=
+            std::numeric_limits<kptr_type>::max();
     }
 
 /*-------------------------------------------- empty test */
